@@ -140,6 +140,10 @@ Damit Jellyfin Remote dieselben Apps als Knöpfe zeigen kann, legt die App die L
 
 - Optionaler **Startbildschirm-Modus** (Launcher) für Android TV / Google TV. Auf Fire TV lässt Amazon keinen fremden Startbildschirm zu.
 
+## Datenschutz
+
+Siehe [Datenschutzerklärung](PRIVACY.md) ([English](PRIVACY.en.md)). Kurz: keine Werbung, kein Tracking, keine Daten an den Entwickler – die App spricht nur mit dem eigenen Jellyfin-Server.
+
 ## Lizenz
 
 GPL v2, wie die offizielle App (siehe [LICENSE](LICENSE)).

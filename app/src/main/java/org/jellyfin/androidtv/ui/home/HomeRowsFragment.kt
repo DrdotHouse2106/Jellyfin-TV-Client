@@ -136,8 +136,11 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			// Jellyfin-TV-Client: Apps und Geräte-Einstellungen des Fernsehers
 			if (userPreferences[UserPreferences.tvClientAppsRow]) rows.add(HomeFragmentAppsRow())
 			if (userPreferences[UserPreferences.tvClientDeviceRow]) rows.add(HomeFragmentDeviceSettingsRow())
-			val appContext = requireContext().applicationContext
-			lifecycleScope.launch(Dispatchers.IO) { DeviceAppsPublisher.publish(appContext, api) }
+			// App-Liste nur an den eigenen Jellyfin-Server melden, wenn die Zeile „Apps“ eingeschaltet ist
+			if (userPreferences[UserPreferences.tvClientAppsRow]) {
+				val appContext = requireContext().applicationContext
+				lifecycleScope.launch(Dispatchers.IO) { DeviceAppsPublisher.publish(appContext, api) }
+			}
 
 			// Add sections to layout
 			withContext(Dispatchers.Main) {
