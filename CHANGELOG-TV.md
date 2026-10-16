@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.5.0 – 2026-10-16
+
+- **Netflix-Look überarbeitet:** Das Bild des ausgewählten Titels steht nur noch oben rechts und läuft nach links und unten in Schwarz aus; der Rest der Startseite ist schwarz. Titel, Eckdaten und Beschreibung stehen links daneben.
+- Kleinere Karten im Querformat (Vorschau- bzw. Hintergrundbild) ohne Titel darunter – mehr Titel pro Zeile.
+- Bei YouTube-artigen Kanälen werden unsinnige Folgennummern (z. B. „S2026:F101698“) nicht mehr angezeigt.
+
 ## 1.4.0 – 2026-10-16
 
 - **Netflix-Ansicht:** großer Infobereich oben auf der Startseite mit Logo bzw. Titel, Eckdaten (Jahr, FSK, Laufzeit, Bewertung, Genres) und Beschreibung des ausgewählten Titels; Hintergrundbild links und unten abgedunkelt. Abschaltbar unter Einstellungen → Startseite → Darstellung.

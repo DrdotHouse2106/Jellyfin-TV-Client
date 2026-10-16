@@ -21,6 +21,19 @@ class HomeHeroTests : FunSpec({
 		heroSubtitle(episode) shouldBe "S1:F3 · Pilot"
 	}
 
+	test("YouTube-artige Nummern (Jahr als Staffel) werden nicht angezeigt") {
+		val video = BaseItemDto(
+			id = UUID.randomUUID(),
+			type = BaseItemKind.EPISODE,
+			name = "Video",
+			seriesName = "Kanal",
+			parentIndexNumber = 2026,
+			indexNumber = 101698,
+		)
+
+		heroSubtitle(video) shouldBe "Video"
+	}
+
 	test("Film: Jahr, FSK, Laufzeit, Bewertung und Genres") {
 		val movie = BaseItemDto(
 			id = UUID.randomUUID(),

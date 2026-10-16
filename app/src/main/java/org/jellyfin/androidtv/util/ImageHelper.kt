@@ -7,7 +7,9 @@ import androidx.annotation.AnyRes
 import org.jellyfin.androidtv.util.apiclient.JellyfinImage
 import org.jellyfin.androidtv.util.apiclient.albumPrimaryImage
 import org.jellyfin.androidtv.util.apiclient.getUrl
+import org.jellyfin.androidtv.util.apiclient.itemBackdropImages
 import org.jellyfin.androidtv.util.apiclient.itemImages
+import org.jellyfin.androidtv.util.apiclient.parentBackdropImages
 import org.jellyfin.androidtv.util.apiclient.parentImages
 import org.jellyfin.androidtv.util.apiclient.primaryImage
 import org.jellyfin.androidtv.util.apiclient.seriesPrimaryImage
@@ -97,7 +99,17 @@ class ImageHelper(
 		item: BaseItemDto,
 		fillWidth: Int,
 		fillHeight: Int,
-	): String? = item.itemImages[ImageType.THUMB]?.getUrl(api, fillWidth = fillWidth, fillHeight = fillHeight)
+	): String? {
+		// Jellyfin-TV-Client: Querformat für die Netflix-Ansicht – ohne Thumb auf Hintergrundbild,
+		// Serienbild oder (bei Folgen) das Folgenbild zurückfallen
+		val image = item.itemImages[ImageType.THUMB]
+			?: (if (item.type == BaseItemKind.EPISODE) item.itemImages[ImageType.PRIMARY] else null)
+			?: item.itemBackdropImages.firstOrNull()
+			?: item.parentImages[ImageType.THUMB]
+			?: item.parentBackdropImages.firstOrNull()
+			?: item.itemImages[ImageType.PRIMARY]
+		return image?.getUrl(api, fillWidth = fillWidth, fillHeight = fillHeight)
+	}
 		?: getPrimaryImageUrl(item, true, fillWidth, fillHeight)
 
 	fun getBannerImageUrl(item: BaseItemDto, fillWidth: Int, fillHeight: Int): String? =

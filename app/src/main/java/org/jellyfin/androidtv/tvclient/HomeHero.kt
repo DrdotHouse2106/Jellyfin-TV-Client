@@ -1,5 +1,19 @@
 package org.jellyfin.androidtv.tvclient
 
+import android.widget.ImageView
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Alignment
+import org.jellyfin.androidtv.util.apiclient.JellyfinImage
+import org.jellyfin.androidtv.util.apiclient.getUrl
+import org.jellyfin.androidtv.util.apiclient.itemBackdropImages
+import org.jellyfin.androidtv.util.apiclient.itemImages
+import org.jellyfin.androidtv.util.apiclient.parentBackdropImages
+import org.jellyfin.androidtv.util.apiclient.parentImages
+import org.jellyfin.sdk.api.client.ApiClient
+import org.jellyfin.sdk.model.api.ImageType
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -39,17 +53,71 @@ object HomeHeroState {
 	val item = MutableStateFlow<BaseItemDto?>(null)
 }
 
-/** Verlauf, der das Hintergrundbild links und unten abdunkelt, damit Text und Zeilen lesbar bleiben. */
-val heroScrim = Brush.horizontalGradient(
-	0f to Color.Black.copy(alpha = 0.92f),
-	0.45f to Color.Black.copy(alpha = 0.6f),
-	1f to Color.Transparent,
-)
+/**
+ * Hintergrundbild des ausgewählten Titels oben rechts (etwa zwei Drittel der Breite), das nach links
+ * und unten in Schwarz ausläuft – wie bei Netflix. Der Rest der Startseite bleibt schwarz.
+ */
+@Composable
+fun HomeHeroBackdrop(modifier: Modifier = Modifier) {
+	val item by HomeHeroState.item.collectAsState()
+	val api = koinInject<ApiClient>()
 
-val heroBottomScrim = Brush.verticalGradient(
-	0.35f to Color.Transparent,
-	1f to Color.Black.copy(alpha = 0.85f),
-)
+	Box(modifier.fillMaxSize().background(Color.Black)) {
+		AnimatedContent(
+			targetState = item,
+			transitionSpec = { fadeIn() togetherWith fadeOut() },
+			contentKey = { it?.id },
+			modifier = Modifier
+				.align(Alignment.TopEnd)
+				.fillMaxWidth(0.7f)
+				.fillMaxHeight(0.68f),
+			label = "HomeHeroBackdrop",
+		) { current ->
+			val backdrop = current?.let(::heroBackdropImage)
+			if (backdrop != null) {
+				Box(Modifier.fillMaxSize()) {
+					AsyncImage(
+						modifier = Modifier.fillMaxSize(),
+						url = backdrop.getUrl(api, maxWidth = 1280),
+						blurHash = backdrop.blurHash,
+						aspectRatio = 16f / 9f,
+						scaleType = ImageView.ScaleType.CENTER_CROP,
+					)
+					// Nach links und unten in Schwarz auslaufen lassen
+					Box(
+						Modifier
+							.fillMaxSize()
+							.background(
+								Brush.horizontalGradient(
+									0f to Color.Black,
+									0.35f to Color.Black.copy(alpha = 0.55f),
+									0.7f to Color.Transparent,
+								)
+							)
+					)
+					Box(
+						Modifier
+							.fillMaxSize()
+							.background(
+								Brush.verticalGradient(
+									0.5f to Color.Transparent,
+									1f to Color.Black,
+								)
+							)
+					)
+				}
+			}
+		}
+	}
+}
+
+/** Großes Bild für den Infobereich: Hintergrundbild, sonst Serien-Hintergrund oder Vorschaubild. */
+fun heroBackdropImage(item: BaseItemDto): JellyfinImage? =
+	item.itemBackdropImages.firstOrNull()
+		?: item.parentBackdropImages.firstOrNull()
+		?: item.itemImages[ImageType.THUMB]
+		?: item.parentImages[ImageType.THUMB]
+		?: if (item.type == BaseItemKind.EPISODE || item.type == BaseItemKind.PROGRAM) item.itemImages[ImageType.PRIMARY] else null
 
 @Composable
 fun HomeHero(modifier: Modifier = Modifier) {
@@ -73,8 +141,8 @@ private fun HeroContent(item: BaseItemDto) {
 
 	Column(
 		modifier = Modifier
-			.fillMaxWidth()
-			.padding(start = 48.dp, end = 48.dp, top = 8.dp),
+			.fillMaxWidth(0.5f)
+			.padding(start = 48.dp, top = 24.dp),
 		verticalArrangement = Arrangement.spacedBy(8.dp),
 	) {
 		if (logoUrl != null) {
@@ -127,7 +195,7 @@ private fun HeroContent(item: BaseItemDto) {
 				color = Color(0xFFDDE1E8),
 				maxLines = 3,
 				overflow = TextOverflow.Ellipsis,
-				modifier = Modifier.widthIn(max = 720.dp),
+				modifier = Modifier.fillMaxWidth(),
 			)
 		}
 	}
@@ -142,7 +210,10 @@ fun heroTitle(item: BaseItemDto): String = when (item.type) {
 /** Zweite Zeile: bei Folgen „S1:E3 · Titel“, bei Sendungen Zeit und Sender. */
 fun heroSubtitle(item: BaseItemDto): String? = when (item.type) {
 	BaseItemKind.EPISODE -> listOfNotNull(
-		if (item.parentIndexNumber != null && item.indexNumber != null) "S${item.parentIndexNumber}:F${item.indexNumber}" else null,
+		// Nur echte Staffeln/Folgen (keine Jahres- oder Datumsnummern wie bei YouTube-Kanälen)
+		if (item.parentIndexNumber != null && item.indexNumber != null && item.parentIndexNumber!! < 100 && item.indexNumber!! < 1000) {
+			"S${item.parentIndexNumber}:F${item.indexNumber}"
+		} else null,
 		item.name,
 	).joinToString(" · ").ifBlank { null }
 

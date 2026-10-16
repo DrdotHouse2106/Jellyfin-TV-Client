@@ -26,6 +26,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.jellyfin.androidtv.auth.repository.UserRepository
 import org.jellyfin.androidtv.constant.CustomMessage
+import org.jellyfin.androidtv.constant.ImageType
 import org.jellyfin.androidtv.constant.QueryType
 import org.jellyfin.androidtv.data.model.DataRefreshService
 import org.jellyfin.androidtv.data.querying.LocalRecommendationsType
@@ -81,6 +82,7 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 	private val keyProcessor by inject<KeyProcessor>()
 
 	private val helper by lazy { HomeFragmentHelper(requireContext(), userRepository) }
+	private val netflixStyle by lazy { userPreferences[HomeRow.heroPreference] }
 
 	// Data
 	private var currentItem: BaseRowItem? = null
@@ -141,7 +143,8 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 
 			// Add sections to layout
 			withContext(Dispatchers.Main) {
-				val cardPresenter = CardPresenter()
+				// Jellyfin-TV-Client: Netflix-Ansicht mit kleinen Querformat-Bildern ohne Titel darunter
+				val cardPresenter = if (netflixStyle) CardPresenter(false, ImageType.THUMB, NETFLIX_CARD_HEIGHT) else CardPresenter()
 
 				// Add rows in order
 				notificationsRow.addToRowsAdapter(requireContext(), cardPresenter, adapter as MutableObjectAdapter<Row>)
@@ -294,8 +297,14 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 				val itemRowAdapter = row.adapter as? ItemRowAdapter
 				itemRowAdapter?.loadMoreItemsIfNeeded(itemRowAdapter.indexOf(item))
 
-				backgroundService.setBackground(item.baseItem)
+				// In der Netflix-Ansicht zeigt der Infobereich das Bild selbst
+				if (netflixStyle) backgroundService.clearBackgrounds() else backgroundService.setBackground(item.baseItem)
 			}
 		}
+	}
+
+	private companion object {
+		// Höhe der Querformat-Karten in der Netflix-Ansicht (dp)
+		const val NETFLIX_CARD_HEIGHT = 115
 	}
 }

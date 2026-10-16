@@ -5,8 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.focusGroup
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,8 +35,7 @@ import org.jellyfin.androidtv.data.repository.NotificationsRepository
 import org.jellyfin.androidtv.preference.UserPreferences
 import org.jellyfin.androidtv.tvclient.HomeHero
 import org.jellyfin.androidtv.tvclient.HomeRow
-import org.jellyfin.androidtv.tvclient.heroBottomScrim
-import org.jellyfin.androidtv.tvclient.heroScrim
+import org.jellyfin.androidtv.tvclient.HomeHeroBackdrop
 import org.jellyfin.androidtv.ui.base.JellyfinTheme
 import org.jellyfin.androidtv.ui.shared.toolbar.MainToolbar
 import org.jellyfin.androidtv.ui.shared.toolbar.MainToolbarActiveButton
@@ -62,15 +59,12 @@ class HomeFragment : Fragment() {
 
 		JellyfinTheme {
 			// Jellyfin-TV-Client: Netflix-Ansicht mit abgedunkeltem Hintergrund und Infobereich oben
-			if (showHero) {
-				Box(Modifier.fillMaxSize().background(heroScrim))
-				Box(Modifier.fillMaxSize().background(heroBottomScrim))
-			}
+			if (showHero) HomeHeroBackdrop()
 
 			Column {
 				MainToolbar(MainToolbarActiveButton.Home)
 
-				if (showHero) HomeHero(Modifier.fillMaxWidth().height(210.dp))
+				if (showHero) HomeHero(Modifier.fillMaxWidth().height(230.dp))
 
 				// The leanback code has its own awful focus handling that doesn't work properly with Compose view inteop to workaround this
 				// issue we add custom behavior that only allows focus exit when the current selected row is the first one. Additionally when
