@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.5.2 – 2026-10-16
+
+- Netflix-Ansicht: Die ausgewählte Zeile steht ganz oben, die vorherige Zeile ist nicht mehr angeschnitten zu sehen.
+- Kleinere Karten (mehr Titel pro Zeile).
+- Beschreibungen ohne Markdown-Links (z. B. „[Name](http://…)“) und HTML-Reste.
+
 ## 1.5.1 – 2026-10-16
 
 - Navigation links: alle Symbole (Profil, Suche, Startseite, TV-Programm, Einstellungen) sind mit hoch/runter erreichbar; „Rechts“ führt zurück in die Zeilen.

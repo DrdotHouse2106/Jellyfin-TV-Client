@@ -187,7 +187,7 @@ private fun HeroContent(item: BaseItemDto) {
 			)
 		}
 
-		item.overview?.takeIf { it.isNotBlank() }?.let {
+		item.overview?.let(::cleanOverview)?.takeIf { it.isNotBlank() }?.let {
 			Text(
 				text = it,
 				fontSize = 15.sp,
@@ -200,6 +200,13 @@ private fun HeroContent(item: BaseItemDto) {
 		}
 	}
 }
+
+/** Beschreibung ohne Markdown-Links („[Name](http://…)“ → „Name“), HTML-Reste und Zeilenumbrüche. */
+fun cleanOverview(text: String): String = text
+	.replace(Regex("\\[([^\\]]*)]\\([^)]*\\)"), "$1")
+	.replace(Regex("<[^>]+>"), "")
+	.replace(Regex("\\s+"), " ")
+	.trim()
 
 /** Haupttitel: bei Folgen der Serienname. */
 fun heroTitle(item: BaseItemDto): String = when (item.type) {

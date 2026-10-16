@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import androidx.leanback.app.RowsSupportFragment
+import androidx.leanback.widget.BaseGridView
 import androidx.leanback.widget.ListRow
 import androidx.leanback.widget.OnItemViewClickedListener
 import androidx.leanback.widget.OnItemViewSelectedListener
@@ -206,6 +207,20 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 		return keyProcessor.handleKey(keyCode, currentItem, activity)
 	}
 
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+		super.onViewCreated(view, savedInstanceState)
+
+		// Jellyfin-TV-Client: Netflix-Ansicht – die ausgewählte Zeile steht ganz oben, die Zeile davor
+		// verschwindet vollständig unter dem Infobereich
+		if (netflixStyle) verticalGridView?.apply {
+			windowAlignment = BaseGridView.WINDOW_ALIGN_NO_EDGE
+			windowAlignmentOffset = 0
+			windowAlignmentOffsetPercent = 0f
+			itemAlignmentOffset = 0
+			itemAlignmentOffsetPercent = 0f
+		}
+	}
+
 	override fun onResume() {
 		super.onResume()
 
@@ -305,6 +320,6 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 
 	private companion object {
 		// Höhe der Querformat-Karten in der Netflix-Ansicht (dp)
-		const val NETFLIX_CARD_HEIGHT = 115
+		const val NETFLIX_CARD_HEIGHT = 95
 	}
 }

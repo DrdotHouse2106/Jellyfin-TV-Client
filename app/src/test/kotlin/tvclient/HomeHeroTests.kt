@@ -48,4 +48,9 @@ class HomeHeroTests : FunSpec({
 
 		heroFacts(movie) shouldBe listOf("2021", "FSK-18", "1 Std. 50 Min.", "★ 6,8", "Action, Fantasy")
 	}
+
+	test("Beschreibung ohne Markdown-Links und HTML") {
+		cleanOverview("For young [Tanjirou](http://anidb.net/ch99458), these <b>rumors</b>\nwill come true.") shouldBe
+			"For young Tanjirou, these rumors will come true."
+	}
 })
