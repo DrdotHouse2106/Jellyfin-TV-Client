@@ -42,9 +42,8 @@
     <string name="tvclient_trailer_sound">Trailer preview with sound</string>
     <string name="tvclient_personal_screensaver">Personal screensaver</string>
     <string name="tvclient_personal_screensaver_description">Shows your recommendations and started movies instead of random titles</string>
-    <string name="tvclient_skip_countdown">Skipping in %1$d s – Back to stay</string>
     <string name="tvclient_skip_countdown_pref">Skip intro &amp; credits automatically</string>
-    <string name="tvclient_skip_countdown_pref_description">Shows a 5 second countdown and skips unless you press Back (for segments set to \"Ask to skip\")</string>
+    <string name="tvclient_skip_countdown_pref_description">The \"Skip\" button fills up over 5 seconds, then skips. Back cancels, OK skips right away (for segments set to \"Ask to skip\")</string>
     <string name="tvclient_smart_subtitles">Smart subtitles</string>
     <string name="tvclient_smart_subtitles_description">No subtitles when the audio is in your language; your choice per series is remembered for the next episodes</string>
 </resources>

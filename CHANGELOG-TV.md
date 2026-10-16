@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.7.1 – 2026-10-16
+
+- Überspringen wie bei Netflix: Der Knopf zeigt nur „Überspringen“ und füllt sich in 5 Sekunden wie ein Balken, dann wird übersprungen. „Zurück“ bricht ab, OK springt sofort.
+
 ## 1.7.0 – 2026-10-16
 
 - **Intelligente Untertitel:** Läuft der Ton auf Deutsch (z. B. deutsche Synchro), startet der Titel ohne Untertitel – nur erzwungene Untertitel (z. B. für fremdsprachige Stellen) bleiben an. Schaltest du Untertitel bei einer Serie aus oder um, gilt das auch für die nächsten Folgen. Abschaltbar unter Einstellungen → Wiedergabe.

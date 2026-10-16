@@ -35,15 +35,18 @@ import org.jellyfin.androidtv.ui.base.Text
 import org.jellyfin.androidtv.ui.playback.segment.MediaSegmentRepository
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import org.jellyfin.androidtv.tvclient.TvClientSkip
 
 @Composable
 fun SkipOverlayComposable(
 	visible: Boolean,
-	countdown: Int? = null,
+	progress: Float = 0f,
 ) {
 	Box(
 		contentAlignment = Alignment.BottomEnd,
@@ -55,6 +58,10 @@ fun SkipOverlayComposable(
 				modifier = Modifier
 					.clip(RoundedCornerShape(6.dp))
 					.background(colorResource(R.color.popup_menu_background).copy(alpha = 0.6f))
+					// Jellyfin-TV-Client: Balken füllt sich wie bei Netflix, danach wird übersprungen
+					.drawBehind {
+						if (progress > 0f) drawRect(Color.White.copy(alpha = 0.35f), size = Size(size.width * progress, size.height))
+					}
 					.padding(10.dp),
 				horizontalArrangement = Arrangement.spacedBy(8.dp),
 				verticalAlignment = Alignment.CenterVertically,
@@ -65,9 +72,7 @@ fun SkipOverlayComposable(
 				)
 
 				Text(
-					// Jellyfin-TV-Client: Countdown wie bei Netflix – „Überspringen in 5 s (Zurück = bleiben)“
-					text = if (countdown != null) stringResource(R.string.tvclient_skip_countdown, countdown)
-					else stringResource(R.string.segment_action_skip),
+					text = stringResource(R.string.segment_action_skip),
 					color = colorResource(R.color.button_default_normal_text),
 					fontSize = 18.sp,
 				)
@@ -139,15 +144,11 @@ class SkipOverlayView @JvmOverloads constructor(
 
 		// Jellyfin-TV-Client: automatisch überspringen nach Countdown, wenn nicht mit „Zurück“ abgebrochen
 		val autoSkip = remember { TvClientSkip.autoSkipEnabled() }
-		var countdown by remember { mutableStateOf<Int?>(null) }
+		val progress = remember { Animatable(0f) }
 		LaunchedEffect(visible, targetPosition) {
-			countdown = null
+			progress.snapTo(0f)
 			if (!visible || !autoSkip || targetPosition == null) return@LaunchedEffect
-			for (seconds in TvClientSkip.COUNTDOWN_SECONDS downTo 1) {
-				countdown = seconds
-				delay(1.seconds)
-			}
-			countdown = null
+			progress.animateTo(1f, tween(TvClientSkip.COUNTDOWN_SECONDS * 1000, easing = LinearEasing))
 			onAutoSkip?.run()
 		}
 
@@ -157,6 +158,6 @@ class SkipOverlayView @JvmOverloads constructor(
 			_targetPosition.value = null
 		}
 
-		SkipOverlayComposable(visible, countdown)
+		SkipOverlayComposable(visible, progress.value)
 	}
 }
