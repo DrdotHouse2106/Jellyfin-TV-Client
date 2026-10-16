@@ -34,7 +34,8 @@ public class LeanbackOverlayFragment extends PlaybackSupportFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setBackgroundType(BG_LIGHT);
+        // Jellyfin-TV-Client: dunklerer Verlauf unter den Bedienelementen (besser lesbar, wie bei Netflix)
+        setBackgroundType(BG_DARK);
 
         PlaybackController playbackController = playbackControllerContainer.getValue().getPlaybackController();
         if (playbackController == null) {
