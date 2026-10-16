@@ -48,7 +48,7 @@ Es gibt keine automatischen Store-Updates. Für ein Update die neue APK genauso 
 
 ## Startseite
 
-Oben zeigt ein **großer Infobereich** (wie bei Netflix) den ausgewählten Titel mit Logo, Eckdaten und Beschreibung (abschaltbar unter Einstellungen → Startseite → Darstellung).
+Die Startseite sieht aus wie bei Netflix: **Navigation am linken Rand** (Profil, Suche, Startseite, TV-Programm, Einstellungen – mit „Links“ erreichbar), oben ein **großer Infobereich** den ausgewählten Titel mit Logo, Eckdaten und Beschreibung (abschaltbar unter Einstellungen → Startseite → Darstellung).
 
 Die Zeilen der Startseite stehen in einer festen Reihenfolge und lassen sich unter **Einstellungen → Startseite** einzeln ein- und ausschalten (gespeichert auf dem Gerät):
 

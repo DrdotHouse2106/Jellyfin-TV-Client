@@ -142,7 +142,7 @@ private fun HeroContent(item: BaseItemDto) {
 	Column(
 		modifier = Modifier
 			.fillMaxWidth(0.5f)
-			.padding(start = 48.dp, top = 24.dp),
+			.padding(start = 28.dp, top = 28.dp),
 		verticalArrangement = Arrangement.spacedBy(8.dp),
 	) {
 		if (logoUrl != null) {

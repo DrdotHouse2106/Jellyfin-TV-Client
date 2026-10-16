@@ -5,7 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.focusGroup
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
@@ -35,10 +39,12 @@ import org.jellyfin.androidtv.data.repository.NotificationsRepository
 import org.jellyfin.androidtv.preference.UserPreferences
 import org.jellyfin.androidtv.tvclient.HomeHero
 import org.jellyfin.androidtv.tvclient.HomeRow
+import org.jellyfin.androidtv.tvclient.SideRail
 import org.jellyfin.androidtv.tvclient.HomeHeroBackdrop
 import org.jellyfin.androidtv.ui.base.JellyfinTheme
 import org.jellyfin.androidtv.ui.shared.toolbar.MainToolbar
 import org.jellyfin.androidtv.ui.shared.toolbar.MainToolbarActiveButton
+import org.jellyfin.androidtv.ui.shared.toolbar.ToolbarClock
 import org.koin.android.ext.android.inject
 
 class HomeFragment : Fragment() {
@@ -58,38 +64,54 @@ class HomeFragment : Fragment() {
 		val showHero = remember { userPreferences[HomeRow.heroPreference] }
 
 		JellyfinTheme {
-			// Jellyfin-TV-Client: Netflix-Ansicht mit abgedunkeltem Hintergrund und Infobereich oben
-			if (showHero) HomeHeroBackdrop()
+			Box(Modifier.fillMaxSize()) {
+				// Jellyfin-TV-Client: Netflix-Ansicht – Bild oben rechts, Navigation links, Infobereich oben
+				if (showHero) HomeHeroBackdrop()
 
-			Column {
-				MainToolbar(MainToolbarActiveButton.Home)
+				Row(Modifier.fillMaxSize()) {
+					if (showHero) SideRail()
 
-				if (showHero) HomeHero(Modifier.fillMaxWidth().height(230.dp))
+					Column(Modifier.weight(1f)) {
+						if (showHero) HomeHero(Modifier.fillMaxWidth().height(250.dp))
+						else MainToolbar(MainToolbarActiveButton.Home)
 
-				// The leanback code has its own awful focus handling that doesn't work properly with Compose view inteop to workaround this
-				// issue we add custom behavior that only allows focus exit when the current selected row is the first one. Additionally when
-				// we do switch the focus, we reset the leanback state so it won't cause weird behavior when focus is regained
-				var rowsSupportFragment by remember { mutableStateOf<HomeRowsFragment?>(null) }
-				AndroidFragment<HomeRowsFragment>(
-					modifier = Modifier
-						.focusGroup()
-						.focusRequester(rowsFocusRequester)
-						.focusProperties {
-							onExit = {
-								val isFirstRowSelected = rowsSupportFragment?.selectedPosition?.let { it <= 0 } ?: false
-								if (requestedFocusDirection != FocusDirection.Up || !isFirstRowSelected) {
-									cancelFocusChange()
-								} else {
-									rowsSupportFragment?.selectedPosition = 0
-									rowsSupportFragment?.verticalGridView?.clearFocus()
+						// The leanback code has its own awful focus handling that doesn't work properly with Compose view inteop to workaround this
+						// issue we add custom behavior that only allows focus exit when the current selected row is the first one. Additionally when
+						// we do switch the focus, we reset the leanback state so it won't cause weird behavior when focus is regained
+						var rowsSupportFragment by remember { mutableStateOf<HomeRowsFragment?>(null) }
+						AndroidFragment<HomeRowsFragment>(
+							modifier = Modifier
+								.focusGroup()
+								.focusRequester(rowsFocusRequester)
+								.focusProperties {
+									onExit = {
+										val isFirstRowSelected = rowsSupportFragment?.selectedPosition?.let { it <= 0 } ?: false
+										when {
+											// Netflix-Ansicht: mit „Links“ in die Navigation am Rand
+											showHero && requestedFocusDirection == FocusDirection.Left -> Unit
+											showHero || requestedFocusDirection != FocusDirection.Up || !isFirstRowSelected -> cancelFocusChange()
+											else -> {
+												rowsSupportFragment?.selectedPosition = 0
+												rowsSupportFragment?.verticalGridView?.clearFocus()
+											}
+										}
+									}
 								}
+								.fillMaxSize(),
+							onUpdate = { fragment ->
+								rowsSupportFragment = fragment
 							}
-						}
-						.fillMaxSize(),
-					onUpdate = { fragment ->
-						rowsSupportFragment = fragment
+						)
 					}
-				)
+				}
+
+				if (showHero) {
+					ToolbarClock(
+						Modifier
+							.align(Alignment.TopEnd)
+							.padding(top = 24.dp, end = 48.dp)
+					)
+				}
 			}
 		}
 	}
