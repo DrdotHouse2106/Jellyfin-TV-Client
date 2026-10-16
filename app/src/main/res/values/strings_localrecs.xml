@@ -21,4 +21,7 @@
     <string name="tvclient_home_device_description">Wi-Fi, Bluetooth, display, sound and settings of this TV</string>
     <string name="tvclient_home_web_sections">More sections from the web</string>
     <string name="tvclient_home_web_sections_description">Sections of the \"Home Screen Sections\" plugin as set up in the web interface (genres, top 10, because you watched, collections, …)</string>
+    <string name="tvclient_home_style">Appearance</string>
+    <string name="tvclient_home_hero">Large info area (Netflix style)</string>
+    <string name="tvclient_home_hero_description">Shows the selected title large at the top with logo, facts and description</string>
 </resources>

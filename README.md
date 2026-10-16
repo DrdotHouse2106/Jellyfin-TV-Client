@@ -48,6 +48,8 @@ Es gibt keine automatischen Store-Updates. Für ein Update die neue APK genauso 
 
 ## Startseite
 
+Oben zeigt ein **großer Infobereich** (wie bei Netflix) den ausgewählten Titel mit Logo, Eckdaten und Beschreibung (abschaltbar unter Einstellungen → Startseite → Darstellung).
+
 Die Zeilen der Startseite stehen in einer festen Reihenfolge und lassen sich unter **Einstellungen → Startseite** einzeln ein- und ausschalten (gespeichert auf dem Gerät):
 
 1. Weiterschauen
@@ -60,8 +62,8 @@ Die Zeilen der Startseite stehen in einer festen Reihenfolge und lassen sich unt
 8. Weitere Abschnitte aus dem Web ** (z. B. Genres, Top 10, „Weil du … gesehen hast“, Sammlungen)
 9. Weiterhören (anfangs aus)
 10. Aktive Aufnahmen (anfangs aus)
-11. Apps
-12. Gerät
+11. Apps (anfangs aus)
+12. Gerät (anfangs aus)
 13. Meine Medien (Bibliotheken)
 
 \* benötigt das Server-Plugin „Local Recommendations“ ab 12.5.0; ohne Plugin bleiben die Zeilen unsichtbar. Gesehene Titel verschwinden nach dem Anschauen.

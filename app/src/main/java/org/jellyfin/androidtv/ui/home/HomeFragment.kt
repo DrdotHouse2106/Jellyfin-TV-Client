@@ -5,7 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.focusGroup
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,6 +21,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.compose.AndroidFragment
 import androidx.fragment.compose.content
@@ -29,6 +34,11 @@ import kotlinx.coroutines.flow.onEach
 import org.jellyfin.androidtv.auth.repository.ServerRepository
 import org.jellyfin.androidtv.auth.repository.SessionRepository
 import org.jellyfin.androidtv.data.repository.NotificationsRepository
+import org.jellyfin.androidtv.preference.UserPreferences
+import org.jellyfin.androidtv.tvclient.HomeHero
+import org.jellyfin.androidtv.tvclient.HomeRow
+import org.jellyfin.androidtv.tvclient.heroBottomScrim
+import org.jellyfin.androidtv.tvclient.heroScrim
 import org.jellyfin.androidtv.ui.base.JellyfinTheme
 import org.jellyfin.androidtv.ui.shared.toolbar.MainToolbar
 import org.jellyfin.androidtv.ui.shared.toolbar.MainToolbarActiveButton
@@ -38,6 +48,7 @@ class HomeFragment : Fragment() {
 	private val sessionRepository by inject<SessionRepository>()
 	private val serverRepository by inject<ServerRepository>()
 	private val notificationRepository by inject<NotificationsRepository>()
+	private val userPreferences by inject<UserPreferences>()
 
 	override fun onCreateView(
 		inflater: LayoutInflater,
@@ -47,9 +58,19 @@ class HomeFragment : Fragment() {
 		val rowsFocusRequester = remember { FocusRequester() }
 		LaunchedEffect(rowsFocusRequester) { rowsFocusRequester.requestFocus() }
 
+		val showHero = remember { userPreferences[HomeRow.heroPreference] }
+
 		JellyfinTheme {
+			// Jellyfin-TV-Client: Netflix-Ansicht mit abgedunkeltem Hintergrund und Infobereich oben
+			if (showHero) {
+				Box(Modifier.fillMaxSize().background(heroScrim))
+				Box(Modifier.fillMaxSize().background(heroBottomScrim))
+			}
+
 			Column {
 				MainToolbar(MainToolbarActiveButton.Home)
+
+				if (showHero) HomeHero(Modifier.fillMaxWidth().height(210.dp))
 
 				// The leanback code has its own awful focus handling that doesn't work properly with Compose view inteop to workaround this
 				// issue we add custom behavior that only allows focus exit when the current selected row is the first one. Additionally when

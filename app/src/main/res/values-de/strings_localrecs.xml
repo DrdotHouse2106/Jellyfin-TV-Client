@@ -21,4 +21,7 @@
     <string name="tvclient_home_device_description">WLAN, Bluetooth, Bild, Ton und Einstellungen des Fernsehers</string>
     <string name="tvclient_home_web_sections">Weitere Abschnitte aus dem Web</string>
     <string name="tvclient_home_web_sections_description">Abschnitte des Plugins „Home Screen Sections“, wie in der Weboberfläche eingerichtet (Genres, Top 10, Weil du … gesehen hast, Sammlungen …)</string>
+    <string name="tvclient_home_style">Darstellung</string>
+    <string name="tvclient_home_hero">Großer Infobereich (wie Netflix)</string>
+    <string name="tvclient_home_hero_description">Zeigt den ausgewählten Titel oben groß mit Logo, Eckdaten und Beschreibung</string>
 </resources>

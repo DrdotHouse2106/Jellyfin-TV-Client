@@ -50,6 +50,7 @@ import org.jellyfin.androidtv.ui.presentation.PositionableListRowPresenter
 import org.jellyfin.androidtv.tvclient.DeviceAppsPublisher
 import org.jellyfin.androidtv.tvclient.HomeFragmentAppsRow
 import org.jellyfin.androidtv.tvclient.HomeFragmentDeviceSettingsRow
+import org.jellyfin.androidtv.tvclient.HomeHeroState
 import org.jellyfin.androidtv.tvclient.HomeRow
 import org.jellyfin.androidtv.tvclient.HomeScreenSections
 import org.jellyfin.androidtv.tvclient.onDeviceCardClicked
@@ -279,6 +280,9 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			rowViewHolder: RowPresenter.ViewHolder?,
 			row: Row?,
 		) {
+			// Jellyfin-TV-Client: Infobereich oben (Netflix-Ansicht) zeigt den ausgewählten Titel
+			HomeHeroState.item.value = (item as? BaseRowItem)?.baseItem
+
 			if (item !is BaseRowItem) {
 				currentItem = null
 				//fill in default background

@@ -23,6 +23,16 @@ class HomePreferencesScreen : OptionsFragment() {
 		setTitle(R.string.home_prefs)
 
 		category {
+			setTitle(R.string.tvclient_home_style)
+
+			checkbox {
+				setTitle(R.string.tvclient_home_hero)
+				setContent(R.string.tvclient_home_hero_description)
+				bind(userPreferences, HomeRow.heroPreference)
+			}
+		}
+
+		category {
 			setTitle(R.string.tvclient_home_rows)
 
 			HomeRow.entries.forEach { row ->

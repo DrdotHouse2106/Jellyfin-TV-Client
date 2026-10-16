@@ -26,14 +26,17 @@ enum class HomeRow(
 	WEB_SECTIONS("web_sections", R.string.tvclient_home_web_sections, true, R.string.tvclient_home_web_sections_description),
 	RESUME_AUDIO("resume_audio", R.string.home_section_resume_audio, false),
 	ACTIVE_RECORDINGS("recordings", R.string.home_section_active_recordings, false),
-	APPS("apps", R.string.tvclient_row_apps, true, R.string.tvclient_home_apps_description),
-	DEVICE("device", R.string.tvclient_row_device, true, R.string.tvclient_home_device_description),
+	APPS("apps", R.string.tvclient_row_apps, false, R.string.tvclient_home_apps_description),
+	DEVICE("device", R.string.tvclient_row_device, false, R.string.tvclient_home_device_description),
 	LIBRARIES("libraries", R.string.home_section_library, true),
 	;
 
 	val preference = booleanPreference("pref_tvclient_home_$key", enabledByDefault)
 
 	companion object {
+		/** Netflix-Ansicht: großer Infobereich zum ausgewählten Titel oben auf der Startseite. */
+		val heroPreference = booleanPreference("pref_tvclient_home_hero", true)
+
 		/** Eingeschaltete Zeilen in der festen Reihenfolge. */
 		fun enabled(userPreferences: UserPreferences): List<HomeRow> =
 			entries.filter { userPreferences[it.preference] }
