@@ -2,6 +2,7 @@ package org.jellyfin.androidtv.util
 
 import android.content.Context
 import android.os.Build
+import org.jellyfin.androidtv.tvclient.TimeFormat
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
@@ -23,6 +24,10 @@ fun Context.getDateFormatter(
 @JvmOverloads
 fun Context.getTimeFormatter(
 	style: FormatStyle = FormatStyle.SHORT
-): DateTimeFormatter = DateTimeFormatter
-	.ofLocalizedTime(style)
-	.withLocale(locale)
+): DateTimeFormatter = when {
+	// Jellyfin-TV-Client: 24-Stunden-Format erzwingen (siehe tvclient/TimeFormat.kt)
+	style == FormatStyle.SHORT && TimeFormat.use24Hour(this) -> DateTimeFormatter.ofPattern("HH:mm", locale)
+	else -> DateTimeFormatter
+		.ofLocalizedTime(style)
+		.withLocale(locale)
+}

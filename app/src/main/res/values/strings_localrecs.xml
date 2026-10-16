@@ -24,4 +24,6 @@
     <string name="tvclient_home_style">Appearance</string>
     <string name="tvclient_home_hero">Large info area (Netflix style)</string>
     <string name="tvclient_home_hero_description">Shows the selected title large at the top with logo, facts and description</string>
+    <string name="tvclient_24h">24-hour clock</string>
+    <string name="tvclient_24h_description">Times as 23:03 instead of 11:03 PM</string>
 </resources>

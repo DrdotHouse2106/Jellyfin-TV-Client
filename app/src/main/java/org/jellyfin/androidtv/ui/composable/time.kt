@@ -1,6 +1,7 @@
 package org.jellyfin.androidtv.ui.composable
 
 import android.text.format.DateFormat
+import org.jellyfin.androidtv.tvclient.TimeFormat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -22,7 +23,8 @@ fun rememberCurrentTime(
 	val context = LocalContext.current
 	val locale = context.locale
 	val format = remember(context, locale) {
-		when (DateFormat.is24HourFormat(context)) {
+		// Jellyfin-TV-Client: 24-Stunden-Format erzwingen (siehe tvclient/TimeFormat.kt)
+		when (TimeFormat.use24Hour(context)) {
 			true -> format24
 			false -> format12
 		}
