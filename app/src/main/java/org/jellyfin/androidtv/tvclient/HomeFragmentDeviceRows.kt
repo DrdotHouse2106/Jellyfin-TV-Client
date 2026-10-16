@@ -1,6 +1,7 @@
 package org.jellyfin.androidtv.tvclient
 
 import android.content.Context
+import android.graphics.drawable.InsetDrawable
 import android.util.TypedValue
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -89,8 +90,11 @@ private class DeviceCardPresenter : Presenter() {
 			}
 
 			is DeviceApps.SettingsShortcut -> {
-				cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT, ImageView.ScaleType.CENTER_INSIDE)
-				cardView.mainImageView.load(placeholder = ContextCompat.getDrawable(context, item.icon))
+				cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT, ImageView.ScaleType.FIT_CENTER)
+				// Symbol mit Rand, damit es nicht die ganze Kachel füllt
+				val inset = (CARD_HEIGHT * ICON_INSET * context.resources.displayMetrics.density).toInt()
+				val icon = ContextCompat.getDrawable(context, item.icon)?.let { InsetDrawable(it, inset) }
+				cardView.mainImageView.load(placeholder = icon)
 				cardView.setTitleText(context.getString(item.title))
 			}
 		}
@@ -101,5 +105,6 @@ private class DeviceCardPresenter : Presenter() {
 	companion object {
 		private const val CARD_WIDTH = 224
 		private const val CARD_HEIGHT = 126
+		private const val ICON_INSET = 0.3f
 	}
 }

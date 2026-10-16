@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.2.3 – 2026-10-16
+
+- Zeile „Gerät“: Symbole mit Rand statt kachelfüllend.
+
 ## 1.2.2 – 2026-10-16
 
 - Startbildschirm: „Willkommen bei Quallenkino!“ und Versionsanzeige „Quallenkino …“ statt „jellyfin-androidtv“.
