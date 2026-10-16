@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.2.1 – 2026-10-16
+
+- Die Liste der installierten Apps wird nur noch an den eigenen Jellyfin-Server gemeldet, wenn die Zeile „Apps“ eingeschaltet ist.
+- Datenschutzerklärung (PRIVACY.md) und Store-Unterlagen.
+- Build erzeugt zusätzlich ein App Bundle (.aab) für Google Play.
+
 ## 1.2.0 – 2026-10-16
 
 ### Neu

@@ -68,7 +68,7 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew :app:assembleRelease
+        run: ./gradlew :app:assembleRelease :app:bundleRelease
 
       - name: Assemble debug APK
         if: steps.keystore.outputs.signed != 'true'
@@ -78,6 +78,7 @@ jobs:
         run: |
           mkdir -p build/tv-client
           find app/build/outputs/apk -iname "*.apk" -exec cp "{}" build/tv-client/ \;
+          find app/build/outputs/bundle -iname "*.aab" -exec cp "{}" build/tv-client/ \; 2>/dev/null || true
           ls -la build/tv-client
 
       - name: Upload artifacts
@@ -94,5 +95,5 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="v$JELLYFIN_VERSION"
-          gh release create "$TAG" build/tv-client/*.apk --target "$GITHUB_SHA" --title "Quallenkino $TAG" --notes "Siehe README und CHANGELOG-TV.md." \
-            || gh release upload "$TAG" build/tv-client/*.apk --clobber
+          gh release create "$TAG" build/tv-client/* --target "$GITHUB_SHA" --title "Quallenkino $TAG" --notes "Siehe README und CHANGELOG-TV.md." \
+            || gh release upload "$TAG" build/tv-client/* --clobber
