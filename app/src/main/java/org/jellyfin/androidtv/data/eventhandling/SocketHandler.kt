@@ -120,7 +120,11 @@ class SocketHandler(
 				val index = message["index"]?.toIntOrNull() ?: return@onEach
 
 				withContext(Dispatchers.Main) {
-					playbackControllerContainer.playbackController?.setSubtitleIndex(index)
+					playbackControllerContainer.playbackController?.let { controller ->
+						// Jellyfin-TV-Client: Wahl für die nächsten Folgen der Serie merken
+						org.jellyfin.androidtv.tvclient.TvClientSubtitles.remember(controller.currentlyPlayingItem, controller.currentMediaSource, index)
+						controller.setSubtitleIndex(index)
+					}
 				}
 			}
 			.launchIn(coroutineScope)

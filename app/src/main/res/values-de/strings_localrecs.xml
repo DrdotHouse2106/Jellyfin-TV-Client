@@ -42,4 +42,9 @@
     <string name="tvclient_trailer_sound">Trailer-Vorschau mit Ton</string>
     <string name="tvclient_personal_screensaver">Persönlicher Bildschirmschoner</string>
     <string name="tvclient_personal_screensaver_description">Zeigt deine Empfehlungen und angefangene Filme statt zufälliger Titel</string>
+    <string name="tvclient_skip_countdown">Überspringen in %1$d s – Zurück zum Bleiben</string>
+    <string name="tvclient_skip_countdown_pref">Intro &amp; Abspann automatisch überspringen</string>
+    <string name="tvclient_skip_countdown_pref_description">Zeigt 5 Sekunden Countdown und überspringt, außer du drückst „Zurück“ (für Abschnitte mit „Nachfragen“)</string>
+    <string name="tvclient_smart_subtitles">Intelligente Untertitel</string>
+    <string name="tvclient_smart_subtitles_description">Keine Untertitel, wenn der Ton in deiner Sprache ist; deine Wahl pro Serie gilt auch für die nächsten Folgen</string>
 </resources>

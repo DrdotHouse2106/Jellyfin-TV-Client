@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
 import org.jellyfin.androidtv.R
+import org.jellyfin.androidtv.tvclient.TvClientSubtitles
 import org.jellyfin.androidtv.ui.playback.PlaybackController
 import org.jellyfin.androidtv.ui.playback.overlay.CustomPlaybackTransportControlGlue
 import org.jellyfin.androidtv.ui.playback.overlay.VideoPlayerAdapter
@@ -59,6 +60,8 @@ class ClosedCaptionsAction(
 				popup = null
 			}
 			setOnMenuItemClickListener { item ->
+				// Jellyfin-TV-Client: Wahl für die nächsten Folgen der Serie merken
+				TvClientSubtitles.remember(playbackController.currentlyPlayingItem, playbackController.currentMediaSource, item.itemId)
 				playbackController.setSubtitleIndex(item.itemId)
 				true
 			}

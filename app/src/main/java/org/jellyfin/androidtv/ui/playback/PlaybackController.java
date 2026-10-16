@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 
 import org.jellyfin.androidtv.R;
 import org.jellyfin.androidtv.data.compat.PlaybackException;
+import org.jellyfin.androidtv.tvclient.TvClientSubtitles;
 import org.jellyfin.androidtv.data.compat.StreamInfo;
 import org.jellyfin.androidtv.data.compat.VideoOptions;
 import org.jellyfin.androidtv.data.model.DataRefreshService;
@@ -633,6 +634,20 @@ public class PlaybackController implements PlaybackControllerNotifiable {
         mCurrentOptions.setSubtitleStreamIndex(response.getMediaSource().getDefaultSubtitleStreamIndex() != null ? response.getMediaSource().getDefaultSubtitleStreamIndex() : null);
         setDefaultAudioIndex(response);
         Timber.i("default audio index set to %s remote default %s", mDefaultAudioIndex, response.getMediaSource().getDefaultAudioStreamIndex());
+
+        // Jellyfin-TV-Client: keine Untertitel bei Ton in der eigenen Sprache, gemerkte Wahl pro Serie
+        Integer serverSubtitleIndex = mCurrentOptions.getSubtitleStreamIndex();
+        Integer chosenSubtitleIndex = TvClientSubtitles.chooseSubtitleIndex(item, response.getMediaSource(), serverSubtitleIndex, mDefaultAudioIndex);
+        if (chosenSubtitleIndex != null && !chosenSubtitleIndex.equals(serverSubtitleIndex)) {
+            if (burningSubs && TvClientSubtitles.allowRestart(item)) {
+                // Eingebrannte Untertitel lassen sich nur durch Neustart des Streams ändern
+                burningSubs = false;
+                stop();
+                play(position, chosenSubtitleIndex);
+                return;
+            }
+            mCurrentOptions.setSubtitleStreamIndex(chosenSubtitleIndex);
+        }
         Timber.i("default sub index set to %s remote default %s", mCurrentOptions.getSubtitleStreamIndex(), response.getMediaSource().getDefaultSubtitleStreamIndex());
 
         Long mbPos = position * 10000;

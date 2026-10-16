@@ -213,6 +213,14 @@ public class CustomPlaybackOverlayFragment extends Fragment implements LiveTvGui
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Jellyfin-TV-Client: Intro/Abspann nach Countdown automatisch überspringen
+        binding.skipOverlay.setOnAutoSkip(() -> {
+            if (binding == null) return;
+            Long target = binding.skipOverlay.getTargetPositionMs();
+            if (target != null) playbackControllerContainer.getValue().getPlaybackController().seek(target, true);
+            clearSkipOverlay();
+        });
+
         if (mItemsToPlay == null || mItemsToPlay.isEmpty()) {
             Utils.showToast(requireContext(), getString(R.string.msg_no_playable_items));
             closePlayer();

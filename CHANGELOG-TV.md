@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.7.0 – 2026-10-16
+
+- **Intelligente Untertitel:** Läuft der Ton auf Deutsch (z. B. deutsche Synchro), startet der Titel ohne Untertitel – nur erzwungene Untertitel (z. B. für fremdsprachige Stellen) bleiben an. Schaltest du Untertitel bei einer Serie aus oder um, gilt das auch für die nächsten Folgen. Abschaltbar unter Einstellungen → Wiedergabe.
+- **Intro & Abspann automatisch überspringen:** Wie bei Netflix läuft ein 5-Sekunden-Countdown („Überspringen in 5 s“). Drückst du nicht „Zurück“, wird übersprungen; mit OK sofort. Gilt für Abschnitte, die in den Wiedergabe-Einstellungen auf „Nachfragen“ stehen; abschaltbar unter Einstellungen → Wiedergabe.
+
 ## 1.6.0 – 2026-10-16
 
 - **Billboard wie bei Netflix:** Ganz oben wechseln Vorschläge (aus „Local Recommendations“, sonst die neuesten Filme und Serien) alle paar Sekunden, mit Punkten als Anzeige. Darunter die Knöpfe **Abspielen**, **Mehr Infos** und **Trailer** (lokaler Trailer vom Server, sonst YouTube). Beim Start ist „Abspielen“ ausgewählt; aus der ersten Zeile kommt man mit „Hoch“ zurück.

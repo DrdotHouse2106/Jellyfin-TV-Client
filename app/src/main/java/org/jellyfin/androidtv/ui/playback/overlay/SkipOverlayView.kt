@@ -35,10 +35,15 @@ import org.jellyfin.androidtv.ui.base.Text
 import org.jellyfin.androidtv.ui.playback.segment.MediaSegmentRepository
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import org.jellyfin.androidtv.tvclient.TvClientSkip
 
 @Composable
 fun SkipOverlayComposable(
 	visible: Boolean,
+	countdown: Int? = null,
 ) {
 	Box(
 		contentAlignment = Alignment.BottomEnd,
@@ -60,7 +65,9 @@ fun SkipOverlayComposable(
 				)
 
 				Text(
-					text = stringResource(R.string.segment_action_skip),
+					// Jellyfin-TV-Client: Countdown wie bei Netflix – „Überspringen in 5 s (Zurück = bleiben)“
+					text = if (countdown != null) stringResource(R.string.tvclient_skip_countdown, countdown)
+					else stringResource(R.string.segment_action_skip),
 					color = colorResource(R.color.button_default_normal_text),
 					fontSize = 18.sp,
 				)
@@ -77,6 +84,9 @@ class SkipOverlayView @JvmOverloads constructor(
 	private val _currentPosition = MutableStateFlow(Duration.ZERO)
 	private val _targetPosition = MutableStateFlow<Duration?>(null)
 	private val _skipUiEnabled = MutableStateFlow(true)
+
+	/** Jellyfin-TV-Client: wird nach Ablauf des Countdowns aufgerufen (überspringt automatisch). */
+	var onAutoSkip: Runnable? = null
 
 	var currentPosition: Duration
 		get() = _currentPosition.value
@@ -127,12 +137,26 @@ class SkipOverlayView @JvmOverloads constructor(
 			derivedStateOf { visible }
 		}
 
+		// Jellyfin-TV-Client: automatisch überspringen nach Countdown, wenn nicht mit „Zurück“ abgebrochen
+		val autoSkip = remember { TvClientSkip.autoSkipEnabled() }
+		var countdown by remember { mutableStateOf<Int?>(null) }
+		LaunchedEffect(visible, targetPosition) {
+			countdown = null
+			if (!visible || !autoSkip || targetPosition == null) return@LaunchedEffect
+			for (seconds in TvClientSkip.COUNTDOWN_SECONDS downTo 1) {
+				countdown = seconds
+				delay(1.seconds)
+			}
+			countdown = null
+			onAutoSkip?.run()
+		}
+
 		// Auto hide
 		LaunchedEffect(skipUiEnabled, targetPosition) {
 			delay(MediaSegmentRepository.AskToSkipAutoHideDuration)
 			_targetPosition.value = null
 		}
 
-		SkipOverlayComposable(visible)
+		SkipOverlayComposable(visible, countdown)
 	}
 }
