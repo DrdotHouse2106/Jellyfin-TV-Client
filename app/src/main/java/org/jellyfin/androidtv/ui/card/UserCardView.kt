@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,9 +39,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import org.jellyfin.androidtv.R
 import org.jellyfin.androidtv.ui.base.Icon
-import org.jellyfin.androidtv.ui.base.JellyfinTheme
 import org.jellyfin.androidtv.ui.base.LocalTextStyle
 import org.jellyfin.androidtv.ui.base.ProvideTextStyle
 import org.jellyfin.androidtv.ui.base.Text
@@ -58,17 +61,18 @@ fun UserCard(
 	onClick: () -> Unit,
 	modifier: Modifier = Modifier,
 	interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-	shape: Shape = CircleShape,
+	// Jellyfin-TV-Client: Netflix-Profile – abgerundete Quadrate statt Kreise
+	shape: Shape = RoundedCornerShape(8.dp),
 ) {
 	val focused by interactionSource.collectIsFocusedAsState()
 
 	// Mix button background with input foreground because we display text beneath the profile picture on a transparent background similar
 	// to the input text
 	val color = when {
-		focused -> JellyfinTheme.colorScheme.buttonFocused to JellyfinTheme.colorScheme.onInputFocused
-		else -> JellyfinTheme.colorScheme.button to JellyfinTheme.colorScheme.onInput
+		focused -> Color.White to Color.White
+		else -> Color.Transparent to Color(0xFF9A9A9A)
 	}
-	val scale by animateFloatAsState(if (focused) 1.1f else 1f, label = "UserCardFocusScale")
+	val scale by animateFloatAsState(if (focused) 1.08f else 1f, label = "UserCardFocusScale")
 
 	Column(
 		modifier = modifier
@@ -80,12 +84,12 @@ fun UserCard(
 			modifier = Modifier
 				.aspectRatio(1f)
 				.clip(shape)
-				.border(2.dp, color.first, shape)
+				.border(3.dp, color.first, shape)
 		) {
 			image()
 		}
 
-		Spacer(Modifier.height(8.dp))
+		Spacer(Modifier.height(12.dp))
 
 		Box(
 			modifier = Modifier
@@ -99,6 +103,7 @@ fun UserCard(
 			ProvideTextStyle(
 				LocalTextStyle.current.copy(
 					color = color.second,
+					fontSize = 18.sp,
 				)
 			) {
 				name()
@@ -106,6 +111,15 @@ fun UserCard(
 		}
 	}
 }
+
+/** Jellyfin-TV-Client: feste Profilfarbe pro Name (wie die bunten Netflix-Profile). */
+private val profileColors = listOf(
+	Color(0xFF2D6CDF), Color(0xFFE50914), Color(0xFFE8A317), Color(0xFF2E9E5B),
+	Color(0xFF7B4FD6), Color(0xFF14A3A3), Color(0xFFD9467A),
+)
+
+private fun profileColor(name: String?): Color =
+	profileColors[Math.floorMod(name.orEmpty().lowercase().hashCode(), profileColors.size)]
 
 class UserCardView @JvmOverloads constructor(
 	context: Context,
@@ -163,14 +177,23 @@ class UserCardView @JvmOverloads constructor(
 						url = image,
 					)
 				} else {
-					Box(modifier = Modifier.fillMaxSize()) {
-						Icon(
-							imageVector = ImageVector.vectorResource(R.drawable.ic_user),
-							contentDescription = name,
-							modifier = Modifier
-								.size(48.dp)
-								.align(Alignment.Center)
-						)
+					// Jellyfin-TV-Client: farbige Kachel mit Anfangsbuchstaben wie bei Netflix
+					val letter = name?.trim()?.firstOrNull()?.uppercaseChar()
+					Box(
+						modifier = Modifier
+							.fillMaxSize()
+							.background(profileColor(name)),
+						contentAlignment = Alignment.Center,
+					) {
+						if (letter != null) {
+							Text(letter.toString(), fontSize = 64.sp, fontWeight = FontWeight.Bold, color = Color.White)
+						} else {
+							Icon(
+								imageVector = ImageVector.vectorResource(R.drawable.ic_user),
+								contentDescription = name,
+								modifier = Modifier.size(64.dp),
+							)
+						}
 					}
 				}
 			},
@@ -178,8 +201,8 @@ class UserCardView @JvmOverloads constructor(
 				Text(name.orEmpty(), maxLines = 1)
 			},
 			modifier = Modifier
-				.padding(horizontal = 6.dp, vertical = 8.dp)
-				.width(110.dp),
+				.padding(horizontal = 14.dp, vertical = 10.dp)
+				.width(150.dp),
 			interactionSource = interactionSource,
 			// We use our own click handler for views used in presenters
 			onClick = {}

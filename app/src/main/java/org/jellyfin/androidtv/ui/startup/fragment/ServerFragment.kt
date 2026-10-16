@@ -106,6 +106,13 @@ class ServerFragment : Fragment() {
 				userAdapter.items = users
 
 				binding.users.isFocusable = users.any()
+				// Jellyfin-TV-Client: Profile mittig anzeigen wie bei Netflix (Karte = 178dp breit)
+				binding.users.post {
+					val grid = _binding?.users ?: return@post
+					val cardWidth = (178 * resources.displayMetrics.density).toInt()
+					val padding = ((grid.width - cardWidth * users.size) / 2).coerceAtLeast(0)
+					grid.setPadding(padding, 0, padding, 0)
+				}
 				binding.noUsersWarning.isVisible = users.isEmpty()
 				binding.root.requestFocus()
 			}.launchIn(viewLifecycleOwner.lifecycleScope)

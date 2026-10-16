@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.8.0 – 2026-10-16
+
+- **Profilauswahl wie bei Netflix:** „Wer schaut gerade?“ groß und mittig, Profile als große abgerundete Kacheln in festen Farben mit Anfangsbuchstaben (oder Profilbild, falls in Jellyfin gesetzt). Das ausgewählte Profil bekommt einen weißen Rahmen.
+
 ## 1.7.3 – 2026-10-16
 
 - Untertitel: Sprachcodes wie „ger“, „deu“ und „de“ werden jetzt als dieselbe Sprache erkannt. Haben Ton und Untertitel dieselbe Sprache (z. B. deutsche Synchro + deutsche Untertitel), startet der Titel ohne Untertitel – auch bei englisch eingestelltem Gerät. Zusätzlich zählt die bevorzugte Tonsprache aus den Jellyfin-Benutzereinstellungen als eigene Sprache.
