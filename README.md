@@ -133,7 +133,7 @@ Die eigenen Änderungen sind bewusst klein gehalten:
 | `constant/HomeSectionType.kt`, `constant/QueryType.kt` | neue Zeilen-Typen |
 | `ui/itemhandling/ItemRowAdapter.java` | neue Abfrage `LocalRecommendations` |
 | `ui/home/HomeRowsFragment.kt`, `ui/home/HomeFragmentHelper.kt` | Zeilen einbauen |
-| `preference/UserPreferences.kt`, `ui/preference/screen/HomePreferencesScreen.kt` | Einstellung „Empfehlungen automatisch anzeigen“ |
+| `ui/preference/screen/HomePreferencesScreen.kt`, neu: `tvclient/HomeLayout.kt` | Startseite: feste Reihenfolge mit Ein/Aus-Schaltern |
 | neu: `LocalRecommendationsHelper.kt`, `HomeFragmentLocalRecommendationsRow.kt`, `GetLocalRecommendationsRequest.kt`, `strings_localrecs.xml` | Abfrage, Zeile, Texte (de/en) |
 | neu: `.github/workflows/tv-client-build.yaml`, `tv-client-version.txt` | Build |
 | `di/AppModule.kt`, neu: `src/tvclient/res` | Name „Quallenkino“, Symbol, Banner, Logo |
