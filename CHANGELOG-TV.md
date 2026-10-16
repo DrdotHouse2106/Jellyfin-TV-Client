@@ -6,6 +6,7 @@
 - Kleinere Karten im Querformat (Vorschau- bzw. Hintergrundbild) ohne Titel darunter – mehr Titel pro Zeile.
 - **Navigation links** wie bei Netflix: Profil, Suche, Startseite, TV-Programm und Einstellungen am linken Rand (mit „Links“ aus der ersten Karte einer Zeile erreichbar); die Leiste oben entfällt in der Netflix-Ansicht, die Uhr bleibt oben rechts.
 - **24-Stunden-Uhr:** Uhrzeiten überall als „23:03“ statt „11:03 PM“ (Player „Endet um“, Uhr, TV-Programm), unabhängig von der Systemeinstellung; abschaltbar unter Einstellungen → Startseite → Darstellung.
+- **Einstellungen neu geordnet:** Startseite, Wiedergabe, Bibliotheken, Darstellung & Bedienung, Konto & Anmeldung; Selten-Gebrauchtes (erweiterte Wiedergabe, Absturzberichte, Entwickleroptionen) unter „Erweitert“.
 - **Player:** dunklere Verläufe oben (Titel, Uhr) und unten (Bedienleiste) – besser lesbar auf hellen Bildern.
 - Bei YouTube-artigen Kanälen werden unsinnige Folgennummern (z. B. „S2026:F101698“) nicht mehr angezeigt.
 

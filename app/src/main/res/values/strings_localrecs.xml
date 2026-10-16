@@ -26,4 +26,11 @@
     <string name="tvclient_home_hero_description">Shows the selected title large at the top with logo, facts and description</string>
     <string name="tvclient_24h">24-hour clock</string>
     <string name="tvclient_24h_description">Times as 23:03 instead of 11:03 PM</string>
+    <string name="tvclient_settings_home_description">Rows, Netflix view, 24-hour clock</string>
+    <string name="tvclient_settings_playback_description">Subtitles, audio, next up, skip intro</string>
+    <string name="tvclient_settings_libraries_description">How libraries are displayed</string>
+    <string name="tvclient_settings_appearance">Appearance &amp; controls</string>
+    <string name="tvclient_settings_appearance_description">Theme, clock, screensaver, remote buttons</string>
+    <string name="tvclient_settings_account">Account &amp; sign-in</string>
+    <string name="tvclient_settings_advanced_description">Advanced playback, crash reports, developer options</string>
 </resources>
