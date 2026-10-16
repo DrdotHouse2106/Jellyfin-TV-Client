@@ -48,6 +48,10 @@ import org.jellyfin.androidtv.ui.playback.MediaManager
 import org.jellyfin.androidtv.ui.presentation.CardPresenter
 import org.jellyfin.androidtv.ui.presentation.MutableObjectAdapter
 import org.jellyfin.androidtv.ui.presentation.PositionableListRowPresenter
+import org.jellyfin.androidtv.tvclient.DeviceAppsPublisher
+import org.jellyfin.androidtv.tvclient.HomeFragmentAppsRow
+import org.jellyfin.androidtv.tvclient.HomeFragmentDeviceSettingsRow
+import org.jellyfin.androidtv.tvclient.onDeviceCardClicked
 import org.jellyfin.androidtv.util.KeyProcessor
 import org.jellyfin.playback.core.PlaybackManager
 import org.jellyfin.sdk.api.client.ApiClient
@@ -129,6 +133,12 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 				HomeSectionType.NONE -> Unit
 			}
 
+			// Jellyfin-TV-Client: Apps und Geräte-Einstellungen des Fernsehers
+			if (userPreferences[UserPreferences.tvClientAppsRow]) rows.add(HomeFragmentAppsRow())
+			if (userPreferences[UserPreferences.tvClientDeviceRow]) rows.add(HomeFragmentDeviceSettingsRow())
+			val appContext = requireContext().applicationContext
+			lifecycleScope.launch(Dispatchers.IO) { DeviceAppsPublisher.publish(appContext, api) }
+
 			// Add sections to layout
 			withContext(Dispatchers.Main) {
 				val cardPresenter = CardPresenter()
@@ -154,6 +164,7 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 
 		onItemViewClickedListener = CompositeClickedListener().apply {
 			registerListener(ItemViewClickedListener())
+			registerListener { _, item, _, _ -> onDeviceCardClicked(requireContext(), item) }
 			registerListener(liveTVRow::onItemClicked)
 			registerListener(notificationsRow::onItemClicked)
 		}

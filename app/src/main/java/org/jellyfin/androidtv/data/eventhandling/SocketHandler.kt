@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.jellyfin.androidtv.data.model.DataRefreshService
+import org.jellyfin.androidtv.tvclient.RemoteCommands
 import org.jellyfin.androidtv.ui.itemhandling.ItemLauncher
 import org.jellyfin.androidtv.ui.navigation.Destinations
 import org.jellyfin.androidtv.ui.navigation.NavigationRepository
@@ -166,7 +167,11 @@ class SocketHandler(
 				val string by message
 				val query = string
 
-				if (!query.isNullOrBlank()) RemoteNavigation.search(navigationRepository, query)
+				when {
+					query.isNullOrBlank() -> Unit
+					RemoteCommands.isCommand(query) -> RemoteCommands.handle(context, navigationRepository, query)
+					else -> RemoteNavigation.search(navigationRepository, query)
+				}
 			}
 			.launchIn(coroutineScope)
 

@@ -8,7 +8,7 @@ plugins {
 
 // Jellyfin-TV-Client
 val TV_CLIENT_APPLICATION_ID = "de.drdothouse.jellyfintv"
-val TV_CLIENT_APP_NAME = "Jellyfin TV"
+val TV_CLIENT_APP_NAME = "Heimkino TV"
 
 android {
 	namespace = "org.jellyfin.androidtv"
@@ -89,6 +89,10 @@ android {
 		}
 	}
 
+	// Jellyfin-TV-Client: eigenes Symbol, Banner und Logo (überschreibt die Jellyfin-Grafiken)
+	sourceSets["release"].res.srcDir("src/tvclient/res")
+	sourceSets["debug"].res.srcDir("src/tvclient/res")
+
 	lint {
 		lintConfig = file("$rootDir/android-lint.xml")
 		abortOnError = false
@@ -101,7 +105,7 @@ android {
 	}
 }
 
-base.archivesName.set("jellyfin-tv-client-v${project.getVersionName()}")
+base.archivesName.set("heimkino-tv-v${project.getVersionName()}")
 
 tasks.register("versionTxt") {
 	val path = layout.buildDirectory.asFile.get().resolve("version.txt")

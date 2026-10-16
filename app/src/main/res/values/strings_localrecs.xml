@@ -10,4 +10,15 @@
     <string name="pref_localrecs_category">Recommendations</string>
     <string name="pref_localrecs_auto_rows">Show recommendations automatically</string>
     <string name="pref_localrecs_auto_rows_description">Adds the rows of the \"Local Recommendations\" plugin after \"Continue watching\" / \"Next up\" unless you placed them in the home sections yourself. Rows stay hidden if the plugin is missing.</string>
+    <string name="tvclient_row_apps">Apps</string>
+    <string name="tvclient_row_device">Device</string>
+    <string name="tvclient_settings_wifi">Wi-Fi</string>
+    <string name="tvclient_settings_bluetooth">Bluetooth &amp; remotes</string>
+    <string name="tvclient_settings_display">Display</string>
+    <string name="tvclient_settings_sound">Sound</string>
+    <string name="tvclient_settings_all">All settings</string>
+    <string name="tvclient_pref_apps_row">Show apps row</string>
+    <string name="tvclient_pref_apps_row_description">Shows the apps installed on this TV (YouTube, Netflix, …) at the end of the home screen</string>
+    <string name="tvclient_pref_device_row">Show device row</string>
+    <string name="tvclient_pref_device_row_description">Shortcuts to Wi-Fi, Bluetooth, display, sound and the settings of this TV</string>
 </resources>

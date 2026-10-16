@@ -29,6 +29,18 @@ class HomePreferencesScreen : OptionsFragment() {
 				setContent(R.string.pref_localrecs_auto_rows_description)
 				bind(userPreferences, UserPreferences.localRecsAutoRows)
 			}
+
+			checkbox {
+				setTitle(R.string.tvclient_pref_apps_row)
+				setContent(R.string.tvclient_pref_apps_row_description)
+				bind(userPreferences, UserPreferences.tvClientAppsRow)
+			}
+
+			checkbox {
+				setTitle(R.string.tvclient_pref_device_row)
+				setContent(R.string.tvclient_pref_device_row_description)
+				bind(userPreferences, UserPreferences.tvClientDeviceRow)
+			}
 		}
 
 		category {

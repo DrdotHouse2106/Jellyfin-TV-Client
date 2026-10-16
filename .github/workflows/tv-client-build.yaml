@@ -87,4 +87,4 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release create "$GITHUB_REF_NAME" build/tv-client/*.apk --title "Jellyfin TV $GITHUB_REF_NAME" --notes "Siehe README und CHANGELOG-TV.md." || gh release upload "$GITHUB_REF_NAME" build/tv-client/*.apk --clobber
+        run: gh release create "$GITHUB_REF_NAME" build/tv-client/*.apk --title "Heimkino TV $GITHUB_REF_NAME" --notes "Siehe README und CHANGELOG-TV.md." || gh release upload "$GITHUB_REF_NAME" build/tv-client/*.apk --clobber

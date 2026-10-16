@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Jellyfin-TV-Client: eigenes Erscheinungsbild „Heimkino TV“ -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#FFFFFFFF" android:fillType="evenOdd"
+        android:pathData="M54.00,27.00L84.00,51.00L77.00,51.00L77.00,81.00L31.00,81.00L31.00,51.00L24.00,51.00ZM48.00,56.00L48.00,74.00L64.00,65.00Z" />
+</vector>

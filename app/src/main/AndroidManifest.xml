@@ -29,6 +29,15 @@
         android:required="false" />
 
     <queries>
+        <!-- Jellyfin-TV-Client: installierte Apps für die Zeile „Apps“ -->
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data
