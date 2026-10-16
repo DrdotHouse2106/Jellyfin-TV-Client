@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.5.1 – 2026-10-16
+
+- Navigation links: alle Symbole (Profil, Suche, Startseite, TV-Programm, Einstellungen) sind mit hoch/runter erreichbar; „Rechts“ führt zurück in die Zeilen.
+
 ## 1.5.0 – 2026-10-16
 
 - **Netflix-Look überarbeitet:** Das Bild des ausgewählten Titels steht nur noch oben rechts und läuft nach links und unten in Schwarz aus; der Rest der Startseite ist schwarz. Titel, Eckdaten und Beschreibung stehen links daneben.

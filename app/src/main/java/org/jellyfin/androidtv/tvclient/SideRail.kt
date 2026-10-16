@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.graphics.Brush
@@ -40,12 +41,34 @@ import org.koin.compose.koinInject
  * Mit „Links“ aus der ersten Karte einer Zeile kommt man hinein.
  */
 @Composable
-fun SideRail(modifier: Modifier = Modifier) {
+fun SideRail(
+	modifier: Modifier = Modifier,
+	contentFocusRequester: FocusRequester? = null,
+) {
 	val navigationRepository = koinInject<NavigationRepository>()
 	val sessionRepository = koinInject<SessionRepository>()
 	val mediaManager = koinInject<MediaManager>()
 	val activity = LocalActivity.current
-	val homeFocus = remember { FocusRequester() }
+
+	// Feste Reihenfolge für hoch/runter – die automatische Fokussuche springt sonst in die Zeilen daneben
+	val user = remember { FocusRequester() }
+	val search = remember { FocusRequester() }
+	val home = remember { FocusRequester() }
+	val guide = remember { FocusRequester() }
+	val settings = remember { FocusRequester() }
+	val order = listOf(user, search, home, guide, settings)
+
+	fun Modifier.railFocus(self: FocusRequester): Modifier {
+		val index = order.indexOf(self)
+		return this
+			.focusRequester(self)
+			.focusProperties {
+				up = order.getOrNull(index - 1) ?: FocusRequester.Cancel
+				down = order.getOrNull(index + 1) ?: FocusRequester.Cancel
+				left = FocusRequester.Cancel
+				right = contentFocusRequester ?: FocusRequester.Default
+			}
+	}
 
 	Column(
 		modifier = modifier
@@ -53,25 +76,25 @@ fun SideRail(modifier: Modifier = Modifier) {
 			.width(76.dp)
 			.background(Brush.horizontalGradient(0f to Color.Black, 1f to Color.Black.copy(alpha = 0.6f)))
 			.padding(vertical = 24.dp)
-			.focusRestorer(homeFocus)
+			.focusRestorer(home)
 			.focusGroup(),
 		verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterVertically),
 		horizontalAlignment = Alignment.CenterHorizontally,
 	) {
-		RailButton(R.drawable.ic_user, R.string.lbl_switch_user) {
+		RailButton(R.drawable.ic_user, R.string.lbl_switch_user, Modifier.railFocus(user)) {
 			mediaManager.clearAudioQueue()
 			sessionRepository.destroyCurrentSession()
 			activity?.startActivity(ActivityDestinations.startup(activity))
 			activity?.finishAfterTransition()
 		}
-		RailButton(R.drawable.ic_search, R.string.lbl_search) {
+		RailButton(R.drawable.ic_search, R.string.lbl_search, Modifier.railFocus(search)) {
 			navigationRepository.navigate(Destinations.search())
 		}
-		RailButton(R.drawable.ic_house, R.string.lbl_home, active = true, modifier = Modifier.focusRequester(homeFocus)) {}
-		RailButton(R.drawable.ic_tv_guide, R.string.lbl_live_tv_guide) {
+		RailButton(R.drawable.ic_house, R.string.lbl_home, Modifier.railFocus(home), active = true) {}
+		RailButton(R.drawable.ic_tv_guide, R.string.lbl_live_tv_guide, Modifier.railFocus(guide)) {
 			navigationRepository.navigate(Destinations.liveTvGuide)
 		}
-		RailButton(R.drawable.ic_settings, R.string.lbl_settings) {
+		RailButton(R.drawable.ic_settings, R.string.lbl_settings, Modifier.railFocus(settings)) {
 			activity?.let { it.startActivity(ActivityDestinations.userPreferences(it)) }
 		}
 	}

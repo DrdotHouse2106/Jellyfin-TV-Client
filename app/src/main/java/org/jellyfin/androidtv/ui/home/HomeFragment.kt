@@ -69,7 +69,7 @@ class HomeFragment : Fragment() {
 				if (showHero) HomeHeroBackdrop()
 
 				Row(Modifier.fillMaxSize()) {
-					if (showHero) SideRail()
+					if (showHero) SideRail(contentFocusRequester = rowsFocusRequester)
 
 					Column(Modifier.weight(1f)) {
 						if (showHero) HomeHero(Modifier.fillMaxWidth().height(250.dp))
