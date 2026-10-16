@@ -33,7 +33,14 @@ Die App heißt auf dem Gerät **„Quallenkino“** (eigenes Symbol, eigenes Log
 3. In Downloader die Adresse der APK aus den [Releases](https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases) eingeben (`quallenkino-v…-release.apk`) und installieren.
 4. „Quallenkino“ öffnen und mit dem eigenen Jellyfin-Konto anmelden.
 
-### Android TV / Google TV
+### Android TV / Google TV (z. B. waipu.tv 4K Stick, Chromecast, Nvidia Shield)
+
+1. Im Play Store des Sticks die App **Downloader** (von AFTVnews) installieren.
+2. Einstellungen → Geräteeinstellungen → Sicherheit & Einschränkungen → **Unbekannte Quellen** → „Downloader“ erlauben.
+3. In Downloader diese Adresse eingeben und installieren (zeigt immer auf die neueste Version):
+   `https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk`
+
+Alternativ:
 
 Wie oben über „Downloader“ (Play Store) oder per `adb install quallenkino-v…-release.apk`.
 

@@ -79,6 +79,9 @@ jobs:
           mkdir -p build/tv-client
           find app/build/outputs/apk -iname "*.apk" -exec cp "{}" build/tv-client/ \;
           find app/build/outputs/bundle -iname "*.aab" -exec cp "{}" build/tv-client/ \; 2>/dev/null || true
+          # Fester Dateiname für einen gleichbleibenden Download-Link:
+          # https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk
+          for f in build/tv-client/*-release.apk; do [ -e "$f" ] && cp "$f" build/tv-client/quallenkino.apk; done
           ls -la build/tv-client
 
       - name: Upload artifacts
