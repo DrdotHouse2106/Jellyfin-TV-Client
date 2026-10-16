@@ -25,6 +25,7 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.leanback.widget.ListRowPresenter
 import androidx.fragment.compose.AndroidFragment
 import androidx.fragment.compose.content
 import androidx.lifecycle.Lifecycle
@@ -116,8 +117,15 @@ class HomeFragment : Fragment() {
 									onExit = {
 										val isFirstRowSelected = rowsSupportFragment?.selectedPosition?.let { it <= 0 } ?: false
 										when {
-											// Netflix-Ansicht: mit „Links“ in die Navigation am Rand
-											showHero && requestedFocusDirection == FocusDirection.Left -> Unit
+											// Netflix-Ansicht: mit „Links“ in die Navigation am Rand – nur vom ersten Titel einer Zeile.
+											// Der Fokus der Zeilen wird dabei gelöscht, sonst öffnet OK weiterhin den zuletzt gewählten Titel.
+											showHero && requestedFocusDirection == FocusDirection.Left -> {
+												val fragment = rowsSupportFragment
+												val rowHolder = fragment?.getRowViewHolder(fragment.selectedPosition) as? ListRowPresenter.ViewHolder
+												val column = rowHolder?.gridView?.selectedPosition ?: 0
+												if (column > 0) cancelFocusChange()
+												else fragment?.verticalGridView?.clearFocus()
+											}
 											// Netflix-Ansicht: aus der ersten Zeile mit „Hoch“ zu den Billboard-Knöpfen
 											requestedFocusDirection != FocusDirection.Up || !isFirstRowSelected -> cancelFocusChange()
 											else -> {

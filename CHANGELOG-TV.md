@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.7.2 – 2026-10-16
+
+- Navigation links: „Links“ wechselt erst vom ersten Titel einer Zeile in das Seitenmenü, sonst geht es in der Zeile normal nach links.
+- Seitenmenü: Startseite, Suche, Einstellungen usw. lassen sich wieder mit OK öffnen (vorher wurde der zuletzt gewählte Titel geöffnet).
+
 ## 1.7.1 – 2026-10-16
 
 - Überspringen wie bei Netflix: Der Knopf zeigt nur „Überspringen“ und füllt sich in 5 Sekunden wie ein Balken, dann wird übersprungen. „Zurück“ bricht ab, OK springt sofort.
