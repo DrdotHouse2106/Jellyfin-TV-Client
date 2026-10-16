@@ -53,4 +53,14 @@ class HomeHeroTests : FunSpec({
 		cleanOverview("For young [Tanjirou](http://anidb.net/ch99458), these <b>rumors</b>\nwill come true.") shouldBe
 			"For young Tanjirou, these rumors will come true."
 	}
+
+	test("Billboard: Filme und Serien abwechselnd") {
+		fun item(kind: BaseItemKind, name: String) = BaseItemDto(id = UUID.randomUUID(), type = kind, name = name)
+		val items = listOf(
+			item(BaseItemKind.MOVIE, "F1"), item(BaseItemKind.MOVIE, "F2"), item(BaseItemKind.MOVIE, "F3"),
+			item(BaseItemKind.SERIES, "S1"),
+		)
+
+		HomeBillboard.interleave(items).map { it.name } shouldBe listOf("F1", "S1", "F2", "F3")
+	}
 })

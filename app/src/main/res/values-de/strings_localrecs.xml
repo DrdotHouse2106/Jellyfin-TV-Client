@@ -33,4 +33,6 @@
     <string name="tvclient_settings_appearance_description">Design, Uhr, Bildschirmschoner, Fernbedienungstasten</string>
     <string name="tvclient_settings_account">Konto &amp; Anmeldung</string>
     <string name="tvclient_settings_advanced_description">Erweiterte Wiedergabe, Absturzberichte, Entwickleroptionen</string>
+    <string name="tvclient_more_info">Mehr Infos</string>
+    <string name="tvclient_no_trailer">Kein Trailer verfügbar</string>
 </resources>

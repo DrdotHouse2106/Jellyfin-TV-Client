@@ -37,7 +37,10 @@ import org.jellyfin.androidtv.auth.repository.ServerRepository
 import org.jellyfin.androidtv.auth.repository.SessionRepository
 import org.jellyfin.androidtv.data.repository.NotificationsRepository
 import org.jellyfin.androidtv.preference.UserPreferences
+import org.jellyfin.androidtv.tvclient.HomeBillboard
+import org.jellyfin.androidtv.tvclient.HomeBillboardButtons
 import org.jellyfin.androidtv.tvclient.HomeHero
+import org.jellyfin.androidtv.tvclient.HomeHeroState
 import org.jellyfin.androidtv.tvclient.HomeRow
 import org.jellyfin.androidtv.tvclient.SideRail
 import org.jellyfin.androidtv.tvclient.HomeHeroBackdrop
@@ -46,6 +49,9 @@ import org.jellyfin.androidtv.ui.shared.toolbar.MainToolbar
 import org.jellyfin.androidtv.ui.shared.toolbar.MainToolbarActiveButton
 import org.jellyfin.androidtv.ui.shared.toolbar.ToolbarClock
 import org.koin.android.ext.android.inject
+import org.koin.compose.koinInject
+import org.jellyfin.sdk.api.client.ApiClient
+import org.jellyfin.sdk.model.api.BaseItemDto
 
 class HomeFragment : Fragment() {
 	private val sessionRepository by inject<SessionRepository>()
@@ -63,17 +69,40 @@ class HomeFragment : Fragment() {
 
 		val showHero = remember { userPreferences[HomeRow.heroPreference] }
 
+		// Jellyfin-TV-Client: Billboard mit wechselnden Vorschlägen (Netflix-Ansicht)
+		val api = koinInject<ApiClient>()
+		val billboardFocusRequester = remember { FocusRequester() }
+		val railHomeFocusRequester = remember { FocusRequester() }
+		var billboardItems by remember { mutableStateOf<List<BaseItemDto>>(emptyList()) }
+		if (showHero) LaunchedEffect(Unit) {
+			billboardItems = HomeBillboard.load(api)
+			if (billboardItems.isNotEmpty()) {
+				HomeHeroState.item.value = billboardItems.first()
+				runCatching { billboardFocusRequester.requestFocus() }
+			}
+		}
+
 		JellyfinTheme {
 			Box(Modifier.fillMaxSize()) {
 				// Jellyfin-TV-Client: Netflix-Ansicht – Bild oben rechts, Navigation links, Infobereich oben
 				if (showHero) HomeHeroBackdrop()
 
 				Row(Modifier.fillMaxSize()) {
-					if (showHero) SideRail(contentFocusRequester = rowsFocusRequester)
+					if (showHero) SideRail(contentFocusRequester = rowsFocusRequester, homeFocusRequester = railHomeFocusRequester)
 
 					Column(Modifier.weight(1f)) {
-						if (showHero) HomeHero(Modifier.fillMaxWidth().height(250.dp))
-						else MainToolbar(MainToolbarActiveButton.Home)
+						if (showHero) {
+							HomeHero(Modifier.fillMaxWidth().height(200.dp))
+							HomeBillboardButtons(
+								items = billboardItems,
+								modifier = Modifier.padding(start = 28.dp, top = 4.dp, bottom = 12.dp),
+								focusRequester = billboardFocusRequester,
+								downFocusRequester = rowsFocusRequester,
+								leftFocusRequester = railHomeFocusRequester,
+							)
+						} else {
+							MainToolbar(MainToolbarActiveButton.Home)
+						}
 
 						// The leanback code has its own awful focus handling that doesn't work properly with Compose view inteop to workaround this
 						// issue we add custom behavior that only allows focus exit when the current selected row is the first one. Additionally when
@@ -89,7 +118,8 @@ class HomeFragment : Fragment() {
 										when {
 											// Netflix-Ansicht: mit „Links“ in die Navigation am Rand
 											showHero && requestedFocusDirection == FocusDirection.Left -> Unit
-											showHero || requestedFocusDirection != FocusDirection.Up || !isFirstRowSelected -> cancelFocusChange()
+											// Netflix-Ansicht: aus der ersten Zeile mit „Hoch“ zu den Billboard-Knöpfen
+											requestedFocusDirection != FocusDirection.Up || !isFirstRowSelected -> cancelFocusChange()
 											else -> {
 												rowsSupportFragment?.selectedPosition = 0
 												rowsSupportFragment?.verticalGridView?.clearFocus()

@@ -33,4 +33,6 @@
     <string name="tvclient_settings_appearance_description">Theme, clock, screensaver, remote buttons</string>
     <string name="tvclient_settings_account">Account &amp; sign-in</string>
     <string name="tvclient_settings_advanced_description">Advanced playback, crash reports, developer options</string>
+    <string name="tvclient_more_info">More info</string>
+    <string name="tvclient_no_trailer">No trailer available</string>
 </resources>

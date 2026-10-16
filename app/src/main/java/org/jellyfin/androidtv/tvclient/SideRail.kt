@@ -44,6 +44,7 @@ import org.koin.compose.koinInject
 fun SideRail(
 	modifier: Modifier = Modifier,
 	contentFocusRequester: FocusRequester? = null,
+	homeFocusRequester: FocusRequester? = null,
 ) {
 	val navigationRepository = koinInject<NavigationRepository>()
 	val sessionRepository = koinInject<SessionRepository>()
@@ -53,7 +54,7 @@ fun SideRail(
 	// Feste Reihenfolge für hoch/runter – die automatische Fokussuche springt sonst in die Zeilen daneben
 	val user = remember { FocusRequester() }
 	val search = remember { FocusRequester() }
-	val home = remember { FocusRequester() }
+	val home = homeFocusRequester ?: remember { FocusRequester() }
 	val guide = remember { FocusRequester() }
 	val settings = remember { FocusRequester() }
 	val order = listOf(user, search, home, guide, settings)
