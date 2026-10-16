@@ -1,7 +1,16 @@
 # Amazon Appstore – Eintrag „Quallenkino“
 
-Alle Grafiken liegen in diesem Ordner (`icon-512.png`, `icon-114.png`, `background-1920x1080.png`).
-Screenshots (1920×1080, mind. 3) müssen vom Fire TV kommen.
+## Grafiken (Step 3 „Images and videos“)
+
+| Feld bei Amazon | Datei |
+|---|---|
+| Tablet assets → Icon 512×512 | `icon-512.png` |
+| Tablet assets → Icon 114×114 | `icon-114.png` |
+| Fire TV → App icon 1280×720 | `firetv-icon-1280x720.png` |
+| Fire TV → Background image 1920×1080 | `background-1920x1080.png` |
+| Fire TV → Featured content logo 640×260 (optional) | `featured-logo-640x260.png` |
+| Fire TV → Featured content background 1920×720 (optional) | `featured-background-1920x720.png` |
+| Fire TV → Screenshots 1920×1080 (mind. 3) | vom Fire TV aufnehmen |
 
 ## Grunddaten
 
@@ -36,6 +45,17 @@ Außerdem: Weiterschauen, Als Nächstes, Live-TV mit TV-Programm und Aufnahmen, 
 
 Voraussetzung: ein Jellyfin-Server (eigener oder von Familie/Freunden). Quallenkino ist eine angepasste Version der offiziellen Jellyfin-App für Android TV und kein offizielles Produkt des Jellyfin-Projekts. Open Source (GPL v2): github.com/DrdotHouse2106/Jellyfin-TV-Client
 
+**Feature-Liste (eine Zeile pro Punkt)**
+
+Persönliche Empfehlungen für Filme, Serien und Live-TV
+Steuerung per Handy mit Jellyfin Remote
+Andere Apps des Fernsehers direkt starten
+Schnellzugriff auf WLAN, Bluetooth, Bild und Ton
+Live-TV mit TV-Programm und Aufnahmen
+Weiterschauen und Als Nächstes
+Mehrere Benutzer und Quick Connect
+Keine Werbung, kein Tracking, Open Source
+
 **Stichwörter**
 
 jellyfin, mediaserver, heimkino, filme, serien, live tv, empfehlungen, streaming, plex alternative
@@ -55,7 +75,24 @@ What makes it different:
 • Fully controllable from your phone, e.g. with "Jellyfin Remote"
 • "Apps" row to launch other TV apps, "Device" row for Wi-Fi, Bluetooth, display and sound
 
-Requires a Jellyfin server. Quallenkino is a customized version of the official Jellyfin Android TV app and not an official Jellyfin product. Open source (GPL v2).
+Also included: continue watching, next up, live TV with guide and recordings, subtitles, multiple users, Quick Connect.
+
+Requires a Jellyfin server (your own or one from family and friends). Quallenkino is a customized version of the official Jellyfin Android TV app and not an official Jellyfin product. Open source (GPL v2): github.com/DrdotHouse2106/Jellyfin-TV-Client
+
+**Feature bullets**
+
+Personal recommendations for movies, shows and live TV
+Control everything from your phone with Jellyfin Remote
+Launch your other TV apps right from the home screen
+Quick access to Wi-Fi, Bluetooth, display and sound settings
+Live TV with program guide and recordings
+Continue watching and next up
+Multiple users and Quick Connect
+No ads, no tracking, open source
+
+**Keywords**
+
+jellyfin, media server, home theater, movies, tv shows, live tv, recommendations, streaming
 
 ## Hinweis für die Prüfer (Testing instructions)
 
