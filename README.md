@@ -40,9 +40,7 @@ Die App heißt auf dem Gerät **„Quallenkino“** (eigenes Symbol, eigenes Log
 3. In Downloader diese Adresse eingeben und installieren (zeigt immer auf die neueste Version):
    `https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk`
 
-Alternativ:
-
-Wie oben über „Downloader“ (Play Store) oder per `adb install quallenkino-v…-release.apk`.
+Alternativ per ADB: `adb install quallenkino.apk`.
 
 ### Updates
 
