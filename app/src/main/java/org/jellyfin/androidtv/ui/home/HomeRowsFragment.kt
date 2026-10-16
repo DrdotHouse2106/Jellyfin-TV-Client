@@ -26,7 +26,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.jellyfin.androidtv.auth.repository.UserRepository
 import org.jellyfin.androidtv.constant.CustomMessage
-import org.jellyfin.androidtv.constant.HomeSectionType
 import org.jellyfin.androidtv.constant.QueryType
 import org.jellyfin.androidtv.data.model.DataRefreshService
 import org.jellyfin.androidtv.data.querying.LocalRecommendationsType
@@ -51,6 +50,7 @@ import org.jellyfin.androidtv.ui.presentation.PositionableListRowPresenter
 import org.jellyfin.androidtv.tvclient.DeviceAppsPublisher
 import org.jellyfin.androidtv.tvclient.HomeFragmentAppsRow
 import org.jellyfin.androidtv.tvclient.HomeFragmentDeviceSettingsRow
+import org.jellyfin.androidtv.tvclient.HomeRow
 import org.jellyfin.androidtv.tvclient.onDeviceCardClicked
 import org.jellyfin.androidtv.util.KeyProcessor
 import org.jellyfin.playback.core.PlaybackManager
@@ -100,8 +100,9 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 				userRepository.currentUser.filterNotNull().first()
 			}
 
-			// Start out with default sections
-			val homesections = withLocalRecommendations(userSettingPreferences.activeHomesections, userPreferences[UserPreferences.localRecsAutoRows])
+			// Jellyfin-TV-Client: feste Reihenfolge, jede Zeile einzeln abschaltbar (Einstellungen → Startseite)
+			val homeRows = HomeRow.enabled(userPreferences)
+			val liveTvAccess = currentUser.policy?.enableLiveTvAccess == true
 
 			// Make sure the rows are empty
 			val rows = mutableListOf<HomeFragmentRow>()
@@ -110,34 +111,27 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			if (!isActive) return@launch
 
 			// Actually add the sections
-			for (section in homesections) when (section) {
-				HomeSectionType.LATEST_MEDIA -> rows.add(helper.loadRecentlyAdded(userViewsRepository.views.first()))
-				HomeSectionType.LIBRARY_TILES_SMALL -> rows.add(HomeFragmentViewsRow(small = false))
-				HomeSectionType.LIBRARY_BUTTONS -> rows.add(HomeFragmentViewsRow(small = true))
-				HomeSectionType.RESUME -> rows.add(helper.loadResumeVideo())
-				HomeSectionType.RESUME_AUDIO -> rows.add(helper.loadResumeAudio())
-				HomeSectionType.RESUME_BOOK -> Unit // Books are not (yet) supported
-				HomeSectionType.ACTIVE_RECORDINGS -> rows.add(helper.loadLatestLiveTvRecordings())
-				HomeSectionType.NEXT_UP -> rows.add(helper.loadNextUp())
-				HomeSectionType.LIVE_TV -> if (currentUser.policy?.enableLiveTvAccess == true) {
+			for (homeRow in homeRows) when (homeRow) {
+				HomeRow.RESUME -> rows.add(helper.loadResumeVideo())
+				HomeRow.NEXT_UP -> rows.add(helper.loadNextUp())
+				HomeRow.RECOMMENDED_MOVIES -> rows.add(helper.loadLocalRecommendations(LocalRecommendationsType.MOVIES))
+				HomeRow.RECOMMENDED_SERIES -> rows.add(helper.loadLocalRecommendations(LocalRecommendationsType.SERIES))
+				HomeRow.RECOMMENDED_LIVE_TV -> if (liveTvAccess) rows.add(helper.loadLocalRecommendations(LocalRecommendationsType.LIVE_TV))
+				HomeRow.LIVE_TV -> if (liveTvAccess) {
 					rows.add(liveTVRow)
 					rows.add(helper.loadOnNow())
 				}
 
-				HomeSectionType.LOCAL_RECS_MOVIES -> rows.add(helper.loadLocalRecommendations(LocalRecommendationsType.MOVIES))
-				HomeSectionType.LOCAL_RECS_SERIES -> rows.add(helper.loadLocalRecommendations(LocalRecommendationsType.SERIES))
-				HomeSectionType.LOCAL_RECS_LIVE_TV -> if (currentUser.policy?.enableLiveTvAccess == true) {
-					rows.add(helper.loadLocalRecommendations(LocalRecommendationsType.LIVE_TV))
-				}
-
-				HomeSectionType.NONE -> Unit
+				HomeRow.LATEST_MEDIA -> rows.add(helper.loadRecentlyAdded(userViewsRepository.views.first()))
+				HomeRow.LIBRARIES -> rows.add(HomeFragmentViewsRow(small = false))
+				HomeRow.RESUME_AUDIO -> rows.add(helper.loadResumeAudio())
+				HomeRow.ACTIVE_RECORDINGS -> if (liveTvAccess) rows.add(helper.loadLatestLiveTvRecordings())
+				HomeRow.APPS -> rows.add(HomeFragmentAppsRow())
+				HomeRow.DEVICE -> rows.add(HomeFragmentDeviceSettingsRow())
 			}
 
-			// Jellyfin-TV-Client: Apps und Geräte-Einstellungen des Fernsehers
-			if (userPreferences[UserPreferences.tvClientAppsRow]) rows.add(HomeFragmentAppsRow())
-			if (userPreferences[UserPreferences.tvClientDeviceRow]) rows.add(HomeFragmentDeviceSettingsRow())
 			// App-Liste nur an den eigenen Jellyfin-Server melden, wenn die Zeile „Apps“ eingeschaltet ist
-			if (userPreferences[UserPreferences.tvClientAppsRow]) {
+			if (HomeRow.APPS in homeRows) {
 				val appContext = requireContext().applicationContext
 				lifecycleScope.launch(Dispatchers.IO) { DeviceAppsPublisher.publish(appContext, api) }
 			}

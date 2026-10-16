@@ -7,9 +7,6 @@
     <string name="lbl_localrecs_movies">Empfohlene Filme für dich</string>
     <string name="lbl_localrecs_series">Empfohlene Serien für dich</string>
     <string name="lbl_localrecs_livetv">Heute im TV für dich</string>
-    <string name="pref_localrecs_category">Empfehlungen</string>
-    <string name="pref_localrecs_auto_rows">Empfehlungen automatisch anzeigen</string>
-    <string name="pref_localrecs_auto_rows_description">Zeigt die Zeilen des Plugins „Lokale Empfehlungen“ nach „Weiterschauen“ / „Als Nächstes“, sofern du sie nicht selbst in die Startseitenabschnitte gelegt hast. Fehlt das Plugin, bleiben die Zeilen unsichtbar.</string>
     <string name="tvclient_row_apps">Apps</string>
     <string name="tvclient_row_device">Gerät</string>
     <string name="tvclient_settings_wifi">WLAN</string>
@@ -17,8 +14,9 @@
     <string name="tvclient_settings_display">Bild</string>
     <string name="tvclient_settings_sound">Ton</string>
     <string name="tvclient_settings_all">Alle Einstellungen</string>
-    <string name="tvclient_pref_apps_row">Zeile „Apps“ anzeigen</string>
-    <string name="tvclient_pref_apps_row_description">Zeigt die auf dem Fernseher installierten Apps (YouTube, Netflix, …) am Ende der Startseite</string>
-    <string name="tvclient_pref_device_row">Zeile „Gerät“ anzeigen</string>
-    <string name="tvclient_pref_device_row_description">Abkürzungen zu WLAN, Bluetooth, Bild, Ton und den Einstellungen des Fernsehers</string>
+    <string name="tvclient_home_rows">Zeilen der Startseite (feste Reihenfolge)</string>
+    <string name="tvclient_home_requires_plugin">Benötigt das Server-Plugin „Local Recommendations“</string>
+    <string name="tvclient_home_livetv_description">TV-Programm, Aufnahmen und was gerade läuft</string>
+    <string name="tvclient_home_apps_description">Auf dem Fernseher installierte Apps (YouTube, Netflix, …)</string>
+    <string name="tvclient_home_device_description">WLAN, Bluetooth, Bild, Ton und Einstellungen des Fernsehers</string>
 </resources>

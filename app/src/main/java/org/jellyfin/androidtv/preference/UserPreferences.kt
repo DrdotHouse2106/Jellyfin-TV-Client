@@ -56,21 +56,6 @@ class UserPreferences(context: Context) : SharedPreferenceStore(
 		 */
 		var mediaManagementEnabled = booleanPreference("enable_media_management", false)
 
-		/**
-		 * Jellyfin-TV-Client: Empfehlungen des Plugins "Local Recommendations" automatisch auf der Startseite zeigen
-		 */
-		var localRecsAutoRows = booleanPreference("pref_localrecs_auto_rows", true)
-
-		/**
-		 * Jellyfin-TV-Client: Zeile „Apps“ (installierte Apps des Fernsehers) auf der Startseite
-		 */
-		var tvClientAppsRow = booleanPreference("pref_tvclient_apps_row", true)
-
-		/**
-		 * Jellyfin-TV-Client: Zeile „Gerät“ (WLAN, Bluetooth, Bild, Ton, Einstellungen) auf der Startseite
-		 */
-		var tvClientDeviceRow = booleanPreference("pref_tvclient_device_row", true)
-
 		/* Playback - General*/
 		/**
 		 * Maximum bitrate in megabit for playback.

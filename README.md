@@ -46,13 +46,26 @@ Alternativ per ADB: `adb install quallenkino.apk`.
 
 Es gibt keine automatischen Store-Updates. Für ein Update die neue APK genauso installieren – die Einstellungen und die Anmeldung bleiben erhalten (solange die APK mit demselben Schlüssel signiert ist).
 
-## Empfehlungen auf der Startseite
+## Startseite
 
-- Standardmäßig erscheinen die drei Zeilen **automatisch** nach „Weiterschauen“ / „Als Nächstes“.
-- Einstellungen → Startseite: **„Empfehlungen automatisch anzeigen“** ein-/ausschalten.
-- Wer die Reihenfolge selbst festlegen will: unter „Startseitenabschnitte“ einen der neuen Einträge wählen, z. B. „Empfohlene Filme (Lokale Empfehlungen)“. Sobald einer davon gewählt ist, wird nichts mehr automatisch eingefügt.
-- „Heute im TV für dich“ erscheint nur für Benutzer mit Live-TV-Zugriff.
-- Gesehene Titel verschwinden nach dem Anschauen aus der Zeile.
+Die Zeilen der Startseite stehen in einer festen Reihenfolge und lassen sich unter **Einstellungen → Startseite** einzeln ein- und ausschalten (gespeichert auf dem Gerät):
+
+1. Weiterschauen
+2. Als Nächstes
+3. Empfohlene Filme für dich *
+4. Empfohlene Serien für dich *
+5. Heute im TV für dich * (nur mit Live-TV-Zugriff)
+6. Live-TV (TV-Programm, Aufnahmen, Läuft gerade)
+7. Kürzlich hinzugefügt
+8. Meine Medien (Bibliotheken)
+9. Weiterhören (anfangs aus)
+10. Aktive Aufnahmen (anfangs aus)
+11. Apps
+12. Gerät
+
+\* benötigt das Server-Plugin „Local Recommendations“ ab 12.5.0; ohne Plugin bleiben die Zeilen unsichtbar. Gesehene Titel verschwinden nach dem Anschauen.
+
+Die Startseiten-Einstellungen der Jellyfin-Weboberfläche („Startseitenabschnitte“) gelten für Quallenkino nicht mehr.
 
 ## Bedienung per Handy
 

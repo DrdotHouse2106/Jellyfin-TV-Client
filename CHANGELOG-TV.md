@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.3.0 – 2026-10-16
+
+- **Startseite neu geordnet:** feste Reihenfolge (Weiterschauen, Als Nächstes, Empfehlungen, Heute im TV für dich, Live-TV, Kürzlich hinzugefügt, Meine Medien, Apps, Gerät) mit einem Ein/Aus-Schalter pro Zeile unter Einstellungen → Startseite. Ersetzt die zehn Felder „Startseitenabschnitt 1–10“.
+
 ## 1.2.3 – 2026-10-16
 
 - Zeile „Gerät“: Symbole mit Rand statt kachelfüllend.

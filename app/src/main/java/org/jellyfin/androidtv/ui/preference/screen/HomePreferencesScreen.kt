@@ -1,55 +1,35 @@
 package org.jellyfin.androidtv.ui.preference.screen
 
 import org.jellyfin.androidtv.R
-import org.jellyfin.androidtv.constant.HomeSectionType
 import org.jellyfin.androidtv.preference.UserPreferences
-import org.jellyfin.androidtv.preference.UserSettingPreferences
-import org.jellyfin.androidtv.ui.preference.dsl.checkbox
+import org.jellyfin.androidtv.tvclient.HomeRow
 import org.jellyfin.androidtv.ui.preference.dsl.OptionsFragment
-import org.jellyfin.androidtv.ui.preference.dsl.enum
+import org.jellyfin.androidtv.ui.preference.dsl.checkbox
 import org.jellyfin.androidtv.ui.preference.dsl.optionsScreen
 import org.jellyfin.preference.store.PreferenceStore
 import org.koin.android.ext.android.inject
 
+/**
+ * Jellyfin-TV-Client: Zeilen der Startseite in fester Reihenfolge ein- und ausschalten
+ * (statt der zehn Auswahlfelder „Startseitenabschnitt 1–10“).
+ */
 class HomePreferencesScreen : OptionsFragment() {
-	private val userSettingPreferences: UserSettingPreferences by inject()
 	private val userPreferences: UserPreferences by inject()
 
 	override val stores: Array<PreferenceStore<*, *>>
-		get() = arrayOf(userSettingPreferences, userPreferences)
+		get() = arrayOf(userPreferences)
 
 	override val screen by optionsScreen {
 		setTitle(R.string.home_prefs)
 
 		category {
-			setTitle(R.string.pref_localrecs_category)
+			setTitle(R.string.tvclient_home_rows)
 
-			checkbox {
-				setTitle(R.string.pref_localrecs_auto_rows)
-				setContent(R.string.pref_localrecs_auto_rows_description)
-				bind(userPreferences, UserPreferences.localRecsAutoRows)
-			}
-
-			checkbox {
-				setTitle(R.string.tvclient_pref_apps_row)
-				setContent(R.string.tvclient_pref_apps_row_description)
-				bind(userPreferences, UserPreferences.tvClientAppsRow)
-			}
-
-			checkbox {
-				setTitle(R.string.tvclient_pref_device_row)
-				setContent(R.string.tvclient_pref_device_row_description)
-				bind(userPreferences, UserPreferences.tvClientDeviceRow)
-			}
-		}
-
-		category {
-			setTitle(R.string.home_sections)
-
-			userSettingPreferences.homesections.forEachIndexed { index, section ->
-				enum<HomeSectionType> {
-					title = getString(R.string.home_section_i, index + 1)
-					bind(userSettingPreferences, section)
+			HomeRow.entries.forEach { row ->
+				checkbox {
+					setTitle(row.title)
+					row.description?.let { setContent(it) }
+					bind(userPreferences, row.preference)
 				}
 			}
 		}
