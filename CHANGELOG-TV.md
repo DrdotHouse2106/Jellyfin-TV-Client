@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.2.2 – 2026-10-16
+
+- Startbildschirm: „Willkommen bei Quallenkino!“ und Versionsanzeige „Quallenkino …“ statt „jellyfin-androidtv“.
+- Einstellungen → Info zeigt Quallenkino-Version und die zugrunde liegende Jellyfin-Version.
+
 ## 1.2.1 – 2026-10-16
 
 - Die Liste der installierten Apps wird nur noch an den eigenen Jellyfin-Server gemeldet, wenn die Zeile „Apps“ eingeschaltet ist.

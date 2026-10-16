@@ -12,8 +12,9 @@ fun OptionsScreen.aboutCategory() = category {
 
 	link {
 		// Hardcoded strings for troubleshooting purposes
-		title = "Jellyfin app version"
-		content = "jellyfin-androidtv ${BuildConfig.VERSION_NAME} ${BuildConfig.BUILD_TYPE}"
+		// Jellyfin-TV-Client: eigener Name, Basis-Version für die Fehlersuche
+		title = "Quallenkino ${BuildConfig.VERSION_NAME}"
+		content = "basiert auf jellyfin-androidtv 0.19.10 (${BuildConfig.BUILD_TYPE})"
 		icon = R.drawable.ic_jellyfin
 	}
 

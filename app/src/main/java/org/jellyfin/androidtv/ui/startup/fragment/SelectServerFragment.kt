@@ -196,7 +196,7 @@ class SelectServerFragment : Fragment() {
 
 		// App info
 		@Suppress("SetTextI18n")
-		binding.appVersion.text = "jellyfin-androidtv ${BuildConfig.VERSION_NAME} ${BuildConfig.BUILD_TYPE}"
+		binding.appVersion.text = "${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME}"
 
 		// Set focus to fragment
 		binding.root.requestFocus()
