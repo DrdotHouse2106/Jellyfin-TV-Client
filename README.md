@@ -74,6 +74,7 @@ Gebaut wird automatisch mit dem Workflow [`TV-Client / Build`](.github/workflows
 
 - **Push auf `main`** → APK als Artefakt im Workflow-Lauf (Version aus `tv-client-version.txt`).
 - **Tag `v*`** (z. B. `v1.0.1`) → zusätzlich ein GitHub-Release mit der APK.
+- **Release ohne Tag:** Actions → „TV-Client / Build“ → *Run workflow* → Haken bei „GitHub-Release … anlegen“ → legt das Release `v{Version aus tv-client-version.txt}` an.
 
 ### Signatur einrichten (einmalig)
 
