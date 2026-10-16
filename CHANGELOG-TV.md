@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.8.1 – 2026-10-16
+
+- Profilauswahl noch näher an Netflix: schwarzer Hintergrund, „Wer schaut gerade?“ mittig, gedecktere Profilfarben.
+- Kachel **„Profil hinzufügen“** mit Plus direkt neben den Profilen.
+- Statt der grauen Knöpfe ein schlichter Knopf **„Profile verwalten“**: Profile abmelden oder entfernen und den Server wechseln.
+
 ## 1.8.0 – 2026-10-16
 
 - **Profilauswahl wie bei Netflix:** „Wer schaut gerade?“ groß und mittig, Profile als große abgerundete Kacheln in festen Farben mit Anfangsbuchstaben (oder Profilbild, falls in Jellyfin gesetzt). Das ausgewählte Profil bekommt einen weißen Rahmen.

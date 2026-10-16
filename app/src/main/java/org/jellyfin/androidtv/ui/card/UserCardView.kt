@@ -114,8 +114,8 @@ fun UserCard(
 
 /** Jellyfin-TV-Client: feste Profilfarbe pro Name (wie die bunten Netflix-Profile). */
 private val profileColors = listOf(
-	Color(0xFF2D6CDF), Color(0xFFE50914), Color(0xFFE8A317), Color(0xFF2E9E5B),
-	Color(0xFF7B4FD6), Color(0xFF14A3A3), Color(0xFFD9467A),
+	Color(0xFF1F5FBF), Color(0xFFB81D24), Color(0xFFC9961A), Color(0xFF1E6F6A),
+	Color(0xFF5E3BA6), Color(0xFF2F7D32), Color(0xFFB4501A),
 )
 
 private fun profileColor(name: String?): Color =
@@ -128,6 +128,8 @@ class UserCardView @JvmOverloads constructor(
 ) : AbstractComposeView(context, attrs, defStyleAttr) {
 	var name by mutableStateOf<String?>(null)
 	var image by mutableStateOf<String?>(null)
+	/** Jellyfin-TV-Client: Kachel „Profil hinzufügen“ mit Plus. */
+	var addTile by mutableStateOf(false)
 	private var focused by mutableStateOf(false)
 
 	init {
@@ -170,7 +172,16 @@ class UserCardView @JvmOverloads constructor(
 
 		UserCard(
 			image = {
-				if (image != null) {
+				if (addTile) {
+					Box(
+						modifier = Modifier
+							.fillMaxSize()
+							.background(Color(0xFF262626)),
+						contentAlignment = Alignment.Center,
+					) {
+						Text("+", fontSize = 72.sp, color = Color(0xFF9A9A9A))
+					}
+				} else if (image != null) {
 					AsyncImage(
 						modifier = Modifier.fillMaxSize(),
 						scaleType = ImageView.ScaleType.CENTER_CROP,

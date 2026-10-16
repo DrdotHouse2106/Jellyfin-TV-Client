@@ -46,4 +46,9 @@
     <string name="tvclient_skip_countdown_pref_description">The \"Skip\" button fills up over 5 seconds, then skips. Back cancels, OK skips right away (for segments set to \"Ask to skip\")</string>
     <string name="tvclient_smart_subtitles">Smart subtitles</string>
     <string name="tvclient_smart_subtitles_description">No subtitles when the audio is in your language; your choice per series is remembered for the next episodes</string>
+    <string name="tvclient_manage_profiles">Manage profiles</string>
+    <string name="tvclient_add_profile">Add profile</string>
+    <string name="tvclient_profile_sign_out">Sign out %1$s</string>
+    <string name="tvclient_profile_remove">Remove %1$s</string>
+    <string name="tvclient_switch_server">Switch server (%1$s)</string>
 </resources>

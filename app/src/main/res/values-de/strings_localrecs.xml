@@ -46,4 +46,9 @@
     <string name="tvclient_skip_countdown_pref_description">Der „Überspringen“-Knopf füllt sich in 5 Sekunden, dann wird übersprungen. „Zurück“ bricht ab, OK springt sofort (für Abschnitte mit „Nachfragen“)</string>
     <string name="tvclient_smart_subtitles">Intelligente Untertitel</string>
     <string name="tvclient_smart_subtitles_description">Keine Untertitel, wenn der Ton in deiner Sprache ist; deine Wahl pro Serie gilt auch für die nächsten Folgen</string>
+    <string name="tvclient_manage_profiles">Profile verwalten</string>
+    <string name="tvclient_add_profile">Profil hinzufügen</string>
+    <string name="tvclient_profile_sign_out">%1$s abmelden</string>
+    <string name="tvclient_profile_remove">%1$s entfernen</string>
+    <string name="tvclient_switch_server">Server wechseln (%1$s)</string>
 </resources>

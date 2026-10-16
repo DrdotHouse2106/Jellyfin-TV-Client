@@ -17,6 +17,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -41,6 +42,8 @@ import org.jellyfin.androidtv.ui.card.UserCardView
 import org.jellyfin.androidtv.ui.startup.StartupViewModel
 import org.jellyfin.androidtv.util.ListAdapter
 import org.jellyfin.androidtv.util.MarkdownRenderer
+import org.jellyfin.androidtv.util.popupMenu
+import org.jellyfin.androidtv.util.showIfNotEmpty
 import org.jellyfin.sdk.model.serializer.toUUIDOrNull
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
@@ -98,7 +101,17 @@ class ServerFragment : Fragment() {
 				}
 			}.launchIn(lifecycleScope)
 		}
-		binding.users.adapter = userAdapter
+		// Jellyfin-TV-Client: Kachel „Profil hinzufügen“ hinter den Profilen
+		val addProfileAdapter = AddProfileAdapter(requireContext()) {
+			navigateFragment<UserLoginFragment>(
+				args = bundleOf(
+					UserLoginFragment.ARG_SERVER_ID to server.id.toString(),
+					UserLoginFragment.ARG_USERNAME to null
+				)
+			)
+		}
+		binding.users.adapter = ConcatAdapter(userAdapter, addProfileAdapter)
+		binding.manageProfilesButton.setOnClickListener { showManageMenu(server) }
 
 		startupViewModel.users
 			.flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
@@ -110,7 +123,7 @@ class ServerFragment : Fragment() {
 				binding.users.post {
 					val grid = _binding?.users ?: return@post
 					val cardWidth = (178 * resources.displayMetrics.density).toInt()
-					val padding = ((grid.width - cardWidth * users.size) / 2).coerceAtLeast(0)
+					val padding = ((grid.width - cardWidth * (users.size + 1)) / 2).coerceAtLeast(0)
 					grid.setPadding(padding, 0, padding, 0)
 				}
 				binding.noUsersWarning.isVisible = users.isEmpty()
@@ -129,6 +142,30 @@ class ServerFragment : Fragment() {
 		}
 
 		return binding.root
+	}
+
+	/** Jellyfin-TV-Client: „Profile verwalten“ – abmelden, entfernen, Server wechseln. */
+	private fun showManageMenu(server: Server) {
+		val users = startupViewModel.users.value
+		popupMenu(requireContext(), binding.manageProfilesButton) {
+			users.filterIsInstance<PrivateUser>().forEach { user ->
+				if (user.accessToken != null) item(getString(R.string.tvclient_profile_sign_out, user.name)) {
+					authenticationRepository.logout(user)
+				}
+				item(getString(R.string.tvclient_profile_remove, user.name)) {
+					serverUserRepository.deleteStoredUser(user)
+					startupViewModel.loadUsers(server)
+				}
+			}
+			item(getString(R.string.tvclient_switch_server, server.name)) {
+				navigateFragment<SelectServerFragment>(keepToolbar = true)
+			}
+		}.showIfNotEmpty()
+	}
+
+	override fun onPause() {
+		super.onPause()
+		requireActivity().findViewById<View>(R.id.content_view)?.background = null
 	}
 
 	override fun onDestroyView() {
@@ -199,6 +236,8 @@ class ServerFragment : Fragment() {
 
 		startupViewModel.reloadStoredServers()
 		backgroundService.clearBackgrounds()
+		// Jellyfin-TV-Client: schwarzer Hintergrund wie bei Netflix (auch hinter der Kopfzeile)
+		requireActivity().findViewById<View>(R.id.content_view)?.setBackgroundColor(android.graphics.Color.BLACK)
 
 		val server = serverIdArgument?.let(startupViewModel::getServer)
 		if (server != null) startupViewModel.loadUsers(server)
@@ -251,6 +290,24 @@ class ServerFragment : Fragment() {
 		private class ViewHolder(
 			val cardView: UserCardView,
 		) : RecyclerView.ViewHolder(cardView)
+	}
+
+	private class AddProfileAdapter(
+		private val context: Context,
+		private val onPressed: () -> Unit,
+	) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+		override fun getItemCount() = 1
+
+		override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+			val cardView = UserCardView(context).apply {
+				addTile = true
+				name = context.getString(R.string.tvclient_add_profile)
+				setOnClickListener { onPressed() }
+			}
+			return object : RecyclerView.ViewHolder(cardView) {}
+		}
+
+		override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) = Unit
 	}
 }
 
