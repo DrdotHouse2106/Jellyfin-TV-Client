@@ -4,6 +4,8 @@ import android.content.Context
 import org.jellyfin.androidtv.R
 import org.jellyfin.androidtv.auth.repository.UserRepository
 import org.jellyfin.androidtv.constant.ChangeTriggerType
+import org.jellyfin.androidtv.data.querying.GetLocalRecommendationsRequest
+import org.jellyfin.androidtv.data.querying.LocalRecommendationsType
 import org.jellyfin.androidtv.data.repository.ItemRepository
 import org.jellyfin.androidtv.ui.browsing.BrowseRowDef
 import org.jellyfin.sdk.model.api.BaseItemDto
@@ -74,6 +76,16 @@ class HomeFragmentHelper(
 		)
 
 		return HomeFragmentBrowseRowDefRow(BrowseRowDef(context.getString(R.string.lbl_on_now), query))
+	}
+
+	fun loadLocalRecommendations(type: LocalRecommendationsType): HomeFragmentRow {
+		val title = when (type) {
+			LocalRecommendationsType.MOVIES -> context.getString(R.string.lbl_localrecs_movies)
+			LocalRecommendationsType.SERIES -> context.getString(R.string.lbl_localrecs_series)
+			LocalRecommendationsType.LIVE_TV -> context.getString(R.string.lbl_localrecs_livetv)
+		}
+
+		return HomeFragmentLocalRecommendationsRow(title, GetLocalRecommendationsRequest(type))
 	}
 
 	companion object {

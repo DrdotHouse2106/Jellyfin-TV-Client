@@ -21,5 +21,11 @@ enum class HomeSectionType(
 	ACTIVE_RECORDINGS("activerecordings", R.string.home_section_active_recordings),
 	NEXT_UP("nextup", R.string.home_section_next_up),
 	LIVE_TV("livetv", R.string.home_section_livetv),
+
+	// Jellyfin-TV-Client: Empfehlungen des Plugins "Local Recommendations"
+	LOCAL_RECS_MOVIES("localrecsmovies", R.string.home_section_localrecs_movies),
+	LOCAL_RECS_SERIES("localrecsseries", R.string.home_section_localrecs_series),
+	LOCAL_RECS_LIVE_TV("localrecslivetv", R.string.home_section_localrecs_livetv),
+
 	NONE("none", R.string.home_section_none),
 }

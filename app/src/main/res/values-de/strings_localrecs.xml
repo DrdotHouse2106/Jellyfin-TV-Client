@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Jellyfin-TV-Client: Texte für das Plugin „Local Recommendations“ -->
+<resources>
+    <string name="home_section_localrecs_movies">Empfohlene Filme (Lokale Empfehlungen)</string>
+    <string name="home_section_localrecs_series">Empfohlene Serien (Lokale Empfehlungen)</string>
+    <string name="home_section_localrecs_livetv">Heute im TV für dich (Lokale Empfehlungen)</string>
+    <string name="lbl_localrecs_movies">Empfohlene Filme für dich</string>
+    <string name="lbl_localrecs_series">Empfohlene Serien für dich</string>
+    <string name="lbl_localrecs_livetv">Heute im TV für dich</string>
+    <string name="pref_localrecs_category">Empfehlungen</string>
+    <string name="pref_localrecs_auto_rows">Empfehlungen automatisch anzeigen</string>
+    <string name="pref_localrecs_auto_rows_description">Zeigt die Zeilen des Plugins „Lokale Empfehlungen“ nach „Weiterschauen“ / „Als Nächstes“, sofern du sie nicht selbst in die Startseitenabschnitte gelegt hast. Fehlt das Plugin, bleiben die Zeilen unsichtbar.</string>
+</resources>

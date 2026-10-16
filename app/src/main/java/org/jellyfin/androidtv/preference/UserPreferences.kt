@@ -56,6 +56,11 @@ class UserPreferences(context: Context) : SharedPreferenceStore(
 		 */
 		var mediaManagementEnabled = booleanPreference("enable_media_management", false)
 
+		/**
+		 * Jellyfin-TV-Client: Empfehlungen des Plugins "Local Recommendations" automatisch auf der Startseite zeigen
+		 */
+		var localRecsAutoRows = booleanPreference("pref_localrecs_auto_rows", true)
+
 		/* Playback - General*/
 		/**
 		 * Maximum bitrate in megabit for playback.

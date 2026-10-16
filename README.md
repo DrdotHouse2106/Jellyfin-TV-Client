@@ -1,89 +1,112 @@
-<h1 align="center">Jellyfin Android TV</h1>
-<h3 align="center">Part of the <a href="https://jellyfin.org">Jellyfin Project</a></h3>
+# Jellyfin TV (Jellyfin-TV-Client)
 
----
+Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** ([jellyfin/jellyfin-androidtv](https://github.com/jellyfin/jellyfin-androidtv)). Sie zeigt auf dem Fernseher zusätzlich die persönlichen Empfehlungen des Plugins [Lokale Empfehlungen](https://github.com/DrdotHouse2106/Lokal-Vorschlag-Jellyfin):
 
-<p align="center">
-<img alt="Logo banner" src="https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/branding/SVG/banner-logo-solid.svg?sanitize=true"/>
-<br/><br/>
-<a href="https://github.com/jellyfin/jellyfin-androidtv">
-<img alt="GPL 2.0 License" src="https://img.shields.io/github/license/jellyfin/jellyfin-androidtv.svg"/>
-</a>
-<a href="https://github.com/jellyfin/jellyfin-androidtv/releases">
-<img alt="Current Release" src="https://img.shields.io/github/release/jellyfin/jellyfin-androidtv.svg"/>
-</a>
-<a href="https://translate.jellyfin.org/projects/jellyfin-android/jellyfin-androidtv/">
-<img alt="Translation Status" src="https://translate.jellyfin.org/widgets/jellyfin-android/-/jellyfin-androidtv/svg-badge.svg"/>
-</a>
-<br/>
-<a href="https://opencollective.com/jellyfin">
-<img alt="Donate" src="https://img.shields.io/opencollective/all/jellyfin.svg?label=backers"/>
-</a>
-<a href="https://features.jellyfin.org">
-<img alt="Feature Requests" src="https://img.shields.io/badge/fider-vote%20on%20features-success.svg"/>
-</a>
-<a href="https://matrix.to/#/+jellyfin:matrix.org">
-<img alt="Chat on Matrix" src="https://img.shields.io/matrix/jellyfin:matrix.org.svg?logo=matrix"/>
-</a>
-<a href="https://www.reddit.com/r/jellyfin">
-<img alt="Join our Subreddit" src="https://img.shields.io/badge/reddit-r%2Fjellyfin-%23FF5700.svg"/>
-</a>
-<br/>
-<a href="https://play.google.com/store/apps/details?id=org.jellyfin.androidtv">
-<img width="153" alt="Jellyfin on Google Play" src="https://jellyfin.org/images/store-icons/google-play.png"/>
-</a>
-<a href="https://www.amazon.com/gp/aw/d/B07TX7Z725">
-<img width="153" alt="Jellyfin on Amazon Appstore" src="https://jellyfin.org/images/store-icons/amazon.png"/>
-</a>
-<a href="https://f-droid.org/en/packages/org.jellyfin.androidtv/">
-<img width="153" alt="Jellyfin on F-Droid" src="https://jellyfin.org/images/store-icons/fdroid.png"/>
-</a>
-<br/>
-<a href="https://repo.jellyfin.org/releases/client/androidtv/">Download archive</a>
-</p>
+- **Empfohlene Filme für dich**
+- **Empfohlene Serien für dich** (mit echten Serien-Covern)
+- **Heute im TV für dich** (passende Sendungen aus dem EPG, mit Sendezeit und Sender)
 
-Jellyfin Android TV is a Jellyfin client for Android TV, Nvidia Shield, and Amazon Fire TV devices.
-We welcome all contributions and pull requests! If you have a larger feature in mind please open an
-issue so we can discuss the implementation before you start. 
+Alles andere ist wie in der offiziellen App: Player, Untertitel, Live-TV, Intro Skipper, Steuerung per Fernbedienung.
 
-## Translating
+> English version: [README.en.md](README.en.md) · Original-README: [README.upstream.md](README.upstream.md)
 
-Translations can be improved very easily from our
-[Weblate](https://translate.jellyfin.org/projects/jellyfin-android/jellyfin-androidtv) instance.
-Look through the following graphic to see if your native language could use some work!
+> [!NOTE]
+> Basis ist die offizielle App **v0.19.10** (GPL v2). Alle Rechte an der eigentlichen App liegen beim Jellyfin-Team. Dieses Repository enthält nur wenige, klar markierte Änderungen (Kommentare mit „Jellyfin-TV-Client“).
 
-<a href="https://translate.jellyfin.org/engage/jellyfin-android/">
-<img alt="Detailed Translation Status" src="https://translate.jellyfin.org/widgets/jellyfin-android/-/jellyfin-androidtv/multi-auto.svg"/>
-</a>
+## Voraussetzungen
 
-## Build Process
+- Jellyfin-Server 12 mit dem Plugin **Local Recommendations ab Version 12.5.0** (stellt `GET /LocalRecs/Recommendations` bereit). „Home Screen Sections“ ist für diese App **nicht** nötig.
+- Android TV / Google TV oder **Fire TV mit Fire OS** (Android). Geräte mit *Vega OS* (z. B. einige Fire-TV-Modelle ab 2025) können keine APKs installieren.
 
-### Dependencies
+Ohne Plugin funktioniert die App ganz normal, nur ohne die Empfehlungs-Zeilen.
 
-- Android Studio
+## Installation
 
-### Build
+Die App heißt auf dem Gerät **„Jellyfin TV“** und hat die eigene Paket-ID `de.drdothouse.jellyfintv`. Sie kann daher **neben** der offiziellen Jellyfin-App installiert sein.
 
-1. Clone or download this repository
+### Fire TV
 
-   ```sh
-   git clone https://github.com/jellyfin/jellyfin-androidtv.git
-   cd jellyfin-androidtv
-   ```
+1. Einstellungen → Mein Fire TV → Entwickleroptionen → **Apps unbekannter Herkunft** für die App „Downloader“ erlauben (Entwickleroptionen erscheinen nach 7× Klick auf Einstellungen → Mein Fire TV → Info → Gerätename).
+2. App **Downloader** aus dem Amazon-Appstore installieren.
+3. In Downloader die Adresse der APK aus den [Releases](https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases) eingeben (`jellyfin-tv-client-v…-release.apk`) und installieren.
+4. „Jellyfin TV“ öffnen und mit dem eigenen Jellyfin-Konto anmelden.
 
-2. Open the project in Android Studio and run it from there or build an APK directly through Gradle:
+### Android TV / Google TV
 
-   ```sh
-   ./gradlew assembleDebug
-   ```
-   
-   Add the Android SDK to your PATH environment variable or create the ANDROID_SDK_ROOT variable for
-   this to work.
+Wie oben über „Downloader“ (Play Store) oder per `adb install jellyfin-tv-client-v…-release.apk`.
 
-### Deploy to device/emulator
+### Updates
 
-   ```sh
-   ./gradlew installDebug
-   ```
+Es gibt keine automatischen Store-Updates. Für ein Update die neue APK genauso installieren – die Einstellungen und die Anmeldung bleiben erhalten (solange die APK mit demselben Schlüssel signiert ist).
 
-*You can also replace the "Debug" with "Release" to get an optimized release binary.*
+## Empfehlungen auf der Startseite
+
+- Standardmäßig erscheinen die drei Zeilen **automatisch** nach „Weiterschauen“ / „Als Nächstes“.
+- Einstellungen → Startseite: **„Empfehlungen automatisch anzeigen“** ein-/ausschalten.
+- Wer die Reihenfolge selbst festlegen will: unter „Startseitenabschnitte“ einen der neuen Einträge wählen, z. B. „Empfohlene Filme (Lokale Empfehlungen)“. Sobald einer davon gewählt ist, wird nichts mehr automatisch eingefügt.
+- „Heute im TV für dich“ erscheint nur für Benutzer mit Live-TV-Zugriff.
+- Gesehene Titel verschwinden nach dem Anschauen aus der Zeile.
+
+## Bedienung per Handy
+
+- **Fire-TV-App / Google-TV-App** (Fernbedienung auf dem Handy): Steuerkreuz, Zurück, Home und Texteingabe über die Handy-Tastatur funktionieren wie bei der offiziellen App – die neuen Zeilen sind normale Zeilen.
+- **Jellyfin Mobile** (iOS/Android): Über „Wiedergabe auf …“ lässt sich die Wiedergabe auf dem Fernseher starten, pausieren, spulen und die Lautstärke ändern (Fernsteuerung von Jellyfin).
+
+## Selbst bauen (GitHub Actions)
+
+Gebaut wird automatisch mit dem Workflow [`TV-Client / Build`](.github/workflows/tv-client-build.yaml):
+
+- **Push auf `main`** → APK als Artefakt im Workflow-Lauf (Version aus `tv-client-version.txt`).
+- **Tag `v*`** (z. B. `v1.0.1`) → zusätzlich ein GitHub-Release mit der APK.
+
+### Signatur einrichten (einmalig)
+
+Damit Updates über die installierte App gespielt werden können, muss jede APK mit **demselben Schlüssel** signiert sein. Dafür im Repository unter *Settings → Secrets and variables → Actions* vier Secrets anlegen:
+
+| Secret | Inhalt |
+|---|---|
+| `KEYSTORE` | Keystore-Datei als Base64 (eine Zeile) |
+| `KEYSTORE_PASSWORD` | Passwort des Keystores |
+| `KEY_ALIAS` | Alias des Schlüssels |
+| `KEY_PASSWORD` | Passwort des Schlüssels |
+
+Eigenen Schlüssel erzeugen (Java nötig):
+
+```
+keytool -genkeypair -keystore jellyfin-tv.jks -storetype PKCS12 -alias jellyfintv -keyalg RSA -keysize 4096 -validity 36500
+base64 -w0 jellyfin-tv.jks > KEYSTORE.txt
+```
+
+Ohne diese Secrets baut der Workflow nur eine Debug-APK („Jellyfin TV Debug“), deren Signatur sich bei jedem Lauf ändert. **Den Keystore niemals ins Repository hochladen.**
+
+## Update auf eine neue Version der offiziellen App
+
+Das Repository enthält die komplette Git-Historie der offiziellen App, Updates lassen sich daher einfach einspielen:
+
+```
+git remote add upstream https://github.com/jellyfin/jellyfin-androidtv.git
+git fetch upstream --tags
+git merge v0.19.11          # gewünschte offizielle Version
+# Konflikte lösen, dann tv-client-version.txt erhöhen, CHANGELOG-TV.md ergänzen, pushen
+```
+
+Die eigenen Änderungen sind bewusst klein gehalten:
+
+| Datei | Änderung |
+|---|---|
+| `app/build.gradle.kts` | Paket-ID, App-Name, Dateiname der APK |
+| `constant/HomeSectionType.kt`, `constant/QueryType.kt` | neue Zeilen-Typen |
+| `ui/itemhandling/ItemRowAdapter.java` | neue Abfrage `LocalRecommendations` |
+| `ui/home/HomeRowsFragment.kt`, `ui/home/HomeFragmentHelper.kt` | Zeilen einbauen |
+| `preference/UserPreferences.kt`, `ui/preference/screen/HomePreferencesScreen.kt` | Einstellung „Empfehlungen automatisch anzeigen“ |
+| neu: `LocalRecommendationsHelper.kt`, `HomeFragmentLocalRecommendationsRow.kt`, `GetLocalRecommendationsRequest.kt`, `strings_localrecs.xml` | Abfrage, Zeile, Texte (de/en) |
+| neu: `.github/workflows/tv-client-build.yaml`, `tv-client-version.txt` | Build |
+
+## Geplant
+
+- Zeile **„Apps“** zum Starten von YouTube, Netflix, Mediatheken usw. direkt aus der Startseite (funktioniert auch auf Fire TV).
+- Optionaler **Startbildschirm-Modus** (Launcher) für Android TV / Google TV. Auf Fire TV lässt Amazon keinen fremden Startbildschirm zu.
+
+## Lizenz
+
+GPL v2, wie die offizielle App (siehe [LICENSE](LICENSE)).

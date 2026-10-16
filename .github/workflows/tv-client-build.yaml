@@ -1,0 +1,90 @@
+# Jellyfin-TV-Client: baut die App bei jedem Push auf main und bei jedem Tag v*.
+# Bei einem Tag (z. B. v1.0.0) wird zusätzlich ein GitHub-Release mit der APK angelegt.
+# Für eine signierte App müssen die Secrets KEYSTORE, KEYSTORE_PASSWORD, KEY_ALIAS und
+# KEY_PASSWORD gesetzt sein (siehe README). Ohne sie entsteht nur eine Debug-APK.
+name: TV-Client / Build
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Set JELLYFIN_VERSION
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "JELLYFIN_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+          else
+            echo "JELLYFIN_VERSION=$(tr -d '[:space:]' < tv-client-version.txt)" >> $GITHUB_ENV
+          fi
+
+      - name: Unit tests
+        run: ./gradlew :app:testDebugUnitTest
+
+      - name: Decode keystore
+        id: keystore
+        env:
+          KEYSTORE: ${{ secrets.KEYSTORE }}
+        run: |
+          if [ -n "$KEYSTORE" ]; then
+            echo "$KEYSTORE" | base64 --decode > "$RUNNER_TEMP/keystore.jks"
+            echo "signed=true" >> $GITHUB_OUTPUT
+          else
+            echo "::warning::Keine Signatur-Secrets gesetzt – es wird nur eine Debug-APK gebaut (siehe README)."
+            echo "signed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Assemble release APK
+        if: steps.keystore.outputs.signed == 'true'
+        env:
+          KEYSTORE_FILE: ${{ runner.temp }}/keystore.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew :app:assembleRelease
+
+      - name: Assemble debug APK
+        if: steps.keystore.outputs.signed != 'true'
+        run: ./gradlew :app:assembleDebug
+
+      - name: Collect APKs
+        run: |
+          mkdir -p build/tv-client
+          find app/build/outputs/apk -iname "*.apk" -exec cp "{}" build/tv-client/ \;
+          ls -la build/tv-client
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: jellyfin-tv-client-${{ env.JELLYFIN_VERSION }}
+          retention-days: 30
+          if-no-files-found: error
+          path: build/tv-client/
+
+      - name: Create GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" build/tv-client/*.apk --title "Jellyfin TV $GITHUB_REF_NAME" --notes "Siehe README und CHANGELOG-TV.md." || gh release upload "$GITHUB_REF_NAME" build/tv-client/*.apk --clobber

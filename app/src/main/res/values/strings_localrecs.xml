@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Jellyfin-TV-Client: texts for the "Local Recommendations" plugin (separate file to avoid conflicts with Weblate) -->
+<resources>
+    <string name="home_section_localrecs_movies">Recommended movies (Local Recommendations)</string>
+    <string name="home_section_localrecs_series">Recommended series (Local Recommendations)</string>
+    <string name="home_section_localrecs_livetv">On TV today for you (Local Recommendations)</string>
+    <string name="lbl_localrecs_movies">Recommended movies for you</string>
+    <string name="lbl_localrecs_series">Recommended series for you</string>
+    <string name="lbl_localrecs_livetv">On TV today for you</string>
+    <string name="pref_localrecs_category">Recommendations</string>
+    <string name="pref_localrecs_auto_rows">Show recommendations automatically</string>
+    <string name="pref_localrecs_auto_rows_description">Adds the rows of the \"Local Recommendations\" plugin after \"Continue watching\" / \"Next up\" unless you placed them in the home sections yourself. Rows stay hidden if the plugin is missing.</string>
+</resources>

@@ -29,10 +29,12 @@ import org.jellyfin.androidtv.constant.CustomMessage
 import org.jellyfin.androidtv.constant.HomeSectionType
 import org.jellyfin.androidtv.constant.QueryType
 import org.jellyfin.androidtv.data.model.DataRefreshService
+import org.jellyfin.androidtv.data.querying.LocalRecommendationsType
 import org.jellyfin.androidtv.data.repository.CustomMessageRepository
 import org.jellyfin.androidtv.data.repository.NotificationsRepository
 import org.jellyfin.androidtv.data.repository.UserViewsRepository
 import org.jellyfin.androidtv.data.service.BackgroundService
+import org.jellyfin.androidtv.preference.UserPreferences
 import org.jellyfin.androidtv.preference.UserSettingPreferences
 import org.jellyfin.androidtv.ui.browsing.CompositeClickedListener
 import org.jellyfin.androidtv.ui.browsing.CompositeSelectedListener
@@ -64,6 +66,7 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 	private val notificationsRepository by inject<NotificationsRepository>()
 	private val userRepository by inject<UserRepository>()
 	private val userSettingPreferences by inject<UserSettingPreferences>()
+	private val userPreferences by inject<UserPreferences>()
 	private val userViewsRepository by inject<UserViewsRepository>()
 	private val dataRefreshService by inject<DataRefreshService>()
 	private val customMessageRepository by inject<CustomMessageRepository>()
@@ -94,7 +97,7 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			}
 
 			// Start out with default sections
-			val homesections = userSettingPreferences.activeHomesections
+			val homesections = withLocalRecommendations(userSettingPreferences.activeHomesections, userPreferences[UserPreferences.localRecsAutoRows])
 
 			// Make sure the rows are empty
 			val rows = mutableListOf<HomeFragmentRow>()
@@ -115,6 +118,12 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 				HomeSectionType.LIVE_TV -> if (currentUser.policy?.enableLiveTvAccess == true) {
 					rows.add(liveTVRow)
 					rows.add(helper.loadOnNow())
+				}
+
+				HomeSectionType.LOCAL_RECS_MOVIES -> rows.add(helper.loadLocalRecommendations(LocalRecommendationsType.MOVIES))
+				HomeSectionType.LOCAL_RECS_SERIES -> rows.add(helper.loadLocalRecommendations(LocalRecommendationsType.SERIES))
+				HomeSectionType.LOCAL_RECS_LIVE_TV -> if (currentUser.policy?.enableLiveTvAccess == true) {
+					rows.add(helper.loadLocalRecommendations(LocalRecommendationsType.LIVE_TV))
 				}
 
 				HomeSectionType.NONE -> Unit

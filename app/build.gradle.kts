@@ -6,6 +6,10 @@ plugins {
 	alias(libs.plugins.aboutlibraries)
 }
 
+// Jellyfin-TV-Client
+val TV_CLIENT_APPLICATION_ID = "de.drdothouse.jellyfintv"
+val TV_CLIENT_APP_NAME = "Jellyfin TV"
+
 android {
 	namespace = "org.jellyfin.androidtv"
 	compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -15,7 +19,8 @@ android {
 		targetSdk = libs.versions.android.targetSdk.get().toInt()
 
 		// Release version
-		applicationId = namespace
+		// Jellyfin-TV-Client: eigene Paket-ID, damit die App neben der offiziellen App installiert werden kann
+		applicationId = TV_CLIENT_APPLICATION_ID
 		versionName = project.getVersionName()
 		versionCode = getVersionCode(versionName!!)
 	}
@@ -56,12 +61,12 @@ android {
 			isMinifyEnabled = false
 
 			// Set package names used in various XML files
-			resValue("string", "app_id", namespace!!)
-			resValue("string", "app_search_suggest_authority", "${namespace}.content")
-			resValue("string", "app_search_suggest_intent_data", "content://${namespace}.content/intent")
+			resValue("string", "app_id", TV_CLIENT_APPLICATION_ID)
+			resValue("string", "app_search_suggest_authority", "${TV_CLIENT_APPLICATION_ID}.content")
+			resValue("string", "app_search_suggest_intent_data", "content://${TV_CLIENT_APPLICATION_ID}.content/intent")
 
 			// Set flavored application name
-			resValue("string", "app_name", "@string/app_name_release")
+			resValue("string", "app_name", TV_CLIENT_APP_NAME)
 
 			buildConfigField("boolean", "DEVELOPMENT", "false")
 
@@ -73,12 +78,12 @@ android {
 			applicationIdSuffix = ".debug"
 
 			// Set package names used in various XML files
-			resValue("string", "app_id", namespace + applicationIdSuffix)
-			resValue("string", "app_search_suggest_authority", "${namespace + applicationIdSuffix}.content")
-			resValue("string", "app_search_suggest_intent_data", "content://${namespace + applicationIdSuffix}.content/intent")
+			resValue("string", "app_id", TV_CLIENT_APPLICATION_ID + applicationIdSuffix)
+			resValue("string", "app_search_suggest_authority", "${TV_CLIENT_APPLICATION_ID + applicationIdSuffix}.content")
+			resValue("string", "app_search_suggest_intent_data", "content://${TV_CLIENT_APPLICATION_ID + applicationIdSuffix}.content/intent")
 
 			// Set flavored application name
-			resValue("string", "app_name", "@string/app_name_debug")
+			resValue("string", "app_name", "$TV_CLIENT_APP_NAME Debug")
 
 			buildConfigField("boolean", "DEVELOPMENT", (defaultConfig.versionCode!! < 100).toString())
 		}
@@ -96,7 +101,7 @@ android {
 	}
 }
 
-base.archivesName.set("jellyfin-androidtv-v${project.getVersionName()}")
+base.archivesName.set("jellyfin-tv-client-v${project.getVersionName()}")
 
 tasks.register("versionTxt") {
 	val path = layout.buildDirectory.asFile.get().resolve("version.txt")
