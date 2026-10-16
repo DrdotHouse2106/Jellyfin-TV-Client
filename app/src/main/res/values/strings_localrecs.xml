@@ -35,4 +35,9 @@
     <string name="tvclient_settings_advanced_description">Advanced playback, crash reports, developer options</string>
     <string name="tvclient_more_info">More info</string>
     <string name="tvclient_no_trailer">No trailer available</string>
+    <string name="tvclient_home_genres">Genre rows</string>
+    <string name="tvclient_home_genres_description">Up to 12 rows such as Action, Comedy or Anime with random titles – shuffled every time</string>
+    <string name="tvclient_trailer_preview">Trailer preview</string>
+    <string name="tvclient_trailer_preview_description">Plays the trailer at the top after a few seconds on a title (only trailers stored on the server)</string>
+    <string name="tvclient_trailer_sound">Trailer preview with sound</string>
 </resources>

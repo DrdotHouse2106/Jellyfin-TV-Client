@@ -16,6 +16,7 @@ class HomeRowTests : FunSpec({
 			HomeRow.LIVE_TV,
 			HomeRow.LATEST_MEDIA,
 			HomeRow.WEB_SECTIONS,
+			HomeRow.GENRES,
 			HomeRow.LIBRARIES,
 		)
 	}
@@ -38,5 +39,11 @@ class HomeRowTests : FunSpec({
 		HomeScreenSections.isShown(HomeScreenSections.Section(section = "TopTen")) shouldBe true
 		HomeScreenSections.isShown(HomeScreenSections.Section(section = null)) shouldBe false
 	}
-})
 
+	test("Genre-Zeilen: höchstens 12, keine doppelten") {
+		val names = (1..20).map { "Genre $it" } + listOf("Action", "action")
+		val picked = GenreRows.pick(names)
+		picked.size shouldBe 12
+		picked.map { it.lowercase() }.distinct().size shouldBe 12
+	}
+})

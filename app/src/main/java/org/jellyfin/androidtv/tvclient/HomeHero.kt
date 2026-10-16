@@ -27,7 +27,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
+import org.jellyfin.androidtv.preference.UserPreferences
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -61,6 +67,7 @@ object HomeHeroState {
 fun HomeHeroBackdrop(modifier: Modifier = Modifier) {
 	val item by HomeHeroState.item.collectAsState()
 	val api = koinInject<ApiClient>()
+	val userPreferences = koinInject<UserPreferences>()
 
 	Box(modifier.fillMaxSize().background(Color.Black)) {
 		AnimatedContent(
@@ -74,15 +81,31 @@ fun HomeHeroBackdrop(modifier: Modifier = Modifier) {
 			label = "HomeHeroBackdrop",
 		) { current ->
 			val backdrop = current?.let(::heroBackdropImage)
-			if (backdrop != null) {
+
+			// Trailer-Vorschau: nach kurzer Zeit auf demselben Titel statt des Bildes
+			var trailerUrl by remember(current?.id) { mutableStateOf<String?>(null) }
+			LaunchedEffect(current?.id) {
+				if (current == null || !userPreferences[TrailerPreview.enabledPreference]) return@LaunchedEffect
+				delay(TrailerPreview.delay)
+				trailerUrl = TrailerPreview.streamUrl(api, current)
+			}
+
+			if (backdrop != null || trailerUrl != null) {
 				Box(Modifier.fillMaxSize()) {
-					AsyncImage(
+					if (backdrop != null) AsyncImage(
 						modifier = Modifier.fillMaxSize(),
 						url = backdrop.getUrl(api, maxWidth = 1280),
 						blurHash = backdrop.blurHash,
 						aspectRatio = 16f / 9f,
 						scaleType = ImageView.ScaleType.CENTER_CROP,
 					)
+					trailerUrl?.let { url ->
+						TrailerVideo(
+							url = url,
+							withSound = userPreferences[TrailerPreview.soundPreference],
+							modifier = Modifier.fillMaxSize(),
+						)
+					}
 					// Nach links und unten in Schwarz auslaufen lassen
 					Box(
 						Modifier

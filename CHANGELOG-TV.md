@@ -3,6 +3,8 @@
 ## 1.6.0 – 2026-10-16
 
 - **Billboard wie bei Netflix:** Ganz oben wechseln Vorschläge (aus „Local Recommendations“, sonst die neuesten Filme und Serien) alle paar Sekunden, mit Punkten als Anzeige. Darunter die Knöpfe **Abspielen**, **Mehr Infos** und **Trailer** (lokaler Trailer vom Server, sonst YouTube). Beim Start ist „Abspielen“ ausgewählt; aus der ersten Zeile kommt man mit „Hoch“ zurück.
+- **Trailer-Vorschau:** Bleibt man etwa 3 Sekunden auf einem Film oder einer Serie, läuft oben statt des Bildes der Trailer (stumm, abschaltbar; Ton zuschaltbar). Funktioniert mit Trailern, die auf dem Server liegen.
+- **Genre-Zeilen:** bis zu 12 Zeilen wie „Action“, „Komödie“ oder „Anime“ mit zufälligen Titeln – bei jedem Öffnen neu gemischt, zum Weiterscrollen wie bei Netflix.
 
 ## 1.5.2 – 2026-10-16
 

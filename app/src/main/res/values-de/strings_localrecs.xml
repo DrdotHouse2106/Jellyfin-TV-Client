@@ -35,4 +35,9 @@
     <string name="tvclient_settings_advanced_description">Erweiterte Wiedergabe, Absturzberichte, Entwickleroptionen</string>
     <string name="tvclient_more_info">Mehr Infos</string>
     <string name="tvclient_no_trailer">Kein Trailer verfügbar</string>
+    <string name="tvclient_home_genres">Genre-Zeilen</string>
+    <string name="tvclient_home_genres_description">Bis zu 12 Zeilen wie Action, Komödie oder Anime mit zufälligen Titeln – bei jedem Öffnen neu gemischt</string>
+    <string name="tvclient_trailer_preview">Trailer-Vorschau</string>
+    <string name="tvclient_trailer_preview_description">Spielt oben nach einigen Sekunden auf einem Titel den Trailer ab (nur Trailer, die auf dem Server liegen)</string>
+    <string name="tvclient_trailer_sound">Trailer-Vorschau mit Ton</string>
 </resources>

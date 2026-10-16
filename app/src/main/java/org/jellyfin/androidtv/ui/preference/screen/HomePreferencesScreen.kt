@@ -4,6 +4,7 @@ import org.jellyfin.androidtv.R
 import org.jellyfin.androidtv.preference.UserPreferences
 import org.jellyfin.androidtv.tvclient.HomeRow
 import org.jellyfin.androidtv.tvclient.TimeFormat
+import org.jellyfin.androidtv.tvclient.TrailerPreview
 import org.jellyfin.androidtv.ui.preference.dsl.OptionsFragment
 import org.jellyfin.androidtv.ui.preference.dsl.checkbox
 import org.jellyfin.androidtv.ui.preference.dsl.optionsScreen
@@ -36,6 +37,18 @@ class HomePreferencesScreen : OptionsFragment() {
 				setTitle(R.string.tvclient_24h)
 				setContent(R.string.tvclient_24h_description)
 				bind(userPreferences, TimeFormat.use24HourPreference)
+			}
+
+			checkbox {
+				setTitle(R.string.tvclient_trailer_preview)
+				setContent(R.string.tvclient_trailer_preview_description)
+				bind(userPreferences, TrailerPreview.enabledPreference)
+			}
+
+			checkbox {
+				setTitle(R.string.tvclient_trailer_sound)
+				bind(userPreferences, TrailerPreview.soundPreference)
+				depends { userPreferences[TrailerPreview.enabledPreference] }
 			}
 		}
 

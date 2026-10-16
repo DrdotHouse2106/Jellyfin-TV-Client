@@ -24,6 +24,7 @@ enum class HomeRow(
 	LIVE_TV("livetv", R.string.home_section_livetv, true, R.string.tvclient_home_livetv_description),
 	LATEST_MEDIA("latest", R.string.home_section_latest_media, true),
 	WEB_SECTIONS("web_sections", R.string.tvclient_home_web_sections, true, R.string.tvclient_home_web_sections_description),
+	GENRES("genres", R.string.tvclient_home_genres, true, R.string.tvclient_home_genres_description),
 	RESUME_AUDIO("resume_audio", R.string.home_section_resume_audio, false),
 	ACTIVE_RECORDINGS("recordings", R.string.home_section_active_recordings, false),
 	APPS("apps", R.string.tvclient_row_apps, false, R.string.tvclient_home_apps_description),
