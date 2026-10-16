@@ -107,10 +107,9 @@ class ImageHelper(
 			?: item.itemBackdropImages.firstOrNull()
 			?: item.parentImages[ImageType.THUMB]
 			?: item.parentBackdropImages.firstOrNull()
-			?: item.itemImages[ImageType.PRIMARY]
 		return image?.getUrl(api, fillWidth = fillWidth, fillHeight = fillHeight)
+			?: getPrimaryImageUrl(item, true, fillWidth, fillHeight)
 	}
-		?: getPrimaryImageUrl(item, true, fillWidth, fillHeight)
 
 	fun getBannerImageUrl(item: BaseItemDto, fillWidth: Int, fillHeight: Int): String? =
 		item.itemImages[ImageType.BANNER]?.getUrl(api, fillWidth = fillWidth, fillHeight = fillHeight)
