@@ -49,8 +49,21 @@ Es gibt keine automatischen Store-Updates. Für ein Update die neue APK genauso 
 
 ## Bedienung per Handy
 
-- **Fire-TV-App / Google-TV-App** (Fernbedienung auf dem Handy): Steuerkreuz, Zurück, Home und Texteingabe über die Handy-Tastatur funktionieren wie bei der offiziellen App – die neuen Zeilen sind normale Zeilen.
-- **Jellyfin Mobile** (iOS/Android): Über „Wiedergabe auf …“ lässt sich die Wiedergabe auf dem Fernseher starten, pausieren, spulen und die Lautstärke ändern (Fernsteuerung von Jellyfin).
+Die App lässt sich komplett über Jellyfin fernsteuern, z. B. mit **[Jellyfin Remote](https://github.com/DrdotHouse2106/Jellyfin-Remote)** – ohne Einrichtung auf dem Stick. Einfach in Jellyfin Remote das Gerät „Jellyfin TV“ wählen.
+
+| Befehl aus Jellyfin Remote | Wirkung in der App |
+|---|---|
+| Hoch / Runter / Links / Rechts, OK | wie das Steuerkreuz der Fernbedienung (überall: Startseite, Details, Player, Dialoge) |
+| Zurück | Zurück-Taste |
+| Home | Startseite der App |
+| Bildschirmmenü | Menü-Taste (im Live-TV: TV-Programm) |
+| Suche / Texteingabe | öffnet die Suche mit dem eingegebenen Begriff |
+| Einstellungen, TV-Programm | öffnet die Seite direkt |
+| Play/Pause, Spulen, Stopp, Lautstärke, Stumm | wie in der offiziellen App |
+
+Hinweise:
+- Die Befehle wirken, solange „Jellyfin TV“ auf dem Fernseher im Vordergrund ist. Andere Apps (Netflix, YouTube) und das Fire-TV-Menü lassen sich darüber nicht steuern.
+- Die Fire-TV-App bzw. Google-TV-App auf dem Handy funktioniert natürlich weiterhin.
 
 ## Selbst bauen (GitHub Actions)
 

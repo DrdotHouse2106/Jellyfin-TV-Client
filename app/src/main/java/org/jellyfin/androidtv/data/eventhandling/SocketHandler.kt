@@ -78,6 +78,9 @@ class SocketHandler(
 						add(GeneralCommandType.DISPLAY_MESSAGE)
 						add(GeneralCommandType.SEND_STRING)
 
+						// Jellyfin-TV-Client: Steuerung per Handy (z. B. Jellyfin Remote)
+						addAll(RemoteNavigation.supportedCommands)
+
 						// Note: These are used in the PlaySessionSocketService
 						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !audioManager.isVolumeFixed) {
 							add(GeneralCommandType.VOLUME_UP)
@@ -148,13 +151,38 @@ class SocketHandler(
 			}
 			.launchIn(coroutineScope)
 
-		subscribeGeneralCommands(setOf(GeneralCommandType.DISPLAY_MESSAGE, GeneralCommandType.SEND_STRING))
+		subscribeGeneralCommand(GeneralCommandType.DISPLAY_MESSAGE)
 			.onEach { message ->
 				val header by message
 				val text by message
-				val string by message
 
-				onDisplayMessage(header, text ?: string)
+				onDisplayMessage(header, text)
+			}
+			.launchIn(coroutineScope)
+
+		// Jellyfin-TV-Client: Text vom Handy öffnet die Suche (statt nur eine Meldung zu zeigen)
+		subscribeGeneralCommand(GeneralCommandType.SEND_STRING)
+			.onEach { message ->
+				val string by message
+				val query = string
+
+				if (!query.isNullOrBlank()) RemoteNavigation.search(navigationRepository, query)
+			}
+			.launchIn(coroutineScope)
+
+		// Jellyfin-TV-Client: Steuerkreuz, OK, Zurück, Menü
+		subscribeGeneralCommands(RemoteNavigation.keyCommands.keys)
+			.onEach { message ->
+				val keyCode = RemoteNavigation.keyCommands[message.data?.name] ?: return@onEach
+				RemoteNavigation.sendKey(keyCode)
+			}
+			.launchIn(coroutineScope)
+
+		// Jellyfin-TV-Client: Startseite, Suche, Einstellungen, TV-Programm
+		subscribeGeneralCommands(RemoteNavigation.navigationCommands)
+			.onEach { message ->
+				val command = message.data?.name ?: return@onEach
+				RemoteNavigation.navigate(context, navigationRepository, command)
 			}
 			.launchIn(coroutineScope)
 	}

@@ -1,5 +1,11 @@
 # Änderungen – Jellyfin TV (Jellyfin-TV-Client)
 
+## 1.1.0 – 2026-10-16
+
+### Neu
+
+- **Fernsteuerung per Handy** (z. B. Jellyfin Remote): Steuerkreuz, OK, Zurück, Bildschirmmenü, Seite hoch/runter, Kanal hoch/runter, Startseite, Suche, Einstellungen und TV-Programm. Text vom Handy öffnet die Suche mit diesem Begriff.
+
 ## 1.0.0 – 2026-10-16
 
 Basis: offizielle App v0.19.10
