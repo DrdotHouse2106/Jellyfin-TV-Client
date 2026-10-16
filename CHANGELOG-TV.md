@@ -1,10 +1,10 @@
-# Änderungen – Heimkino TV (Jellyfin-TV-Client)
+# Änderungen – Quallenkino (Jellyfin-TV-Client)
 
 ## 1.2.0 – 2026-10-16
 
 ### Neu
 
-- **Neuer Name „Heimkino TV“** mit eigenem Symbol, TV-Banner und Logo (Paket-ID bleibt `de.drdothouse.jellyfintv`, Updates funktionieren weiter). In Jellyfin erscheint die App als Client „Heimkino TV“.
+- **Neuer Name „Quallenkino“** mit eigenem Symbol, TV-Banner und Logo (Paket-ID bleibt `de.drdothouse.jellyfintv`, Updates funktionieren weiter). In Jellyfin erscheint die App als Client „Quallenkino“.
 - Zeile **„Apps“**: installierte Apps des Fernsehers direkt starten.
 - Zeile **„Gerät“**: WLAN, Bluetooth & Fernbedienungen, Bild, Ton, alle Einstellungen.
 - **Jellyfin Remote** kann Apps starten, Geräte-Einstellungen und Bereiche der App öffnen (`SendString` mit `tvclient:…`); die App meldet ihre App-Liste dafür an den Server.

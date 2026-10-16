@@ -1,4 +1,4 @@
-# Heimkino TV – für Jellyfin (Jellyfin-TV-Client)
+# Quallenkino – für Jellyfin (Jellyfin-TV-Client)
 
 Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** ([jellyfin/jellyfin-androidtv](https://github.com/jellyfin/jellyfin-androidtv)). Sie zeigt auf dem Fernseher zusätzlich die persönlichen Empfehlungen des Plugins [Lokale Empfehlungen](https://github.com/DrdotHouse2106/Lokal-Vorschlag-Jellyfin):
 
@@ -22,20 +22,20 @@ Ohne Plugin funktioniert die App ganz normal, nur ohne die Empfehlungs-Zeilen.
 
 ## Installation
 
-Die App heißt auf dem Gerät **„Heimkino TV“** (eigenes Symbol, eigenes Logo) und hat die eigene Paket-ID `de.drdothouse.jellyfintv`. Sie kann daher **neben** der offiziellen Jellyfin-App installiert sein. In Jellyfin (Dashboard, Jellyfin Remote) erscheint sie als Client „Heimkino TV“.
+Die App heißt auf dem Gerät **„Quallenkino“** (eigenes Symbol, eigenes Logo) und hat die eigene Paket-ID `de.drdothouse.jellyfintv`. Sie kann daher **neben** der offiziellen Jellyfin-App installiert sein. In Jellyfin (Dashboard, Jellyfin Remote) erscheint sie als Client „Quallenkino“.
 
-> Name: Für einen Store-Eintrag „Heimkino TV – für Jellyfin“. Die Bezeichnung „Jellyfin“ wird nur beschreibend verwendet; die App ist kein offizielles Jellyfin-Produkt.
+> Name: Für einen Store-Eintrag „Quallenkino – für Jellyfin“. Die Bezeichnung „Jellyfin“ wird nur beschreibend verwendet; die App ist kein offizielles Jellyfin-Produkt.
 
 ### Fire TV
 
 1. Einstellungen → Mein Fire TV → Entwickleroptionen → **Apps unbekannter Herkunft** für die App „Downloader“ erlauben (Entwickleroptionen erscheinen nach 7× Klick auf Einstellungen → Mein Fire TV → Info → Gerätename).
 2. App **Downloader** aus dem Amazon-Appstore installieren.
-3. In Downloader die Adresse der APK aus den [Releases](https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases) eingeben (`heimkino-tv-v…-release.apk`) und installieren.
-4. „Heimkino TV“ öffnen und mit dem eigenen Jellyfin-Konto anmelden.
+3. In Downloader die Adresse der APK aus den [Releases](https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases) eingeben (`quallenkino-v…-release.apk`) und installieren.
+4. „Quallenkino“ öffnen und mit dem eigenen Jellyfin-Konto anmelden.
 
 ### Android TV / Google TV
 
-Wie oben über „Downloader“ (Play Store) oder per `adb install heimkino-tv-v…-release.apk`.
+Wie oben über „Downloader“ (Play Store) oder per `adb install quallenkino-v…-release.apk`.
 
 ### Updates
 
@@ -51,7 +51,7 @@ Es gibt keine automatischen Store-Updates. Für ein Update die neue APK genauso 
 
 ## Bedienung per Handy
 
-Die App lässt sich komplett über Jellyfin fernsteuern, z. B. mit **[Jellyfin Remote](https://github.com/DrdotHouse2106/Jellyfin-Remote)** – ohne Einrichtung auf dem Stick. Einfach in Jellyfin Remote das Gerät „Heimkino TV“ wählen.
+Die App lässt sich komplett über Jellyfin fernsteuern, z. B. mit **[Jellyfin Remote](https://github.com/DrdotHouse2106/Jellyfin-Remote)** – ohne Einrichtung auf dem Stick. Einfach in Jellyfin Remote das Gerät „Quallenkino“ wählen.
 
 | Befehl aus Jellyfin Remote | Wirkung in der App |
 |---|---|
@@ -64,8 +64,8 @@ Die App lässt sich komplett über Jellyfin fernsteuern, z. B. mit **[Jellyfin R
 | Play/Pause, Spulen, Stopp, Lautstärke, Stumm | wie in der offiziellen App |
 
 Hinweise:
-- Die Befehle wirken, solange „Heimkino TV“ auf dem Fernseher im Vordergrund ist. Startet man darüber eine andere App (z. B. Netflix), wird diese mit der normalen Fernbedienung bedient.
-- Jellyfin Remote zeigt für „Heimkino TV“ zusätzlich Knöpfe für die Bereiche der App (Bibliotheken, Live-TV, TV-Programm, Aufnahmen, Suche, Einstellungen), die installierten Apps des Fernsehers und dessen Einstellungen (WLAN, Bluetooth, Bild, Ton).
+- Die Befehle wirken, solange „Quallenkino“ auf dem Fernseher im Vordergrund ist. Startet man darüber eine andere App (z. B. Netflix), wird diese mit der normalen Fernbedienung bedient.
+- Jellyfin Remote zeigt für „Quallenkino“ zusätzlich Knöpfe für die Bereiche der App (Bibliotheken, Live-TV, TV-Programm, Aufnahmen, Suche, Einstellungen), die installierten Apps des Fernsehers und dessen Einstellungen (WLAN, Bluetooth, Bild, Ton).
 - Die Fire-TV-App bzw. Google-TV-App auf dem Handy funktioniert natürlich weiterhin.
 
 ## Selbst bauen (GitHub Actions)
@@ -94,7 +94,7 @@ keytool -genkeypair -keystore jellyfin-tv.jks -storetype PKCS12 -alias jellyfint
 base64 -w0 jellyfin-tv.jks > KEYSTORE.txt
 ```
 
-Ohne diese Secrets baut der Workflow nur eine Debug-APK („Heimkino TV Debug“), deren Signatur sich bei jedem Lauf ändert. **Den Keystore niemals ins Repository hochladen.**
+Ohne diese Secrets baut der Workflow nur eine Debug-APK („Quallenkino Debug“), deren Signatur sich bei jedem Lauf ändert. **Den Keystore niemals ins Repository hochladen.**
 
 ## Update auf eine neue Version der offiziellen App
 
@@ -118,7 +118,7 @@ Die eigenen Änderungen sind bewusst klein gehalten:
 | `preference/UserPreferences.kt`, `ui/preference/screen/HomePreferencesScreen.kt` | Einstellung „Empfehlungen automatisch anzeigen“ |
 | neu: `LocalRecommendationsHelper.kt`, `HomeFragmentLocalRecommendationsRow.kt`, `GetLocalRecommendationsRequest.kt`, `strings_localrecs.xml` | Abfrage, Zeile, Texte (de/en) |
 | neu: `.github/workflows/tv-client-build.yaml`, `tv-client-version.txt` | Build |
-| `di/AppModule.kt`, neu: `src/tvclient/res` | Name „Heimkino TV“, Symbol, Banner, Logo |
+| `di/AppModule.kt`, neu: `src/tvclient/res` | Name „Quallenkino“, Symbol, Banner, Logo |
 | `data/eventhandling/SocketHandler.kt`, neu: `RemoteNavigation.kt`, `tvclient/*` | Fernsteuerung, Zeilen „Apps“ und „Gerät“ |
 
 ## Apps und Gerät

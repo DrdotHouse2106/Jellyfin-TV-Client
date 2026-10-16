@@ -78,7 +78,7 @@ val appModule = module {
 			// Add client info
 			val clientName = buildString {
 				// Jellyfin-TV-Client: eigener Name, z. B. in Jellyfin Remote und im Dashboard sichtbar
-				append("Heimkino TV")
+				append("Quallenkino")
 				if (BuildConfig.DEBUG) append(" (debug)")
 			}
 			clientInfo = ClientInfo(clientName, BuildConfig.VERSION_NAME)

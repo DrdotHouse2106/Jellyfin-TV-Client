@@ -8,7 +8,7 @@ plugins {
 
 // Jellyfin-TV-Client
 val TV_CLIENT_APPLICATION_ID = "de.drdothouse.jellyfintv"
-val TV_CLIENT_APP_NAME = "Heimkino TV"
+val TV_CLIENT_APP_NAME = "Quallenkino"
 
 android {
 	namespace = "org.jellyfin.androidtv"
@@ -105,7 +105,7 @@ android {
 	}
 }
 
-base.archivesName.set("heimkino-tv-v${project.getVersionName()}")
+base.archivesName.set("quallenkino-v${project.getVersionName()}")
 
 tasks.register("versionTxt") {
 	val path = layout.buildDirectory.asFile.get().resolve("version.txt")
