@@ -1,6 +1,7 @@
 package org.jellyfin.androidtv.ui.preference.screen
 
 import org.jellyfin.androidtv.R
+import org.jellyfin.androidtv.tvclient.PersonalScreensaver
 import org.jellyfin.androidtv.preference.UserPreferences
 import org.jellyfin.androidtv.preference.constant.AppTheme
 import org.jellyfin.androidtv.preference.constant.ClockBehavior
@@ -73,6 +74,13 @@ class CustomizationPreferencesScreen : OptionsFragment() {
 
 		category {
 			setTitle(R.string.pref_screensaver)
+
+			// Jellyfin-TV-Client: persönliche Titel statt Zufall
+			checkbox {
+				setTitle(R.string.tvclient_personal_screensaver)
+				setContent(R.string.tvclient_personal_screensaver_description)
+				bind(userPreferences, PersonalScreensaver.enabledPreference)
+			}
 
 			checkbox {
 				setTitle(R.string.pref_screensaver_inapp_enabled)

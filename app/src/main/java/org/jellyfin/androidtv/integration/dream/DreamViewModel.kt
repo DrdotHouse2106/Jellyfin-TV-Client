@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 import org.jellyfin.androidtv.integration.dream.model.DreamContent
 import org.jellyfin.androidtv.preference.UserPreferences
+import org.jellyfin.androidtv.tvclient.PersonalScreensaver
 import org.jellyfin.androidtv.util.apiclient.getUrl
 import org.jellyfin.androidtv.util.apiclient.itemBackdropImages
 import org.jellyfin.androidtv.util.apiclient.itemImages
@@ -99,7 +100,10 @@ class DreamViewModel(
 		errorDelay: Duration,
 	): Flow<DreamContent.LibraryShowcase?> = flow {
 		while (true) {
-			val items = try {
+			// Jellyfin-TV-Client: zuerst persönliche Titel (Empfehlungen, angefangene Filme), sonst Zufall
+			val personal = if (userPreferences[PersonalScreensaver.enabledPreference]) PersonalScreensaver.items(api) else emptyList()
+
+			val items = if (personal.isNotEmpty()) personal else try {
 				withContext(Dispatchers.IO) {
 					val response by api.itemsApi.getItems(
 						includeItemTypes = listOf(BaseItemKind.MOVIE, BaseItemKind.SERIES),

@@ -40,4 +40,6 @@
     <string name="tvclient_trailer_preview">Trailer preview</string>
     <string name="tvclient_trailer_preview_description">Plays the trailer at the top after a few seconds on a title (only trailers stored on the server)</string>
     <string name="tvclient_trailer_sound">Trailer preview with sound</string>
+    <string name="tvclient_personal_screensaver">Personal screensaver</string>
+    <string name="tvclient_personal_screensaver_description">Shows your recommendations and started movies instead of random titles</string>
 </resources>
