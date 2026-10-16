@@ -7,7 +7,7 @@ Screenshots (1920×1080, mind. 3) müssen vom Fire TV kommen.
 
 | Feld | Wert |
 |---|---|
-| App title | Quallenkino – für Jellyfin |
+| App title | Quallenkino für Jellyfin (Amazon lehnt den Gedankenstrich „–“ ab; falls auch „ü“ abgelehnt wird: Quallenkino for Jellyfin) |
 | App SKU | de.drdothouse.jellyfintv |
 | Kategorie | Unterhaltung / Entertainment (bzw. „Video“, falls angeboten) |
 | Support-Website | https://github.com/DrdotHouse2106/Jellyfin-TV-Client |
