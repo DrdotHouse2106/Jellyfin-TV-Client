@@ -23,11 +23,12 @@ enum class HomeRow(
 	RECOMMENDED_LIVE_TV("localrecs_livetv", R.string.lbl_localrecs_livetv, true, R.string.tvclient_home_requires_plugin),
 	LIVE_TV("livetv", R.string.home_section_livetv, true, R.string.tvclient_home_livetv_description),
 	LATEST_MEDIA("latest", R.string.home_section_latest_media, true),
-	LIBRARIES("libraries", R.string.home_section_library, true),
+	WEB_SECTIONS("web_sections", R.string.tvclient_home_web_sections, true, R.string.tvclient_home_web_sections_description),
 	RESUME_AUDIO("resume_audio", R.string.home_section_resume_audio, false),
 	ACTIVE_RECORDINGS("recordings", R.string.home_section_active_recordings, false),
 	APPS("apps", R.string.tvclient_row_apps, true, R.string.tvclient_home_apps_description),
 	DEVICE("device", R.string.tvclient_row_device, true, R.string.tvclient_home_device_description),
+	LIBRARIES("libraries", R.string.home_section_library, true),
 	;
 
 	val preference = booleanPreference("pref_tvclient_home_$key", enabledByDefault)

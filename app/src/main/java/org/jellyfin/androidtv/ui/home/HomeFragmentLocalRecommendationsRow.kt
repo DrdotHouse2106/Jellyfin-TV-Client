@@ -5,7 +5,7 @@ import androidx.leanback.widget.HeaderItem
 import androidx.leanback.widget.ListRow
 import androidx.leanback.widget.Row
 import org.jellyfin.androidtv.constant.ChangeTriggerType
-import org.jellyfin.androidtv.data.querying.GetLocalRecommendationsRequest
+import org.jellyfin.androidtv.data.querying.ExternalItemsRequest
 import org.jellyfin.androidtv.preference.UserPreferences
 import org.jellyfin.androidtv.ui.itemhandling.ItemRowAdapter
 import org.jellyfin.androidtv.ui.presentation.CardPresenter
@@ -20,7 +20,7 @@ import org.koin.core.component.inject
  */
 class HomeFragmentLocalRecommendationsRow(
 	private val title: String,
-	private val query: GetLocalRecommendationsRequest,
+	private val query: ExternalItemsRequest,
 ) : HomeFragmentRow, KoinComponent {
 	private val userPreferences by inject<UserPreferences>()
 

@@ -22,7 +22,7 @@ import org.jellyfin.androidtv.data.model.FilterOptions;
 import org.jellyfin.androidtv.data.querying.GetAdditionalPartsRequest;
 import org.jellyfin.androidtv.data.querying.GetSeriesTimersRequest;
 import org.jellyfin.androidtv.data.querying.GetSpecialsRequest;
-import org.jellyfin.androidtv.data.querying.GetLocalRecommendationsRequest;
+import org.jellyfin.androidtv.data.querying.ExternalItemsRequest;
 import org.jellyfin.androidtv.data.querying.GetTrailersRequest;
 import org.jellyfin.androidtv.data.querying.GetUserViewsRequest;
 import org.jellyfin.androidtv.data.repository.UserViewsRepository;
@@ -99,7 +99,7 @@ public class ItemRowAdapter extends MutableObjectAdapter<Object> {
     private final Object currentlyRetrievingSemaphore = new Object();
     private boolean currentlyRetrieving = false;
 
-    private GetLocalRecommendationsRequest mLocalRecommendationsQuery;
+    private ExternalItemsRequest mLocalRecommendationsQuery;
     private boolean preferParentThumb = false;
     private boolean staticHeight = false;
 
@@ -254,7 +254,7 @@ public class ItemRowAdapter extends MutableObjectAdapter<Object> {
         queryType = QueryType.StaticItems;
     }
 
-    public ItemRowAdapter(Context context, GetLocalRecommendationsRequest query, boolean preferParentThumb, Presenter presenter, MutableObjectAdapter<Row> parent) {
+    public ItemRowAdapter(Context context, ExternalItemsRequest query, boolean preferParentThumb, Presenter presenter, MutableObjectAdapter<Row> parent) {
         super(presenter);
         this.context = context;
         mParent = parent;

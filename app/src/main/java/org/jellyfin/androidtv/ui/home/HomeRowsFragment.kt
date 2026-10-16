@@ -51,6 +51,7 @@ import org.jellyfin.androidtv.tvclient.DeviceAppsPublisher
 import org.jellyfin.androidtv.tvclient.HomeFragmentAppsRow
 import org.jellyfin.androidtv.tvclient.HomeFragmentDeviceSettingsRow
 import org.jellyfin.androidtv.tvclient.HomeRow
+import org.jellyfin.androidtv.tvclient.HomeScreenSections
 import org.jellyfin.androidtv.tvclient.onDeviceCardClicked
 import org.jellyfin.androidtv.util.KeyProcessor
 import org.jellyfin.playback.core.PlaybackManager
@@ -124,6 +125,7 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 
 				HomeRow.LATEST_MEDIA -> rows.add(helper.loadRecentlyAdded(userViewsRepository.views.first()))
 				HomeRow.LIBRARIES -> rows.add(HomeFragmentViewsRow(small = false))
+				HomeRow.WEB_SECTIONS -> rows.addAll(HomeScreenSections.loadRows(api, currentUser.id))
 				HomeRow.RESUME_AUDIO -> rows.add(helper.loadResumeAudio())
 				HomeRow.ACTIVE_RECORDINGS -> if (liveTvAccess) rows.add(helper.loadLatestLiveTvRecordings())
 				HomeRow.APPS -> rows.add(HomeFragmentAppsRow())

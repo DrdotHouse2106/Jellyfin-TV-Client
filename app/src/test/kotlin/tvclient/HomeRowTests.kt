@@ -15,9 +15,10 @@ class HomeRowTests : FunSpec({
 			HomeRow.RECOMMENDED_LIVE_TV,
 			HomeRow.LIVE_TV,
 			HomeRow.LATEST_MEDIA,
-			HomeRow.LIBRARIES,
+			HomeRow.WEB_SECTIONS,
 			HomeRow.APPS,
 			HomeRow.DEVICE,
+			HomeRow.LIBRARIES,
 		)
 	}
 
@@ -29,6 +30,13 @@ class HomeRowTests : FunSpec({
 
 	test("Jede Zeile hat einen eigenen Schlüssel") {
 		HomeRow.entries.map { it.preference.key }.distinct().size shouldBe HomeRow.entries.size
+	}
+
+	test("Abschnitte, die Quallenkino schon hat, werden aus dem Web nicht doppelt gezeigt") {
+		HomeScreenSections.isShown(HomeScreenSections.Section(section = "NextUp")) shouldBe false
+		HomeScreenSections.isShown(HomeScreenSections.Section(section = "LocalRecsMovies")) shouldBe false
+		HomeScreenSections.isShown(HomeScreenSections.Section(section = "TopTen")) shouldBe true
+		HomeScreenSections.isShown(HomeScreenSections.Section(section = null)) shouldBe false
 	}
 })
 

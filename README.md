@@ -57,15 +57,18 @@ Die Zeilen der Startseite stehen in einer festen Reihenfolge und lassen sich unt
 5. Heute im TV für dich * (nur mit Live-TV-Zugriff)
 6. Live-TV (TV-Programm, Aufnahmen, Läuft gerade)
 7. Kürzlich hinzugefügt
-8. Meine Medien (Bibliotheken)
+8. Weitere Abschnitte aus dem Web ** (z. B. Genres, Top 10, „Weil du … gesehen hast“, Sammlungen)
 9. Weiterhören (anfangs aus)
 10. Aktive Aufnahmen (anfangs aus)
 11. Apps
 12. Gerät
+13. Meine Medien (Bibliotheken)
 
 \* benötigt das Server-Plugin „Local Recommendations“ ab 12.5.0; ohne Plugin bleiben die Zeilen unsichtbar. Gesehene Titel verschwinden nach dem Anschauen.
 
-Die Startseiten-Einstellungen der Jellyfin-Weboberfläche („Startseitenabschnitte“) gelten für Quallenkino nicht mehr.
+\*\* benötigt das Plugin „Home Screen Sections“; es werden die Abschnitte gezeigt, die der Benutzer in der Weboberfläche eingeschaltet hat (in dessen Reihenfolge). Abschnitte, die Quallenkino schon selbst zeigt (Weiterschauen, Als Nächstes, Meine Medien, Live-TV, Empfehlungen), werden übersprungen.
+
+Die normalen Startseiten-Einstellungen der Jellyfin-Weboberfläche („Startseitenabschnitte“) gelten für Quallenkino nicht mehr.
 
 ## Bedienung per Handy
 
