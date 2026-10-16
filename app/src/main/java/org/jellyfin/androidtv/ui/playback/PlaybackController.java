@@ -637,7 +637,9 @@ public class PlaybackController implements PlaybackControllerNotifiable {
 
         // Jellyfin-TV-Client: keine Untertitel bei Ton in der eigenen Sprache, gemerkte Wahl pro Serie
         Integer serverSubtitleIndex = mCurrentOptions.getSubtitleStreamIndex();
-        Integer chosenSubtitleIndex = TvClientSubtitles.chooseSubtitleIndex(item, response.getMediaSource(), serverSubtitleIndex, mDefaultAudioIndex);
+        Integer chosenSubtitleIndex = TvClientSubtitles.chooseSubtitleIndex(item, response.getMediaSource(), serverSubtitleIndex,
+            // dieselbe Tonspur wie beim Start der Wiedergabe (Server-Standard vor eigener Wahl)
+            response.getMediaSource().getDefaultAudioStreamIndex() != null ? response.getMediaSource().getDefaultAudioStreamIndex() : mDefaultAudioIndex);
         if (chosenSubtitleIndex != null && !chosenSubtitleIndex.equals(serverSubtitleIndex)) {
             if (burningSubs && TvClientSubtitles.allowRestart(item)) {
                 // Eingebrannte Untertitel lassen sich nur durch Neustart des Streams ändern

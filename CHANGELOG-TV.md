@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.7.3 – 2026-10-16
+
+- Untertitel: Sprachcodes wie „ger“, „deu“ und „de“ werden jetzt als dieselbe Sprache erkannt. Haben Ton und Untertitel dieselbe Sprache (z. B. deutsche Synchro + deutsche Untertitel), startet der Titel ohne Untertitel – auch bei englisch eingestelltem Gerät. Zusätzlich zählt die bevorzugte Tonsprache aus den Jellyfin-Benutzereinstellungen als eigene Sprache.
+
 ## 1.7.2 – 2026-10-16
 
 - Navigation links: „Links“ wechselt erst vom ersten Titel einer Zeile in das Seitenmenü, sonst geht es in der Zeile normal nach links.

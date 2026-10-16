@@ -1,6 +1,7 @@
 package org.jellyfin.androidtv.tvclient
 
 import android.content.Context
+import org.jellyfin.androidtv.auth.repository.UserRepository
 import org.jellyfin.androidtv.preference.UserPreferences
 import org.jellyfin.preference.booleanPreference
 import org.jellyfin.sdk.model.api.BaseItemDto
@@ -30,53 +31,97 @@ object TvClientSubtitles {
 	private fun prefs() = KoinJavaComponent.get<Context>(Context::class.java)
 		.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
-	/** Sprachcodes, die als „eigene Sprache“ gelten (z. B. de, deu, ger). */
-	fun ownLanguages(locale: Locale = Locale.getDefault()): Set<String> = buildSet {
-		add(locale.language.lowercase())
-		runCatching { add(locale.isO3Language.lowercase()) }
-		if (locale.language == "de") addAll(listOf("de", "deu", "ger"))
+	/** ISO-639-2/B-Codes (z. B. „ger“), die Java nicht kennt, auf ISO-639-2/T abbilden. */
+	private val bibliographic = mapOf(
+		"ger" to "deu", "fre" to "fra", "chi" to "zho", "dut" to "nld", "cze" to "ces", "gre" to "ell",
+		"per" to "fas", "rum" to "ron", "slo" to "slk", "alb" to "sqi", "arm" to "hye", "baq" to "eus",
+		"bur" to "mya", "geo" to "kat", "ice" to "isl", "mac" to "mkd", "mao" to "mri", "may" to "msa",
+		"tib" to "bod", "wel" to "cym",
+	)
+
+	private val iso3ToIso2 by lazy {
+		Locale.getISOLanguages().associateBy { runCatching { Locale.forLanguageTag(it).isO3Language }.getOrDefault(it) }
 	}
+
+	/** Sprachcode vereinheitlichen: „de“, „deu“, „ger“, „German“ → „de“. */
+	fun normalize(language: String?): String? {
+		val code = language?.trim()?.lowercase()?.substringBefore('-')?.substringBefore('_')
+		if (code.isNullOrEmpty() || code == "und" || code == "unknown") return null
+		return when (code.length) {
+			2 -> code
+			3 -> iso3ToIso2[bibliographic[code] ?: code] ?: code
+			else -> Locale.getAvailableLocales()
+				.firstOrNull { it.getDisplayLanguage(Locale.ENGLISH).equals(code, true) || it.displayLanguage.equals(code, true) }
+				?.language ?: code
+		}
+	}
+
+	/** Sprachen, die als „eigene Sprache“ gelten: Gerät, App und Jellyfin-Benutzereinstellung. */
+	fun ownLanguages(): Set<String> = buildSet {
+		add(Locale.getDefault().language)
+		runCatching {
+			val context = KoinJavaComponent.get<Context>(Context::class.java)
+			add(context.resources.configuration.locales[0].language)
+		}
+		runCatching {
+			val user = KoinJavaComponent.get<UserRepository>(UserRepository::class.java).currentUser.value
+			add(user?.configuration?.audioLanguagePreference.orEmpty())
+		}
+	}.mapNotNull { normalize(it) }.toSet()
 
 	/**
 	 * Untertitel für den Start eines Titels. Gibt -1 (aus), einen Stream-Index oder den Vorschlag
 	 * des Servers zurück.
 	 */
 	@JvmStatic
-	fun chooseSubtitleIndex(item: BaseItemDto?, source: MediaSourceInfo?, serverDefault: Int?, audioIndex: Int): Int? {
+	fun chooseSubtitleIndex(item: BaseItemDto?, source: MediaSourceInfo?, serverDefault: Int?, audioIndex: Int?): Int? {
 		if (item == null || source == null || !enabled()) return serverDefault
 		val streams = source.mediaStreams.orEmpty()
 		val subtitles = streams.filter { it.type == MediaStreamType.SUBTITLE }
+		val own = ownLanguages()
 
 		// Für diese Serie gemerkte Wahl
 		val remembered = item.seriesId?.let { prefs().getString(it.toString(), null) }
-		if (remembered == OFF) return forcedIndex(subtitles, ownLanguages()) ?: -1
-		if (remembered != null) {
-			subtitles.firstOrNull { it.language.equals(remembered, ignoreCase = true) && it.isForced != true }
+		if (remembered == OFF) return forcedIndex(subtitles, setOfNotNull(audioLanguage(streams, audioIndex)) + own) ?: -1
+		// Gemerkte Untertitel in der Sprache des Tons ignorieren (deutscher Ton + deutsche Untertitel)
+		if (remembered != null && normalize(remembered) != audioLanguage(streams, audioIndex)) {
+			subtitles.firstOrNull { normalize(it.language) == normalize(remembered) && it.isForced != true }
 				?.let { return it.index }
 		}
 
-		return decide(streams, serverDefault, audioIndex, ownLanguages())
+		val result = decide(streams, serverDefault, audioIndex, own)
+		Timber.i("Untertitel: Ton=%s eigene=%s Server=%s -> %s", audioLanguage(streams, audioIndex), own, serverDefault, result)
+		return result
 	}
 
-	/** Reine Entscheidung (testbar): eigene Tonsprache → keine (nicht erzwungenen) Untertitel. */
-	fun decide(streams: List<MediaStream>, serverDefault: Int?, audioIndex: Int, ownLanguages: Set<String>): Int? {
-		val subtitles = streams.filter { it.type == MediaStreamType.SUBTITLE }
+	private fun audioLanguage(streams: List<MediaStream>, audioIndex: Int?): String? {
 		val audios = streams.filter { it.type == MediaStreamType.AUDIO }
 		val audio = audios.firstOrNull { it.index == audioIndex }
-			?: audios.firstOrNull { it.isDefault }
+			?: audios.firstOrNull { it.isDefault == true }
 			?: audios.firstOrNull()
-		val defaultSubtitle = subtitles.firstOrNull { it.index == serverDefault } ?: return serverDefault
+		return normalize(audio?.language)
+	}
 
-		val audioLanguage = audio?.language?.lowercase()
-		return if (audioLanguage != null && audioLanguage in ownLanguages && defaultSubtitle.isForced != true) {
-			forcedIndex(subtitles, ownLanguages) ?: -1
+	/**
+	 * Reine Entscheidung (testbar): Keine (nicht erzwungenen) Untertitel, wenn der Ton in der eigenen
+	 * Sprache läuft oder die Untertitel dieselbe Sprache wie der Ton haben.
+	 */
+	fun decide(streams: List<MediaStream>, serverDefault: Int?, audioIndex: Int?, ownLanguages: Set<String>): Int? {
+		val subtitles = streams.filter { it.type == MediaStreamType.SUBTITLE }
+		val defaultSubtitle = subtitles.firstOrNull { it.index == serverDefault } ?: return serverDefault
+		if (defaultSubtitle.isForced == true) return serverDefault
+
+		val audioLanguage = audioLanguage(streams, audioIndex) ?: return serverDefault
+		val subtitleLanguage = normalize(defaultSubtitle.language)
+		return if (audioLanguage in ownLanguages || audioLanguage == subtitleLanguage) {
+			forcedIndex(subtitles, setOf(audioLanguage)) ?: -1
 		} else {
 			serverDefault
 		}
 	}
 
-	private fun forcedIndex(subtitles: List<MediaStream>, ownLanguages: Set<String>): Int? =
-		subtitles.firstOrNull { it.isForced == true && it.language?.lowercase() in ownLanguages }?.index
+	private fun forcedIndex(subtitles: List<MediaStream>, languages: Set<String>): Int? =
+		subtitles.firstOrNull { it.isForced == true && normalize(it.language) in languages }?.index
 
 	private var lastRestartedItem: java.util.UUID? = null
 
