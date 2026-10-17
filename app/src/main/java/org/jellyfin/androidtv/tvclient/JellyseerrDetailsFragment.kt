@@ -99,6 +99,9 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 	var localTrailerUrl by remember { mutableStateOf<String?>(null) }
 	// Automatische Trailer-Vorschau oben rechts; aus, sobald das große Fenster oder ein Dialog aufgeht
 	var previewOn by remember { mutableStateOf(true) }
+	val scrollState = rememberScrollState()
+	var justRequested by remember { mutableStateOf(false) }
+	val requestedFocus = remember { FocusRequester() }
 	val playbackLauncher = koinInject<PlaybackLauncher>()
 	var error by remember { mutableStateOf(false) }
 	val primaryFocus = remember { FocusRequester() }
@@ -136,7 +139,12 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 			runCatching { Jellyseerr.request(info.media, userRepository.currentUser.value?.id, seasons) }
 				.onSuccess {
 					Toast.makeText(context, context.getString(R.string.tvclient_jellyseerr_requested, info.media.title), Toast.LENGTH_LONG).show()
-					details = info.copy(media = info.media.copy(status = Jellyseerr.Status.REQUESTED))
+					justRequested = true
+					details = info.copy(
+						media = info.media.copy(status = Jellyseerr.Status.REQUESTED),
+						seasons = info.seasons.map { if (seasons == null || it.number in seasons) it.copy(status = Jellyseerr.Status.REQUESTED) else it },
+					)
+					scope.launch { delay(50); runCatching { requestedFocus.requestFocus() } }
 				}
 				.onFailure {
 					Timber.w(it, "Jellyseerr-Anfrage fehlgeschlagen")
@@ -198,13 +206,14 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 			localUrl = localTrailerUrl,
 			youtubeKey = info.trailerKey.takeIf { localTrailerUrl == null },
 			background = Color(0xFF101010),
-			enabled = previewOn,
+			// Beim Herunterscrollen ausblenden, damit nichts unter den Player rutscht
+			enabled = previewOn && scrollState.value < 40,
 		)
 
 		Column(
 			Modifier
 				.fillMaxSize()
-				.verticalScroll(rememberScrollState())
+				.verticalScroll(scrollState)
 				.padding(horizontal = 48.dp, vertical = 27.dp),
 		) {
 			Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
@@ -217,9 +226,11 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 
 				// Platz rechts lassen für den Trailer oben rechts
 				Column(Modifier.fillMaxWidth(0.62f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-					StatusBadge(info.media.status)
 					Text(info.media.title, fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.White)
 					info.originalTitle?.let { Text(it, color = Color(0xFFB3B3B3)) }
+					// Status in der Eckdaten-Zeile, damit sich die Höhe nach einer Anfrage nicht ändert
+					Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+					StatusBadge(info.media.status)
 					Text(
 						listOfNotNull(
 							info.media.year,
@@ -230,6 +241,7 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 						).joinToString("  ·  "),
 						color = Color(0xFFD0D0D0),
 					)
+					}
 					if (info.genres.isNotEmpty()) Text(info.genres.joinToString(", "), color = Color(0xFFB3B3B3))
 					if (info.creators.isNotEmpty()) Text(
 						stringResource(
@@ -251,6 +263,12 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 						}
 						val canRequest = info.media.status == Jellyseerr.Status.NONE ||
 							(info.media.type == "tv" && info.seasons.any { it.status == Jellyseerr.Status.NONE })
+						// Nach der Anfrage bleibt an derselben Stelle ein Knopf „Angefragt“ (Fokus springt nicht)
+						if (!canRequest && justRequested) {
+							Button(onClick = {
+								Toast.makeText(context, R.string.tvclient_jellyseerr_already, Toast.LENGTH_SHORT).show()
+							}, modifier = Modifier.focusRequester(requestedFocus)) { Text(stringResource(R.string.tvclient_jellyseerr_pending)) }
+						}
 						if (canRequest) {
 							Button(
 								onClick = { request(info, if (info.media.type == "tv") info.seasons.filter { it.status == Jellyseerr.Status.NONE }.map { it.number }.ifEmpty { null } else null) },
@@ -285,7 +303,7 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 
 			Spacer(Modifier.height(20.dp))
 			// Fokussierbar, damit man mit „Runter“ weiterblättern kann
-			info.media.overview?.let { Text(it, color = Color(0xFFE0E0E0), fontSize = 16.sp, modifier = Modifier.fillMaxWidth(0.75f).focusFrame()) }
+			info.media.overview?.let { Text(it, color = Color(0xFFE0E0E0), fontSize = 16.sp, modifier = Modifier.fillMaxWidth(0.55f).focusFrame()) }
 
 			// Staffeln
 			if (info.seasons.isNotEmpty()) {
@@ -333,7 +351,10 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 				Spacer(Modifier.height(20.dp))
 				Text(stringResource(R.string.tvclient_jellyseerr_related), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
 				Spacer(Modifier.height(8.dp))
-				LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+				LazyRow(
+					horizontalArrangement = Arrangement.spacedBy(16.dp),
+					contentPadding = androidx.compose.foundation.layout.PaddingValues(12.dp),
+				) {
 					items(related.take(20), key = { "${it.type}-${it.id}" }) { media ->
 						MediaCard(media, Modifier.width(120.dp)) {
 							navigationRepository.navigate(Destinations.jellyseerrDetails(media.type, media.id))

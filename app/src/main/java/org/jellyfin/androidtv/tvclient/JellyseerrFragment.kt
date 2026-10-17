@@ -183,6 +183,8 @@ private fun JellyseerrScreen() {
 				columns = GridCells.Adaptive(130.dp),
 				horizontalArrangement = Arrangement.spacedBy(16.dp),
 				verticalArrangement = Arrangement.spacedBy(16.dp),
+				// Platz für die vergrößerte Karte, damit sie am Rand nicht abgeschnitten wird
+				contentPadding = androidx.compose.foundation.layout.PaddingValues(12.dp),
 				modifier = Modifier.fillMaxSize(),
 			) {
 				itemsIndexed(results, key = { _, it -> "${it.type}-${it.id}" }) { index, media ->
@@ -216,14 +218,15 @@ internal fun MediaCard(media: Jellyseerr.Media, modifier: Modifier = Modifier, o
 				.aspectRatio(2f / 3f)
 				.clip(RoundedCornerShape(6.dp))
 				.background(Color(0xFF262626))
-				.border(3.dp, if (focused) Color.White else Color.Transparent, RoundedCornerShape(6.dp))
 		) {
 			if (media.posterUrl != null) {
-				AsyncImage(
+				// Compose-Bild (nicht AndroidView), damit runde Ecken und Fokusrahmen erhalten bleiben
+				coil3.compose.AsyncImage(
+					model = media.posterUrl,
+					contentDescription = media.title,
+					imageLoader = koinInject<coil3.ImageLoader>(),
+					contentScale = androidx.compose.ui.layout.ContentScale.Crop,
 					modifier = Modifier.fillMaxSize(),
-					url = media.posterUrl,
-					aspectRatio = 2f / 3f,
-					scaleType = ImageView.ScaleType.CENTER_CROP,
 				)
 			} else {
 				// Kein Plakat: Titel als Platzhalter
@@ -235,6 +238,8 @@ internal fun MediaCard(media: Jellyseerr.Media, modifier: Modifier = Modifier, o
 				)
 			}
 			StatusBadge(media.status, Modifier.align(Alignment.TopEnd).padding(6.dp))
+			// Fokusrahmen über dem Bild, mit denselben runden Ecken
+			Box(Modifier.fillMaxSize().border(3.dp, if (focused) Color.White else Color.Transparent, RoundedCornerShape(6.dp)))
 		}
 		Spacer(Modifier.padding(top = 6.dp))
 		Text(media.title, maxLines = 1, color = if (focused) Color.White else Color(0xFFB3B3B3))

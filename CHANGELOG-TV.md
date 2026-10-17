@@ -3,6 +3,8 @@
 ## 1.17.1 – 2026-10-17
 
 - Anfragen: Beim Öffnen steht die Auswahl auf dem ersten „Für dich“-Titel statt im Suchfeld – die Tastatur geht erst auf, wenn man mit „Hoch“ ins Suchfeld wechselt.
+- Anfragen: Ausgewählte Karten werden oben nicht mehr abgeschnitten und behalten runde Ecken samt Rahmen (auch in „Das könnte dir auch gefallen“).
+- Anfragen – Detailseite: Nach dem Anfragen verrutscht die Seite nicht mehr. Der Status steht in der Eckdaten-Zeile, an der Stelle des Knopfs steht „Angefragt“. Die Inhaltsangabe lässt rechts Platz für den Trailer; beim Herunterscrollen wird der YouTube-Trailer ausgeblendet, damit nichts darunter rutscht.
 
 ## 1.17.0 – 2026-10-17
 
