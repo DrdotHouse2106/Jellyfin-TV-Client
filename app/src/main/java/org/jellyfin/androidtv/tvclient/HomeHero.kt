@@ -226,6 +226,8 @@ private fun HeroContent(item: BaseItemDto) {
 
 /** Beschreibung ohne Markdown-Links („[Name](http://…)“ → „Name“), HTML-Reste und Zeilenumbrüche. */
 fun cleanOverview(text: String): String = text
+	// wörtliche „\n“ aus manchen Metadaten-Quellen
+	.replace("\\n", " ")
 	.replace(Regex("\\[([^\\]]*)]\\([^)]*\\)"), "$1")
 	.replace(Regex("<[^>]+>"), "")
 	.replace(Regex("\\s+"), " ")

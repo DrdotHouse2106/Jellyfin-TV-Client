@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.8.4 – 2026-10-17
+
+- Startseite: Die Zeile „Live-TV“ mit den Knöpfen Aktuelles/Aufnahmen/Zeitplan/Serien ist standardmäßig aus (wieder einschaltbar unter Einstellungen → Startseite). Das TV-Programm bleibt über das Symbol links erreichbar.
+- Beschreibungen: wörtliche „\n“ werden nicht mehr angezeigt.
+
 ## 1.8.3 – 2026-10-17
 
 - Profilauswahl: Beim Auswählen eines Profils erscheint „Anmeldung als … “, solange auf den Server gewartet wird.
