@@ -45,9 +45,13 @@ fun DreamContentLibraryShowcase(
 		DreamContentVignette()
 	}
 
-	// Jellyfin-TV-Client: Trailer stumm über dem Bild (blendet sich erst mit dem ersten Bild ein)
+	// Jellyfin-TV-Client: Trailer über dem Bild (Ton wie in den Einstellungen) (blendet sich erst mit dem ersten Bild ein)
 	content.trailerUrl?.let { url ->
-		TrailerVideo(url = url, withSound = false, modifier = Modifier.fillMaxSize())
+		TrailerVideo(
+			url = url,
+			withSound = org.koin.java.KoinJavaComponent.get<org.jellyfin.androidtv.preference.UserPreferences>(org.jellyfin.androidtv.preference.UserPreferences::class.java)[org.jellyfin.androidtv.tvclient.TrailerPreview.soundPreference],
+			modifier = Modifier.fillMaxSize(),
+		)
 		DreamContentVignette()
 	}
 

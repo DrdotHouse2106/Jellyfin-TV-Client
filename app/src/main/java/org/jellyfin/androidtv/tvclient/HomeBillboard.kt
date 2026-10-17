@@ -25,6 +25,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.flow.first
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
@@ -130,15 +136,19 @@ object HomeBillboard {
 		playbackHelper.retrieveAndPlay(item.id, false, context)
 	}
 
-	suspend fun playTrailer(context: Context, api: ApiClient, playbackLauncher: PlaybackLauncher, item: BaseItemDto) {
+	/** Trailer im kleinen Fenster: zuerst der Trailer vom Server, sonst YouTube. */
+	suspend fun playTrailer(context: Context, api: ApiClient, @Suppress("UNUSED_PARAMETER") playbackLauncher: PlaybackLauncher, item: BaseItemDto) {
 		if ((item.localTrailerCount ?: 0) > 0) {
-			val trailers = runCatching {
-				withContext(Dispatchers.IO) { api.userLibraryApi.getLocalTrailers(item.id).content }
-			}.getOrDefault(emptyList())
-			if (trailers.isNotEmpty()) {
-				playbackLauncher.launch(context, trailers, 0)
+			TrailerPreview.streamUrl(api, item)?.let { url ->
+				TrailerWindow.showLocal(context, url)
 				return
 			}
+		}
+
+		val key = item.remoteTrailers.orEmpty().firstNotNullOfOrNull { TrailerWindow.youtubeKey(it.url) }
+		if (key != null) {
+			TrailerWindow.showYoutube(context, key)
+			return
 		}
 
 		val intent = TrailerUtils.getExternalTrailerIntent(context, item)
@@ -180,9 +190,24 @@ fun HomeBillboardButtons(
 		if (current?.id !in items.map { it.id }) HomeHeroState.item.value = items[index % items.size]
 		while (true) {
 			delay(HomeBillboard.rotationInterval)
+			// Läuft der Trailer, erst nach seinem Ende weiterschalten
+			HomeHeroState.trailerPlaying.first { !it }
 			index = (index + 1) % items.size
 			HomeHeroState.item.value = items[index]
 		}
+	}
+
+	// Links/Rechts am Rand der Knöpfe: vorheriger/nächster Vorschlag
+	fun step(delta: Int): Boolean {
+		if (items.size < 2) return false
+		val shown = items.indexOfFirst { it.id == current?.id }.coerceAtLeast(0)
+		index = (shown + delta + items.size) % items.size
+		HomeHeroState.trailerPlaying.value = false
+		HomeHeroState.item.value = items[index]
+		return true
+	}
+	fun Modifier.stepOnKey(key: Key, delta: Int, enabled: () -> Boolean = { true }) = onPreviewKeyEvent { event ->
+		event.type == KeyEventType.KeyDown && event.key == key && enabled() && step(delta)
 	}
 
 	val item = current ?: return
@@ -205,20 +230,23 @@ fun HomeBillboardButtons(
 			text = stringResource(R.string.lbl_play),
 			modifier = buttonFocus
 				.focusRequester(focusRequester)
-				.focusProperties { left = leftFocusRequester },
+				.focusProperties { left = leftFocusRequester }
+				// Links: vorheriger Vorschlag; beim ersten Vorschlag geht es in die Navigation
+				.stepOnKey(Key.DirectionLeft, -1) { items.indexOfFirst { it.id == current?.id } > 0 },
 		) { HomeBillboard.play(context, playbackHelper, item) }
 
 		BillboardButton(
 			icon = R.drawable.ic_help,
 			text = stringResource(R.string.tvclient_more_info),
-			modifier = buttonFocus,
+			// Rechts auf dem letzten Knopf: nächster Vorschlag
+			modifier = if (hasTrailer) buttonFocus else buttonFocus.stepOnKey(Key.DirectionRight, 1),
 		) { navigationRepository.navigate(Destinations.itemDetails(item.id)) }
 
 		if (hasTrailer) {
 			BillboardButton(
 				icon = R.drawable.ic_trailer,
 				text = stringResource(R.string.lbl_trailers),
-				modifier = buttonFocus,
+				modifier = buttonFocus.stepOnKey(Key.DirectionRight, 1),
 			) { scope.launch { HomeBillboard.playTrailer(context, api, playbackLauncher, item) } }
 		}
 

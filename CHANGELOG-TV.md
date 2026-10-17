@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.15.0 – 2026-10-17
+
+- **Trailer im kleinen Fenster:** Der Trailer-Knopf (Banner, Detailseite, Anfragen) öffnet ein Fenster mitten in der App statt einer anderen App. Trailer vom Server (z. B. Trailarr) laufen dort werbefrei; YouTube-Trailer über den offiziellen YouTube-Player (kann Werbung zeigen). „Zurück“ schließt das Fenster. Lässt sich ein Video nicht einbetten oder ist die WebView zu alt, öffnet sich die YouTube-App direkt (ohne Auswahl „Öffnen mit …“).
+- **Trailer mit Ton:** Trailer laufen jetzt standardmäßig mit Ton, bei 75 % der eingestellten Lautstärke (Filme und Serien bleiben bei 100 %). Ausschalten: Einstellungen → Startseite → „Trailer-Vorschau mit Ton“. Gilt auch für das Trailer-Fenster und den Bildschirmschoner.
+- **Banner:** Läuft im Banner ein Trailer, wird nicht mehr nach 9 Sekunden umgeschaltet, sondern erst am Ende des Trailers. Mit „Rechts“ auf dem letzten Knopf kommt sofort der nächste Vorschlag, mit „Links“ auf „Abspielen“ der vorherige (beim ersten Vorschlag geht „Links“ wie bisher in die Navigation).
+
 ## 1.14.2 – 2026-10-17
 
 - Anfragen – Detailseite: „In Jellyfin öffnen“ findet den Titel auch, wenn Jellyseerr eine veraltete ID gespeichert hat (z. B. nach dem Umbenennen eines Ordners) – über Titelsuche und TMDB-ID.

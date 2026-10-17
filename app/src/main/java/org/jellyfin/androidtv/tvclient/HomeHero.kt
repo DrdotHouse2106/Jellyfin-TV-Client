@@ -57,6 +57,9 @@ import kotlin.time.Duration.Companion.microseconds
 object HomeHeroState {
 	/** Ausgewählter Eintrag; wird von den Startseiten-Zeilen gesetzt. */
 	val item = MutableStateFlow<BaseItemDto?>(null)
+
+	/** Läuft gerade eine Trailer-Vorschau? Solange wechselt das Banner nicht automatisch. */
+	val trailerPlaying = MutableStateFlow(false)
 }
 
 /**
@@ -104,6 +107,7 @@ fun HomeHeroBackdrop(modifier: Modifier = Modifier) {
 							url = url,
 							withSound = userPreferences[TrailerPreview.soundPreference],
 							modifier = Modifier.fillMaxSize(),
+							onPlayingChange = { HomeHeroState.trailerPlaying.value = it },
 						)
 					}
 					// Nach links und unten in Schwarz auslaufen lassen

@@ -37,7 +37,11 @@ import kotlin.time.Duration.Companion.seconds
  */
 object TrailerPreview {
 	val enabledPreference = booleanPreference("pref_tvclient_trailer_preview", true)
-	val soundPreference = booleanPreference("pref_tvclient_trailer_sound", false)
+	// Neuer Schlüssel: Trailer laufen jetzt standardmäßig mit Ton (alter Schlüssel „…_sound“ war aus)
+	val soundPreference = booleanPreference("pref_tvclient_trailer_sound_on", true)
+
+	/** Lautstärke von Trailern relativ zur Gerätelautstärke (nicht so laut wie Filme). */
+	const val volume = 0.75f
 
 	/** Wartezeit auf einem Titel, bevor der Trailer startet. */
 	val delay = 3.seconds
@@ -70,6 +74,7 @@ fun TrailerVideo(
 	url: String,
 	withSound: Boolean,
 	modifier: Modifier = Modifier,
+	onPlayingChange: (Boolean) -> Unit = {},
 ) {
 	val context = LocalContext.current
 	val lifecycleOwner = LocalLifecycleOwner.current
@@ -78,7 +83,7 @@ fun TrailerVideo(
 	val player = remember(url) {
 		ExoPlayer.Builder(context).build().apply {
 			setMediaItem(MediaItem.fromUri(url))
-			volume = if (withSound) 1f else 0f
+			volume = if (withSound) TrailerPreview.volume else 0f
 			repeatMode = Player.REPEAT_MODE_OFF
 			playWhenReady = true
 			prepare()
@@ -89,11 +94,15 @@ fun TrailerVideo(
 		val listener = object : Player.Listener {
 			override fun onRenderedFirstFrame() {
 				visible = true
+				onPlayingChange(true)
 			}
 
 			override fun onPlaybackStateChanged(playbackState: Int) {
 				// Am Ende wieder das Bild zeigen
-				if (playbackState == Player.STATE_ENDED) visible = false
+				if (playbackState == Player.STATE_ENDED) {
+					visible = false
+					onPlayingChange(false)
+				}
 			}
 		}
 		val observer = LifecycleEventObserver { _, event ->
@@ -107,6 +116,7 @@ fun TrailerVideo(
 		lifecycleOwner.lifecycle.addObserver(observer)
 
 		onDispose {
+			onPlayingChange(false)
 			lifecycleOwner.lifecycle.removeObserver(observer)
 			player.removeListener(listener)
 			player.release()

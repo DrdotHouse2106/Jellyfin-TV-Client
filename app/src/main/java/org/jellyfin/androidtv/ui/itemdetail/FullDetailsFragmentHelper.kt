@@ -178,6 +178,14 @@ fun FullDetailsFragment.togglePlayed() {
 fun FullDetailsFragment.playTrailers() {
 	val localTrailerCount = mBaseItem.localTrailerCount ?: 0
 
+	// Jellyfin-TV-Client: Trailer im kleinen Fenster in der App (Server-Trailer oder YouTube)
+	lifecycleScope.launch {
+		val api by inject<ApiClient>()
+		val playbackLauncher by inject<org.jellyfin.androidtv.ui.playback.PlaybackLauncher>()
+		org.jellyfin.androidtv.tvclient.HomeBillboard.playTrailer(requireContext(), api, playbackLauncher, mBaseItem)
+	}
+	return
+
 	// External trailer
 	if (localTrailerCount < 1) try {
 		val intent = getExternalTrailerIntent(requireContext(), mBaseItem)

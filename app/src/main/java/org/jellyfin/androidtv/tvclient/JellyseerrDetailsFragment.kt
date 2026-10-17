@@ -1,7 +1,6 @@
 package org.jellyfin.androidtv.tvclient
 
 import android.app.AlertDialog
-import android.content.ActivityNotFoundException
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -255,13 +254,7 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 									if (localTrailer && item != null) {
 										// Trailer, der auf dem Server liegt (z. B. von Trailarr)
 										scope.launch { HomeBillboard.playTrailer(context, api, playbackLauncher, item) }
-									} else info.trailerKey?.let { key ->
-										try {
-											context.startActivity(JellyfinLink.youtubeIntent(context, key))
-										} catch (_: ActivityNotFoundException) {
-											Toast.makeText(context, R.string.no_player_message, Toast.LENGTH_LONG).show()
-										}
-									}
+									} else info.trailerKey?.let { key -> TrailerWindow.showYoutube(context, key) }
 								},
 								modifier = if (!canRequest && jellyfinId == null) Modifier.focusRequester(primaryFocus) else Modifier,
 							) { Text(stringResource(R.string.lbl_play_trailers)) }
