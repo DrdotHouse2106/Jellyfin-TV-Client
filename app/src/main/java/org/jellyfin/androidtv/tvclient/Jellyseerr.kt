@@ -179,6 +179,10 @@ object Jellyseerr {
 		return parseResults(call(current(), "/search?query=$encoded&page=1&language=de"))
 	}
 
+	/** „Das könnte dir auch gefallen“ zu einem Titel (Jellyseerr-Empfehlungen, ohne bereits Gesehenes zu kennen). */
+	suspend fun recommendations(type: String, id: Int): List<Media> =
+		parseResults(call(current(), "/$type/$id/recommendations?page=1")).filter { it.id != id }
+
 	/** Gerade beliebte Titel (nur direkt mit Jellyseerr; das Plugin bietet dafür keinen Endpunkt). */
 	suspend fun trending(): List<Media> =
 		if (supportsTrending) parseResults(call(current(), "/discover/trending?page=1&language=de")) else emptyList()

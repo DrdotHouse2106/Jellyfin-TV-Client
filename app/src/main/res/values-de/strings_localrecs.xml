@@ -107,4 +107,5 @@
         <item quantity="one">%1$d Folge</item>
         <item quantity="other">%1$d Folgen</item>
     </plurals>
+    <string name="tvclient_jellyseerr_related">Das könnte dir auch gefallen</string>
 </resources>

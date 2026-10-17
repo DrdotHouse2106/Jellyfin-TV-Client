@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -88,6 +90,7 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 	val navigationRepository = koinInject<NavigationRepository>()
 	val scope = rememberCoroutineScope()
 	var details by remember { mutableStateOf<Jellyseerr.Details?>(null) }
+	var related by remember { mutableStateOf<List<Jellyseerr.Media>>(emptyList()) }
 	var error by remember { mutableStateOf(false) }
 	val primaryFocus = remember { FocusRequester() }
 
@@ -102,6 +105,9 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 				Timber.w(it, "Jellyseerr-Details nicht verfügbar")
 				error = true
 			}
+	}
+	LaunchedEffect(details != null) {
+		if (details != null) related = runCatching { Jellyseerr.recommendations(type, tmdbId) }.getOrDefault(emptyList())
 	}
 	LaunchedEffect(details) {
 		if (details != null) {
@@ -284,6 +290,19 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 							}
 							Text(person.name, fontSize = 12.sp, color = Color.White, maxLines = 2)
 							person.role?.let { Text(it, fontSize = 11.sp, color = Color(0xFF909090), maxLines = 1) }
+						}
+					}
+				}
+			}
+			// Das könnte dir auch gefallen
+			if (related.isNotEmpty()) {
+				Spacer(Modifier.height(20.dp))
+				Text(stringResource(R.string.tvclient_jellyseerr_related), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+				Spacer(Modifier.height(8.dp))
+				LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+					items(related.take(20), key = { "${it.type}-${it.id}" }) { media ->
+						MediaCard(media, Modifier.width(120.dp)) {
+							navigationRepository.navigate(Destinations.jellyseerrDetails(media.type, media.id))
 						}
 					}
 				}

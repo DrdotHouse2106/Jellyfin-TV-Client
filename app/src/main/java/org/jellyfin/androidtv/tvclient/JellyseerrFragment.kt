@@ -193,7 +193,7 @@ private fun JellyseerrScreen() {
 }
 
 @Composable
-private fun MediaCard(media: Jellyseerr.Media, modifier: Modifier = Modifier, onClick: () -> Unit) {
+internal fun MediaCard(media: Jellyseerr.Media, modifier: Modifier = Modifier, onClick: () -> Unit) {
 	val interaction = remember { MutableInteractionSource() }
 	val focused by interaction.collectIsFocusedAsState()
 	Column(

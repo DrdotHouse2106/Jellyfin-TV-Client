@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.14.1 – 2026-10-17
+
+- Anfragen – Detailseite: unten neue Zeile **„Das könnte dir auch gefallen“** mit passenden Titeln aus Jellyseerr; OK öffnet deren Detailseite.
+
 ## 1.14.0 – 2026-10-17
 
 - **Anfragen – Detailseite:** OK auf einem Suchtreffer öffnet jetzt eine Detailseite mit Bild, Plakat, Titel und Originaltitel, Jahr, FSK, Laufzeit bzw. Staffelanzahl, Bewertung, Genres, Regie/Idee, vollständiger Inhaltsangabe, Besetzung und bei Serien den Staffeln mit Status. Knöpfe: „Anfragen“ (Serien: „Alle Staffeln anfragen“ oder „Staffeln wählen“), „In Jellyfin öffnen“ (wenn schon vorhanden) und „Trailer“ (YouTube).
