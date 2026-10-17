@@ -102,7 +102,11 @@ class HomeFragment : Fragment() {
 				if (showHero) HomeHeroBackdrop()
 
 				Row(Modifier.fillMaxSize()) {
-					if (showHero) SideRail(contentFocusRequester = rowsFocusRequester, homeFocusRequester = railHomeFocusRequester)
+					// „Rechts“ aus der Navigation führt zurück ins Banner (wenn es da ist), sonst in die Zeilen
+					if (showHero) SideRail(
+						contentFocusRequester = if (billboardItems.isNotEmpty()) billboardFocusRequester else rowsFocusRequester,
+						homeFocusRequester = railHomeFocusRequester,
+					)
 
 					Column(Modifier.weight(1f)) {
 						if (showHero) {

@@ -198,13 +198,24 @@ fun HomeBillboardButtons(
 	}
 
 	// Links/Rechts am Rand der Knöpfe: vorheriger/nächster Vorschlag
+	val lastButtonFocus = remember { FocusRequester() }
+	var refocusLast by remember { mutableStateOf(false) }
 	fun step(delta: Int): Boolean {
 		if (items.size < 2) return false
 		val shown = items.indexOfFirst { it.id == current?.id }.coerceAtLeast(0)
 		index = (shown + delta + items.size) % items.size
 		HomeHeroState.trailerPlaying.value = false
 		HomeHeroState.item.value = items[index]
+		// Die Knopfzeile wird neu aufgebaut (mit/ohne „Trailer“): Fokus gezielt auf den letzten Knopf,
+		// sonst landet er in der Seitenleiste
+		if (delta > 0) refocusLast = true
 		return true
+	}
+	LaunchedEffect(current?.id, refocusLast) {
+		if (!refocusLast) return@LaunchedEffect
+		delay(30)
+		runCatching { lastButtonFocus.requestFocus() }
+		refocusLast = false
 	}
 	fun Modifier.stepOnKey(key: Key, delta: Int, enabled: () -> Boolean = { true }) = onPreviewKeyEvent { event ->
 		event.type == KeyEventType.KeyDown && event.key == key && enabled() && step(delta)
@@ -239,14 +250,14 @@ fun HomeBillboardButtons(
 			icon = R.drawable.ic_help,
 			text = stringResource(R.string.tvclient_more_info),
 			// Rechts auf dem letzten Knopf: nächster Vorschlag
-			modifier = if (hasTrailer) buttonFocus else buttonFocus.stepOnKey(Key.DirectionRight, 1),
+			modifier = if (hasTrailer) buttonFocus else buttonFocus.focusRequester(lastButtonFocus).stepOnKey(Key.DirectionRight, 1),
 		) { navigationRepository.navigate(Destinations.itemDetails(item.id)) }
 
 		if (hasTrailer) {
 			BillboardButton(
 				icon = R.drawable.ic_trailer,
 				text = stringResource(R.string.lbl_trailers),
-				modifier = buttonFocus.stepOnKey(Key.DirectionRight, 1),
+				modifier = buttonFocus.focusRequester(lastButtonFocus).stepOnKey(Key.DirectionRight, 1),
 			) { scope.launch { HomeBillboard.playTrailer(context, api, playbackLauncher, item) } }
 		}
 

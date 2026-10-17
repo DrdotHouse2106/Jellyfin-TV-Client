@@ -3,6 +3,7 @@
 ## 1.19.0 – 2026-10-17
 
 - **Personenseite:** OK auf einen Schauspieler in der Besetzung (Anfragen-Detailseite) öffnet seine Seite mit Foto, Geburtstag und -ort, Biografie (OK klappt sie aus) und den Reihen „Filme“ und „Serien“ – neueste zuerst, mit Status (Verfügbar/Angefragt). OK auf einen Titel öffnet dessen Detailseite.
+- Startseite: Nach „Rechts“ im Banner bleibt die Auswahl im Banner (vorher sprang sie in die Navigation). „Rechts“ aus der Navigation führt zurück ins Banner.
 
 ## 1.18.1 – 2026-10-17
 
