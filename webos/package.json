@@ -1,6 +1,6 @@
 {
   "name": "de.drdothouse.quallenkino",
-  "version": "1.0.0",
+  "version": "1.8.9",
   "description": "Quallenkino für webOS (basiert auf jellyfin-webos)",
   "scripts": {
     "check": "ares-package --check",

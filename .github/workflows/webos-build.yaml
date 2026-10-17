@@ -1,7 +1,6 @@
-# Quallenkino für webOS (LG-Fernseher): baut die .ipk mit ares-package.
-# Mit „release“ entsteht ein GitHub-Release webos-v{Version aus webos/frontend/appinfo.json}.
-# Das Release wird NICHT als „latest“ markiert, damit der APK-Link
-# releases/latest/download/quallenkino.apk weiter auf die Android-App zeigt.
+# Quallenkino für webOS (LG-Fernseher): Probe-Build der .ipk bei Änderungen in webos/.
+# Veröffentlicht wird die .ipk zusammen mit der Android-App im Release vX.Y.Z
+# (Workflow „TV-Client / Build“, Version aus tv-client-version.txt).
 name: webOS / Build
 
 on:
@@ -12,14 +11,9 @@ on:
       - 'webos/**'
       - '.github/workflows/webos-build.yaml'
   workflow_dispatch:
-    inputs:
-      release:
-        description: 'GitHub-Release webos-v{Version} mit der .ipk anlegen'
-        type: boolean
-        default: false
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -49,8 +43,6 @@ jobs:
           ares-package --no-minify --outdir build/ services frontend
           node tools/gen-manifest.js build/de.drdothouse.quallenkino.manifest.json
           VERSION=$(node -p "require('./frontend/appinfo.json').version")
-          echo "WEBOS_VERSION=$VERSION" >> $GITHUB_ENV
-          # fester Dateiname für einen gleichbleibenden Download-Link
           cp build/de.drdothouse.quallenkino_${VERSION}_all.ipk build/quallenkino-webos.ipk
           ls -la build
 
@@ -60,13 +52,3 @@ jobs:
           name: quallenkino-webos
           if-no-files-found: error
           path: webos/build/
-
-      - name: Create GitHub release
-        if: inputs.release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          TAG="webos-v$WEBOS_VERSION"
-          gh release create "$TAG" build/* --target "$GITHUB_SHA" --latest=false \
-            --title "Quallenkino für webOS $WEBOS_VERSION" --notes "Installation siehe webos/README.md." \
-            || gh release upload "$TAG" build/* --clobber

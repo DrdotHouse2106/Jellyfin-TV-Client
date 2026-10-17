@@ -13,6 +13,13 @@ Alles andere ist wie in der offiziellen App: Player, Untertitel, Live-TV, Intro 
 > [!NOTE]
 > Basis ist die offizielle App **v0.19.10** (GPL v2). Alle Rechte an der eigentlichen App liegen beim Jellyfin-Team. Dieses Repository enthält nur wenige, klar markierte Änderungen (Kommentare mit „Jellyfin-TV-Client“).
 
+## Download
+
+Immer die neueste Version, beide im selben Release mit derselben Versionsnummer:
+
+- **Fire TV / Android TV:** https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk
+- **LG-Fernseher (webOS):** https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino-webos.ipk (Installation siehe [webos/README.md](webos/README.md))
+
 ## Voraussetzungen
 
 - Jellyfin-Server 12 mit dem Plugin **Local Recommendations ab Version 12.5.0** (stellt `GET /LocalRecs/Recommendations` bereit). „Home Screen Sections“ ist für diese App **nicht** nötig.

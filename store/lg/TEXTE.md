@@ -1,12 +1,12 @@
 # LG Content Store – Eintrag „Quallenkino“ (webOS)
 
-Texte zum Kopieren für die LG Seller Lounge (seller.lgappstv.com). Die App liegt in `webos/`, die .ipk im GitHub-Release `webos-v…`.
+Texte zum Kopieren für die LG Seller Lounge (seller.lgappstv.com). Die App liegt in `webos/`, die .ipk im GitHub-Release `vX.Y.Z` (zusammen mit der Android-App).
 
 | Feld | Inhalt |
 |---|---|
 | App-Name | Quallenkino |
 | App-ID | de.drdothouse.quallenkino |
-| Version | 1.0.0 |
+| Version | wie die Android-App (siehe tv-client-version.txt) |
 | Kategorie | Entertainment (Unterhaltung) |
 | Preis | kostenlos |
 | Altersfreigabe | ab 0 (die App selbst zeigt keine Inhalte; Inhalte kommen vom eigenen Server) |

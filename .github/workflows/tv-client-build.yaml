@@ -82,7 +82,25 @@ jobs:
           # Fester Dateiname für einen gleichbleibenden Download-Link:
           # https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk
           for f in build/tv-client/*-release.apk; do [ -e "$f" ] && cp "$f" build/tv-client/quallenkino.apk; done
-          ls -la build/tv-client
+
+      # webOS (LG) in derselben Version im selben Release:
+      # https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino-webos.ipk
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20.x
+
+      - name: Build webOS package
+        working-directory: webos
+        run: |
+          npm install -g @webosose/ares-cli
+          node -e "const f='frontend/appinfo.json',fs=require('fs'),a=JSON.parse(fs.readFileSync(f));a.version=process.env.JELLYFIN_VERSION;fs.writeFileSync(f,JSON.stringify(a,null,4)+'\\n')"
+          ares-package --check services frontend
+          mkdir -p build
+          ares-package --no-minify --outdir build/ services frontend
+          cp "build/de.drdothouse.quallenkino_${JELLYFIN_VERSION}_all.ipk" "../build/tv-client/quallenkino-webos-v${JELLYFIN_VERSION}.ipk"
+          cp "build/de.drdothouse.quallenkino_${JELLYFIN_VERSION}_all.ipk" ../build/tv-client/quallenkino-webos.ipk
+          ls -la ../build/tv-client
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v5
@@ -98,5 +116,5 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="v$JELLYFIN_VERSION"
-          gh release create "$TAG" build/tv-client/* --target "$GITHUB_SHA" --title "Quallenkino $TAG" --notes "Siehe README und CHANGELOG-TV.md." \
+          gh release create "$TAG" build/tv-client/* --target "$GITHUB_SHA" --title "Quallenkino $TAG" --notes "Fire TV / Android TV: quallenkino.apk – LG webOS: quallenkino-webos.ipk. Änderungen siehe CHANGELOG-TV.md." \
             || gh release upload "$TAG" build/tv-client/* --clobber

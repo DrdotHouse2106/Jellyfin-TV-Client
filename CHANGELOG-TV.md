@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.8.9 – 2026-10-17
+
+- Android und webOS haben jetzt dieselbe Versionsnummer und liegen im selben Release: `quallenkino.apk` (Fire TV / Android TV) und `quallenkino-webos.ipk` (LG webOS), dazu die versionierten Dateien und die .aab.
+
 ## 1.8.8 – 2026-10-17
 
 - Einstellungen: Vergleiche mit anderen Streaming-Diensten aus den Texten entfernt („Großer Infobereich“ statt „wie …“).

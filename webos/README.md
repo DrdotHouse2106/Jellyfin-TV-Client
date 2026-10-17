@@ -3,7 +3,8 @@
 Quallenkino für LG-Fernseher mit webOS. Die App ist eine schlanke Hülle um die Weboberfläche deines Jellyfin-Servers. Sie basiert auf [jellyfin-webos](https://github.com/jellyfin/jellyfin-webos) und hat Quallenkino-Name, Icon und deutsche Texte.
 
 - **App-ID:** `de.drdothouse.quallenkino`
-- **Download:** im GitHub-Release `webos-v…` die Datei `quallenkino-webos.ipk`, siehe [Releases](https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases)
+- **Download (immer die neueste Version):** https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino-webos.ipk
+- **Version:** dieselbe wie die Android-App; beide liegen im selben Release `vX.Y.Z`
 
 ## Was die webOS-Version kann
 
@@ -42,7 +43,7 @@ npm install -g @webosose/ares-cli
 ares-package --no-minify --outdir build/ services frontend
 ```
 
-Auf GitHub baut der Workflow „webOS / Build“ die .ipk automatisch. Mit „Run workflow“ und „release“ entsteht ein Release `webos-v{Version}`. Die Version steht in `frontend/appinfo.json`.
+Veröffentlicht wird die .ipk vom Workflow „TV-Client / Build“ zusammen mit der Android-App im Release `vX.Y.Z`. Die Version kommt dabei aus `tv-client-version.txt` und wird beim Bauen in `frontend/appinfo.json` übernommen. Der Workflow „webOS / Build“ baut bei Änderungen in `webos/` nur zur Probe.
 
 ## Herkunft und Lizenz
 
