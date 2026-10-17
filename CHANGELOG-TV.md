@@ -1,5 +1,12 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.14.2 – 2026-10-17
+
+- Anfragen – Detailseite: „In Jellyfin öffnen“ findet den Titel auch, wenn Jellyseerr eine veraltete ID gespeichert hat (z. B. nach dem Umbenennen eines Ordners) – über Titelsuche und TMDB-ID.
+- Mit „Runter“ lässt sich die ganze Seite durchgehen: Inhaltsangabe, Staffeln, Besetzung und „Das könnte dir auch gefallen“ sind auswählbar und scrollen mit.
+- Trailer: Liegt der Trailer auf dem Server (z. B. von Trailarr), läuft er direkt in Quallenkino; sonst öffnet sich YouTube direkt statt der Auswahl „Öffnen mit …“.
+- Besetzung ohne Foto zeigt Initialen.
+
 ## 1.14.1 – 2026-10-17
 
 - Anfragen – Detailseite: unten neue Zeile **„Das könnte dir auch gefallen“** mit passenden Titeln aus Jellyseerr; OK öffnet deren Detailseite.

@@ -8,6 +8,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,7 +61,8 @@ import org.jellyfin.androidtv.ui.base.button.Button
 import org.jellyfin.androidtv.ui.composable.AsyncImage
 import org.jellyfin.androidtv.ui.navigation.Destinations
 import org.jellyfin.androidtv.ui.navigation.NavigationRepository
-import org.jellyfin.androidtv.util.sdk.TrailerUtils
+import org.jellyfin.androidtv.ui.playback.PlaybackLauncher
+import org.jellyfin.sdk.model.api.BaseItemDto
 import org.jellyfin.sdk.api.client.ApiClient
 import org.koin.compose.koinInject
 import timber.log.Timber
@@ -91,6 +96,8 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 	val scope = rememberCoroutineScope()
 	var details by remember { mutableStateOf<Jellyseerr.Details?>(null) }
 	var related by remember { mutableStateOf<List<Jellyseerr.Media>>(emptyList()) }
+	var jellyfinItem by remember { mutableStateOf<BaseItemDto?>(null) }
+	val playbackLauncher = koinInject<PlaybackLauncher>()
 	var error by remember { mutableStateOf(false) }
 	val primaryFocus = remember { FocusRequester() }
 
@@ -107,7 +114,12 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 			}
 	}
 	LaunchedEffect(details != null) {
-		if (details != null) related = runCatching { Jellyseerr.recommendations(type, tmdbId) }.getOrDefault(emptyList())
+		val info = details ?: return@LaunchedEffect
+		// Den Titel in Jellyfin finden (die gespeicherte ID kann nach Umbenennen veraltet sein)
+		if (info.media.status in setOf(Jellyseerr.Status.AVAILABLE, Jellyseerr.Status.PARTIAL)) {
+			jellyfinItem = JellyfinLink.resolve(api, info.media, userRepository.currentUser.value?.id)
+		}
+		related = runCatching { Jellyseerr.recommendations(type, tmdbId) }.getOrDefault(emptyList())
 	}
 	LaunchedEffect(details) {
 		if (details != null) {
@@ -217,8 +229,8 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 
 					// Knöpfe
 					Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-						val jellyfinId = info.media.jellyfinId
-						if (jellyfinId != null && info.media.status in setOf(Jellyseerr.Status.AVAILABLE, Jellyseerr.Status.PARTIAL)) {
+						val jellyfinId = jellyfinItem?.id
+						if (jellyfinId != null) {
 							Button(
 								onClick = { navigationRepository.navigate(Destinations.itemDetails(jellyfinId)) },
 								modifier = Modifier.focusRequester(primaryFocus),
@@ -235,19 +247,26 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 								Button(onClick = { chooseSeasons(info) }) { Text(stringResource(R.string.tvclient_jellyseerr_choose_seasons)) }
 							}
 						}
-						info.trailerKey?.let { key ->
+						val localTrailer = (jellyfinItem?.localTrailerCount ?: 0) > 0
+						if (localTrailer || info.trailerKey != null) {
 							Button(
 								onClick = {
-									try {
-										context.startActivity(TrailerUtils.getExternalTrailerIntent("https://www.youtube.com/watch?v=$key"))
-									} catch (_: ActivityNotFoundException) {
-										Toast.makeText(context, R.string.no_player_message, Toast.LENGTH_LONG).show()
+									val item = jellyfinItem
+									if (localTrailer && item != null) {
+										// Trailer, der auf dem Server liegt (z. B. von Trailarr)
+										scope.launch { HomeBillboard.playTrailer(context, api, playbackLauncher, item) }
+									} else info.trailerKey?.let { key ->
+										try {
+											context.startActivity(JellyfinLink.youtubeIntent(context, key))
+										} catch (_: ActivityNotFoundException) {
+											Toast.makeText(context, R.string.no_player_message, Toast.LENGTH_LONG).show()
+										}
 									}
 								},
 								modifier = if (!canRequest && jellyfinId == null) Modifier.focusRequester(primaryFocus) else Modifier,
 							) { Text(stringResource(R.string.lbl_play_trailers)) }
 						}
-						if (!canRequest && info.trailerKey == null && jellyfinId == null) {
+						if (!canRequest && info.trailerKey == null && !localTrailer && jellyfinId == null) {
 							Button(onClick = { navigationRepository.goBack() }, modifier = Modifier.focusRequester(primaryFocus)) {
 								Text(stringResource(R.string.tvclient_back))
 							}
@@ -257,7 +276,8 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 			}
 
 			Spacer(Modifier.height(20.dp))
-			info.media.overview?.let { Text(it, color = Color(0xFFE0E0E0), fontSize = 16.sp, modifier = Modifier.fillMaxWidth(0.75f)) }
+			// Fokussierbar, damit man mit „Runter“ weiterblättern kann
+			info.media.overview?.let { Text(it, color = Color(0xFFE0E0E0), fontSize = 16.sp, modifier = Modifier.fillMaxWidth(0.75f).focusFrame()) }
 
 			// Staffeln
 			if (info.seasons.isNotEmpty()) {
@@ -265,7 +285,7 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 				Text(stringResource(R.string.tvclient_jellyseerr_seasons_title), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
 				Spacer(Modifier.height(6.dp))
 				info.seasons.forEach { season ->
-					Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+					Row(Modifier.focusFrame(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 						Text(
 							listOfNotNull(season.name, season.episodes?.let { context.resources.getQuantityString(R.plurals.tvclient_jellyseerr_episodes, it, it) }).joinToString(" · "),
 							color = Color(0xFFD0D0D0),
@@ -280,12 +300,18 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 				Spacer(Modifier.height(20.dp))
 				Text(stringResource(R.string.tvclient_jellyseerr_cast), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
 				Spacer(Modifier.height(8.dp))
-				Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-					info.cast.take(8).forEach { person ->
-						Column(Modifier.width(90.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-							Box(Modifier.size(72.dp).clip(CircleShape).background(Color(0xFF262626))) {
-								person.imageUrl?.let {
-									AsyncImage(modifier = Modifier.fillMaxSize(), url = it, aspectRatio = 1f, scaleType = ImageView.ScaleType.CENTER_CROP)
+				LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+					items(info.cast, key = { it.name + it.role }) { person ->
+						Column(Modifier.width(90.dp).focusFrame(), horizontalAlignment = Alignment.CenterHorizontally) {
+							Box(Modifier.size(72.dp).clip(CircleShape).background(Color(0xFF262626)), contentAlignment = Alignment.Center) {
+								if (person.imageUrl != null) {
+									AsyncImage(modifier = Modifier.fillMaxSize(), url = person.imageUrl, aspectRatio = 1f, scaleType = ImageView.ScaleType.CENTER_CROP)
+								} else {
+									// Ohne Foto: Initialen
+									Text(
+										person.name.split(" ").filter { it.isNotBlank() }.take(2).joinToString("") { it.take(1) },
+										color = Color(0xFFB3B3B3), fontSize = 22.sp, fontWeight = FontWeight.Bold,
+									)
 								}
 							}
 							Text(person.name, fontSize = 12.sp, color = Color.White, maxLines = 2)
@@ -310,4 +336,15 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 			Spacer(Modifier.height(24.dp))
 		}
 	}
+}
+
+/** Fokussierbarer Bereich mit dünnem Rahmen – damit „Runter“ die Seite weiterscrollt. */
+@Composable
+private fun Modifier.focusFrame(): Modifier {
+	val interaction = remember { MutableInteractionSource() }
+	val focused by interaction.collectIsFocusedAsState()
+	return this
+		.border(2.dp, if (focused) Color.White.copy(alpha = 0.8f) else Color.Transparent, RoundedCornerShape(6.dp))
+		.padding(4.dp)
+		.focusable(interactionSource = interaction)
 }
