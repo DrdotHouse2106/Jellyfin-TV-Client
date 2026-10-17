@@ -19,11 +19,15 @@ Quallenkino für Jellyfin
 
 **Kurzbeschreibung (max. 80 Zeichen)**
 
-Dein Jellyfin auf dem Fernseher – mit Empfehlungen und Steuerung per Handy
+Dein Jellyfin im Kino-Stil – Empfehlungen, Top 10, Anfragen und Handy-Steuerung
 
 **Vollständige Beschreibung**
 
-Die deutschen Texte aus `../amazon/TEXTE.md` („Beschreibung“) verwenden. Englisch als zusätzliche Sprache: Abschnitt „English“ dort.
+Die deutschen Texte aus `../amazon/TEXTE.md` („Beschreibung“) verwenden – sie sind auf dem aktuellen Stand (Top 10, Daumen hoch/runter, Jellyseerr-Anfragen, Ton & Untertitel in einem Fenster, Trailer im Bildschirmschoner). Englisch als zusätzliche Sprache: Abschnitt „English“ dort.
+
+**Kurzbeschreibung Englisch (max. 80 Zeichen)**
+
+Your Jellyfin, cinematic – recommendations, Top 10, requests and phone remote
 
 ## Angaben in der Play Console
 

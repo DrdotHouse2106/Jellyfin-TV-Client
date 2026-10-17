@@ -85,4 +85,9 @@
     <string name="tvclient_jellyseerr_search_hint">Film oder Serie suchen, um sie anzufragen</string>
     <string name="tvclient_jellyseerr_already">Schon angefragt oder Anfrage-Limit erreicht</string>
     <string name="tvclient_jellyseerr_no_permission">Dein Jellyseerr-Konto darf nichts anfragen</string>
+    <string name="tvclient_rate">Bewerten</string>
+    <string name="tvclient_rating_none">Keine Bewertung</string>
+    <string name="tvclient_rating_saved">Bewertung gespeichert</string>
+    <string name="tvclient_screensaver_trailers">Trailer im Bildschirmschoner</string>
+    <string name="tvclient_screensaver_trailers_description">Spielt Trailer, die auf dem Server liegen (stumm), statt nur Bilder zu zeigen</string>
 </resources>

@@ -16,6 +16,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jellyfin.androidtv.integration.dream.model.DreamContent
+import org.jellyfin.androidtv.tvclient.TrailerVideo
 import org.jellyfin.androidtv.ui.base.Text
 import org.jellyfin.androidtv.ui.composable.ZoomBox
 import org.jellyfin.androidtv.ui.composable.modifier.overscan
@@ -41,6 +42,12 @@ fun DreamContentLibraryShowcase(
 		)
 
 		// Image vignette
+		DreamContentVignette()
+	}
+
+	// Jellyfin-TV-Client: Trailer stumm über dem Bild (blendet sich erst mit dem ersten Bild ein)
+	content.trailerUrl?.let { url ->
+		TrailerVideo(url = url, withSound = false, modifier = Modifier.fillMaxSize())
 		DreamContentVignette()
 	}
 

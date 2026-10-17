@@ -39,7 +39,11 @@ Besonderheiten gegenüber anderen Jellyfin-Apps:
 • Persönliche Empfehlungen auf der Startseite: „Empfohlene Filme für dich“, „Empfohlene Serien für dich“ und „Heute im TV für dich“ (mit dem Server-Plugin „Local Recommendations“)
 • Komplett per Handy steuerbar, z. B. mit „Jellyfin Remote“: Steuerkreuz, Suche, Bibliotheken, TV-Programm
 • Startseite im Kino-Stil mit großem Infobereich, wechselnden Vorschlägen und Trailer-Vorschau
-• Intelligente Untertitel (aus bei deutschem Ton) und Intro/Abspann automatisch überspringen
+• „Top 10 bei euch“: die meistgesehenen Filme und Serien aller Benutzer auf deinem Server
+• Daumen hoch/runter auf der Detailseite, im Player und vor der nächsten Folge – fließt in die Empfehlungen ein
+• Filme und Serien direkt am Fernseher anfragen (Jellyseerr, wenn auf dem Server eingerichtet)
+• Intelligente Untertitel (aus bei deutschem Ton), Ton und Untertitel in einem Fenster, Intro/Abspann automatisch überspringen
+• Bildschirmschoner mit deinen Empfehlungen, auf Wunsch mit Trailern
 
 Außerdem: Weiterschauen, Als Nächstes, Live-TV mit TV-Programm und Aufnahmen, Untertitel, mehrere Benutzer, Quick Connect.
 
@@ -48,7 +52,9 @@ Voraussetzung: ein Jellyfin-Server (eigener oder von Familie/Freunden). Quallenk
 **Feature-Liste (eine Zeile pro Punkt)**
 
 Startseite im Kino-Stil mit großem Infobereich und Trailer-Vorschau
-Persönliche Empfehlungen für Filme und Serien
+Persönliche Empfehlungen und „Top 10 bei euch“
+Daumen hoch/runter für bessere Empfehlungen
+Filme und Serien anfragen (Jellyseerr)
 Intelligente Untertitel und Intro/Abspann überspringen
 Steuerung per Handy mit Jellyfin Remote
 Weiterschauen und Als Nächstes
@@ -58,7 +64,7 @@ Keine Werbung, kein Tracking, Open Source
 
 **Stichwörter**
 
-jellyfin, mediaserver, heimkino, filme, serien, live tv, empfehlungen, streaming, plex alternative
+jellyfin, mediaserver, heimkino, filme, serien, empfehlungen, top 10, jellyseerr, streaming
 
 ## English
 
@@ -74,7 +80,11 @@ What makes it different:
 • Personal recommendations on the home screen (with the server plugin "Local Recommendations")
 • Fully controllable from your phone, e.g. with "Jellyfin Remote"
 • Cinematic home screen with a large info area, rotating suggestions and trailer preview
-• Smart subtitles (off for audio in your language) and automatic intro/credits skipping
+• "Top 10": the most watched movies and shows of all users on your server
+• Thumbs up/down on the detail page, in the player and before the next episode – improves your recommendations
+• Request movies and shows right from the TV (Jellyseerr, if set up on the server)
+• Smart subtitles (off for audio in your language), audio and subtitles in one window, automatic intro/credits skipping
+• Screensaver with your recommendations, optionally with trailers
 
 Also included: continue watching, next up, live TV with guide and recordings, subtitles, multiple users, Quick Connect.
 
@@ -83,7 +93,9 @@ Requires a Jellyfin server (your own or one from family and friends). Quallenkin
 **Feature bullets**
 
 Cinematic home screen with large info area and trailer preview
-Personal recommendations for movies and shows
+Personal recommendations and Top 10
+Thumbs up/down for better recommendations
+Request movies and shows (Jellyseerr)
 Smart subtitles and intro/credits skipping
 Control everything from your phone with Jellyfin Remote
 Continue watching and next up
@@ -93,7 +105,7 @@ No ads, no tracking, open source
 
 **Keywords**
 
-jellyfin, media server, home theater, movies, tv shows, live tv, recommendations, streaming
+jellyfin, media server, home theater, movies, tv shows, recommendations, top 10, jellyseerr, streaming
 
 ## Hinweis für die Prüfer (Testing instructions)
 

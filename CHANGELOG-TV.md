@@ -1,5 +1,13 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.13.0 – 2026-10-17
+
+- **Bewerten im Player:** neuer Knopf „Bewerten“ (Daumen) – „Gefällt mir“, „Nichts für mich“ oder keine Bewertung. Folgen bewerten ihre Serie.
+- **Bewerten vor der nächsten Folge:** Auf dem Bildschirm „Nächste Folge“ stehen zwei Daumen-Knöpfe für die Serie (wählt man sie an, stoppt der Countdown).
+- **Trailer im Bildschirmschoner** (Einstellungen → Darstellung & Bedienung → Bildschirmschoner, standardmäßig aus): Titel mit Trailer auf dem Server zeigen den Trailer stumm über dem Bild, danach geht es weiter.
+- Bildschirmschoner: Das kurze Quallenkino-Logo am Anfang (2 Sekunden) entfällt; das erste Bild kommt, sobald es geladen ist.
+- README, Amazon- und Google-Texte auf den aktuellen Stand gebracht.
+
 ## 1.12.0 – 2026-10-17
 
 - **Anfragen über „Jellyfin Enhanced“:** Ist auf dem Server das Plugin „Jellyfin Enhanced“ mit Jellyseerr eingerichtet und dein Konto verknüpft, erscheint links in der Navigation automatisch ein „+“ – ohne Adresse oder API-Schlüssel am Fernseher. Die Anfrage läuft über den Jellyfin-Server unter deinem Benutzer und mit deinen Jellyseerr-Rechten. Auf Servern ohne das Plugin erscheint nichts.

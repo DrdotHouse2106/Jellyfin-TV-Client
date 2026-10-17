@@ -48,6 +48,14 @@ import org.jellyfin.androidtv.ui.base.LocalTextStyle
 import org.jellyfin.androidtv.ui.base.ProvideTextStyle
 import org.jellyfin.androidtv.ui.base.Text
 import org.jellyfin.androidtv.ui.base.button.Button
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.graphics.vector.ImageVector
+import org.jellyfin.androidtv.ui.base.Icon
+import org.jellyfin.androidtv.ui.base.button.ButtonDefaults
+import org.jellyfin.androidtv.ui.base.button.IconButton
+import org.jellyfin.androidtv.tvclient.Ratings
 import org.jellyfin.androidtv.ui.base.button.ProgressButton
 import org.jellyfin.androidtv.ui.composable.AsyncImage
 import org.jellyfin.androidtv.ui.composable.FixedMotionDurationScale
@@ -207,6 +215,33 @@ fun NextUpOverlay(
 					.focusGroup()
 					.focusRestorer(focusRequester)
 			) {
+				// Jellyfin-TV-Client: Serie bewerten, bevor die nächste Folge startet
+				Ratings.target(item.baseItem)?.let { target ->
+					val ratingScope = rememberCoroutineScope()
+					var likes by remember(target) { mutableStateOf<Boolean?>(null) }
+					LaunchedEffect(target) { likes = Ratings.get(api, target) }
+					listOf(true to R.drawable.tvclient_ic_thumb_up, false to R.drawable.tvclient_ic_thumb_down).forEach { (value, icon) ->
+						IconButton(
+							onClick = {
+								ratingScope.launch {
+									runCatching { Ratings.set(api, target, if (likes == value) null else value) }
+										.onSuccess { likes = it }
+								}
+							},
+							colors = if (likes == value) ButtonDefaults.colors(
+								containerColor = JellyfinTheme.colorScheme.buttonActive,
+								contentColor = JellyfinTheme.colorScheme.onButtonActive,
+							) else ButtonDefaults.colors(),
+						) {
+							Icon(
+								imageVector = ImageVector.vectorResource(icon),
+								contentDescription = stringResource(if (value) R.string.tvclient_like else R.string.tvclient_dislike),
+							)
+						}
+						Spacer(Modifier.width(8.dp))
+					}
+				}
+
 				Button(onClick = onCancel) {
 					Text(stringResource(R.string.btn_cancel))
 				}

@@ -24,6 +24,7 @@ import kotlinx.coroutines.withContext
 import org.jellyfin.androidtv.integration.dream.model.DreamContent
 import org.jellyfin.androidtv.preference.UserPreferences
 import org.jellyfin.androidtv.tvclient.PersonalScreensaver
+import org.jellyfin.androidtv.tvclient.ScreensaverTrailers
 import org.jellyfin.androidtv.util.apiclient.getUrl
 import org.jellyfin.androidtv.util.apiclient.itemBackdropImages
 import org.jellyfin.androidtv.util.apiclient.itemImages
@@ -61,10 +62,8 @@ class DreamViewModel(
 		.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
 	private val _libraryContent = flow {
-		// Load first library item after 2 seconds
-		// to force the logo at the start of the screensaver
+		// Jellyfin-TV-Client: kein erzwungenes Logo am Anfang – das erste Bild kommt, sobald es geladen ist
 		emit(null)
-		delay(2.seconds)
 
 		val requireParentalRating = userPreferences[UserPreferences.screensaverAgeRatingRequired]
 		val maxParentalRating = userPreferences[UserPreferences.screensaverAgeRatingMax]
@@ -128,11 +127,14 @@ class DreamViewModel(
 				emit(null)
 				delay(noItemsDelay)
 			} else {
+				val withTrailers = userPreferences[ScreensaverTrailers.enabledPreference]
 				for (item in items) {
 					if (item.itemBackdropImages.isEmpty()) continue
 					val showcase = item.asLibraryShowcase() ?: continue
-					emit(showcase)
-					delay(emitDelay)
+					// Jellyfin-TV-Client: auf Wunsch den Trailer (stumm) über dem Bild abspielen
+					val trailer = if (withTrailers) ScreensaverTrailers.trailer(api, item) else null
+					emit(showcase.copy(trailerUrl = trailer?.url))
+					delay(trailer?.let { ScreensaverTrailers.showDuration(it.duration) } ?: emitDelay)
 				}
 			}
 		}

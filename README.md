@@ -1,17 +1,42 @@
 # Quallenkino – für Jellyfin (Jellyfin-TV-Client)
 
-Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** ([jellyfin/jellyfin-androidtv](https://github.com/jellyfin/jellyfin-androidtv)). Sie zeigt auf dem Fernseher zusätzlich die persönlichen Empfehlungen des Plugins [Lokale Empfehlungen](https://github.com/DrdotHouse2106/Lokal-Vorschlag-Jellyfin):
+Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** ([jellyfin/jellyfin-androidtv](https://github.com/jellyfin/jellyfin-androidtv)) mit einer Startseite im Kino-Stil und persönlichen Empfehlungen vom Plugin [Local Recommendations](https://github.com/DrdotHouse2106/Lokal-Vorschlag-Jellyfin).
 
-- **Empfohlene Filme für dich**
-- **Empfohlene Serien für dich** (mit echten Serien-Covern)
-- **Heute im TV für dich** (passende Sendungen aus dem EPG, mit Sendezeit und Sender)
+## Funktionen
 
-Alles andere ist wie in der offiziellen App: Player, Untertitel, Live-TV, Intro Skipper, Steuerung per Fernbedienung.
+**Startseite**
+- Navigation am linken Rand, großer Infobereich mit Logo, Eckdaten und Beschreibung
+- Banner mit wechselnden Vorschlägen und den Knöpfen Abspielen / Mehr Infos / Trailer; beim Start ist „Abspielen“ ausgewählt
+- **Trailer-Vorschau:** bleibt man ein paar Sekunden auf einem Titel, läuft oben stumm der Trailer (nur Trailer, die auf dem Server liegen)
+- Zeilen **Empfohlene Filme / Serien für dich** und **Heute im TV für dich** *
+- **Top 10 bei euch:** die meistgesehenen Filme und Serien aller Benutzer der letzten 60 Tage, mit großen Zahlen *
+- Genre-Zeilen mit zufälligen Titeln, Abschnitte aus „Home Screen Sections“, feste Reihenfolge mit Ein/Aus-Schaltern
+- 24-Stunden-Uhr
+
+**Bewerten und Anfragen**
+- **Daumen hoch / runter** („Gefällt mir“ / „Nichts für mich“) auf der Detailseite, im Player (Knopf „Bewerten“) und auf dem Bildschirm „Nächste Folge“. Folgen bewerten ihre Serie. „Gefällt mir“ zählt für die Empfehlungen wie ein Favorit, „Nichts für mich“ wird nie empfohlen und macht ähnliche Titel seltener *
+- **Anfragen über Jellyseerr:** Ist auf dem Server das Plugin „Jellyfin Enhanced“ mit Jellyseerr eingerichtet, erscheint links ein „+“ zum Suchen und Anfragen – ohne Schlüssel am Fernseher, unter dem eigenen Benutzer. Ohne das Plugin erscheint nichts (optional: eigene Jellyseerr-Adresse und API-Schlüssel)
+
+**Player**
+- **Intro und Abspann überspringen:** der Knopf „Überspringen“ füllt sich in 5 Sekunden, dann wird übersprungen; „Zurück“ bricht ab
+- **Intelligente Untertitel:** bei Ton in der eigenen Sprache keine Untertitel (außer erzwungene); die Wahl gilt für die nächsten Folgen der Serie
+- **Ton & Untertitel in einem Fenster** (zwei Spalten)
+- schnellere Suche mit Ergebnissen schon beim Tippen
+
+**Sonstiges**
+- Profilauswahl „Wer schaut gerade?“ mit farbigen Kacheln und „Profile verwalten“
+- **Bildschirmschoner** mit persönlichen Empfehlungen statt Zufall, auf Wunsch mit **Trailern** (stumm)
+- **Autostart** beim Einschalten des Geräts (bis Android 9, z. B. Fire TV Stick mit Fire OS 7; standardmäßig aus)
+- Steuerung komplett per Handy, z. B. mit [Jellyfin Remote](https://github.com/DrdotHouse2106/Jellyfin-Remote)
+
+\* benötigt das Server-Plugin „Local Recommendations“ (Top 10 über alle Benutzer und Daumen ab **12.6.0**). Ohne Plugin funktioniert die App normal, nur ohne diese Zeilen.
+
+Alles andere ist wie in der offiziellen App: Player, Live-TV, Intro Skipper, Bedienung mit der Fernbedienung.
 
 > English version: [README.en.md](README.en.md) · Original-README: [README.upstream.md](README.upstream.md)
 
 > [!NOTE]
-> Basis ist die offizielle App **v0.19.10** (GPL v2). Alle Rechte an der eigentlichen App liegen beim Jellyfin-Team. Dieses Repository enthält nur wenige, klar markierte Änderungen (Kommentare mit „Jellyfin-TV-Client“).
+> Basis ist die offizielle App **v0.19.10** (GPL v2). Alle Rechte an der eigentlichen App liegen beim Jellyfin-Team. Die eigenen Änderungen sind mit Kommentaren „Jellyfin-TV-Client“ markiert, neue Dateien liegen in `tvclient/`. Alle Änderungen: [CHANGELOG-TV.md](CHANGELOG-TV.md).
 
 ## Download
 
@@ -21,10 +46,10 @@ Immer die neueste Version:
 
 ## Voraussetzungen
 
-- Jellyfin-Server 12 mit dem Plugin **Local Recommendations ab Version 12.5.0** (stellt `GET /LocalRecs/Recommendations` bereit). „Home Screen Sections“ ist für diese App **nicht** nötig.
+- Jellyfin-Server 12. Empfohlen: Plugin **Local Recommendations ab 12.6.0** (Empfehlungen, Top 10, Daumen). Optional: **Jellyfin Enhanced** mit Jellyseerr (Anfragen), **Home Screen Sections** (weitere Abschnitte).
 - Android TV / Google TV oder **Fire TV mit Fire OS** (Android). Geräte mit *Vega OS* (z. B. einige Fire-TV-Modelle ab 2025) können keine APKs installieren.
 
-Ohne Plugin funktioniert die App ganz normal, nur ohne die Empfehlungs-Zeilen.
+Ohne Plugins funktioniert die App ganz normal, nur ohne die jeweiligen Zusatzfunktionen.
 
 ## Installation
 
@@ -63,16 +88,18 @@ Die Zeilen der Startseite stehen in einer festen Reihenfolge und lassen sich unt
 3. Empfohlene Filme für dich *
 4. Empfohlene Serien für dich *
 5. Heute im TV für dich * (nur mit Live-TV-Zugriff)
-6. Live-TV (TV-Programm, Aufnahmen, Läuft gerade)
-7. Kürzlich hinzugefügt
-8. Weitere Abschnitte aus dem Web ** (z. B. Genres, Top 10, „Weil du … gesehen hast“, Sammlungen)
-9. Weiterhören (anfangs aus)
-10. Aktive Aufnahmen (anfangs aus)
-11. Apps (anfangs aus)
-12. Gerät (anfangs aus)
-13. Meine Medien (Bibliotheken)
+6. Top 10 bei euch *
+7. Live-TV (TV-Programm, Aufnahmen, Läuft gerade; anfangs aus)
+8. Kürzlich hinzugefügt
+9. Weitere Abschnitte aus dem Web **
+10. Genres (zufällige Titel, bei jedem Öffnen neu gemischt)
+11. Weiterhören (anfangs aus)
+12. Aktive Aufnahmen (anfangs aus)
+13. Apps (anfangs aus)
+14. Gerät (anfangs aus)
+15. Meine Medien (Bibliotheken)
 
-\* benötigt das Server-Plugin „Local Recommendations“ ab 12.5.0; ohne Plugin bleiben die Zeilen unsichtbar. Gesehene Titel verschwinden nach dem Anschauen.
+\* benötigt das Server-Plugin „Local Recommendations“ (Top 10 über alle Benutzer ab 12.6.0); ohne Plugin bleiben die Zeilen unsichtbar bzw. Top 10 zählt nur, was die App selbst sehen darf. Gesehene Titel verschwinden nach dem Anschauen.
 
 \*\* benötigt das Plugin „Home Screen Sections“; es werden die Abschnitte gezeigt, die der Benutzer in der Weboberfläche eingeschaltet hat (in dessen Reihenfolge). Abschnitte, die Quallenkino schon selbst zeigt (Weiterschauen, Als Nächstes, Meine Medien, Live-TV, Empfehlungen), werden übersprungen.
 

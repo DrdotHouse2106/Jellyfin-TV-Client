@@ -3,6 +3,7 @@ package org.jellyfin.androidtv.ui.preference.screen
 import org.jellyfin.androidtv.R
 import org.jellyfin.androidtv.tvclient.AutoStart
 import org.jellyfin.androidtv.tvclient.PersonalScreensaver
+import org.jellyfin.androidtv.tvclient.ScreensaverTrailers
 import org.jellyfin.androidtv.preference.UserPreferences
 import org.jellyfin.androidtv.preference.constant.AppTheme
 import org.jellyfin.androidtv.preference.constant.ClockBehavior
@@ -100,6 +101,12 @@ class CustomizationPreferencesScreen : OptionsFragment() {
 				setTitle(R.string.tvclient_personal_screensaver)
 				setContent(R.string.tvclient_personal_screensaver_description)
 				bind(userPreferences, PersonalScreensaver.enabledPreference)
+			}
+
+			checkbox {
+				setTitle(R.string.tvclient_screensaver_trailers)
+				setContent(R.string.tvclient_screensaver_trailers_description)
+				bind(userPreferences, ScreensaverTrailers.enabledPreference)
 			}
 
 			checkbox {

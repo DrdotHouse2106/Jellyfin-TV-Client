@@ -63,6 +63,7 @@ public class CustomPlaybackTransportControlGlue extends PlaybackTransportControl
     private PlaybackSpeedAction playbackSpeedAction;
     private ZoomAction zoomAction;
     private ChapterAction chapterAction;
+    private org.jellyfin.androidtv.ui.playback.overlay.action.RateAction rateAction;
 
     // TV actions
     private PreviousLiveTvChannelAction previousLiveTvChannelAction;
@@ -110,6 +111,7 @@ public class CustomPlaybackTransportControlGlue extends PlaybackTransportControl
         mHandler.removeCallbacks(mRefreshViewVisibility);
 
         closedCaptionsAction.removePopup();
+        rateAction.dismissPopup();
         playbackSpeedAction.dismissPopup();
         selectAudioAction.dismissPopup();
         selectQualityAction.dismissPopup();
@@ -202,6 +204,9 @@ public class CustomPlaybackTransportControlGlue extends PlaybackTransportControl
         playbackSpeedAction.setLabels(new String[]{context.getString(R.string.lbl_playback_speed)});
         zoomAction = new ZoomAction(context, this);
         zoomAction.setLabels(new String[]{context.getString(R.string.lbl_zoom)});
+        // Jellyfin-TV-Client: Daumen hoch/runter
+        rateAction = new org.jellyfin.androidtv.ui.playback.overlay.action.RateAction(context, this);
+        rateAction.setLabels(new String[]{context.getString(R.string.tvclient_rate)});
         chapterAction = new ChapterAction(context, this);
         chapterAction.setLabels(new String[]{context.getString(R.string.lbl_chapters)});
 
@@ -246,6 +251,10 @@ public class CustomPlaybackTransportControlGlue extends PlaybackTransportControl
         // Jellyfin-TV-Client: ein Knopf für Ton und Untertitel
         if (playerAdapter.hasSubs() || playerAdapter.hasMultiAudio()) {
             primaryActionsAdapter.add(closedCaptionsAction);
+        }
+
+        if (!playerAdapter.isLiveTv()) {
+            primaryActionsAdapter.add(rateAction);
         }
 
         if (playerAdapter.isLiveTv()) {

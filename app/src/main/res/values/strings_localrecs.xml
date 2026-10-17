@@ -85,4 +85,9 @@
     <string name="tvclient_jellyseerr_search_hint">Search for a movie or show to request it</string>
     <string name="tvclient_jellyseerr_already">Already requested or request limit reached</string>
     <string name="tvclient_jellyseerr_no_permission">Your Jellyseerr account is not allowed to request</string>
+    <string name="tvclient_rate">Rate</string>
+    <string name="tvclient_rating_none">No rating</string>
+    <string name="tvclient_rating_saved">Rating saved</string>
+    <string name="tvclient_screensaver_trailers">Trailers in the screensaver</string>
+    <string name="tvclient_screensaver_trailers_description">Plays trailers stored on the server (muted) instead of only showing pictures</string>
 </resources>
