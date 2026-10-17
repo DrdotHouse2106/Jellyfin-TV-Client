@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.8.10 – 2026-10-17
+
+- webOS (LG): Die Serveradresse lässt sich ohne „https://“ eingeben. Vorher hat das Eingabefeld des Fernsehers „Gib eine URL ein“ gemeldet, bevor die App selbst https/http ausprobieren konnte. „OK“ auf der Bildschirmtastatur verbindet jetzt direkt.
+
 ## 1.8.9 – 2026-10-17
 
 - Android und webOS haben jetzt dieselbe Versionsnummer und liegen im selben Release: `quallenkino.apk` (Fire TV / Android TV) und `quallenkino-webos.ipk` (LG webOS), dazu die versionierten Dateien und die .aab.

@@ -24,8 +24,8 @@
 		<div id="serverInfoForm">
 			<p id="error" style="display: none;">&nbsp;</p>
 			<p id="hint">Einfach die Adresse deines Jellyfin-Servers eingeben – https/http und Port werden automatisch erkannt.</p>
-			<form onsubmit="return false;">
-				<input type="url" id="baseurl" name="baseurl" placeholder="jellyfin.beispiel.de oder 192.168.1.10" tabindex="0" />
+			<form novalidate onsubmit="handleServerSelect(); return false;">
+				<input type="text" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" id="baseurl" name="baseurl" placeholder="jellyfin.beispiel.de oder 192.168.1.10" tabindex="0" />
 				<div class="checkbox-wrapper">
 					<input type="checkbox" id="auto_connect" name="auto_connect"
 						onclick="return handleCheckbox(this, true);"
