@@ -66,6 +66,9 @@ object HomeHeroState {
 
 	/** Läuft gerade eine Trailer-Vorschau? Solange wechselt das Banner nicht automatisch. */
 	val trailerPlaying = MutableStateFlow(false)
+
+	/** Ist die Banner-Knopfzeile ausgewählt? Nur dann läuft die Trailer-Vorschau. */
+	val billboardFocused = MutableStateFlow(false)
 }
 
 /**
@@ -77,6 +80,7 @@ fun HomeHeroBackdrop(modifier: Modifier = Modifier) {
 	val item by HomeHeroState.item.collectAsState()
 	val api = koinInject<ApiClient>()
 	val userPreferences = koinInject<UserPreferences>()
+	val billboardFocused by HomeHeroState.billboardFocused.collectAsState()
 
 	Box(modifier.fillMaxSize().background(Color.Black)) {
 		AnimatedContent(
@@ -93,8 +97,11 @@ fun HomeHeroBackdrop(modifier: Modifier = Modifier) {
 
 			// Trailer-Vorschau: nach kurzer Zeit auf demselben Titel statt des Bildes
 			var trailerUrl by remember(current?.id) { mutableStateOf<String?>(null) }
-			LaunchedEffect(current?.id) {
-				if (current == null || !userPreferences[TrailerPreview.enabledPreference]) return@LaunchedEffect
+			// Nur solange das Banner ausgewählt ist – steht der Fokus in einer Reihe, bleibt es beim Bild
+			LaunchedEffect(current?.id, billboardFocused) {
+				trailerUrl = null
+				if (!billboardFocused) HomeHeroState.trailerPlaying.value = false
+				if (current == null || !billboardFocused || !userPreferences[TrailerPreview.enabledPreference]) return@LaunchedEffect
 				delay(TrailerPreview.delay)
 				trailerUrl = TrailerPreview.streamUrl(api, current)
 			}

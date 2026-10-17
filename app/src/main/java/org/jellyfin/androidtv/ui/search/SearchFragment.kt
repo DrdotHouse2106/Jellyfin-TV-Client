@@ -22,6 +22,14 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusRestorer
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
@@ -38,6 +46,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 
+@OptIn(ExperimentalLayoutApi::class)
 class SearchFragment : Fragment() {
 	companion object {
 		const val EXTRA_QUERY = "query"
@@ -55,6 +64,17 @@ class SearchFragment : Fragment() {
 			val textInputFocusRequester = remember { FocusRequester() }
 			val resultFocusRequester = remember { FocusRequester() }
 			val speechRecognizerAvailability = rememberSpeechRecognizerAvailability()
+
+			// Jellyfin-TV-Client: Tastatur mit „Zurück“ geschlossen und Ergebnisse da → Fokus auf die Ergebnisse,
+			// sonst bleibt man im Suchfeld hängen
+			val imeVisible = WindowInsets.isImeVisible
+			var imeWasVisible by remember { mutableStateOf(false) }
+			LaunchedEffect(imeVisible) {
+				if (imeWasVisible && !imeVisible && searchFragmentDelegate.rowsAdapter.size() > 0) {
+					runCatching { resultFocusRequester.requestFocus() }
+				}
+				imeWasVisible = imeVisible
+			}
 
 			LaunchedEffect(Unit) {
 				val extraQuery = arguments?.getString(EXTRA_QUERY)
@@ -106,7 +126,14 @@ class SearchFragment : Fragment() {
 						},
 						modifier = Modifier
 							.weight(1f)
-							.focusRequester(textInputFocusRequester),
+							.focusRequester(textInputFocusRequester)
+							// Jellyfin-TV-Client: „Runter“ verlässt das Suchfeld immer (das Textfeld behält die Taste sonst für sich)
+							.onPreviewKeyEvent { event ->
+								if (event.type == KeyEventType.KeyDown && event.key == Key.DirectionDown && searchFragmentDelegate.rowsAdapter.size() > 0) {
+									resultFocusRequester.requestFocus()
+									true
+								} else false
+							},
 					)
 				}
 

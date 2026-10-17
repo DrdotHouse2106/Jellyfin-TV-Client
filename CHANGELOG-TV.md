@@ -1,5 +1,12 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.19.4 – 2026-10-17
+
+- Startseite: Die Trailer-Vorschau läuft nur noch, solange das Banner ausgewählt ist. Steht die Auswahl in einer Reihe (auch nach „Zurück“ von einem Titel), bleibt es beim Bild.
+- Startseite: Nach „Zurück“ bleiben Auswahl und angezeigter Titel, wo sie waren – das Banner holt sich den Fokus nur beim ersten Öffnen.
+- Suche: „Runter“ führt aus dem Suchfeld zu den Ergebnissen, auch ohne die Suchen-Taste der Tastatur. Schließt man die Tastatur mit „Zurück“, springt die Auswahl zu den Ergebnissen.
+- Top 10: Die Rang-Ziffern stehen links neben dem Plakat und sind besser lesbar.
+
 ## 1.19.3 – 2026-10-17
 
 - Startseite: Nach dem Anmelden bleibt die Auswahl wirklich auf „Abspielen“ im Banner – die Zeilen darunter sind bis zum ersten Tastendruck gesperrt und können sich den Fokus nicht mehr holen.

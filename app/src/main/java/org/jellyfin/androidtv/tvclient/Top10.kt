@@ -158,14 +158,14 @@ private class Top10Presenter : Presenter() {
 		val context = parent.context
 		fun dp(value: Int) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value.toFloat(), context.resources.displayMetrics).toInt()
 
-		// Große dunkle Zahl mit hellem Schein als Umriss
+		// Große dunkle Zahl mit hellem Schein als Umriss, links neben dem Plakat (nur „10“ ragt etwas darunter)
 		val number = AppCompatTextView(context).apply {
-			setTextColor(Color.parseColor("#1A1A1A"))
-			setShadowLayer(dp(3).toFloat(), 0f, 0f, Color.parseColor("#B0B0B0"))
-			setTextSize(TypedValue.COMPLEX_UNIT_SP, 110f)
+			setTextColor(Color.parseColor("#2B2B2B"))
+			setShadowLayer(dp(3).toFloat(), 0f, 0f, Color.parseColor("#D0D0D0"))
+			setTextSize(TypedValue.COMPLEX_UNIT_SP, 96f)
 			typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
 			includeFontPadding = false
-			gravity = Gravity.BOTTOM or Gravity.END
+			gravity = Gravity.BOTTOM or Gravity.START
 		}
 		val poster = AsyncImageView(context).apply {
 			scaleType = ImageView.ScaleType.CENTER_CROP
@@ -173,11 +173,11 @@ private class Top10Presenter : Presenter() {
 			background = GradientDrawable().apply { cornerRadius = dp(4).toFloat(); setColor(Color.parseColor("#262626")) }
 		}
 		val root = FrameLayout(context).apply {
-			layoutParams = ViewGroup.LayoutParams(dp(170), dp(150))
+			layoutParams = ViewGroup.LayoutParams(dp(180), dp(150))
 			isFocusable = true
 			isFocusableInTouchMode = true
 			clipChildren = false
-			addView(number, FrameLayout.LayoutParams(dp(110), ViewGroup.LayoutParams.MATCH_PARENT, Gravity.START or Gravity.BOTTOM))
+			addView(number, FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.START or Gravity.BOTTOM))
 			addView(poster, FrameLayout.LayoutParams(dp(100), dp(150), Gravity.END))
 			val border = android.view.View(context).apply {
 				background = GradientDrawable().apply {

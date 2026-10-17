@@ -65,6 +65,9 @@ class HomeFragment : Fragment() {
 	private val notificationRepository by inject<NotificationsRepository>()
 	private val userPreferences by inject<UserPreferences>()
 
+	// Jellyfin-TV-Client: Banner schon einmal gestartet? Dann beim Zurückkehren keinen Fokus mehr erzwingen.
+	private var billboardStarted = false
+
 	override fun onCreateView(
 		inflater: LayoutInflater,
 		container: ViewGroup?,
@@ -83,10 +86,13 @@ class HomeFragment : Fragment() {
 		// Hat der Benutzer schon eine Taste gedrückt? Dann wird ihm der Fokus nicht mehr weggenommen.
 		var userInteracted by remember { mutableStateOf(false) }
 		if (showHero) LaunchedEffect(Unit) {
-			HomeHeroState.rowsFocusBlocked.value = true
+			// Zurück von einer anderen Seite: Fokus und Titel bleiben, wo sie waren
+			val firstStart = !billboardStarted
+			billboardStarted = true
+			if (firstStart) HomeHeroState.rowsFocusBlocked.value = true
 			billboardItems = HomeBillboard.load(api)
-			if (billboardItems.isEmpty()) HomeHeroState.rowsFocusBlocked.value = false
-			if (billboardItems.isNotEmpty()) {
+			if (billboardItems.isEmpty() || !firstStart) HomeHeroState.rowsFocusBlocked.value = false
+			if (firstStart && billboardItems.isNotEmpty()) {
 				HomeHeroState.item.value = billboardItems.first()
 				// Beim Öffnen (z. B. nach dem Anmelden) auf „Abspielen“ im Banner starten. Die Zeilen laden
 				// danach noch und holen sich dabei sonst den Fokus – deshalb einige Sekunden lang den Fokus
@@ -127,7 +133,10 @@ class HomeFragment : Fragment() {
 								items = billboardItems,
 								modifier = Modifier
 									.padding(start = 28.dp, top = 4.dp, bottom = 12.dp)
-									.onFocusChanged { billboardFocused = it.hasFocus },
+									.onFocusChanged {
+										billboardFocused = it.hasFocus
+										HomeHeroState.billboardFocused.value = it.hasFocus
+									},
 								focusRequester = billboardFocusRequester,
 								downFocusRequester = rowsFocusRequester,
 								leftFocusRequester = railHomeFocusRequester,
