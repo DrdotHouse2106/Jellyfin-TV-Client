@@ -53,6 +53,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.compose.content
 import kotlinx.coroutines.delay
 import org.jellyfin.androidtv.R
+import org.jellyfin.androidtv.auth.repository.UserRepository
 import org.jellyfin.androidtv.ui.base.JellyfinTheme
 import org.jellyfin.androidtv.ui.base.Text
 import org.jellyfin.androidtv.ui.composable.AsyncImage
@@ -89,6 +90,7 @@ private fun JellyseerrScreen() {
 	val context = LocalContext.current
 	val api = koinInject<ApiClient>()
 	val navigationRepository = koinInject<NavigationRepository>()
+	val userRepository = koinInject<UserRepository>()
 	val keyboard = LocalSoftwareKeyboardController.current
 	var query by remember { mutableStateOf(JellyseerrSearchState.query) }
 	val results = remember { mutableStateListOf<Jellyseerr.Media>() }
@@ -115,15 +117,14 @@ private fun JellyseerrScreen() {
 	LaunchedEffect(query, available) {
 		JellyseerrSearchState.query = query
 		if (available != true) return@LaunchedEffect
-		if (query.isBlank() && !Jellyseerr.supportsTrending) {
-			results.clear()
-			loading = false
-			return@LaunchedEffect
-		}
 		if (query.isNotBlank()) delay(500)
 		loading = true
 		error = null
-		runCatching { if (query.isBlank()) Jellyseerr.trending() else Jellyseerr.search(query.trim()) }
+		runCatching {
+			if (query.isNotBlank()) Jellyseerr.search(query.trim())
+			// Ohne Suchbegriff: Empfehlungen passend zu den eigenen Vorlieben, neuere zuerst
+			else JellyseerrDiscover.forYou(api, userRepository.currentUser.value?.id).ifEmpty { Jellyseerr.trending() }
+		}
 			.onSuccess { results.clear(); results.addAll(it) }
 			.onFailure {
 				Timber.w(it, "Jellyseerr-Abfrage fehlgeschlagen")
@@ -163,7 +164,7 @@ private fun JellyseerrScreen() {
 				text = when {
 					error != null -> error!!
 					loading -> stringResource(R.string.tvclient_jellyseerr_loading)
-					query.isBlank() && Jellyseerr.supportsTrending -> stringResource(R.string.tvclient_jellyseerr_trending)
+					query.isBlank() && results.isNotEmpty() -> stringResource(R.string.tvclient_jellyseerr_for_you)
 					query.isBlank() -> stringResource(R.string.tvclient_jellyseerr_search_hint)
 					results.isEmpty() -> stringResource(R.string.tvclient_jellyseerr_nothing)
 					else -> ""

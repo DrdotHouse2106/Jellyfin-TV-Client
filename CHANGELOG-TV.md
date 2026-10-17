@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.16.0 – 2026-10-17
+
+- **Anfragen – „Für dich“:** Öffnet man das „+“, stehen dort gleich Filme und Serien, die zu deinen Vorlieben passen und die es noch nicht auf dem Server gibt – **neuere zuerst**. Grundlage sind Titel mit „Gefällt mir“, Favoriten und zuletzt Gesehenes (ohne „Nichts für mich“); passende Vorschläge liefert Jellyseerr. Suchen geht wie bisher.
+
 ## 1.15.0 – 2026-10-17
 
 - **Trailer im kleinen Fenster:** Der Trailer-Knopf (Banner, Detailseite, Anfragen) öffnet ein Fenster mitten in der App statt einer anderen App. Trailer vom Server (z. B. Trailarr) laufen dort werbefrei; YouTube-Trailer über den offiziellen YouTube-Player (kann Werbung zeigen). „Zurück“ schließt das Fenster. Lässt sich ein Video nicht einbetten oder ist die WebView zu alt, öffnet sich die YouTube-App direkt (ohne Auswahl „Öffnen mit …“).

@@ -15,7 +15,7 @@ Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** 
 
 **Bewerten und Anfragen**
 - **Daumen hoch / runter** („Gefällt mir“ / „Nichts für mich“) auf der Detailseite, im Player (Knopf „Bewerten“) und auf dem Bildschirm „Nächste Folge“. Folgen bewerten ihre Serie. „Gefällt mir“ zählt für die Empfehlungen wie ein Favorit, „Nichts für mich“ wird nie empfohlen und macht ähnliche Titel seltener *
-- **Anfragen über Jellyseerr:** Ist auf dem Server das Plugin „Jellyfin Enhanced“ mit Jellyseerr eingerichtet, erscheint links ein „+“ zum Suchen; jeder Treffer hat eine Detailseite (Inhalt, Besetzung, Staffeln, Trailer) mit „Anfragen“ bzw. „Staffeln wählen“ – ohne Schlüssel am Fernseher, unter dem eigenen Benutzer. Ohne das Plugin erscheint nichts (optional: eigene Jellyseerr-Adresse und API-Schlüssel)
+- **Anfragen über Jellyseerr:** Ist auf dem Server das Plugin „Jellyfin Enhanced“ mit Jellyseerr eingerichtet, erscheint links ein „+“ zum Suchen; jeder Treffer hat eine Detailseite (Inhalt, Besetzung, Staffeln, Trailer) mit „Anfragen“ bzw. „Staffeln wählen“. Ohne Suchbegriff zeigt die Seite „Für dich“: passende Titel, die es noch nicht auf dem Server gibt, neuere zuerst – ohne Schlüssel am Fernseher, unter dem eigenen Benutzer. Ohne das Plugin erscheint nichts (optional: eigene Jellyseerr-Adresse und API-Schlüssel)
 
 **Player**
 - **Intro und Abspann überspringen:** der Knopf „Überspringen“ füllt sich in 5 Sekunden, dann wird übersprungen; „Zurück“ bricht ab

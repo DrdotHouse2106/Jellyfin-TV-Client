@@ -58,6 +58,8 @@ object Jellyseerr {
 		val status: Status,
 		/** Jellyfin-Eintrag, falls schon in der Bibliothek. */
 		val jellyfinId: UUID?,
+		/** Erscheinungsdatum (JJJJ-MM-TT), zum Sortieren nach Aktualität. */
+		val date: String? = null,
 	)
 
 	/** Wohin die Anfragen gehen. */
@@ -171,6 +173,7 @@ object Jellyseerr {
 				posterUrl = obj.string("posterPath")?.let { TMDB_IMAGES + it },
 				status = statusOf((mediaInfo?.get("status") as? JsonPrimitive)?.intOrNull),
 				jellyfinId = mediaInfo?.string("jellyfinMediaId")?.toUUIDOrNull(),
+				date = date,
 			)
 		}
 
