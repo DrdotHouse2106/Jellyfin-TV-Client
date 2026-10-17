@@ -85,6 +85,9 @@ class StartupActivity : FragmentActivity() {
 
 		super.onCreate(savedInstanceState)
 
+		// Jellyfin-TV-Client: Autostart-Dienst passend zur Einstellung starten
+		org.jellyfin.androidtv.tvclient.AutoStart.sync(this)
+
 		binding = ActivityStartupBinding.inflate(layoutInflater)
 		binding.background.setContent { AppBackground() }
 		binding.screensaver.isVisible = false

@@ -54,4 +54,7 @@
     <string name="tvclient_server_address_hint">Just the address, e.g. jellyfin.example.com or 192.168.1.10 – https/http and the port are detected automatically.</string>
     <string name="tvclient_server_address_example">jellyfin.example.com</string>
     <string name="tvclient_signing_in">Signing in as %1$s…</string>
+    <string name="tvclient_autostart">Start automatically when switched on</string>
+    <string name="tvclient_autostart_description">Opens Quallenkino when the device starts or wakes from standby</string>
+    <string name="tvclient_autostart_unsupported">Not available on Android 10 and newer (the system blocks automatic starts)</string>
 </resources>

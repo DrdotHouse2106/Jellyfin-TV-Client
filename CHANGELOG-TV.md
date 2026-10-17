@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.8.5 – 2026-10-17
+
+- **Autostart beim Einschalten** (Einstellungen → Darstellung & Bedienung, standardmäßig aus): Quallenkino öffnet sich nach einem Neustart des Geräts und beim Aufwachen aus dem Standby. Läuft die App schon, passiert nichts. Funktioniert bis Android 9 (z. B. Fire TV Stick mit Fire OS 7); ab Android 10 verbietet das System automatische Starts. Quallenkino wird nicht als Startbildschirm eingetragen.
+- APK zum Installieren: Release-Asset `quallenkino.apk` (bzw. `quallenkino-v1.8.5-release.apk`) im GitHub-Release v1.8.5.
+
 ## 1.8.4 – 2026-10-17
 
 - Startseite: Die Zeile „Live-TV“ mit den Knöpfen Aktuelles/Aufnahmen/Zeitplan/Serien ist standardmäßig aus (wieder einschaltbar unter Einstellungen → Startseite). Das TV-Programm bleibt über das Symbol links erreichbar.

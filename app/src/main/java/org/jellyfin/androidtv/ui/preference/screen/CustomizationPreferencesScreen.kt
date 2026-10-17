@@ -1,6 +1,7 @@
 package org.jellyfin.androidtv.ui.preference.screen
 
 import org.jellyfin.androidtv.R
+import org.jellyfin.androidtv.tvclient.AutoStart
 import org.jellyfin.androidtv.tvclient.PersonalScreensaver
 import org.jellyfin.androidtv.preference.UserPreferences
 import org.jellyfin.androidtv.preference.constant.AppTheme
@@ -69,6 +70,25 @@ class CustomizationPreferencesScreen : OptionsFragment() {
 				setTitle(R.string.pref_enable_media_management)
 				setContent(R.string.pref_enable_media_management_description)
 				bind(userPreferences, UserPreferences.mediaManagementEnabled)
+			}
+		}
+
+		// Jellyfin-TV-Client: Autostart beim Einschalten des Geräts
+		category {
+			setTitle(R.string.tvclient_autostart)
+
+			checkbox {
+				setTitle(R.string.tvclient_autostart)
+				setContent(if (AutoStart.supported) R.string.tvclient_autostart_description else R.string.tvclient_autostart_unsupported)
+				enabled = AutoStart.supported
+				bind {
+					get { AutoStart.supported && userPreferences[AutoStart.preference] }
+					set { value ->
+						userPreferences[AutoStart.preference] = value
+						AutoStart.sync(context)
+					}
+					default { false }
+				}
 			}
 		}
 
