@@ -13,7 +13,6 @@ class HomeRowTests : FunSpec({
 			HomeRow.RECOMMENDED_MOVIES,
 			HomeRow.RECOMMENDED_SERIES,
 			HomeRow.RECOMMENDED_LIVE_TV,
-			HomeRow.LIVE_TV,
 			HomeRow.LATEST_MEDIA,
 			HomeRow.WEB_SECTIONS,
 			HomeRow.GENRES,
@@ -21,9 +20,10 @@ class HomeRowTests : FunSpec({
 		)
 	}
 
-	test("Weiterhören, Aufnahmen, Apps und Gerät sind anfangs aus") {
+	test("Weiterhören, Live-TV-Knöpfe, Aufnahmen, Apps und Gerät sind anfangs aus") {
 		val enabled = HomeRow.entries.filter { it.preference.defaultValue }
 		enabled shouldNotContain HomeRow.RESUME_AUDIO
+		enabled shouldNotContain HomeRow.LIVE_TV
 		enabled shouldNotContain HomeRow.ACTIVE_RECORDINGS
 		enabled shouldNotContain HomeRow.APPS
 		enabled shouldNotContain HomeRow.DEVICE
