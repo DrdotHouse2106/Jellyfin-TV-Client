@@ -171,8 +171,11 @@ private fun CreditRow(title: Int, items: List<Jellyseerr.Media>, focus: FocusReq
 	Spacer(Modifier.height(4.dp))
 	// Von oben kommend immer auf den ersten Titel (danach auf den zuletzt gewählten), linksbündig
 	val first = remember { FocusRequester() }
+	val listState = androidx.compose.foundation.lazy.rememberLazyListState()
+	val scope = androidx.compose.runtime.rememberCoroutineScope()
 	MinimalScroll {
 		LazyRow(
+			state = listState,
 			modifier = Modifier.focusRestorer(first).focusGroup(),
 			horizontalArrangement = Arrangement.spacedBy(16.dp),
 			contentPadding = PaddingValues(12.dp),
@@ -180,7 +183,8 @@ private fun CreditRow(title: Int, items: List<Jellyseerr.Media>, focus: FocusReq
 			items(items, key = { "${it.type}-${it.id}" }) { media ->
 				var modifier = Modifier.width(120.dp)
 				if (media == items.first()) {
-					modifier = modifier.focusRequester(first)
+					// Erster Titel: ganz an den Anfang scrollen (sonst wird der Innenabstand weggescrollt)
+					modifier = modifier.focusRequester(first).firstItemScroll(listState, scope)
 					if (focus != null) modifier = modifier.focusRequester(focus)
 				}
 				MediaCard(media, modifier) { onClick(media) }

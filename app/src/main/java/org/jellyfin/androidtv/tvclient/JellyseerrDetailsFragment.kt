@@ -352,13 +352,14 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 				Text(stringResource(R.string.tvclient_jellyseerr_cast), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
 				Spacer(Modifier.height(8.dp))
 				val firstCast = remember { FocusRequester() }
+				val castState = androidx.compose.foundation.lazy.rememberLazyListState()
 				MinimalScroll {
-				LazyRow(belowFocus.focusRestorer(firstCast).focusGroup(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+				LazyRow(belowFocus.focusRestorer(firstCast).focusGroup(), state = castState, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
 					items(info.cast, key = { it.name + it.role }) { person ->
 						// OK öffnet die Personenseite
 						Column(
 							Modifier.width(90.dp)
-								.then(if (person == info.cast.first()) Modifier.focusRequester(firstCast) else Modifier)
+								.then(if (person == info.cast.first()) Modifier.focusRequester(firstCast).firstItemScroll(castState, scope) else Modifier)
 								.focusFrame { person.id?.let { navigationRepository.navigate(Destinations.jellyseerrPerson(it)) } },
 							horizontalAlignment = Alignment.CenterHorizontally,
 						) {
@@ -387,14 +388,16 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 				Text(stringResource(R.string.tvclient_jellyseerr_related), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
 				Spacer(Modifier.height(8.dp))
 				val firstRelated = remember { FocusRequester() }
+				val relatedState = androidx.compose.foundation.lazy.rememberLazyListState()
 				MinimalScroll {
 				LazyRow(
+					state = relatedState,
 					modifier = belowFocus.focusRestorer(firstRelated).focusGroup(),
 					horizontalArrangement = Arrangement.spacedBy(16.dp),
 					contentPadding = androidx.compose.foundation.layout.PaddingValues(12.dp),
 				) {
 					items(related.take(20), key = { "${it.type}-${it.id}" }) { media ->
-						MediaCard(media, Modifier.width(120.dp).then(if (media == related.first()) Modifier.focusRequester(firstRelated) else Modifier)) {
+						MediaCard(media, Modifier.width(120.dp).then(if (media == related.first()) Modifier.focusRequester(firstRelated).firstItemScroll(relatedState, scope) else Modifier)) {
 							navigationRepository.navigate(Destinations.jellyseerrDetails(media.type, media.id))
 						}
 					}

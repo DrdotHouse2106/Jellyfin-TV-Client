@@ -4,6 +4,7 @@
 
 - Startseite: Nach dem Anmelden bleibt die Auswahl wirklich auf „Abspielen“ im Banner – die Zeilen darunter sind bis zum ersten Tastendruck gesperrt und können sich den Fokus nicht mehr holen.
 - Banner: Die Knopfzeile hat immer drei Knöpfe („Trailer“ ist ohne Trailer gedimmt). Dadurch springt die Auswahl beim Durchklicken mit „Rechts“ nicht mehr kurz in die Navigation.
+- Personenseite/Detailseite: Nach „Zurück“ ist der erste Titel einer Reihe nicht mehr links abgeschnitten.
 
 ## 1.19.2 – 2026-10-17
 
