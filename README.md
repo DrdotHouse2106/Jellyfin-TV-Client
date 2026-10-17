@@ -23,6 +23,9 @@ Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** 
 - **Ton & Untertitel in einem Fenster** (zwei Spalten)
 - schnellere Suche mit Ergebnissen schon beim Tippen
 
+**Live-TV**
+- **Besetzung und Regie** auf der Detailseite einer Sendung (Reihe „Besetzung“) und im Programmführer – aus dem EPG über das Plugin „Local Recommendations“ (ab **12.7.1**, mit eingerichtetem XMLTV). OK auf einen Darsteller öffnet seine Personenseite (über Jellyseerr)
+
 **Sonstiges**
 - Profilauswahl „Wer schaut gerade?“ mit farbigen Kacheln und „Profile verwalten“
 - **Bildschirmschoner** mit persönlichen Empfehlungen statt Zufall, auf Wunsch mit **Teasern** (sonst Trailern) vom Server

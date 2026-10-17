@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.20.0 – 2026-10-17
+
+- **Live-TV: Besetzung und Regie.** Die Detailseite einer Sendung zeigt die Reihe „Besetzung“ mit Name und Rolle, die Regie steht in der Überschrift. Im Programmführer stehen „Regie“ und „Mit“ unter der Beschreibung. Die Daten kommen aus dem EPG über das Plugin Local Recommendations (ab 12.7.1, XMLTV eingerichtet). Ohne Daten bleibt die Reihe weg.
+- OK auf einen Darsteller öffnet seine Personenseite, wenn Jellyseerr genau eine Person mit diesem Namen findet.
+
 ## 1.19.4 – 2026-10-17
 
 - Startseite: Die Trailer-Vorschau läuft nur noch, solange das Banner ausgewählt ist. Steht die Auswahl in einer Reihe (auch nach „Zurück“ von einem Titel), bleibt es beim Bild.

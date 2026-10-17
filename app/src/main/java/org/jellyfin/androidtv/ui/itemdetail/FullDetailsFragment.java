@@ -644,6 +644,8 @@ public class FullDetailsFragment extends Fragment implements RecordingIndicatorV
                 break;
 
             default:
+                // Jellyfin-TV-Client: Besetzung von Live-TV-Sendungen aus dem EPG (Plugin Local Recommendations)
+                org.jellyfin.androidtv.tvclient.LiveTvCredits.addRow(getLifecycle(), requireContext(), adapter, mBaseItem);
                 addInfoRows(adapter);
         }
     }
@@ -1207,6 +1209,7 @@ public class FullDetailsFragment extends Fragment implements RecordingIndicatorV
         public void onItemClicked(final Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
 
+            if (org.jellyfin.androidtv.tvclient.LiveTvCredits.open(getLifecycle(), item)) return;
             if (!(item instanceof BaseRowItem)) return;
             itemLauncher.getValue().launch((BaseRowItem) item, (ItemRowAdapter) ((ListRow) row).getAdapter(), requireContext());
         }

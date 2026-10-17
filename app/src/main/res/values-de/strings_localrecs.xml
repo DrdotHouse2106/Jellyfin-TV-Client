@@ -111,4 +111,6 @@
     <string name="tvclient_jellyseerr_for_you">Für dich – Neuestes zuerst. Oder nach einem Titel suchen.</string>
     <string name="tvclient_jellyseerr_movies">Filme</string>
     <string name="tvclient_jellyseerr_series">Serien</string>
+    <string name="tvclient_livetv_director">Regie: %1$s</string>
+    <string name="tvclient_livetv_with">Mit: %1$s</string>
 </resources>

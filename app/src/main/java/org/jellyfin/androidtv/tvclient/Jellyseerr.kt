@@ -188,6 +188,17 @@ object Jellyseerr {
 		return if (year == null) results else results.filter { it.year == year }.ifEmpty { results }
 	}
 
+	/** TMDB-Id einer Person, deren Name genau passt – nur wenn es genau einen solchen Treffer gibt. */
+	suspend fun findPerson(name: String): Int? {
+		val encoded = URLEncoder.encode(name.take(256), "UTF-8").replace("+", "%20")
+		val results = json.parseToJsonElement(call(current(), "/search?query=$encoded&page=1&language=de")).jsonObject["results"]?.jsonArray.orEmpty()
+		val matches = results.mapNotNull { it as? JsonObject }
+			.filter { it.string("mediaType") == "person" && it.string("name").equals(name.trim(), ignoreCase = true) }
+			.mapNotNull { (it["id"] as? JsonPrimitive)?.intOrNull }
+			.distinct()
+		return matches.singleOrNull()
+	}
+
 	/** Trennt eine vierstellige Jahreszahl (1900–2099) am Ende des Suchbegriffs ab. */
 	fun splitYear(query: String): Pair<String, String?> {
 		val match = Regex("^(.*\\S)\\s+\\(?((?:19|20)\\d{2})\\)?$").find(query.trim()) ?: return query.trim() to null

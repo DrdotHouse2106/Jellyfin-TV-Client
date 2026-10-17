@@ -93,6 +93,9 @@ public class LiveProgramDetailPopup {
             mDSummary.setGravity(Gravity.START);
         }
 
+        // Jellyfin-TV-Client: Regie und Besetzung aus dem EPG nachladen
+        org.jellyfin.androidtv.tvclient.LiveTvCredits.appendToSummary(lifecycle, mDSummary, mProgram);
+
         // build timeline info
         TvManager.setTimelineRow(mContext, mDTimeline, mProgram);
 

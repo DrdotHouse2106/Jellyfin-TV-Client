@@ -43,6 +43,7 @@ Besonderheiten gegenüber anderen Jellyfin-Apps:
 • Daumen hoch/runter auf der Detailseite, im Player und vor der nächsten Folge – fließt in die Empfehlungen ein
 • Filme und Serien direkt am Fernseher anfragen (Jellyseerr, wenn auf dem Server eingerichtet)
 • Intelligente Untertitel (aus bei deutschem Ton), Ton und Untertitel in einem Fenster, Intro/Abspann automatisch überspringen
+• Live-TV mit Besetzung und Regie zur Sendung (wenn der Server sie aus dem EPG liefert)
 • Bildschirmschoner mit deinen Empfehlungen, auf Wunsch mit Trailern
 
 Außerdem: Weiterschauen, Als Nächstes, Live-TV mit TV-Programm und Aufnahmen, Untertitel, mehrere Benutzer, Quick Connect.
