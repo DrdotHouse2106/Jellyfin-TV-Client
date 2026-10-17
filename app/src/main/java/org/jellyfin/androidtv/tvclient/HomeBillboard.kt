@@ -203,6 +203,9 @@ fun HomeBillboardButtons(
 	fun step(delta: Int): Boolean {
 		if (items.size < 2) return false
 		val shown = items.indexOfFirst { it.id == current?.id }.coerceAtLeast(0)
+		// Erst auf „Abspielen“ (gibt es bei jedem Titel), dann wechseln – sonst verschwindet beim neuen
+		// Titel evtl. der ausgewählte Knopf (z. B. „Trailer“) und der Fokus springt in die Seitenleiste
+		if (delta > 0) runCatching { focusRequester.requestFocus() }
 		index = (shown + delta + items.size) % items.size
 		HomeHeroState.trailerPlaying.value = false
 		HomeHeroState.item.value = items[index]
@@ -213,8 +216,11 @@ fun HomeBillboardButtons(
 	}
 	LaunchedEffect(current?.id, refocusLast) {
 		if (!refocusLast) return@LaunchedEffect
-		delay(30)
-		runCatching { lastButtonFocus.requestFocus() }
+		// Nach dem Neuaufbau auf den letzten vorhandenen Knopf (Fallback: „Abspielen“)
+		for (attempt in 0 until 5) {
+			delay(40)
+			if (runCatching { lastButtonFocus.requestFocus() }.isSuccess) break
+		}
 		refocusLast = false
 	}
 	fun Modifier.stepOnKey(key: Key, delta: Int, enabled: () -> Boolean = { true }) = onPreviewKeyEvent { event ->

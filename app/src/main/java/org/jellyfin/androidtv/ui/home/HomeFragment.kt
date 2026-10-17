@@ -24,6 +24,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.leanback.widget.ListRowPresenter
@@ -56,7 +57,7 @@ import org.koin.compose.koinInject
 import org.jellyfin.sdk.api.client.ApiClient
 import org.jellyfin.sdk.model.api.BaseItemDto
 
-private const val BILLBOARD_FOCUS_WINDOW_MS = 5_000L
+private const val BILLBOARD_FOCUS_GUARD_MS = 8_000L
 
 class HomeFragment : Fragment() {
 	private val sessionRepository by inject<SessionRepository>()
@@ -70,9 +71,8 @@ class HomeFragment : Fragment() {
 		savedInstanceState: Bundle?
 	) = content {
 		val rowsFocusRequester = remember { FocusRequester() }
-		LaunchedEffect(rowsFocusRequester) { rowsFocusRequester.requestFocus() }
-
 		val showHero = remember { userPreferences[HomeRow.heroPreference] }
+		LaunchedEffect(rowsFocusRequester) { rowsFocusRequester.requestFocus() }
 
 		// Jellyfin-TV-Client: Billboard mit wechselnden Vorschlägen (Netflix-Ansicht)
 		val api = koinInject<ApiClient>()
@@ -80,24 +80,32 @@ class HomeFragment : Fragment() {
 		val railHomeFocusRequester = remember { FocusRequester() }
 		var billboardItems by remember { mutableStateOf<List<BaseItemDto>>(emptyList()) }
 		var billboardFocused by remember { mutableStateOf(false) }
+		// Hat der Benutzer schon eine Taste gedrückt? Dann wird ihm der Fokus nicht mehr weggenommen.
+		var userInteracted by remember { mutableStateOf(false) }
 		if (showHero) LaunchedEffect(Unit) {
-			val started = System.currentTimeMillis()
 			billboardItems = HomeBillboard.load(api)
 			if (billboardItems.isNotEmpty()) {
 				HomeHeroState.item.value = billboardItems.first()
-				// Beim Öffnen auf „Abspielen“ im Banner starten. Die Knöpfe erscheinen erst nach dem
-				// nächsten Zeichnen, deshalb mehrmals versuchen – aber nur kurz nach dem Start, damit
-				// niemandem, der schon in den Zeilen unterwegs ist, der Fokus weggenommen wird.
-				repeat(20) {
-					if (System.currentTimeMillis() - started > BILLBOARD_FOCUS_WINDOW_MS) return@LaunchedEffect
-					delay(50)
-					if (runCatching { billboardFocusRequester.requestFocus() }.isSuccess && billboardFocused) return@LaunchedEffect
+				// Beim Öffnen (z. B. nach dem Anmelden) auf „Abspielen“ im Banner starten. Die Zeilen laden
+				// danach noch und holen sich dabei sonst den Fokus – deshalb einige Sekunden lang den Fokus
+				// zurück ins Banner holen, solange niemand eine Taste gedrückt hat.
+				val until = System.currentTimeMillis() + BILLBOARD_FOCUS_GUARD_MS
+				while (!userInteracted && System.currentTimeMillis() < until) {
+					if (!billboardFocused) runCatching { billboardFocusRequester.requestFocus() }
+					delay(100)
 				}
 			}
 		}
 
 		JellyfinTheme {
-			Box(Modifier.fillMaxSize()) {
+			Box(
+				Modifier
+					.fillMaxSize()
+					.onPreviewKeyEvent {
+						userInteracted = true
+						false
+					}
+			) {
 				// Jellyfin-TV-Client: Netflix-Ansicht – Bild oben rechts, Navigation links, Infobereich oben
 				if (showHero) HomeHeroBackdrop()
 

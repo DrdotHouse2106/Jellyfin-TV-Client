@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.19.1 – 2026-10-17
+
+- Startseite: Nach dem Anmelden bzw. Öffnen bleibt die Auswahl im Banner auf „Abspielen“, auch wenn die Zeilen danach noch laden (bis man eine Taste drückt).
+- Banner: „Rechts“ zum nächsten Vorschlag funktioniert auch, wenn der neue Titel weniger Knöpfe hat (z. B. ohne „Trailer“) – die Auswahl springt nicht mehr in die Navigation.
+
 ## 1.19.0 – 2026-10-17
 
 - **Personenseite:** OK auf einen Schauspieler in der Besetzung (Anfragen-Detailseite) öffnet seine Seite mit Foto, Geburtstag und -ort, Biografie (OK klappt sie aus) und den Reihen „Filme“ und „Serien“ – neueste zuerst, mit Status (Verfügbar/Angefragt). OK auf einen Titel öffnet dessen Detailseite.
