@@ -25,6 +25,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import kotlinx.coroutines.flow.first
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.onPreviewKeyEvent
@@ -197,31 +198,15 @@ fun HomeBillboardButtons(
 		}
 	}
 
-	// Links/Rechts am Rand der Knöpfe: vorheriger/nächster Vorschlag
-	val lastButtonFocus = remember { FocusRequester() }
-	var refocusLast by remember { mutableStateOf(false) }
+	// Links/Rechts am Rand der Knöpfe: vorheriger/nächster Vorschlag. Die Knopfzeile hat immer drei
+	// Knöpfe (Trailer ggf. gedimmt), damit der ausgewählte Knopf beim Wechsel nie verschwindet.
 	fun step(delta: Int): Boolean {
 		if (items.size < 2) return false
 		val shown = items.indexOfFirst { it.id == current?.id }.coerceAtLeast(0)
-		// Erst auf „Abspielen“ (gibt es bei jedem Titel), dann wechseln – sonst verschwindet beim neuen
-		// Titel evtl. der ausgewählte Knopf (z. B. „Trailer“) und der Fokus springt in die Seitenleiste
-		if (delta > 0) runCatching { focusRequester.requestFocus() }
 		index = (shown + delta + items.size) % items.size
 		HomeHeroState.trailerPlaying.value = false
 		HomeHeroState.item.value = items[index]
-		// Die Knopfzeile wird neu aufgebaut (mit/ohne „Trailer“): Fokus gezielt auf den letzten Knopf,
-		// sonst landet er in der Seitenleiste
-		if (delta > 0) refocusLast = true
 		return true
-	}
-	LaunchedEffect(current?.id, refocusLast) {
-		if (!refocusLast) return@LaunchedEffect
-		// Nach dem Neuaufbau auf den letzten vorhandenen Knopf (Fallback: „Abspielen“)
-		for (attempt in 0 until 5) {
-			delay(40)
-			if (runCatching { lastButtonFocus.requestFocus() }.isSuccess) break
-		}
-		refocusLast = false
 	}
 	fun Modifier.stepOnKey(key: Key, delta: Int, enabled: () -> Boolean = { true }) = onPreviewKeyEvent { event ->
 		event.type == KeyEventType.KeyDown && event.key == key && enabled() && step(delta)
@@ -255,16 +240,19 @@ fun HomeBillboardButtons(
 		BillboardButton(
 			icon = R.drawable.ic_help,
 			text = stringResource(R.string.tvclient_more_info),
-			// Rechts auf dem letzten Knopf: nächster Vorschlag
-			modifier = if (hasTrailer) buttonFocus else buttonFocus.focusRequester(lastButtonFocus).stepOnKey(Key.DirectionRight, 1),
+			modifier = buttonFocus,
 		) { navigationRepository.navigate(Destinations.itemDetails(item.id)) }
 
-		if (hasTrailer) {
-			BillboardButton(
-				icon = R.drawable.ic_trailer,
-				text = stringResource(R.string.lbl_trailers),
-				modifier = buttonFocus.focusRequester(lastButtonFocus).stepOnKey(Key.DirectionRight, 1),
-			) { scope.launch { HomeBillboard.playTrailer(context, api, playbackLauncher, item) } }
+		// Rechts auf dem letzten Knopf: nächster Vorschlag. Ohne Trailer bleibt der Knopf (gedimmt) stehen.
+		BillboardButton(
+			icon = R.drawable.ic_trailer,
+			text = stringResource(R.string.lbl_trailers),
+			modifier = buttonFocus
+				.stepOnKey(Key.DirectionRight, 1)
+				.alpha(if (hasTrailer) 1f else 0.4f),
+		) {
+			if (hasTrailer) scope.launch { HomeBillboard.playTrailer(context, api, playbackLauncher, item) }
+			else Toast.makeText(context, R.string.tvclient_no_trailer, Toast.LENGTH_SHORT).show()
 		}
 
 		// Punkte: welcher Vorschlag gerade gezeigt wird

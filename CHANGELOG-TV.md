@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.19.3 – 2026-10-17
+
+- Startseite: Nach dem Anmelden bleibt die Auswahl wirklich auf „Abspielen“ im Banner – die Zeilen darunter sind bis zum ersten Tastendruck gesperrt und können sich den Fokus nicht mehr holen.
+- Banner: Die Knopfzeile hat immer drei Knöpfe („Trailer“ ist ohne Trailer gedimmt). Dadurch springt die Auswahl beim Durchklicken mit „Rechts“ nicht mehr kurz in die Navigation.
+
 ## 1.19.2 – 2026-10-17
 
 - Personenseite und Anfragen-Detailseite: Mit „Runter“ in eine Reihe (Filme, Serien, Besetzung, „Das könnte dir auch gefallen“) wird der erste Titel ausgewählt, beim Zurückkommen der zuletzt gewählte. Die Reihen scrollen nur so weit wie nötig, statt den ausgewählten Titel in die Mitte zu schieben.

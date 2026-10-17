@@ -3,6 +3,7 @@ package org.jellyfin.androidtv.ui.home
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
+import android.view.ViewGroup
 import androidx.leanback.app.RowsSupportFragment
 import androidx.leanback.widget.BaseGridView
 import androidx.leanback.widget.ListRow
@@ -217,6 +218,14 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 
 		// Jellyfin-TV-Client: Netflix-Ansicht – die ausgewählte Zeile steht ganz oben, die Zeile davor
 		// verschwindet vollständig unter dem Infobereich
+		// Jellyfin-TV-Client: Zeilen nicht fokussierbar, solange das Banner beim Start den Fokus hält
+		HomeHeroState.rowsFocusBlocked
+			.onEach { blocked ->
+				verticalGridView?.descendantFocusability =
+					if (blocked) ViewGroup.FOCUS_BLOCK_DESCENDANTS else ViewGroup.FOCUS_AFTER_DESCENDANTS
+			}
+			.launchIn(viewLifecycleOwner.lifecycleScope)
+
 		if (netflixStyle) verticalGridView?.apply {
 			windowAlignment = BaseGridView.WINDOW_ALIGN_NO_EDGE
 			windowAlignmentOffset = 0

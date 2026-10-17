@@ -58,6 +58,12 @@ object HomeHeroState {
 	/** Ausgewählter Eintrag; wird von den Startseiten-Zeilen gesetzt. */
 	val item = MutableStateFlow<BaseItemDto?>(null)
 
+	/**
+	 * Zeilen beim Start sperren, bis der Benutzer eine Taste drückt – sonst holen sich die nachladenden
+	 * Leanback-Zeilen den Fokus vom Banner.
+	 */
+	val rowsFocusBlocked = MutableStateFlow(false)
+
 	/** Läuft gerade eine Trailer-Vorschau? Solange wechselt das Banner nicht automatisch. */
 	val trailerPlaying = MutableStateFlow(false)
 }

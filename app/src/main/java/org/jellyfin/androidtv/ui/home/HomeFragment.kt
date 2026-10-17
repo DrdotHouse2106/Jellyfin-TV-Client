@@ -83,7 +83,9 @@ class HomeFragment : Fragment() {
 		// Hat der Benutzer schon eine Taste gedrückt? Dann wird ihm der Fokus nicht mehr weggenommen.
 		var userInteracted by remember { mutableStateOf(false) }
 		if (showHero) LaunchedEffect(Unit) {
+			HomeHeroState.rowsFocusBlocked.value = true
 			billboardItems = HomeBillboard.load(api)
+			if (billboardItems.isEmpty()) HomeHeroState.rowsFocusBlocked.value = false
 			if (billboardItems.isNotEmpty()) {
 				HomeHeroState.item.value = billboardItems.first()
 				// Beim Öffnen (z. B. nach dem Anmelden) auf „Abspielen“ im Banner starten. Die Zeilen laden
@@ -102,7 +104,9 @@ class HomeFragment : Fragment() {
 				Modifier
 					.fillMaxSize()
 					.onPreviewKeyEvent {
+						// Erste Taste: Zeilen wieder freigeben (vor der Fokussuche, damit „Runter“ klappt)
 						userInteracted = true
+						HomeHeroState.rowsFocusBlocked.value = false
 						false
 					}
 			) {
