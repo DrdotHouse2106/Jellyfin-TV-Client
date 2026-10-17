@@ -10,7 +10,7 @@
 | Fire TV → Background image 1920×1080 | `background-1920x1080.png` |
 | Fire TV → Featured content logo 640×260 (optional) | `featured-logo-640x260.png` |
 | Fire TV → Featured content background 1920×720 (optional) | `featured-background-1920x720.png` |
-| Fire TV → Screenshots 1920×1080 (mind. 3) | vom Fire TV aufnehmen |
+| Fire TV → Screenshots 1920×1080 (3–10) | `screenshots/01-…10-*.png` (Demo-Server, eigene Domain geschwärzt) |
 
 ## Grunddaten
 
