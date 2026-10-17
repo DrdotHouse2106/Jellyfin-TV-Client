@@ -142,9 +142,30 @@ object TrailerWindow {
 		}
 		container.addView(webView, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 
+		val html = youtubeHtml(key, withSound())
+		webView.loadDataWithBaseURL("$ORIGIN/", html, "text/html", "UTF-8", null)
+
+		// Kommt der Player nicht in Gang (z. B. ohne Internet), die YouTube-App versuchen
+		handler.postDelayed({ if (!ready) fallback() }, READY_TIMEOUT_MS)
+
+		dialog.setOnDismissListener {
+			handler.removeCallbacksAndMessages(null)
+			webView.loadUrl("about:blank")
+			webView.destroy()
+		}
+		dialog.show()
+	}
+
+	const val ORIGIN = "https://de.drdothouse.jellyfintv"
+
+	/**
+	 * Seite mit dem offiziellen YouTube-IFrame-Player. Meldet über das JavaScript-Objekt „Quallenkino“
+	 * ready(), ended() und error(code). Der Player wird nicht verdeckt oder beschnitten.
+	 */
+	fun youtubeHtml(key: String, withSound: Boolean): String {
 		val volume = (TrailerPreview.volume * 100).toInt()
-		val mute = if (withSound()) "false" else "true"
-		val html = """
+		val mute = if (withSound) "false" else "true"
+		return """
 			<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1">
 			<style>html,body,#player{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden}</style></head>
 			<body><div id="player"></div>
@@ -163,20 +184,7 @@ object TrailerWindow {
 			}
 			</script></body></html>
 		""".trimIndent()
-		webView.loadDataWithBaseURL("$ORIGIN/", html, "text/html", "UTF-8", null)
-
-		// Kommt der Player nicht in Gang (z. B. ohne Internet), die YouTube-App versuchen
-		handler.postDelayed({ if (!ready) fallback() }, READY_TIMEOUT_MS)
-
-		dialog.setOnDismissListener {
-			handler.removeCallbacksAndMessages(null)
-			webView.loadUrl("about:blank")
-			webView.destroy()
-		}
-		dialog.show()
 	}
-
-	private const val ORIGIN = "https://de.drdothouse.jellyfintv"
 
 	private fun openApp(context: Context, key: String) {
 		try {

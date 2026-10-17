@@ -178,8 +178,17 @@ object Jellyseerr {
 		}
 
 	suspend fun search(query: String): List<Media> {
-		val encoded = URLEncoder.encode(query.take(256), "UTF-8").replace("+", "%20")
-		return parseResults(call(current(), "/search?query=$encoded&page=1&language=de"))
+		// „Superman 2025“: Jahreszahl am Ende abtrennen und selbst danach filtern (Jellyseerr versteht sie nicht)
+		val (text, year) = splitYear(query)
+		val encoded = URLEncoder.encode(text.take(256), "UTF-8").replace("+", "%20")
+		val results = parseResults(call(current(), "/search?query=$encoded&page=1&language=de"))
+		return if (year == null) results else results.filter { it.year == year }.ifEmpty { results }
+	}
+
+	/** Trennt eine vierstellige Jahreszahl (1900–2099) am Ende des Suchbegriffs ab. */
+	fun splitYear(query: String): Pair<String, String?> {
+		val match = Regex("^(.*\\S)\\s+\\(?((?:19|20)\\d{2})\\)?$").find(query.trim()) ?: return query.trim() to null
+		return match.groupValues[1] to match.groupValues[2]
 	}
 
 	/** „Das könnte dir auch gefallen“ zu einem Titel (Jellyseerr-Empfehlungen, ohne bereits Gesehenes zu kennen). */

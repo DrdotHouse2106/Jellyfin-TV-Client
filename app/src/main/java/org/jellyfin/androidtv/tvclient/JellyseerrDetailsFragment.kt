@@ -96,6 +96,9 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 	var details by remember { mutableStateOf<Jellyseerr.Details?>(null) }
 	var related by remember { mutableStateOf<List<Jellyseerr.Media>>(emptyList()) }
 	var jellyfinItem by remember { mutableStateOf<BaseItemDto?>(null) }
+	var localTrailerUrl by remember { mutableStateOf<String?>(null) }
+	// Automatische Trailer-Vorschau oben rechts; aus, sobald das große Fenster oder ein Dialog aufgeht
+	var previewOn by remember { mutableStateOf(true) }
 	val playbackLauncher = koinInject<PlaybackLauncher>()
 	var error by remember { mutableStateOf(false) }
 	val primaryFocus = remember { FocusRequester() }
@@ -117,6 +120,7 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 		// Den Titel in Jellyfin finden (die gespeicherte ID kann nach Umbenennen veraltet sein)
 		if (info.media.status in setOf(Jellyseerr.Status.AVAILABLE, Jellyseerr.Status.PARTIAL)) {
 			jellyfinItem = JellyfinLink.resolve(api, info.media, userRepository.currentUser.value?.id)
+			jellyfinItem?.takeIf { (it.localTrailerCount ?: 0) > 0 }?.let { localTrailerUrl = TrailerPreview.streamUrl(api, it) }
 		}
 		related = runCatching { Jellyseerr.recommendations(type, tmdbId) }.getOrDefault(emptyList())
 	}
@@ -149,6 +153,7 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 	fun chooseSeasons(info: Jellyseerr.Details) {
 		val open = info.seasons.filter { it.status == Jellyseerr.Status.NONE }
 		if (open.isEmpty()) return
+		previewOn = false
 		val checked = BooleanArray(open.size) { true }
 		AlertDialog.Builder(context)
 			.setTitle(R.string.tvclient_jellyseerr_choose_seasons)
@@ -188,6 +193,14 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 			Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0.45f to Color.Transparent, 0.75f to Color(0xFF101010))))
 		}
 
+		// Trailer im Hintergrund oben rechts (lokal bevorzugt, sonst YouTube)
+		BackdropTrailer(
+			localUrl = localTrailerUrl,
+			youtubeKey = info.trailerKey.takeIf { localTrailerUrl == null },
+			background = Color(0xFF101010),
+			enabled = previewOn,
+		)
+
 		Column(
 			Modifier
 				.fillMaxSize()
@@ -202,7 +215,8 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 					}
 				}
 
-				Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+				// Platz rechts lassen für den Trailer oben rechts
+				Column(Modifier.fillMaxWidth(0.62f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
 					StatusBadge(info.media.status)
 					Text(info.media.title, fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.White)
 					info.originalTitle?.let { Text(it, color = Color(0xFFB3B3B3)) }
@@ -250,6 +264,7 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 						if (localTrailer || info.trailerKey != null) {
 							Button(
 								onClick = {
+									previewOn = false
 									val item = jellyfinItem
 									if (localTrailer && item != null) {
 										// Trailer, der auf dem Server liegt (z. B. von Trailarr)

@@ -123,8 +123,12 @@ fun TrailerVideo(
 		}
 	}
 
+	// Sanft ein- und ausblenden
+	val alpha by androidx.compose.animation.core.animateFloatAsState(
+		if (visible) 1f else 0f, androidx.compose.animation.core.tween(600), label = "TrailerAlpha",
+	)
 	AndroidView(
-		modifier = modifier.alpha(if (visible) 1f else 0f),
+		modifier = modifier.alpha(alpha),
 		factory = { viewContext ->
 			PlayerView(viewContext).apply {
 				useController = false

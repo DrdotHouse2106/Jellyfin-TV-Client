@@ -2,6 +2,7 @@ package org.jellyfin.androidtv.tvclient
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.shouldBe
 
 class JellyseerrDiscoverTests : FunSpec({
 	fun media(id: Int, year: String, type: String = "movie", status: Jellyseerr.Status = Jellyseerr.Status.NONE) =
@@ -21,5 +22,14 @@ class JellyseerrDiscoverTests : FunSpec({
 			setOf("movie-1"),
 		)
 		result.map { it.id } shouldContainExactly listOf(5)
+	}
+})
+
+class JellyseerrSearchTests : io.kotest.core.spec.style.FunSpec({
+	test("Jahreszahl am Ende wird abgetrennt") {
+		Jellyseerr.splitYear("Superman 2025") shouldBe ("Superman" to "2025")
+		Jellyseerr.splitYear("Blade Runner (1982)") shouldBe ("Blade Runner" to "1982")
+		Jellyseerr.splitYear("1917") shouldBe ("1917" to null)
+		Jellyseerr.splitYear("Lucky Luke") shouldBe ("Lucky Luke" to null)
 	}
 })

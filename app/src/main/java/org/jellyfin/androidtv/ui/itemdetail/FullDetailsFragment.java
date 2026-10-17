@@ -157,6 +157,8 @@ public class FullDetailsFragment extends Fragment implements RecordingIndicatorV
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         FragmentFullDetailsBinding binding = FragmentFullDetailsBinding.inflate(getLayoutInflater(), container, false);
+        // Jellyfin-TV-Client: Trailer läuft nach kurzer Zeit oben rechts im Hintergrund
+        trailerHolder = org.jellyfin.androidtv.tvclient.DetailsTrailer.attach((ViewGroup) binding.getRoot());
 
         BUTTON_SIZE = Utils.convertDpToPixel(requireContext(), 40);
 
@@ -417,6 +419,7 @@ public class FullDetailsFragment extends Fragment implements RecordingIndicatorV
             posterHeight = aspect > 1 ? Utils.convertDpToPixel(requireContext(), 160) : Utils.convertDpToPixel(requireContext(), item.getType() == BaseItemKind.PERSON || item.getType() == BaseItemKind.MUSIC_ARTIST ? 300 : 200);
 
             mDetailsOverviewRow = new MyDetailsOverviewRow(item);
+            if (trailerHolder != null) trailerHolder.getItem().setValue(item);
 
             String primaryImageUrl = imageHelper.getValue().getLogoImageUrl(mBaseItem, 600);
             if (primaryImageUrl == null) {
@@ -749,6 +752,7 @@ public class FullDetailsFragment extends Fragment implements RecordingIndicatorV
     }
 
     TextUnderButton favButton = null;
+    org.jellyfin.androidtv.tvclient.DetailsTrailer.Holder trailerHolder = null;
     TextUnderButton likeButton = null;
     TextUnderButton dislikeButton = null;
     TextUnderButton shuffleButton = null;
