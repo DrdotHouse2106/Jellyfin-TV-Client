@@ -65,7 +65,7 @@ object JellyseerrDiscover {
 
 	/** Ausgangstitel: „Gefällt mir“/Favoriten zuerst, dann zuletzt gesehene Filme und Serien. */
 	private suspend fun seeds(api: ApiClient, userId: UUID?): List<Seed> = withContext(Dispatchers.IO) {
-		fun query(filters: Set<ItemFilter>?, types: Set<BaseItemKind>, sort: ItemSortBy, limit: Int) = runCatching {
+		suspend fun query(filters: Set<ItemFilter>?, types: Set<BaseItemKind>, sort: ItemSortBy, limit: Int) = runCatching {
 			api.itemsApi.getItems(
 				GetItemsRequest(
 					userId = userId,
