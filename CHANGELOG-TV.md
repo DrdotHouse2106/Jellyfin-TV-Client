@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.8.6 – 2026-10-17
+
+- Autostart: Quallenkino wird nach dem Hochfahren mehrmals verzögert geöffnet (nach 3, 12 und 25 Sekunden) und nach dem Aufwachen aus dem Standby ebenso (1,5, 6 und 12 Sekunden), weil Fire OS seinen Startbildschirm kurz danach noch darüberlegt. Läuft Quallenkino bereits im Vordergrund, passiert nichts. Diagnose per `adb logcat -s QuallenkinoAutostart`.
+- APK: Release-Asset `quallenkino.apk` im GitHub-Release v1.8.6.
+
 ## 1.8.5 – 2026-10-17
 
 - **Autostart beim Einschalten** (Einstellungen → Darstellung & Bedienung, standardmäßig aus): Quallenkino öffnet sich nach einem Neustart des Geräts und beim Aufwachen aus dem Standby. Läuft die App schon, passiert nichts. Funktioniert bis Android 9 (z. B. Fire TV Stick mit Fire OS 7); ab Android 10 verbietet das System automatische Starts. Quallenkino wird nicht als Startbildschirm eingetragen.

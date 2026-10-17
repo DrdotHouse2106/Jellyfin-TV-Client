@@ -9,7 +9,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -56,22 +59,32 @@ object AutoStart {
 		val inForeground = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
 		if (inForeground) return
 
-		Timber.i("Autostart: Quallenkino wird geöffnet")
+		Log.i(TAG, "Quallenkino wird geöffnet")
 		val intent = Intent(context, StartupActivity::class.java)
 			.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
 		runCatching { context.startActivity(intent) }
-			.onFailure { Timber.w(it, "Autostart: Start nicht möglich") }
+			.onFailure { Log.w(TAG, "Start nicht möglich", it) }
 	}
+
+	internal const val TAG = "QuallenkinoAutostart"
+	internal const val EXTRA_BOOT = "boot"
 }
 
 /** Startet Quallenkino und den Dienst nach dem Hochfahren des Geräts. */
 class AutoStartReceiver : BroadcastReceiver() {
 	override fun onReceive(context: Context, intent: Intent) {
 		if (intent.action != Intent.ACTION_BOOT_COMPLETED && intent.action != "android.intent.action.QUICKBOOT_POWERON") return
+		Log.i(AutoStart.TAG, "Gerät hochgefahren (${intent.action}), Autostart an: ${AutoStart.enabled()}")
 		if (!AutoStart.enabled()) return
 
-		AutoStart.sync(context)
-		AutoStart.launch(context)
+		// Der Dienst öffnet die App mehrmals verzögert: Fire OS legt kurz nach dem Hochfahren noch
+		// seinen eigenen Startbildschirm darüber.
+		val serviceIntent = Intent(context, AutoStartService::class.java).putExtra(AutoStart.EXTRA_BOOT, true)
+		runCatching { ContextCompat.startForegroundService(context, serviceIntent) }
+			.onFailure {
+				Log.w(AutoStart.TAG, "Dienst nicht startbar, öffne direkt", it)
+				AutoStart.launch(context)
+			}
 	}
 }
 
@@ -80,14 +93,26 @@ class AutoStartService : Service() {
 	private companion object {
 		const val CHANNEL_ID = "tvclient_autostart"
 		const val NOTIFICATION_ID = 4711
+		val BOOT_DELAYS = listOf(3_000L, 12_000L, 25_000L)
+		val SCREEN_ON_DELAYS = listOf(1_500L, 6_000L, 12_000L)
 	}
 
 	private val screenOnReceiver = object : BroadcastReceiver() {
 		override fun onReceive(context: Context, intent: Intent) {
-			if (intent.action == Intent.ACTION_SCREEN_ON) AutoStart.launch(context)
+			if (intent.action == Intent.ACTION_SCREEN_ON) {
+				Log.i(AutoStart.TAG, "Bildschirm an")
+				scheduleLaunches(SCREEN_ON_DELAYS)
+			}
 		}
 	}
 	private var registered = false
+	private val handler = Handler(Looper.getMainLooper())
+
+	/** Mehrere Versuche, weil der Fire-TV-Startbildschirm nach dem Hochfahren/Aufwachen nachzieht. */
+	private fun scheduleLaunches(delays: List<Long>) {
+		handler.removeCallbacksAndMessages(null)
+		delays.forEach { handler.postDelayed({ AutoStart.launch(this) }, it) }
+	}
 
 	override fun onBind(intent: Intent?): IBinder? = null
 
@@ -104,10 +129,12 @@ class AutoStartService : Service() {
 			registerReceiver(screenOnReceiver, IntentFilter(Intent.ACTION_SCREEN_ON))
 			registered = true
 		}
+		if (intent?.getBooleanExtra(AutoStart.EXTRA_BOOT, false) == true) scheduleLaunches(BOOT_DELAYS)
 		return START_STICKY
 	}
 
 	override fun onDestroy() {
+		handler.removeCallbacksAndMessages(null)
 		if (registered) runCatching { unregisterReceiver(screenOnReceiver) }
 		registered = false
 		super.onDestroy()
