@@ -34,7 +34,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/lbl_valid_server_address"
+        android:text="@string/tvclient_server_address_hint"
         app:layout_constraintEnd_toStartOf="@id/center"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title" />
@@ -47,6 +47,7 @@
         android:layout_marginTop="8dp"
         android:imeOptions="actionDone"
         android:inputType="textUri"
+        android:hint="@string/tvclient_server_address_example"
         android:nextFocusDown="@id/confirm"
         android:nextFocusForward="@id/confirm"
         android:privateImeOptions="horizontalAlignment=right"

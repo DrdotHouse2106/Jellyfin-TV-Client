@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.8.2 – 2026-10-17
+
+- Profilauswahl ohne Profile: Der Hinweis „Wir konnten keine Konten finden“ liegt nicht mehr über der Kachel „Profil hinzufügen“.
+- Server hinzufügen: Hinweis, dass nur die Adresse nötig ist – https/http und Port erkennt die App selbst.
+
 ## 1.8.1 – 2026-10-16
 
 - Profilauswahl noch näher an Netflix: schwarzer Hintergrund, „Wer schaut gerade?“ mittig, gedecktere Profilfarben.

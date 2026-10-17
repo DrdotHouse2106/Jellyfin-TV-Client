@@ -118,7 +118,8 @@ class ServerFragment : Fragment() {
 			.onEach { users ->
 				userAdapter.items = users
 
-				binding.users.isFocusable = users.any()
+				// Jellyfin-TV-Client: die Kachel „Profil hinzufügen“ ist immer da – kein Hinweistext nötig
+				binding.users.isFocusable = true
 				// Jellyfin-TV-Client: Profile mittig anzeigen wie bei Netflix (Karte = 178dp breit)
 				binding.users.post {
 					val grid = _binding?.users ?: return@post
@@ -126,7 +127,7 @@ class ServerFragment : Fragment() {
 					val padding = ((grid.width - cardWidth * (users.size + 1)) / 2).coerceAtLeast(0)
 					grid.setPadding(padding, 0, padding, 0)
 				}
-				binding.noUsersWarning.isVisible = users.isEmpty()
+				binding.noUsersWarning.isVisible = false
 				binding.root.requestFocus()
 			}.launchIn(viewLifecycleOwner.lifecycleScope)
 
