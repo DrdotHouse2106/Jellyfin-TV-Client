@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.17.1 – 2026-10-17
+
+- Anfragen: Beim Öffnen steht die Auswahl auf dem ersten „Für dich“-Titel statt im Suchfeld – die Tastatur geht erst auf, wenn man mit „Hoch“ ins Suchfeld wechselt.
+
 ## 1.17.0 – 2026-10-17
 
 - **Trailer im Hintergrund der Detailseiten:** Auf der Detailseite eines Films oder einer Serie (Jellyfin und Anfragen) startet nach 2 Sekunden der Trailer oben rechts – „im Hintergrund, aber präsent“. Trailer vom Server ersetzen das Hintergrundbild und laufen weich aus; YouTube-Trailer erscheinen als sauberes Rechteck oben rechts (ohne etwas darüberzulegen). Ton wie eingestellt (Standard an, 75 %). Knöpfe und Fokus bleiben unverändert; beim Verlassen der Seite, beim großen Trailer-Fenster oder bei „Staffeln wählen“ stoppt die Vorschau. Abschaltbar mit „Trailer-Vorschau“ (Einstellungen → Startseite).

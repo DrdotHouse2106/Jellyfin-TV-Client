@@ -100,6 +100,7 @@ private fun JellyseerrScreen() {
 	val firstResultFocus = remember { FocusRequester() }
 	val restoreFocus = remember { FocusRequester() }
 	var available by remember { mutableStateOf<Boolean?>(null) }
+	var initialFocusDone by remember { mutableStateOf(false) }
 
 	fun focusResults() {
 		if (results.isEmpty()) return
@@ -135,9 +136,15 @@ private fun JellyseerrScreen() {
 		if (JellyseerrSearchState.focusedKey != null) {
 			delay(100)
 			runCatching { restoreFocus.requestFocus() }
+		} else if (query.isBlank() && !initialFocusDone) {
+			initialFocusDone = true
+			// Beim Öffnen: auf „Für dich“ statt ins Suchfeld (sonst geht sofort die Tastatur auf);
+			// ins Suchfeld kommt man mit „Hoch“
+			delay(100)
+			if (results.isNotEmpty()) runCatching { firstResultFocus.requestFocus() }
+			else runCatching { inputFocus.requestFocus() }
 		}
 	}
-	LaunchedEffect(Unit) { if (JellyseerrSearchState.focusedKey == null) runCatching { inputFocus.requestFocus() } }
 
 	Box(Modifier.fillMaxSize().background(Color(0xFF101010))) {
 		Column(Modifier.fillMaxSize().padding(horizontal = 48.dp, vertical = 27.dp)) {
