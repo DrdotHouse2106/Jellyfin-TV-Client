@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.10.0 – 2026-10-17
+
+- **Anfragen über Jellyseerr** (standardmäßig aus): Unter Einstellungen → Startseite → Anfragen einschalten und Jellyseerr-Adresse sowie API-Schlüssel eintragen. Dann erscheint links in der Navigation ein „+“. Dort zeigt Quallenkino gerade beliebte Titel, man kann suchen und mit OK einen Film oder eine Serie (alle Staffeln) anfragen. Verfügbare und schon angefragte Titel sind markiert. Die Anfrage läuft unter dem passenden Jellyseerr-Benutzer, wenn es einen zum Jellyfin-Konto gibt.
+
 ## 1.9.0 – 2026-10-17
 
 - **Top 10 bei euch** (Test): neue Zeile mit den meistgesehenen Filmen und Serien der letzten 60 Tage, mit großen Zahlen neben den Postern. Als Administrator zählen alle Benutzer des Servers, sonst nur das eigene Konto. Abschaltbar unter Einstellungen → Startseite.

@@ -57,7 +57,9 @@ fun SideRail(
 	val home = homeFocusRequester ?: remember { FocusRequester() }
 	val guide = remember { FocusRequester() }
 	val settings = remember { FocusRequester() }
-	val order = listOf(user, search, home, guide, settings)
+	val requests = remember { FocusRequester() }
+	val showRequests = remember { Jellyseerr.isConfigured() }
+	val order = listOfNotNull(user, search, home, guide, requests.takeIf { showRequests }, settings)
 
 	fun Modifier.railFocus(self: FocusRequester): Modifier {
 		val index = order.indexOf(self)
@@ -94,6 +96,11 @@ fun SideRail(
 		RailButton(R.drawable.ic_house, R.string.lbl_home, Modifier.railFocus(home), active = true) {}
 		RailButton(R.drawable.ic_tv_guide, R.string.lbl_live_tv_guide, Modifier.railFocus(guide)) {
 			navigationRepository.navigate(Destinations.liveTvGuide)
+		}
+		if (showRequests) {
+			RailButton(R.drawable.ic_add, R.string.tvclient_jellyseerr_title, Modifier.railFocus(requests)) {
+				navigationRepository.navigate(Destinations.jellyseerr)
+			}
 		}
 		RailButton(R.drawable.ic_settings, R.string.lbl_settings, Modifier.railFocus(settings)) {
 			activity?.let { it.startActivity(ActivityDestinations.userPreferences(it)) }

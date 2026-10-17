@@ -59,4 +59,23 @@
     <string name="tvclient_autostart_unsupported">Ab Android 10 nicht möglich (das System verbietet automatische Starts)</string>
     <string name="tvclient_home_top10">Top 10 bei euch</string>
     <string name="tvclient_home_top10_description">Die meistgesehenen Filme und Serien auf eurem Server der letzten 60 Tage (als Administrator über alle Benutzer)</string>
+    <string name="tvclient_jellyseerr_title">Anfragen</string>
+    <string name="tvclient_jellyseerr_enable">Filme und Serien anfragen (Jellyseerr)</string>
+    <string name="tvclient_jellyseerr_enable_description">Zeigt in der Navigation links einen Knopf, um Titel bei Jellyseerr oder Overseerr zu suchen und anzufragen</string>
+    <string name="tvclient_jellyseerr_url">Jellyseerr-Adresse</string>
+    <string name="tvclient_jellyseerr_url_hint">z. B. jellyseerr.beispiel.de oder 192.168.1.10:5055</string>
+    <string name="tvclient_jellyseerr_api_key">API-Schlüssel</string>
+    <string name="tvclient_jellyseerr_api_key_description">Jellyseerr → Einstellungen → Allgemein → API-Schlüssel</string>
+    <string name="tvclient_jellyseerr_not_set">Nicht eingestellt</string>
+    <string name="tvclient_jellyseerr_loading">Lädt …</string>
+    <string name="tvclient_jellyseerr_trending">Gerade beliebt – oder nach einem Titel suchen</string>
+    <string name="tvclient_jellyseerr_nothing">Nichts gefunden</string>
+    <string name="tvclient_jellyseerr_error">Jellyseerr ist nicht erreichbar. Bitte Adresse und API-Schlüssel prüfen.</string>
+    <string name="tvclient_jellyseerr_confirm">„%1$s“ anfragen?</string>
+    <string name="tvclient_jellyseerr_request">Anfragen</string>
+    <string name="tvclient_jellyseerr_requested">„%1$s“ wurde angefragt</string>
+    <string name="tvclient_jellyseerr_available">Verfügbar</string>
+    <string name="tvclient_jellyseerr_partial">Teilweise</string>
+    <string name="tvclient_jellyseerr_pending">Angefragt</string>
+    <string name="tvclient_saved">Gespeichert</string>
 </resources>

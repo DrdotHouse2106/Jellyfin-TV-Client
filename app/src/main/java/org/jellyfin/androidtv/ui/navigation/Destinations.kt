@@ -33,6 +33,8 @@ import java.util.UUID
 object Destinations {
 	// General
 	val home = fragmentDestination<HomeFragment>()
+	// Jellyfin-TV-Client: Filme/Serien bei Jellyseerr anfragen
+	val jellyseerr = fragmentDestination<org.jellyfin.androidtv.tvclient.JellyseerrFragment>()
 	fun search(query: String? = null) = fragmentDestination<SearchFragment>(
 		SearchFragment.EXTRA_QUERY to query,
 	)
