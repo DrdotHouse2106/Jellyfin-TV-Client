@@ -29,7 +29,7 @@
 
 **Kurzbeschreibung**
 
-Deine Filme und Serien vom eigenen Jellyfin-Server – im Netflix-Look, mit persönlichen Empfehlungen und Steuerung per Handy.
+Deine Filme und Serien vom eigenen Jellyfin-Server – mit großer Startseite im Kino-Stil, persönlichen Empfehlungen und Steuerung per Handy.
 
 **Beschreibung**
 
@@ -38,7 +38,7 @@ Quallenkino bringt deinen eigenen Jellyfin-Medienserver auf den Fernseher. Filme
 Besonderheiten gegenüber anderen Jellyfin-Apps:
 • Persönliche Empfehlungen auf der Startseite: „Empfohlene Filme für dich“, „Empfohlene Serien für dich“ und „Heute im TV für dich“ (mit dem Server-Plugin „Local Recommendations“)
 • Komplett per Handy steuerbar, z. B. mit „Jellyfin Remote“: Steuerkreuz, Suche, Bibliotheken, TV-Programm
-• Netflix-artige Startseite mit großem Infobereich, wechselnden Vorschlägen und Trailer-Vorschau
+• Startseite im Kino-Stil mit großem Infobereich, wechselnden Vorschlägen und Trailer-Vorschau
 • Intelligente Untertitel (aus bei deutschem Ton) und Intro/Abspann automatisch überspringen
 
 Außerdem: Weiterschauen, Als Nächstes, Live-TV mit TV-Programm und Aufnahmen, Untertitel, mehrere Benutzer, Quick Connect.
@@ -47,7 +47,7 @@ Voraussetzung: ein Jellyfin-Server (eigener oder von Familie/Freunden). Quallenk
 
 **Feature-Liste (eine Zeile pro Punkt)**
 
-Netflix-artige Startseite mit großem Infobereich und Trailer-Vorschau
+Startseite im Kino-Stil mit großem Infobereich und Trailer-Vorschau
 Persönliche Empfehlungen für Filme und Serien
 Intelligente Untertitel und Intro/Abspann überspringen
 Steuerung per Handy mit Jellyfin Remote
@@ -64,7 +64,7 @@ jellyfin, mediaserver, heimkino, filme, serien, live tv, empfehlungen, streaming
 
 **Short description**
 
-Movies and shows from your own Jellyfin server – with a Netflix-style home screen, personal recommendations and phone remote control.
+Movies and shows from your own Jellyfin server – with a cinematic home screen, personal recommendations and phone remote control.
 
 **Description**
 
@@ -73,7 +73,7 @@ Quallenkino brings your own Jellyfin media server to your TV. Movies, shows, mus
 What makes it different:
 • Personal recommendations on the home screen (with the server plugin "Local Recommendations")
 • Fully controllable from your phone, e.g. with "Jellyfin Remote"
-• Netflix-style home screen with a large info area, rotating suggestions and trailer preview
+• Cinematic home screen with a large info area, rotating suggestions and trailer preview
 • Smart subtitles (off for audio in your language) and automatic intro/credits skipping
 
 Also included: continue watching, next up, live TV with guide and recordings, subtitles, multiple users, Quick Connect.
@@ -82,7 +82,7 @@ Requires a Jellyfin server (your own or one from family and friends). Quallenkin
 
 **Feature bullets**
 
-Netflix-style home screen with large info area and trailer preview
+Cinematic home screen with large info area and trailer preview
 Personal recommendations for movies and shows
 Smart subtitles and intro/credits skipping
 Control everything from your phone with Jellyfin Remote
