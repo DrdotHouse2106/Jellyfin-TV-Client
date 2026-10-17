@@ -15,10 +15,9 @@ Alles andere ist wie in der offiziellen App: Player, Untertitel, Live-TV, Intro 
 
 ## Download
 
-Immer die neueste Version, beide im selben Release mit derselben Versionsnummer:
+Immer die neueste Version:
 
 - **Fire TV / Android TV:** https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk
-- **LG-Fernseher (webOS):** https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino-webos.ipk (Installation siehe [webos/README.md](webos/README.md))
 
 ## Voraussetzungen
 
@@ -169,10 +168,6 @@ Damit Jellyfin Remote dieselben Apps als Knöpfe zeigen kann, legt die App die L
 ## Geplant
 
 - Optionaler **Startbildschirm-Modus** (Launcher) für Android TV / Google TV. Auf Fire TV lässt Amazon keinen fremden Startbildschirm zu.
-
-## LG-Fernseher (webOS)
-
-Für LG-Fernseher gibt es eine eigene, einfachere Quallenkino-Version im Ordner [`webos/`](webos/README.md). Sie zeigt die Jellyfin-Weboberfläche des Servers mit Quallenkino-Name und -Icon, aber ohne die Extras der Android-Version.
 
 ## Datenschutz
 

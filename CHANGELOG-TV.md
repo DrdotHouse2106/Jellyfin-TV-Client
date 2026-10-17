@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## Unveröffentlicht
+
+- Die webOS-Version für LG-Fernseher wurde wieder entfernt. Ab der nächsten Version enthält das Release nur noch die Android-App.
+
 ## 1.8.10 – 2026-10-17
 
 - webOS (LG): Die Serveradresse lässt sich ohne „https://“ eingeben. Vorher hat das Eingabefeld des Fernsehers „Gib eine URL ein“ gemeldet, bevor die App selbst https/http ausprobieren konnte. „OK“ auf der Bildschirmtastatur verbindet jetzt direkt.
