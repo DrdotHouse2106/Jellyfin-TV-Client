@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.18.1 – 2026-10-17
+
+- Anfragen – Detailseite: Bei langen Titeln ist die Seite beim Öffnen nicht mehr verschoben (Titel höchstens zwei Zeilen, bei Überlänge kleiner; solange die Knöpfe ausgewählt sind, bleibt die Seite ganz oben). Dadurch startet der Trailer oben rechts wieder automatisch.
+- Der Trailer oben rechts blendet sich erst aus, wenn man mit „Runter“ zu Inhalt, Staffeln, Besetzung oder Empfehlungen geht, und kommt bei den Knöpfen wieder.
+- Nach einer Anfrage steht „Angefragt“ nur noch einmal (in der Eckdaten-Zeile); der Fokus geht auf den Trailer-Knopf.
+
 ## 1.18.0 – 2026-10-17
 
 - **Teaser im Bildschirmschoner:** Ist „Teaser und Trailer im Bildschirmschoner“ eingeschaltet, nimmt Quallenkino zuerst einen **Teaser** vom Server (kurz, kaum Spoiler) und nur ohne Teaser den Trailer. Teaser werden am Namen („Teaser“) oder an der Länge (bis 100 Sekunden) erkannt – auch unter den Extras, z. B. von Trailarr heruntergeladene.

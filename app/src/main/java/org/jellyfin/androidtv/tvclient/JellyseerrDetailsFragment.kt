@@ -41,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -101,6 +102,8 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 	var previewOn by remember { mutableStateOf(true) }
 	val scrollState = rememberScrollState()
 	var justRequested by remember { mutableStateOf(false) }
+	var belowFocused by remember { mutableStateOf(false) }
+	val belowFocus = Modifier.onFocusChanged { if (it.hasFocus) belowFocused = true }
 	val requestedFocus = remember { FocusRequester() }
 	val playbackLauncher = koinInject<PlaybackLauncher>()
 	var error by remember { mutableStateOf(false) }
@@ -131,6 +134,8 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 		if (details != null) {
 			delay(100)
 			runCatching { primaryFocus.requestFocus() }
+			delay(50)
+			scrollState.scrollTo(0)
 		}
 	}
 
@@ -144,7 +149,8 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 						media = info.media.copy(status = Jellyseerr.Status.REQUESTED),
 						seasons = info.seasons.map { if (seasons == null || it.number in seasons) it.copy(status = Jellyseerr.Status.REQUESTED) else it },
 					)
-					scope.launch { delay(50); runCatching { requestedFocus.requestFocus() } }
+					// Fokus auf den nächsten Knopf (Trailer), Seite bleibt oben
+					scope.launch { delay(50); runCatching { requestedFocus.requestFocus() }; scrollState.scrollTo(0) }
 				}
 				.onFailure {
 					Timber.w(it, "Jellyseerr-Anfrage fehlgeschlagen")
@@ -207,7 +213,8 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 			youtubeKey = info.trailerKey.takeIf { localTrailerUrl == null },
 			background = Color(0xFF101010),
 			// Beim Herunterscrollen ausblenden, damit nichts unter den Player rutscht
-			enabled = previewOn && scrollState.value < 40,
+			// Ausblenden, solange der Fokus unterhalb der Knöpfe ist (Inhalt, Staffeln, Besetzung …)
+			enabled = previewOn && !belowFocused,
 		)
 
 		Column(
@@ -226,7 +233,13 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 
 				// Platz rechts lassen für den Trailer oben rechts
 				Column(Modifier.fillMaxWidth(0.62f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-					Text(info.media.title, fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.White)
+					Text(
+						info.media.title,
+						fontSize = if (info.media.title.length > 26) 26.sp else 32.sp,
+						fontWeight = FontWeight.Bold,
+						color = Color.White,
+						maxLines = 2,
+					)
 					info.originalTitle?.let { Text(it, color = Color(0xFFB3B3B3)) }
 					// Status in der Eckdaten-Zeile, damit sich die Höhe nach einer Anfrage nicht ändert
 					Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -252,8 +265,16 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 					)
 					Spacer(Modifier.height(8.dp))
 
-					// Knöpfe
-					Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+					// Knöpfe – solange sie ausgewählt sind, bleibt die Seite ganz oben
+					Row(
+						horizontalArrangement = Arrangement.spacedBy(12.dp),
+						modifier = Modifier.onFocusChanged { state ->
+							if (state.hasFocus) {
+								belowFocused = false
+								scope.launch { delay(30); scrollState.animateScrollTo(0) }
+							}
+						},
+					) {
 						val jellyfinId = jellyfinItem?.id
 						if (jellyfinId != null) {
 							Button(
@@ -263,12 +284,6 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 						}
 						val canRequest = info.media.status == Jellyseerr.Status.NONE ||
 							(info.media.type == "tv" && info.seasons.any { it.status == Jellyseerr.Status.NONE })
-						// Nach der Anfrage bleibt an derselben Stelle ein Knopf „Angefragt“ (Fokus springt nicht)
-						if (!canRequest && justRequested) {
-							Button(onClick = {
-								Toast.makeText(context, R.string.tvclient_jellyseerr_already, Toast.LENGTH_SHORT).show()
-							}, modifier = Modifier.focusRequester(requestedFocus)) { Text(stringResource(R.string.tvclient_jellyseerr_pending)) }
-						}
 						if (canRequest) {
 							Button(
 								onClick = { request(info, if (info.media.type == "tv") info.seasons.filter { it.status == Jellyseerr.Status.NONE }.map { it.number }.ifEmpty { null } else null) },
@@ -289,7 +304,8 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 										scope.launch { HomeBillboard.playTrailer(context, api, playbackLauncher, item) }
 									} else info.trailerKey?.let { key -> TrailerWindow.showYoutube(context, key) }
 								},
-								modifier = if (!canRequest && jellyfinId == null) Modifier.focusRequester(primaryFocus) else Modifier,
+								modifier = (if (!canRequest && jellyfinId == null) Modifier.focusRequester(primaryFocus) else Modifier)
+									.focusRequester(requestedFocus),
 							) { Text(stringResource(R.string.lbl_play_trailers)) }
 						}
 						if (!canRequest && info.trailerKey == null && !localTrailer && jellyfinId == null) {
@@ -303,7 +319,7 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 
 			Spacer(Modifier.height(20.dp))
 			// Fokussierbar, damit man mit „Runter“ weiterblättern kann
-			info.media.overview?.let { Text(it, color = Color(0xFFE0E0E0), fontSize = 16.sp, modifier = Modifier.fillMaxWidth(0.55f).focusFrame()) }
+			info.media.overview?.let { Text(it, color = Color(0xFFE0E0E0), fontSize = 16.sp, modifier = Modifier.fillMaxWidth(0.55f).then(belowFocus).focusFrame()) }
 
 			// Staffeln
 			if (info.seasons.isNotEmpty()) {
@@ -311,7 +327,7 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 				Text(stringResource(R.string.tvclient_jellyseerr_seasons_title), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
 				Spacer(Modifier.height(6.dp))
 				info.seasons.forEach { season ->
-					Row(Modifier.focusFrame(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+					Row(belowFocus.focusFrame(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 						Text(
 							listOfNotNull(season.name, season.episodes?.let { context.resources.getQuantityString(R.plurals.tvclient_jellyseerr_episodes, it, it) }).joinToString(" · "),
 							color = Color(0xFFD0D0D0),
@@ -326,7 +342,7 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 				Spacer(Modifier.height(20.dp))
 				Text(stringResource(R.string.tvclient_jellyseerr_cast), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
 				Spacer(Modifier.height(8.dp))
-				LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+				LazyRow(belowFocus, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
 					items(info.cast, key = { it.name + it.role }) { person ->
 						Column(Modifier.width(90.dp).focusFrame(), horizontalAlignment = Alignment.CenterHorizontally) {
 							Box(Modifier.size(72.dp).clip(CircleShape).background(Color(0xFF262626)), contentAlignment = Alignment.Center) {
@@ -352,6 +368,7 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 				Text(stringResource(R.string.tvclient_jellyseerr_related), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
 				Spacer(Modifier.height(8.dp))
 				LazyRow(
+					modifier = belowFocus,
 					horizontalArrangement = Arrangement.spacedBy(16.dp),
 					contentPadding = androidx.compose.foundation.layout.PaddingValues(12.dp),
 				) {
