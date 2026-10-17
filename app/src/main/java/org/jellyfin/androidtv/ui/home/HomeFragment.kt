@@ -23,6 +23,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.leanback.widget.ListRowPresenter
@@ -31,6 +32,7 @@ import androidx.fragment.compose.content
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -54,6 +56,8 @@ import org.koin.compose.koinInject
 import org.jellyfin.sdk.api.client.ApiClient
 import org.jellyfin.sdk.model.api.BaseItemDto
 
+private const val BILLBOARD_FOCUS_WINDOW_MS = 5_000L
+
 class HomeFragment : Fragment() {
 	private val sessionRepository by inject<SessionRepository>()
 	private val serverRepository by inject<ServerRepository>()
@@ -75,11 +79,20 @@ class HomeFragment : Fragment() {
 		val billboardFocusRequester = remember { FocusRequester() }
 		val railHomeFocusRequester = remember { FocusRequester() }
 		var billboardItems by remember { mutableStateOf<List<BaseItemDto>>(emptyList()) }
+		var billboardFocused by remember { mutableStateOf(false) }
 		if (showHero) LaunchedEffect(Unit) {
+			val started = System.currentTimeMillis()
 			billboardItems = HomeBillboard.load(api)
 			if (billboardItems.isNotEmpty()) {
 				HomeHeroState.item.value = billboardItems.first()
-				runCatching { billboardFocusRequester.requestFocus() }
+				// Beim Öffnen auf „Abspielen“ im Banner starten. Die Knöpfe erscheinen erst nach dem
+				// nächsten Zeichnen, deshalb mehrmals versuchen – aber nur kurz nach dem Start, damit
+				// niemandem, der schon in den Zeilen unterwegs ist, der Fokus weggenommen wird.
+				repeat(20) {
+					if (System.currentTimeMillis() - started > BILLBOARD_FOCUS_WINDOW_MS) return@LaunchedEffect
+					delay(50)
+					if (runCatching { billboardFocusRequester.requestFocus() }.isSuccess && billboardFocused) return@LaunchedEffect
+				}
 			}
 		}
 
@@ -96,7 +109,9 @@ class HomeFragment : Fragment() {
 							HomeHero(Modifier.fillMaxWidth().height(200.dp))
 							HomeBillboardButtons(
 								items = billboardItems,
-								modifier = Modifier.padding(start = 28.dp, top = 4.dp, bottom = 12.dp),
+								modifier = Modifier
+									.padding(start = 28.dp, top = 4.dp, bottom = 12.dp)
+									.onFocusChanged { billboardFocused = it.hasFocus },
 								focusRequester = billboardFocusRequester,
 								downFocusRequester = rowsFocusRequester,
 								leftFocusRequester = railHomeFocusRequester,

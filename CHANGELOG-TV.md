@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.8.7 – 2026-10-17
+
+- Startseite: Beim Öffnen ist wieder „Abspielen“ im Banner oben ausgewählt statt „Weiterschauen“.
+
 ## 1.8.6 – 2026-10-17
 
 - Autostart: Quallenkino wird nach dem Hochfahren mehrmals verzögert geöffnet (nach 3, 12 und 25 Sekunden) und nach dem Aufwachen aus dem Standby ebenso (1,5, 6 und 12 Sekunden), weil Fire OS seinen Startbildschirm kurz danach noch darüberlegt. Läuft Quallenkino bereits im Vordergrund, passiert nichts. Diagnose per `adb logcat -s QuallenkinoAutostart`.
