@@ -53,6 +53,7 @@ fun BoxScope.BackdropTrailer(
 	youtubeKey: String?,
 	background: Color,
 	enabled: Boolean = true,
+	onUnavailable: () -> Unit = {},
 ) {
 	val userPreferences = koinInject<UserPreferences>()
 	if (!enabled || !userPreferences[TrailerPreview.enabledPreference]) return
@@ -76,6 +77,7 @@ fun BoxScope.BackdropTrailer(
 		YoutubeInline(
 			key = youtubeKey,
 			withSound = withSound,
+			onUnavailable = onUnavailable,
 			modifier = Modifier.align(Alignment.TopEnd).padding(top = 64.dp, end = 48.dp).fillMaxWidth(0.4f).aspectRatio(16f / 9f),
 		)
 	}
@@ -84,7 +86,7 @@ fun BoxScope.BackdropTrailer(
 /** YouTube-IFrame-Player ohne Bedienung, nicht fokussierbar; blendet sich bei Fehlern/Ende aus. */
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-private fun YoutubeInline(key: String, withSound: Boolean, modifier: Modifier) {
+private fun YoutubeInline(key: String, withSound: Boolean, modifier: Modifier, onUnavailable: () -> Unit) {
 	var visible by remember(key) { mutableStateOf(false) }
 	var gone by remember(key) { mutableStateOf(false) }
 	val alpha by animateFloatAsState(if (visible && !gone) 1f else 0f, tween(600), label = "YoutubeInlineAlpha")
@@ -94,7 +96,7 @@ private fun YoutubeInline(key: String, withSound: Boolean, modifier: Modifier) {
 	val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
 	DisposableEffect(key, lifecycleOwner) {
 		// Kommt der Player nicht in Gang, einfach ausblenden (der Nutzer hat nichts gedrückt)
-		handler.postDelayed({ if (!visible) gone = true }, 12_000)
+		handler.postDelayed({ if (!visible) { gone = true; onUnavailable() } }, 12_000)
 		// Seite verlassen oder App im Hintergrund: Vorschau beenden (sonst läuft der Ton weiter)
 		val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
 			if (event == androidx.lifecycle.Lifecycle.Event.ON_PAUSE) gone = true
@@ -130,6 +132,7 @@ private fun YoutubeInline(key: String, withSound: Boolean, modifier: Modifier) {
 					fun error(code: Int) = handler.post {
 						Timber.i("YouTube-Vorschau nicht möglich (%d)", code)
 						gone = true
+						onUnavailable()
 					}
 				}, "Quallenkino")
 				loadDataWithBaseURL("${TrailerWindow.ORIGIN}/", TrailerWindow.youtubeHtml(key, withSound), "text/html", "UTF-8", null)
@@ -150,6 +153,9 @@ object DetailsTrailer {
 	class Holder {
 		val item = kotlinx.coroutines.flow.MutableStateFlow<org.jellyfin.sdk.model.api.BaseItemDto?>(null)
 		val enabled = kotlinx.coroutines.flow.MutableStateFlow(true)
+
+		/** Wird aufgerufen, wenn die Vorschau nicht laufen kann (dann den Trailer-Knopf wieder zeigen). */
+		var onUnavailable: Runnable? = null
 
 		/** Vorschau stoppen (z. B. beim großen Trailer-Fenster oder beim Abspielen). */
 		fun stop() {
@@ -184,6 +190,7 @@ object DetailsTrailer {
 						youtubeKey = key.takeIf { localUrl == null },
 						background = Color.Black.copy(alpha = 0.85f),
 						enabled = enabled,
+						onUnavailable = { holder.onUnavailable?.run() },
 					)
 				}
 			}
@@ -192,4 +199,20 @@ object DetailsTrailer {
 		root.addView(view, 1.coerceAtMost(root.childCount), ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 		return holder
 	}
+}
+
+/** Jellyfin-TV-Client: Kann der Trailer hier automatisch laufen? Dann ist der Knopf „Trailer abspielen“ überflüssig. */
+object TrailerAutoplay {
+	private fun previewEnabled(): Boolean = runCatching {
+		org.koin.java.KoinJavaComponent.get<UserPreferences>(UserPreferences::class.java)[TrailerPreview.enabledPreference]
+	}.getOrDefault(false)
+
+	fun possible(hasLocalTrailer: Boolean, youtubeKey: String?): Boolean =
+		previewEnabled() && (hasLocalTrailer || (youtubeKey != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N))
+
+	/** Für die Jellyfin-Detailseite (Java). */
+	@JvmStatic
+	fun possible(item: org.jellyfin.sdk.model.api.BaseItemDto): Boolean =
+		(item.type == org.jellyfin.sdk.model.api.BaseItemKind.MOVIE || item.type == org.jellyfin.sdk.model.api.BaseItemKind.SERIES) &&
+			possible((item.localTrailerCount ?: 0) > 0, item.remoteTrailers.orEmpty().firstNotNullOfOrNull { TrailerWindow.youtubeKey(it.url) })
 }

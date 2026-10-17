@@ -33,3 +33,14 @@ class JellyseerrSearchTests : io.kotest.core.spec.style.FunSpec({
 		Jellyseerr.splitYear("Lucky Luke") shouldBe ("Lucky Luke" to null)
 	}
 })
+
+class JellyseerrVideoTests : io.kotest.core.spec.style.FunSpec({
+	test("Deutscher Trailer vor englischem, Trailer vor Teaser") {
+		val en = Jellyseerr.Video("en", "Trailer", "Official Trailer", "en")
+		val deTeaser = Jellyseerr.Video("dt", "Teaser", "Teaser Deutsch", null)
+		val deTrailer = Jellyseerr.Video("de", "Trailer", "Trailer German Deutsch", null)
+		Jellyseerr.pickVideo(listOf(en, deTeaser, deTrailer)) shouldBe deTrailer
+		Jellyseerr.pickVideo(listOf(en, deTeaser)) shouldBe deTeaser
+		Jellyseerr.pickVideo(listOf(en, Jellyseerr.Video("c", "Clip", "Clip", "de"))) shouldBe en
+	}
+})

@@ -5,6 +5,9 @@
 - Anfragen – Detailseite: Bei langen Titeln ist die Seite beim Öffnen nicht mehr verschoben (Titel höchstens zwei Zeilen, bei Überlänge kleiner; solange die Knöpfe ausgewählt sind, bleibt die Seite ganz oben). Dadurch startet der Trailer oben rechts wieder automatisch.
 - Der Trailer oben rechts blendet sich erst aus, wenn man mit „Runter“ zu Inhalt, Staffeln, Besetzung oder Empfehlungen geht, und kommt bei den Knöpfen wieder.
 - Nach einer Anfrage steht „Angefragt“ nur noch einmal (in der Eckdaten-Zeile); der Fokus geht auf den Trailer-Knopf.
+- Detailseiten: Läuft der Trailer automatisch oben rechts, wird der Knopf „Trailer abspielen“ ausgeblendet. Er erscheint wieder, wenn die Vorschau aus ist oder nicht laufen kann (z. B. YouTube-Fehler, sehr alte Geräte).
+- YouTube-Trailer: **deutsche Trailer zuerst** (Sprache „de“ oder „Deutsch/German/Offiziell/Kinostart“ im Namen), Trailer vor Teaser; englische nur, wenn es keine deutschen gibt.
+- Anfragen – Detailseite: Die Infospalte ist schmaler, damit die Knöpfe nicht unter den Trailer oben rechts reichen.
 
 ## 1.18.0 – 2026-10-17
 

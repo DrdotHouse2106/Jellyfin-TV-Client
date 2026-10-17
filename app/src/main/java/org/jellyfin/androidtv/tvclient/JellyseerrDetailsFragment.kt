@@ -103,6 +103,7 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 	val scrollState = rememberScrollState()
 	var justRequested by remember { mutableStateOf(false) }
 	var belowFocused by remember { mutableStateOf(false) }
+	var autoTrailerFailed by remember { mutableStateOf(false) }
 	val belowFocus = Modifier.onFocusChanged { if (it.hasFocus) belowFocused = true }
 	val requestedFocus = remember { FocusRequester() }
 	val playbackLauncher = koinInject<PlaybackLauncher>()
@@ -215,6 +216,7 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 			// Beim Herunterscrollen ausblenden, damit nichts unter den Player rutscht
 			// Ausblenden, solange der Fokus unterhalb der Knöpfe ist (Inhalt, Staffeln, Besetzung …)
 			enabled = previewOn && !belowFocused,
+			onUnavailable = { autoTrailerFailed = true },
 		)
 
 		Column(
@@ -232,7 +234,7 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 				}
 
 				// Platz rechts lassen für den Trailer oben rechts
-				Column(Modifier.fillMaxWidth(0.62f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+				Column(Modifier.fillMaxWidth(0.5f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
 					Text(
 						info.media.title,
 						fontSize = if (info.media.title.length > 26) 26.sp else 32.sp,
@@ -294,7 +296,10 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 							}
 						}
 						val localTrailer = (jellyfinItem?.localTrailerCount ?: 0) > 0
-						if (localTrailer || info.trailerKey != null) {
+						// Läuft der Trailer schon automatisch oben rechts, braucht es den Knopf nicht
+						val autoTrailer = !autoTrailerFailed && TrailerAutoplay.possible(localTrailerUrl != null, info.trailerKey)
+						val showTrailerButton = (localTrailer || info.trailerKey != null) && !autoTrailer
+						if (showTrailerButton) {
 							Button(
 								onClick = {
 									previewOn = false
@@ -308,8 +313,8 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 									.focusRequester(requestedFocus),
 							) { Text(stringResource(R.string.lbl_play_trailers)) }
 						}
-						if (!canRequest && info.trailerKey == null && !localTrailer && jellyfinId == null) {
-							Button(onClick = { navigationRepository.goBack() }, modifier = Modifier.focusRequester(primaryFocus)) {
+						if (!canRequest && !showTrailerButton && jellyfinId == null) {
+							Button(onClick = { navigationRepository.goBack() }, modifier = Modifier.focusRequester(primaryFocus).focusRequester(requestedFocus)) {
 								Text(stringResource(R.string.tvclient_back))
 							}
 						}

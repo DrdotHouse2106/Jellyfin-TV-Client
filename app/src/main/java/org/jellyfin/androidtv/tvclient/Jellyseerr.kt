@@ -227,6 +227,24 @@ object Jellyseerr {
 		call(target, "/request", method = "POST", body = body.toString())
 	}
 
+	data class Video(val key: String, val type: String, val name: String, val language: String?)
+
+	/**
+	 * Trailer auswählen (testbar): deutsche Videos zuerst (Sprache „de“ oder Name mit „deutsch“,
+	 * „german“, „offiziell“, „Kinostart“), dabei Trailer vor Teaser; erst danach andere Sprachen.
+	 */
+	fun pickVideo(videos: List<Video>): Video? {
+		fun Video.german() = language.equals("de", true) ||
+			listOf("deutsch", "german", "offiziell", "kinostart").any { name.contains(it, true) }
+		fun Video.rank() = when (type) {
+			"Trailer" -> 0
+			"Teaser" -> 1
+			else -> 2
+		}
+		val usable = videos.filter { it.type == "Trailer" || it.type == "Teaser" }
+		return usable.filter { it.german() }.minByOrNull { it.rank() } ?: usable.minByOrNull { it.rank() }
+	}
+
 	data class Person(val name: String, val role: String?, val imageUrl: String?)
 	data class Season(val number: Int, val name: String, val episodes: Int?, val status: Status)
 
@@ -285,9 +303,11 @@ object Jellyseerr {
 				if (number == 0) return@mapNotNull null // Specials
 				Season(number, season.string("name") ?: "Staffel $number", (season["episodeCount"] as? JsonPrimitive)?.intOrNull, requestedSeasons[number] ?: Status.NONE)
 			}
-		val trailer = (obj["relatedVideos"] as? kotlinx.serialization.json.JsonArray).orEmpty().mapNotNull { it as? JsonObject }
-			.firstOrNull { it.string("type") == "Trailer" && it.string("site").equals("YouTube", true) }
-			?.string("key")
+		val trailer = pickVideo((obj["relatedVideos"] as? kotlinx.serialization.json.JsonArray).orEmpty().mapNotNull { video ->
+			val o = video as? JsonObject ?: return@mapNotNull null
+			if (!o.string("site").equals("YouTube", true)) return@mapNotNull null
+			Video(o.string("key") ?: return@mapNotNull null, o.string("type").orEmpty(), o.string("name").orEmpty(), o.string("iso_639_1") ?: o.string("language"))
+		})?.key
 
 		return Details(
 			media = Media(

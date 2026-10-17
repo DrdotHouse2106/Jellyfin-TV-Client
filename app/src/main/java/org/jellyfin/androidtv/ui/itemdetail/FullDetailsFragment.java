@@ -864,6 +864,12 @@ public class FullDetailsFragment extends Fragment implements RecordingIndicatorV
             });
 
             mDetailsOverviewRow.addAction(trailerButton);
+            // Jellyfin-TV-Client: läuft der Trailer automatisch oben rechts, Knopf ausblenden (bei Fehler wieder zeigen)
+            if (org.jellyfin.androidtv.tvclient.TrailerAutoplay.possible(mBaseItem)) {
+                final TextUnderButton autoHidden = trailerButton;
+                autoHidden.setVisibility(View.GONE);
+                if (trailerHolder != null) trailerHolder.setOnUnavailable(() -> autoHidden.setVisibility(View.VISIBLE));
+            }
         }
 
         if (mProgramInfo != null && Utils.canManageRecordings(KoinJavaComponent.<UserRepository>get(UserRepository.class).getCurrentUser().getValue())) {
