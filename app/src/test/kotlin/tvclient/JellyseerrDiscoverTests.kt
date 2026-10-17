@@ -54,3 +54,11 @@ class JellyseerrLanguageLabelTests : io.kotest.core.spec.style.FunSpec({
 		Jellyseerr.languageLabel(Jellyseerr.Video("e", "Trailer", "Trailer", null), null) shouldBe "EN"
 	}
 })
+
+class JellyseerrCreditsTests : io.kotest.core.spec.style.FunSpec({
+	test("Filmografie: neueste zuerst, ohne Datum ans Ende, doppelte weg") {
+		fun m(id: Int, date: String?) = Jellyseerr.Media(id, "movie", "T$id", date?.take(4), null, "p", Jellyseerr.Status.NONE, null, date)
+		val result = Jellyseerr.sortCredits(listOf(m(1, "2001-01-01"), m(2, null), m(3, "2020-05-05"), m(1, "2001-01-01")))
+		result.map { it.id } shouldContainExactly listOf(3, 1, 2)
+	}
+})

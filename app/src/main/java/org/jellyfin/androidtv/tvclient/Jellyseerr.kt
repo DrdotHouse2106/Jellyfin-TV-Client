@@ -158,7 +158,10 @@ object Jellyseerr {
 
 	/** Suchergebnisse (Plugin und Jellyseerr liefern dasselbe Format); Personen werden ausgelassen. */
 	fun parseResults(text: String): List<Media> =
-		(json.parseToJsonElement(text).jsonObject["results"]?.jsonArray ?: emptyList<JsonElement>()).mapNotNull { element ->
+		parseMedia(json.parseToJsonElement(text).jsonObject["results"]?.jsonArray ?: emptyList<JsonElement>())
+
+	private fun parseMedia(elements: List<JsonElement>): List<Media> =
+		elements.mapNotNull { element ->
 			val obj = element as? JsonObject ?: return@mapNotNull null
 			val type = obj.string("mediaType") ?: return@mapNotNull null
 			if (type != "movie" && type != "tv") return@mapNotNull null
@@ -258,7 +261,41 @@ object Jellyseerr {
 		return if (language == null || language == "en") "EN" else language.uppercase()
 	}
 
-	data class Person(val name: String, val role: String?, val imageUrl: String?)
+	data class PersonDetails(
+		val name: String,
+		val imageUrl: String?,
+		val biography: String?,
+		val birthday: String?,
+		val placeOfBirth: String?,
+		val movies: List<Media>,
+		val series: List<Media>,
+	)
+
+	/** Personenseite: Daten und Filmografie (neueste zuerst, doppelte zusammengefasst). */
+	suspend fun person(id: Int): PersonDetails {
+		val obj = json.parseToJsonElement(call(current(), "/person/$id?language=de")).jsonObject
+		val credits = runCatching {
+			val c = json.parseToJsonElement(call(current(), "/person/$id/combined_credits?language=de")).jsonObject
+			parseMedia((c["cast"] as? kotlinx.serialization.json.JsonArray).orEmpty() + (c["crew"] as? kotlinx.serialization.json.JsonArray).orEmpty())
+		}.getOrDefault(emptyList())
+		val sorted = sortCredits(credits)
+		return PersonDetails(
+			name = obj.string("name").orEmpty(),
+			imageUrl = obj.string("profilePath")?.let { TMDB_IMAGES + it },
+			biography = obj.string("biography"),
+			birthday = obj.string("birthday"),
+			placeOfBirth = obj.string("placeOfBirth"),
+			movies = sorted.filter { it.type == "movie" },
+			series = sorted.filter { it.type == "tv" },
+		)
+	}
+
+	/** Filmografie sortieren (testbar): neueste zuerst; ohne Datum oder Plakat ans Ende; doppelte weg. */
+	fun sortCredits(credits: List<Media>): List<Media> = credits
+		.distinctBy { "${it.type}-${it.id}" }
+		.sortedWith(compareBy<Media> { it.date == null || it.posterUrl == null }.thenByDescending { it.date ?: "" })
+
+	data class Person(val name: String, val role: String?, val imageUrl: String?, val id: Int? = null)
 	data class Season(val number: Int, val name: String, val episodes: Int?, val status: Status)
 
 	data class Details(
@@ -291,6 +328,7 @@ object Jellyseerr {
 			.take(MAX_CAST)
 			.mapNotNull { person ->
 				Person(
+					id = (person["id"] as? JsonPrimitive)?.intOrNull,
 					name = person.string("name") ?: return@mapNotNull null,
 					role = person.string("character"),
 					imageUrl = person.string("profilePath")?.let { TMDB_PROFILES + it },

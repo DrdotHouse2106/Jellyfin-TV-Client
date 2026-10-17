@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -350,7 +351,11 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 				Spacer(Modifier.height(8.dp))
 				LazyRow(belowFocus, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
 					items(info.cast, key = { it.name + it.role }) { person ->
-						Column(Modifier.width(90.dp).focusFrame(), horizontalAlignment = Alignment.CenterHorizontally) {
+						// OK öffnet die Personenseite
+						Column(
+							Modifier.width(90.dp).focusFrame { person.id?.let { navigationRepository.navigate(Destinations.jellyseerrPerson(it)) } },
+							horizontalAlignment = Alignment.CenterHorizontally,
+						) {
 							Box(Modifier.size(72.dp).clip(CircleShape).background(Color(0xFF262626)), contentAlignment = Alignment.Center) {
 								if (person.imageUrl != null) {
 									AsyncImage(modifier = Modifier.fillMaxSize(), url = person.imageUrl, aspectRatio = 1f, scaleType = ImageView.ScaleType.CENTER_CROP)
@@ -392,11 +397,14 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 
 /** Fokussierbarer Bereich mit dünnem Rahmen – damit „Runter“ die Seite weiterscrollt. */
 @Composable
-private fun Modifier.focusFrame(): Modifier {
+private fun Modifier.focusFrame(onClick: (() -> Unit)? = null): Modifier {
 	val interaction = remember { MutableInteractionSource() }
 	val focused by interaction.collectIsFocusedAsState()
 	return this
 		.border(2.dp, if (focused) Color.White.copy(alpha = 0.8f) else Color.Transparent, RoundedCornerShape(6.dp))
 		.padding(4.dp)
-		.focusable(interactionSource = interaction)
+		.let {
+			if (onClick != null) it.clickable(interactionSource = interaction, indication = null, onClick = onClick)
+			else it.focusable(interactionSource = interaction)
+		}
 }

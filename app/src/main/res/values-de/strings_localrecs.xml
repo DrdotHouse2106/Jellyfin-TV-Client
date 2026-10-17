@@ -109,4 +109,6 @@
     </plurals>
     <string name="tvclient_jellyseerr_related">Das könnte dir auch gefallen</string>
     <string name="tvclient_jellyseerr_for_you">Für dich – Neuestes zuerst. Oder nach einem Titel suchen.</string>
+    <string name="tvclient_jellyseerr_movies">Filme</string>
+    <string name="tvclient_jellyseerr_series">Serien</string>
 </resources>
