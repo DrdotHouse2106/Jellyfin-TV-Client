@@ -53,4 +53,5 @@
     <string name="tvclient_switch_server">Switch server (%1$s)</string>
     <string name="tvclient_server_address_hint">Just the address, e.g. jellyfin.example.com or 192.168.1.10 – https/http and the port are detected automatically.</string>
     <string name="tvclient_server_address_example">jellyfin.example.com</string>
+    <string name="tvclient_signing_in">Signing in as %1$s…</string>
 </resources>

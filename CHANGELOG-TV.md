@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.8.3 – 2026-10-17
+
+- Profilauswahl: Beim Auswählen eines Profils erscheint „Anmeldung als … “, solange auf den Server gewartet wird.
+
 ## 1.8.2 – 2026-10-17
 
 - Profilauswahl ohne Profile: Der Hinweis „Wir konnten keine Konten finden“ liegt nicht mehr über der Kachel „Profil hinzufügen“.

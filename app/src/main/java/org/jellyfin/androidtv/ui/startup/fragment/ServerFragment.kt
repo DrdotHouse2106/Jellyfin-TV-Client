@@ -77,8 +77,8 @@ class ServerFragment : Fragment() {
 		userAdapter.onItemPressed = { user ->
 			startupViewModel.authenticate(server, user).onEach { state ->
 				when (state) {
-					// Ignored states
-					AuthenticatingState -> Unit
+					// Jellyfin-TV-Client: sichtbare Rückmeldung, solange der Server antwortet
+					AuthenticatingState -> Toast.makeText(context, getString(R.string.tvclient_signing_in, user.name), Toast.LENGTH_SHORT).show()
 					AuthenticatedState -> Unit
 					// Actions
 					RequireSignInState -> navigateFragment<UserLoginFragment>(bundleOf(
