@@ -28,9 +28,11 @@ import org.jellyfin.androidtv.ui.presentation.CardPresenter
 import org.jellyfin.androidtv.ui.presentation.MutableObjectAdapter
 import org.jellyfin.androidtv.util.ImageHelper
 import org.jellyfin.sdk.api.client.ApiClient
+import org.jellyfin.sdk.api.client.extensions.get
 import org.jellyfin.sdk.api.client.extensions.itemsApi
 import org.jellyfin.sdk.api.client.extensions.userApi
 import org.jellyfin.sdk.model.api.BaseItemDto
+import org.jellyfin.sdk.model.api.BaseItemDtoQueryResult
 import org.jellyfin.sdk.model.api.BaseItemKind
 import org.jellyfin.sdk.model.api.ItemFilter
 import org.jellyfin.sdk.model.api.ItemSortBy
@@ -47,8 +49,9 @@ import java.util.UUID
  * auf dem Server, mit großen Zahlen neben den Postern.
  *
  * Gezählt wird, wie viele Benutzer einen Titel (bei Serien: irgendeine Folge) in den letzten
- * [DAYS] Tagen gesehen haben, danach die Anzahl der Wiedergaben. Administratoren sehen alle
- * Benutzer; sonst zählt nur das eigene Konto.
+ * [DAYS] Tagen gesehen haben, danach die Anzahl der Wiedergaben. Die Zahlen kommen vom Plugin
+ * „Local Recommendations“ (ab 12.6.0, alle Benutzer). Ohne Plugin zählt die App selbst:
+ * als Administrator über alle Benutzer, sonst nur das eigene Konto.
  */
 object Top10 {
 	private const val DAYS = 60L
@@ -66,8 +69,18 @@ object Top10 {
 		.take(size)
 		.map { it.first }
 
+	/** Rangfolge vom Plugin „Local Recommendations“ (ab 12.6.0) – über alle Benutzer, ohne Admin-Rechte. */
+	private suspend fun loadFromPlugin(api: ApiClient): List<UUID>? = runCatching {
+		api.get<BaseItemDtoQueryResult>(
+			"/LocalRecs/Top10",
+			queryParameters = mapOf("type" to "all", "days" to DAYS, "limit" to SIZE),
+		).content.items.map { it.id }
+	}.onFailure { Timber.i("Top 10 vom Plugin nicht verfügbar: %s", it.message) }.getOrNull()
+
 	suspend fun load(api: ApiClient, currentUser: UserDto): List<BaseItemDto> = withContext(Dispatchers.IO) {
 		try {
+			loadFromPlugin(api)?.takeIf { it.isNotEmpty() }?.let { ids -> return@withContext itemsInOrder(api, currentUser, ids) }
+
 			val users = if (currentUser.policy?.isAdministrator == true) {
 				runCatching { api.userApi.getUsers().content }.getOrNull()?.take(MAX_USERS) ?: listOf(currentUser)
 			} else {
@@ -103,24 +116,27 @@ object Top10 {
 				}.awaitAll().flatten()
 			}
 
-			val ids = rank(usages)
-			if (ids.isEmpty()) return@withContext emptyList()
-
-			val byId = api.itemsApi.getItems(
-				GetItemsRequest(
-					userId = currentUser.id,
-					ids = ids,
-					fields = ItemRepository.browseFields,
-					enableUserData = true,
-					enableTotalRecordCount = false,
-				)
-			).content.items.associateBy { it.id }
-			ids.mapNotNull { byId[it] }
+			itemsInOrder(api, currentUser, rank(usages))
 		} catch (@Suppress("TooGenericExceptionCaught") err: Exception) {
 			Timber.w(err, "Top 10 konnte nicht geladen werden")
 			emptyList()
 		}
 	}
+}
+
+/** Titel mit allen Feldern für Infobereich und Karten laden, Reihenfolge beibehalten. */
+private suspend fun itemsInOrder(api: ApiClient, currentUser: UserDto, ids: List<UUID>): List<BaseItemDto> {
+	if (ids.isEmpty()) return emptyList()
+	val byId = api.itemsApi.getItems(
+		GetItemsRequest(
+			userId = currentUser.id,
+			ids = ids,
+			fields = ItemRepository.browseFields,
+			enableUserData = true,
+			enableTotalRecordCount = false,
+		)
+	).content.items.associateBy { it.id }
+	return ids.mapNotNull { byId[it] }
 }
 
 class HomeFragmentTop10Row(private val items: List<BaseItemDto>) : HomeFragmentRow {

@@ -195,7 +195,7 @@ public class CustomPlaybackTransportControlGlue extends PlaybackTransportControl
         selectAudioAction = new SelectAudioAction(context, this);
         selectAudioAction.setLabels(new String[]{context.getString(R.string.lbl_audio_track)});
         closedCaptionsAction = new ClosedCaptionsAction(context, this);
-        closedCaptionsAction.setLabels(new String[]{context.getString(R.string.lbl_subtitle_track)});
+        closedCaptionsAction.setLabels(new String[]{context.getString(R.string.tvclient_audio_subtitles)});
         selectQualityAction = new SelectQualityAction(context, this, KoinJavaComponent.get(UserPreferences.class));
         selectQualityAction.setLabels(new String[]{context.getString(R.string.lbl_quality_profile)});
         playbackSpeedAction = new PlaybackSpeedAction(context, this, playbackController);
@@ -243,12 +243,9 @@ public class CustomPlaybackTransportControlGlue extends PlaybackTransportControl
             primaryActionsAdapter.add(fastForwardAction);
         }
 
-        if (playerAdapter.hasSubs()) {
+        // Jellyfin-TV-Client: ein Knopf für Ton und Untertitel
+        if (playerAdapter.hasSubs() || playerAdapter.hasMultiAudio()) {
             primaryActionsAdapter.add(closedCaptionsAction);
-        }
-
-        if (playerAdapter.hasMultiAudio()) {
-            primaryActionsAdapter.add(selectAudioAction);
         }
 
         if (playerAdapter.isLiveTv()) {

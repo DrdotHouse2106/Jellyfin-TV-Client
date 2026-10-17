@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.11.0 – 2026-10-17
+
+- **Top 10 über alle Benutzer:** Die Zeile „Top 10 bei euch“ nimmt jetzt die Zahlen vom Plugin „Local Recommendations“ (ab 12.6.0) – über alle Benutzer des Servers, auch ohne Administrator-Rechte. Ohne das neue Plugin zählt die App wie bisher selbst.
+- **Daumen hoch/runter** auf der Detailseite von Filmen und Serien („Gefällt mir“ / „Nichts für mich“). Gespeichert wird in Jellyfin; das Plugin „Local Recommendations“ (ab 12.6.0) nutzt es für die Empfehlungen: „Gefällt mir“ zählt wie ein Favorit, „Nichts für mich“ wird nie empfohlen und macht ähnliche Titel seltener. Nochmal drücken nimmt die Bewertung zurück.
+- **Ton & Untertitel in einem Fenster:** Im Player gibt es nur noch einen Knopf. Er öffnet zwei Spalten – links Tonspuren, rechts Untertitel – mit Haken bei der aktiven Auswahl.
+
 ## 1.10.0 – 2026-10-17
 
 - **Anfragen über Jellyseerr** (standardmäßig aus): Unter Einstellungen → Startseite → Anfragen einschalten und Jellyseerr-Adresse sowie API-Schlüssel eintragen. Dann erscheint links in der Navigation ein „+“. Dort zeigt Quallenkino gerade beliebte Titel, man kann suchen und mit OK einen Film oder eine Serie (alle Staffeln) anfragen. Verfügbare und schon angefragte Titel sind markiert. Die Anfrage läuft unter dem passenden Jellyseerr-Benutzer, wenn es einen zum Jellyfin-Konto gibt.

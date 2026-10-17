@@ -58,7 +58,7 @@
     <string name="tvclient_autostart_description">Öffnet Quallenkino, wenn das Gerät hochfährt oder aus dem Standby aufwacht</string>
     <string name="tvclient_autostart_unsupported">Ab Android 10 nicht möglich (das System verbietet automatische Starts)</string>
     <string name="tvclient_home_top10">Top 10 bei euch</string>
-    <string name="tvclient_home_top10_description">Die meistgesehenen Filme und Serien auf eurem Server der letzten 60 Tage (als Administrator über alle Benutzer)</string>
+    <string name="tvclient_home_top10_description">Die meistgesehenen Filme und Serien aller Benutzer der letzten 60 Tage (braucht das Plugin „Local Recommendations“ ab 12.6.0; ohne Plugin sehen nur Administratoren alle Benutzer)</string>
     <string name="tvclient_jellyseerr_title">Anfragen</string>
     <string name="tvclient_jellyseerr_enable">Filme und Serien anfragen (Jellyseerr)</string>
     <string name="tvclient_jellyseerr_enable_description">Zeigt in der Navigation links einen Knopf, um Titel bei Jellyseerr oder Overseerr zu suchen und anzufragen</string>
@@ -78,4 +78,7 @@
     <string name="tvclient_jellyseerr_partial">Teilweise</string>
     <string name="tvclient_jellyseerr_pending">Angefragt</string>
     <string name="tvclient_saved">Gespeichert</string>
+    <string name="tvclient_like">Gefällt mir</string>
+    <string name="tvclient_dislike">Nichts für mich</string>
+    <string name="tvclient_audio_subtitles">Ton &amp; Untertitel</string>
 </resources>

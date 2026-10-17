@@ -125,6 +125,27 @@ fun FullDetailsFragment.toggleFavorite() {
 	}
 }
 
+/**
+ * Jellyfin-TV-Client: Daumen hoch ([like] = true) oder runter ([like] = false). Ein zweiter Druck auf
+ * denselben Daumen nimmt die Bewertung zurück.
+ */
+fun FullDetailsFragment.toggleLikes(like: Boolean) {
+	val api by inject<ApiClient>()
+
+	lifecycleScope.launch {
+		runCatching {
+			withContext(Dispatchers.IO) {
+				if (mBaseItem.userData?.likes == like) api.userLibraryApi.deleteUserItemRating(mBaseItem.id).content
+				else api.userLibraryApi.updateUserItemRating(mBaseItem.id, likes = like).content
+			}
+		}.onSuccess { userData ->
+			mBaseItem = mBaseItem.copyWithUserData(userData)
+			likeButton?.isActivated = userData.likes == true
+			dislikeButton?.isActivated = userData.likes == false
+		}.onFailure { Timber.w(it, "Bewertung konnte nicht gespeichert werden") }
+	}
+}
+
 fun FullDetailsFragment.togglePlayed() {
 	val itemMutationRepository by inject<ItemMutationRepository>()
 	val dataRefreshService by inject<DataRefreshService>()

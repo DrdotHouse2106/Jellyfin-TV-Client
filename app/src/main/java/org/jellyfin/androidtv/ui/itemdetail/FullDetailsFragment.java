@@ -749,6 +749,8 @@ public class FullDetailsFragment extends Fragment implements RecordingIndicatorV
     }
 
     TextUnderButton favButton = null;
+    TextUnderButton likeButton = null;
+    TextUnderButton dislikeButton = null;
     TextUnderButton shuffleButton = null;
     TextUnderButton goToSeriesButton = null;
     TextUnderButton queueButton = null;
@@ -969,6 +971,16 @@ public class FullDetailsFragment extends Fragment implements RecordingIndicatorV
             });
             favButton.setActivated(userData.isFavorite());
             mDetailsOverviewRow.addAction(favButton);
+
+            // Jellyfin-TV-Client: Daumen hoch/runter (fließt in „Local Recommendations“ ein)
+            if (mBaseItem.getType() == BaseItemKind.MOVIE || mBaseItem.getType() == BaseItemKind.SERIES) {
+                likeButton = TextUnderButton.create(requireContext(), R.drawable.tvclient_ic_thumb_up, buttonSize, 2, getString(R.string.tvclient_like), v -> FullDetailsFragmentHelperKt.toggleLikes(FullDetailsFragment.this, true));
+                dislikeButton = TextUnderButton.create(requireContext(), R.drawable.tvclient_ic_thumb_down, buttonSize, 2, getString(R.string.tvclient_dislike), v -> FullDetailsFragmentHelperKt.toggleLikes(FullDetailsFragment.this, false));
+                likeButton.setActivated(Boolean.TRUE.equals(userData.getLikes()));
+                dislikeButton.setActivated(Boolean.FALSE.equals(userData.getLikes()));
+                mDetailsOverviewRow.addAction(likeButton);
+                mDetailsOverviewRow.addAction(dislikeButton);
+            }
         }
 
         if (mBaseItem.getType() == BaseItemKind.EPISODE && mBaseItem.getSeriesId() != null) {

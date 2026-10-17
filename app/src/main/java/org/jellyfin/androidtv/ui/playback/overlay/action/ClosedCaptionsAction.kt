@@ -1,11 +1,10 @@
 package org.jellyfin.androidtv.ui.playback.overlay.action
 
 import android.content.Context
-import android.view.Gravity
 import android.view.View
-import android.widget.PopupMenu
 import android.widget.Toast
 import org.jellyfin.androidtv.R
+import org.jellyfin.androidtv.tvclient.AudioSubtitleDialog
 import org.jellyfin.androidtv.tvclient.TvClientSubtitles
 import org.jellyfin.androidtv.ui.playback.PlaybackController
 import org.jellyfin.androidtv.ui.playback.overlay.CustomPlaybackTransportControlGlue
@@ -18,7 +17,7 @@ class ClosedCaptionsAction(
 	context: Context,
 	customPlaybackTransportControlGlue: CustomPlaybackTransportControlGlue,
 ) : CustomAction(context, customPlaybackTransportControlGlue) {
-	private var popup: PopupMenu? = null
+	private var dialog: android.app.Dialog? = null
 
 	init {
 		initializeWithIcon(R.drawable.ic_select_subtitle)
@@ -38,38 +37,38 @@ class ClosedCaptionsAction(
 
 		videoPlayerAdapter.leanbackOverlayFragment.setFading(false)
 		removePopup()
-		popup = PopupMenu(context, view, Gravity.END).apply {
-			with(menu) {
-				var order = 0
-				add(0, -1, order++, context.getString(R.string.lbl_none)).apply {
-					isChecked = playbackController.subtitleStreamIndex == -1
+
+		// Jellyfin-TV-Client: ein Fenster für Ton (links) und Untertitel (rechts)
+		val streams = playbackController.currentMediaSource.mediaStreams.orEmpty()
+		val audioTracks = playbackController.currentStreamInfo?.selectableAudioStreams.orEmpty()
+		val audio = if (audioTracks.size > 1) audioTracks.map {
+			AudioSubtitleDialog.Option(it.index, it.displayTitle ?: it.language ?: "#${it.index}", it.index == playbackController.audioStreamIndex)
+		} else emptyList()
+		val subtitleStreams = streams.filter { it.type == MediaStreamType.SUBTITLE }
+		val subtitles = if (subtitleStreams.isEmpty()) emptyList() else
+			listOf(AudioSubtitleDialog.Option(-1, context.getString(R.string.lbl_none), playbackController.subtitleStreamIndex == -1)) +
+				subtitleStreams.map {
+					AudioSubtitleDialog.Option(it.index, it.displayTitle ?: it.language ?: "#${it.index}", it.index == playbackController.subtitleStreamIndex)
 				}
 
-				for (sub in playbackController.currentMediaSource.mediaStreams.orEmpty()) {
-					if (sub.type != MediaStreamType.SUBTITLE) continue
-
-					add(0, sub.index, order++, sub.displayTitle).apply {
-						isChecked = sub.index == playbackController.subtitleStreamIndex
-					}
-				}
-
-				setGroupCheckable(0, true, false)
-			}
-			setOnDismissListener {
-				videoPlayerAdapter.leanbackOverlayFragment.setFading(true)
-				popup = null
-			}
-			setOnMenuItemClickListener { item ->
+		dialog = AudioSubtitleDialog.show(
+			context = context,
+			audio = audio,
+			subtitles = subtitles,
+			onAudio = { playbackController.switchAudioStream(it) },
+			onSubtitle = { index ->
 				// Jellyfin-TV-Client: Wahl für die nächsten Folgen der Serie merken
-				TvClientSubtitles.remember(playbackController.currentlyPlayingItem, playbackController.currentMediaSource, item.itemId)
-				playbackController.setSubtitleIndex(item.itemId)
-				true
-			}
-		}
-		popup?.show()
+				TvClientSubtitles.remember(playbackController.currentlyPlayingItem, playbackController.currentMediaSource, index)
+				playbackController.setSubtitleIndex(index)
+			},
+			onDismiss = {
+				videoPlayerAdapter.leanbackOverlayFragment.setFading(true)
+				dialog = null
+			},
+		)
 	}
 
 	fun removePopup() {
-		popup?.dismiss()
+		dialog?.dismiss()
 	}
 }
