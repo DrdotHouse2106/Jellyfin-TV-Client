@@ -40,6 +40,9 @@ object Jellyseerr {
 
 	private const val TIMEOUT_MS = 10_000
 	private const val TMDB_IMAGES = "https://image.tmdb.org/t/p/w342"
+	private const val TMDB_BACKDROPS = "https://image.tmdb.org/t/p/w1280"
+	private const val TMDB_PROFILES = "https://image.tmdb.org/t/p/w185"
+	private const val MAX_CAST = 15
 	private const val PLUGIN_PATH = "/JellyfinEnhanced/jellyseerr"
 	private val json = Json { ignoreUnknownKeys = true }
 
@@ -192,15 +195,109 @@ object Jellyseerr {
 		}.getOrNull()
 	}
 
-	suspend fun request(media: Media, jellyfinUserId: UUID?) {
+	/** Anfrage stellen; bei Serien alle Staffeln oder nur [seasons]. */
+	suspend fun request(media: Media, jellyfinUserId: UUID?, seasons: List<Int>? = null) {
 		val target = current()
 		val userId = (target as? Backend.Direct)?.let { userIdFor(it, jellyfinUserId) }
 		val body = buildJsonObject {
 			put("mediaType", media.type)
 			put("mediaId", media.id)
-			if (media.type == "tv") put("seasons", "all")
+			if (media.type == "tv") {
+				if (seasons.isNullOrEmpty()) put("seasons", "all")
+				else put("seasons", kotlinx.serialization.json.JsonArray(seasons.map { JsonPrimitive(it) }))
+			}
 			if (userId != null) put("userId", userId)
 		}
 		call(target, "/request", method = "POST", body = body.toString())
+	}
+
+	data class Person(val name: String, val role: String?, val imageUrl: String?)
+	data class Season(val number: Int, val name: String, val episodes: Int?, val status: Status)
+
+	data class Details(
+		val media: Media,
+		val originalTitle: String?,
+		val backdropUrl: String?,
+		val runtimeMinutes: Int?,
+		val seasonCount: Int?,
+		val genres: List<String>,
+		val rating: Double?,
+		val ageRating: String?,
+		val creators: List<String>,
+		val cast: List<Person>,
+		val seasons: List<Season>,
+		val trailerKey: String?,
+	)
+
+	/** Alle Infos für die Detailseite (Film: /movie/{id}, Serie: /tv/{id}). */
+	suspend fun details(type: String, id: Int): Details {
+		val obj = json.parseToJsonElement(call(current(), "/$type/$id?language=de")).jsonObject
+		val mediaInfo = obj["mediaInfo"] as? JsonObject
+		val date = obj.string("releaseDate") ?: obj.string("firstAirDate")
+		fun names(key: String) = (obj[key] as? kotlinx.serialization.json.JsonArray).orEmpty()
+			.mapNotNull { (it as? JsonObject)?.string("name") }
+		val credits = obj["credits"] as? JsonObject
+		val crew = (credits?.get("crew") as? kotlinx.serialization.json.JsonArray).orEmpty().mapNotNull { it as? JsonObject }
+		val cast = (credits?.get("cast") as? kotlinx.serialization.json.JsonArray).orEmpty().mapNotNull { it as? JsonObject }
+			.take(MAX_CAST)
+			.mapNotNull { person ->
+				Person(
+					name = person.string("name") ?: return@mapNotNull null,
+					role = person.string("character"),
+					imageUrl = person.string("profilePath")?.let { TMDB_PROFILES + it },
+				)
+			}
+		val ageRating = if (type == "movie") {
+			((obj["releases"] as? JsonObject)?.get("results") as? kotlinx.serialization.json.JsonArray).orEmpty()
+				.mapNotNull { it as? JsonObject }
+				.firstOrNull { it.string("iso_3166_1") == "DE" }
+				?.let { (it["release_dates"] as? kotlinx.serialization.json.JsonArray).orEmpty() }
+				?.mapNotNull { (it as? JsonObject)?.string("certification") }
+				?.firstOrNull()
+		} else {
+			((obj["contentRatings"] as? JsonObject)?.get("results") as? kotlinx.serialization.json.JsonArray).orEmpty()
+				.mapNotNull { it as? JsonObject }
+				.firstOrNull { it.string("iso_3166_1") == "DE" }
+				?.string("rating")
+		}
+		val requestedSeasons = (mediaInfo?.get("seasons") as? kotlinx.serialization.json.JsonArray).orEmpty()
+			.mapNotNull { it as? JsonObject }
+			.associate { ((it["seasonNumber"] as? JsonPrimitive)?.intOrNull ?: -1) to statusOf((it["status"] as? JsonPrimitive)?.intOrNull) }
+		val seasons = (obj["seasons"] as? kotlinx.serialization.json.JsonArray).orEmpty().mapNotNull { it as? JsonObject }
+			.mapNotNull { season ->
+				val number = (season["seasonNumber"] as? JsonPrimitive)?.intOrNull ?: return@mapNotNull null
+				if (number == 0) return@mapNotNull null // Specials
+				Season(number, season.string("name") ?: "Staffel $number", (season["episodeCount"] as? JsonPrimitive)?.intOrNull, requestedSeasons[number] ?: Status.NONE)
+			}
+		val trailer = (obj["relatedVideos"] as? kotlinx.serialization.json.JsonArray).orEmpty().mapNotNull { it as? JsonObject }
+			.firstOrNull { it.string("type") == "Trailer" && it.string("site").equals("YouTube", true) }
+			?.string("key")
+
+		return Details(
+			media = Media(
+				id = id,
+				type = type,
+				title = obj.string("title") ?: obj.string("name").orEmpty(),
+				year = date?.take(4)?.takeIf { it.length == 4 },
+				overview = obj.string("overview"),
+				posterUrl = obj.string("posterPath")?.let { TMDB_IMAGES + it },
+				status = statusOf((mediaInfo?.get("status") as? JsonPrimitive)?.intOrNull),
+				jellyfinId = mediaInfo?.string("jellyfinMediaId")?.toUUIDOrNull(),
+			),
+			originalTitle = (obj.string("originalTitle") ?: obj.string("originalName"))
+				?.takeIf { it != obj.string("title") && it != obj.string("name") },
+			backdropUrl = obj.string("backdropPath")?.let { TMDB_BACKDROPS + it },
+			runtimeMinutes = (obj["runtime"] as? JsonPrimitive)?.intOrNull
+				?: (obj["episodeRunTime"] as? kotlinx.serialization.json.JsonArray)?.firstOrNull()?.let { (it as? JsonPrimitive)?.intOrNull },
+			seasonCount = (obj["numberOfSeasons"] as? JsonPrimitive)?.intOrNull,
+			genres = names("genres"),
+			rating = (obj["voteAverage"] as? JsonPrimitive)?.content?.toDoubleOrNull()?.takeIf { it > 0 },
+			ageRating = ageRating?.takeIf { it.isNotBlank() },
+			creators = if (type == "movie") crew.filter { it.string("job") == "Director" }.mapNotNull { it.string("name") }.distinct()
+			else names("createdBy"),
+			cast = cast,
+			seasons = seasons,
+			trailerKey = trailer,
+		)
 	}
 }

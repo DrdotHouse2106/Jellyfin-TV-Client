@@ -90,4 +90,21 @@
     <string name="tvclient_rating_saved">Bewertung gespeichert</string>
     <string name="tvclient_screensaver_trailers">Trailer im Bildschirmschoner</string>
     <string name="tvclient_screensaver_trailers_description">Spielt Trailer, die auf dem Server liegen (stumm), statt nur Bilder zu zeigen</string>
+    <string name="tvclient_jellyseerr_minutes">%1$d Min.</string>
+    <string name="tvclient_jellyseerr_director">Regie: %1$s</string>
+    <string name="tvclient_jellyseerr_creator">Idee: %1$s</string>
+    <string name="tvclient_jellyseerr_open">In Jellyfin öffnen</string>
+    <string name="tvclient_jellyseerr_request_all">Alle Staffeln anfragen</string>
+    <string name="tvclient_jellyseerr_choose_seasons">Staffeln wählen</string>
+    <string name="tvclient_jellyseerr_seasons_title">Staffeln</string>
+    <string name="tvclient_jellyseerr_cast">Besetzung</string>
+    <string name="tvclient_back">Zurück</string>
+    <plurals name="tvclient_jellyseerr_seasons">
+        <item quantity="one">%1$d Staffel</item>
+        <item quantity="other">%1$d Staffeln</item>
+    </plurals>
+    <plurals name="tvclient_jellyseerr_episodes">
+        <item quantity="one">%1$d Folge</item>
+        <item quantity="other">%1$d Folgen</item>
+    </plurals>
 </resources>

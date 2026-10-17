@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.14.0 – 2026-10-17
+
+- **Anfragen – Detailseite:** OK auf einem Suchtreffer öffnet jetzt eine Detailseite mit Bild, Plakat, Titel und Originaltitel, Jahr, FSK, Laufzeit bzw. Staffelanzahl, Bewertung, Genres, Regie/Idee, vollständiger Inhaltsangabe, Besetzung und bei Serien den Staffeln mit Status. Knöpfe: „Anfragen“ (Serien: „Alle Staffeln anfragen“ oder „Staffeln wählen“), „In Jellyfin öffnen“ (wenn schon vorhanden) und „Trailer“ (YouTube).
+- **Anfragen – Bedienung:** Mit „Runter“ oder der Suchen-Taste geht es aus dem Suchfeld zu den Treffern, die Tastatur schließt sich. OK (Steuerkreuz-Mitte) auf einer Karte funktioniert. Nach „Zurück“ von der Detailseite steht der Fokus wieder auf der zuletzt gewählten Karte.
+- Treffer ohne Plakat zeigen den Titel statt eines leeren Felds.
+
 ## 1.13.0 – 2026-10-17
 
 - **Bewerten im Player:** neuer Knopf „Bewerten“ (Daumen) – „Gefällt mir“, „Nichts für mich“ oder keine Bewertung. Folgen bewerten ihre Serie.

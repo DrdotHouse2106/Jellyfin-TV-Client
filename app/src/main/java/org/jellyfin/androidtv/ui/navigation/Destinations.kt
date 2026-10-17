@@ -35,6 +35,10 @@ object Destinations {
 	val home = fragmentDestination<HomeFragment>()
 	// Jellyfin-TV-Client: Filme/Serien bei Jellyseerr anfragen
 	val jellyseerr = fragmentDestination<org.jellyfin.androidtv.tvclient.JellyseerrFragment>()
+	fun jellyseerrDetails(type: String, tmdbId: Int) = fragmentDestination<org.jellyfin.androidtv.tvclient.JellyseerrDetailsFragment>(
+		org.jellyfin.androidtv.tvclient.JellyseerrDetailsFragment.ARG_TYPE to type,
+		org.jellyfin.androidtv.tvclient.JellyseerrDetailsFragment.ARG_ID to tmdbId,
+	)
 	fun search(query: String? = null) = fragmentDestination<SearchFragment>(
 		SearchFragment.EXTRA_QUERY to query,
 	)

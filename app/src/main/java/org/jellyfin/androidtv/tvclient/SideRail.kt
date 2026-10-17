@@ -107,6 +107,7 @@ fun SideRail(
 		}
 		if (showRequests) {
 			RailButton(R.drawable.ic_add, R.string.tvclient_jellyseerr_title, Modifier.railFocus(requests)) {
+				JellyseerrSearchState.reset()
 				navigationRepository.navigate(Destinations.jellyseerr)
 			}
 		}

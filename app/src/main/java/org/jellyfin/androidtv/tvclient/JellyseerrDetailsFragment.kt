@@ -1,0 +1,294 @@
+package org.jellyfin.androidtv.tvclient
+
+import android.app.AlertDialog
+import android.content.ActivityNotFoundException
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.fragment.app.Fragment
+import androidx.fragment.compose.content
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.jellyfin.androidtv.R
+import org.jellyfin.androidtv.auth.repository.UserRepository
+import org.jellyfin.androidtv.ui.base.JellyfinTheme
+import org.jellyfin.androidtv.ui.base.Text
+import org.jellyfin.androidtv.ui.base.button.Button
+import org.jellyfin.androidtv.ui.composable.AsyncImage
+import org.jellyfin.androidtv.ui.navigation.Destinations
+import org.jellyfin.androidtv.ui.navigation.NavigationRepository
+import org.jellyfin.androidtv.util.sdk.TrailerUtils
+import org.jellyfin.sdk.api.client.ApiClient
+import org.koin.compose.koinInject
+import timber.log.Timber
+
+/**
+ * Jellyfin-TV-Client: Detailseite eines Jellyseerr-Treffers – zum Prüfen, ob es der richtige Titel ist,
+ * bevor man ihn anfragt. Zeigt Bild, Eckdaten, Inhalt, Regie/Idee, Besetzung und bei Serien die Staffeln.
+ */
+class JellyseerrDetailsFragment : Fragment() {
+	companion object {
+		const val ARG_TYPE = "type"
+		const val ARG_ID = "tmdb_id"
+	}
+
+	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) = content {
+		JellyfinTheme {
+			JellyseerrDetailsScreen(
+				type = requireArguments().getString(ARG_TYPE) ?: "movie",
+				tmdbId = requireArguments().getInt(ARG_ID),
+			)
+		}
+	}
+}
+
+@Composable
+private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
+	val context = LocalContext.current
+	val api = koinInject<ApiClient>()
+	val userRepository = koinInject<UserRepository>()
+	val navigationRepository = koinInject<NavigationRepository>()
+	val scope = rememberCoroutineScope()
+	var details by remember { mutableStateOf<Jellyseerr.Details?>(null) }
+	var error by remember { mutableStateOf(false) }
+	val primaryFocus = remember { FocusRequester() }
+
+	LaunchedEffect(type, tmdbId) {
+		if (Jellyseerr.detect(api) == null) {
+			error = true
+			return@LaunchedEffect
+		}
+		runCatching { Jellyseerr.details(type, tmdbId) }
+			.onSuccess { details = it }
+			.onFailure {
+				Timber.w(it, "Jellyseerr-Details nicht verfügbar")
+				error = true
+			}
+	}
+	LaunchedEffect(details) {
+		if (details != null) {
+			delay(100)
+			runCatching { primaryFocus.requestFocus() }
+		}
+	}
+
+	fun request(info: Jellyseerr.Details, seasons: List<Int>?) {
+		scope.launch {
+			runCatching { Jellyseerr.request(info.media, userRepository.currentUser.value?.id, seasons) }
+				.onSuccess {
+					Toast.makeText(context, context.getString(R.string.tvclient_jellyseerr_requested, info.media.title), Toast.LENGTH_LONG).show()
+					details = info.copy(media = info.media.copy(status = Jellyseerr.Status.REQUESTED))
+				}
+				.onFailure {
+					Timber.w(it, "Jellyseerr-Anfrage fehlgeschlagen")
+					val message = when ((it as? Jellyseerr.RequestException)?.code) {
+						409 -> R.string.tvclient_jellyseerr_already
+						403 -> R.string.tvclient_jellyseerr_no_permission
+						else -> R.string.tvclient_jellyseerr_error
+					}
+					Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+				}
+		}
+	}
+
+	fun chooseSeasons(info: Jellyseerr.Details) {
+		val open = info.seasons.filter { it.status == Jellyseerr.Status.NONE }
+		if (open.isEmpty()) return
+		val checked = BooleanArray(open.size) { true }
+		AlertDialog.Builder(context)
+			.setTitle(R.string.tvclient_jellyseerr_choose_seasons)
+			.setMultiChoiceItems(open.map { it.name }.toTypedArray(), checked) { _, which, isChecked -> checked[which] = isChecked }
+			.setPositiveButton(R.string.tvclient_jellyseerr_request) { _, _ ->
+				val chosen = open.filterIndexed { index, _ -> checked[index] }.map { it.number }
+				if (chosen.isNotEmpty()) request(info, chosen)
+			}
+			.setNegativeButton(R.string.lbl_cancel, null)
+			.show()
+	}
+
+	Box(Modifier.fillMaxSize().background(Color(0xFF101010))) {
+		val info = details
+		if (info == null) {
+			Text(
+				stringResource(if (error) R.string.tvclient_jellyseerr_error else R.string.tvclient_jellyseerr_loading),
+				color = Color(0xFFB3B3B3),
+				modifier = Modifier.align(Alignment.Center),
+			)
+			return@Box
+		}
+
+		// Hintergrundbild oben rechts mit Verlauf
+		info.backdropUrl?.let { url ->
+			AsyncImage(
+				modifier = Modifier.align(Alignment.TopEnd).fillMaxWidth(0.7f).fillMaxHeight(0.7f),
+				url = url,
+				aspectRatio = 16f / 9f,
+				scaleType = ImageView.ScaleType.CENTER_CROP,
+			)
+			Box(
+				Modifier.fillMaxSize().background(
+					Brush.horizontalGradient(0.3f to Color(0xFF101010), 0.65f to Color(0xCC101010), 1f to Color.Transparent)
+				)
+			)
+			Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0.45f to Color.Transparent, 0.75f to Color(0xFF101010))))
+		}
+
+		Column(
+			Modifier
+				.fillMaxSize()
+				.verticalScroll(rememberScrollState())
+				.padding(horizontal = 48.dp, vertical = 27.dp),
+		) {
+			Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+				// Plakat
+				Box(Modifier.width(160.dp).height(240.dp).clip(RoundedCornerShape(6.dp)).background(Color(0xFF262626))) {
+					info.media.posterUrl?.let {
+						AsyncImage(modifier = Modifier.fillMaxSize(), url = it, aspectRatio = 2f / 3f, scaleType = ImageView.ScaleType.CENTER_CROP)
+					}
+				}
+
+				Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+					StatusBadge(info.media.status)
+					Text(info.media.title, fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.White)
+					info.originalTitle?.let { Text(it, color = Color(0xFFB3B3B3)) }
+					Text(
+						listOfNotNull(
+							info.media.year,
+							info.ageRating?.let { "FSK $it" },
+							info.runtimeMinutes?.let { context.getString(R.string.tvclient_jellyseerr_minutes, it) },
+							info.seasonCount?.let { context.resources.getQuantityString(R.plurals.tvclient_jellyseerr_seasons, it, it) },
+							info.rating?.let { "★ %.1f".format(it) },
+						).joinToString("  ·  "),
+						color = Color(0xFFD0D0D0),
+					)
+					if (info.genres.isNotEmpty()) Text(info.genres.joinToString(", "), color = Color(0xFFB3B3B3))
+					if (info.creators.isNotEmpty()) Text(
+						stringResource(
+							if (info.media.type == "movie") R.string.tvclient_jellyseerr_director else R.string.tvclient_jellyseerr_creator,
+							info.creators.joinToString(", "),
+						),
+						color = Color(0xFFB3B3B3),
+					)
+					Spacer(Modifier.height(8.dp))
+
+					// Knöpfe
+					Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+						val jellyfinId = info.media.jellyfinId
+						if (jellyfinId != null && info.media.status in setOf(Jellyseerr.Status.AVAILABLE, Jellyseerr.Status.PARTIAL)) {
+							Button(
+								onClick = { navigationRepository.navigate(Destinations.itemDetails(jellyfinId)) },
+								modifier = Modifier.focusRequester(primaryFocus),
+							) { Text(stringResource(R.string.tvclient_jellyseerr_open)) }
+						}
+						val canRequest = info.media.status == Jellyseerr.Status.NONE ||
+							(info.media.type == "tv" && info.seasons.any { it.status == Jellyseerr.Status.NONE })
+						if (canRequest) {
+							Button(
+								onClick = { request(info, if (info.media.type == "tv") info.seasons.filter { it.status == Jellyseerr.Status.NONE }.map { it.number }.ifEmpty { null } else null) },
+								modifier = if (jellyfinId == null || info.media.status == Jellyseerr.Status.NONE) Modifier.focusRequester(primaryFocus) else Modifier,
+							) { Text(stringResource(if (info.media.type == "tv") R.string.tvclient_jellyseerr_request_all else R.string.tvclient_jellyseerr_request)) }
+							if (info.media.type == "tv" && info.seasons.count { it.status == Jellyseerr.Status.NONE } > 1) {
+								Button(onClick = { chooseSeasons(info) }) { Text(stringResource(R.string.tvclient_jellyseerr_choose_seasons)) }
+							}
+						}
+						info.trailerKey?.let { key ->
+							Button(
+								onClick = {
+									try {
+										context.startActivity(TrailerUtils.getExternalTrailerIntent("https://www.youtube.com/watch?v=$key"))
+									} catch (_: ActivityNotFoundException) {
+										Toast.makeText(context, R.string.no_player_message, Toast.LENGTH_LONG).show()
+									}
+								},
+								modifier = if (!canRequest && jellyfinId == null) Modifier.focusRequester(primaryFocus) else Modifier,
+							) { Text(stringResource(R.string.lbl_play_trailers)) }
+						}
+						if (!canRequest && info.trailerKey == null && jellyfinId == null) {
+							Button(onClick = { navigationRepository.goBack() }, modifier = Modifier.focusRequester(primaryFocus)) {
+								Text(stringResource(R.string.tvclient_back))
+							}
+						}
+					}
+				}
+			}
+
+			Spacer(Modifier.height(20.dp))
+			info.media.overview?.let { Text(it, color = Color(0xFFE0E0E0), fontSize = 16.sp, modifier = Modifier.fillMaxWidth(0.75f)) }
+
+			// Staffeln
+			if (info.seasons.isNotEmpty()) {
+				Spacer(Modifier.height(20.dp))
+				Text(stringResource(R.string.tvclient_jellyseerr_seasons_title), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+				Spacer(Modifier.height(6.dp))
+				info.seasons.forEach { season ->
+					Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+						Text(
+							listOfNotNull(season.name, season.episodes?.let { context.resources.getQuantityString(R.plurals.tvclient_jellyseerr_episodes, it, it) }).joinToString(" · "),
+							color = Color(0xFFD0D0D0),
+						)
+						StatusBadge(season.status)
+					}
+				}
+			}
+
+			// Besetzung
+			if (info.cast.isNotEmpty()) {
+				Spacer(Modifier.height(20.dp))
+				Text(stringResource(R.string.tvclient_jellyseerr_cast), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+				Spacer(Modifier.height(8.dp))
+				Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+					info.cast.take(8).forEach { person ->
+						Column(Modifier.width(90.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+							Box(Modifier.size(72.dp).clip(CircleShape).background(Color(0xFF262626))) {
+								person.imageUrl?.let {
+									AsyncImage(modifier = Modifier.fillMaxSize(), url = it, aspectRatio = 1f, scaleType = ImageView.ScaleType.CENTER_CROP)
+								}
+							}
+							Text(person.name, fontSize = 12.sp, color = Color.White, maxLines = 2)
+							person.role?.let { Text(it, fontSize = 11.sp, color = Color(0xFF909090), maxLines = 1) }
+						}
+					}
+				}
+			}
+			Spacer(Modifier.height(24.dp))
+		}
+	}
+}
