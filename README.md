@@ -25,7 +25,7 @@ Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** 
 
 **Sonstiges**
 - Profilauswahl „Wer schaut gerade?“ mit farbigen Kacheln und „Profile verwalten“
-- **Bildschirmschoner** mit persönlichen Empfehlungen statt Zufall, auf Wunsch mit **Trailern** (stumm)
+- **Bildschirmschoner** mit persönlichen Empfehlungen statt Zufall, auf Wunsch mit **Teasern** (sonst Trailern) vom Server
 - **Autostart** beim Einschalten des Geräts (bis Android 9, z. B. Fire TV Stick mit Fire OS 7; standardmäßig aus)
 - Steuerung komplett per Handy, z. B. mit [Jellyfin Remote](https://github.com/DrdotHouse2106/Jellyfin-Remote)
 

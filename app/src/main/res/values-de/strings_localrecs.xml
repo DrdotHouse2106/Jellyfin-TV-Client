@@ -88,8 +88,8 @@
     <string name="tvclient_rate">Bewerten</string>
     <string name="tvclient_rating_none">Keine Bewertung</string>
     <string name="tvclient_rating_saved">Bewertung gespeichert</string>
-    <string name="tvclient_screensaver_trailers">Trailer im Bildschirmschoner</string>
-    <string name="tvclient_screensaver_trailers_description">Spielt Trailer, die auf dem Server liegen (stumm), statt nur Bilder zu zeigen</string>
+    <string name="tvclient_screensaver_trailers">Teaser und Trailer im Bildschirmschoner</string>
+    <string name="tvclient_screensaver_trailers_description">Spielt Teaser vom Server (sonst Trailer) statt nur Bilder zu zeigen</string>
     <string name="tvclient_jellyseerr_minutes">%1$d Min.</string>
     <string name="tvclient_jellyseerr_director">Regie: %1$s</string>
     <string name="tvclient_jellyseerr_creator">Idee: %1$s</string>

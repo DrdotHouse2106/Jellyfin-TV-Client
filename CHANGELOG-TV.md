@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.18.0 – 2026-10-17
+
+- **Teaser im Bildschirmschoner:** Ist „Teaser und Trailer im Bildschirmschoner“ eingeschaltet, nimmt Quallenkino zuerst einen **Teaser** vom Server (kurz, kaum Spoiler) und nur ohne Teaser den Trailer. Teaser werden am Namen („Teaser“) oder an der Länge (bis 100 Sekunden) erkannt – auch unter den Extras, z. B. von Trailarr heruntergeladene.
+
 ## 1.17.1 – 2026-10-17
 
 - Anfragen: Beim Öffnen steht die Auswahl auf dem ersten „Für dich“-Titel statt im Suchfeld – die Tastatur geht erst auf, wenn man mit „Hoch“ ins Suchfeld wechselt.

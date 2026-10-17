@@ -88,8 +88,8 @@
     <string name="tvclient_rate">Rate</string>
     <string name="tvclient_rating_none">No rating</string>
     <string name="tvclient_rating_saved">Rating saved</string>
-    <string name="tvclient_screensaver_trailers">Trailers in the screensaver</string>
-    <string name="tvclient_screensaver_trailers_description">Plays trailers stored on the server (muted) instead of only showing pictures</string>
+    <string name="tvclient_screensaver_trailers">Teasers and trailers in the screensaver</string>
+    <string name="tvclient_screensaver_trailers_description">Plays teasers stored on the server (otherwise trailers) instead of only showing pictures</string>
     <string name="tvclient_jellyseerr_minutes">%1$d min</string>
     <string name="tvclient_jellyseerr_director">Director: %1$s</string>
     <string name="tvclient_jellyseerr_creator">Created by: %1$s</string>

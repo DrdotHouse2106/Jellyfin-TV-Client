@@ -12,7 +12,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Jellyfin-TV-Client: Trailer im Bildschirmschoner (stumm). Nur Trailer, die auf dem Server liegen;
+ * Jellyfin-TV-Client: Teaser bzw. Trailer im Bildschirmschoner. Nur Videos, die auf dem Server liegen;
  * Titel ohne Trailer werden wie bisher als Bild gezeigt.
  */
 object ScreensaverTrailers {
@@ -23,19 +23,37 @@ object ScreensaverTrailers {
 
 	data class Trailer(val url: String, val duration: Duration?)
 
+	/**
+	 * Video für den Bildschirmschoner: ein **Teaser** vom Server, wenn es einen gibt (kurz, kaum
+	 * Spoiler), sonst der erste Trailer. Teaser erkennt die App am Namen bzw. Dateipfad („Teaser“)
+	 * oder an der Länge (bis 100 Sekunden), unter Trailern und Extras.
+	 */
 	suspend fun trailer(api: ApiClient, item: BaseItemDto): Trailer? {
 		if (item.type != BaseItemKind.MOVIE && item.type != BaseItemKind.SERIES) return null
 		return runCatching {
-			val local = withContext(Dispatchers.IO) { api.userLibraryApi.getLocalTrailers(item.id).content.firstOrNull() }
-				?: return null
+			val (trailers, extras) = withContext(Dispatchers.IO) {
+				val trailers = api.userLibraryApi.getLocalTrailers(item.id).content
+				val extras = runCatching { api.userLibraryApi.getSpecialFeatures(item.id).content }.getOrDefault(emptyList())
+				trailers to extras
+			}
+			val video = pickTeaser(trailers + extras) ?: trailers.firstOrNull() ?: return null
 			val url = api.createUrl(
 				pathTemplate = "/Videos/{itemId}/stream",
-				pathParameters = mapOf("itemId" to local.id),
+				pathParameters = mapOf("itemId" to video.id),
 				queryParameters = mapOf("static" to true, "api_key" to api.accessToken),
 			)
-			Trailer(url, local.runTimeTicks?.ticks)
+			Trailer(url, video.runTimeTicks?.ticks)
 		}.getOrNull()
 	}
+
+	/** Teaser auswählen (testbar): Name/Pfad mit „Teaser“ zuerst, sonst ein kurzes Video. */
+	fun pickTeaser(videos: List<BaseItemDto>): BaseItemDto? {
+		fun BaseItemDto.isTeaser() = listOfNotNull(name, path).any { it.contains("teaser", ignoreCase = true) }
+		return videos.firstOrNull { it.isTeaser() }
+			?: videos.filter { (it.runTimeTicks?.ticks ?: maxTeaser) < maxTeaser }.minByOrNull { it.runTimeTicks ?: Long.MAX_VALUE }
+	}
+
+	private val maxTeaser = 100.seconds
 
 	/** Wie lange ein Titel mit Trailer stehen bleibt: Trailerlänge plus kurzer Nachlauf, höchstens 3 Minuten. */
 	fun showDuration(duration: Duration?): Duration = minOf((duration ?: defaultDuration) + 3.seconds, maxDuration)
