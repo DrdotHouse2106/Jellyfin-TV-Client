@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Jellyfin-TV-Client: Umriss-Knopf wie „Profile verwalten“ bei Netflix -->
+<!-- Jellyfin-TV-Client: Umriss-Knopf für „Profile verwalten“ -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_focused="true">
         <shape android:shape="rectangle">

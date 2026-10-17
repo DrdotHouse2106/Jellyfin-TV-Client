@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.8.8 – 2026-10-17
+
+- Einstellungen: Vergleiche mit anderen Streaming-Diensten aus den Texten entfernt („Großer Infobereich“ statt „wie …“).
+
 ## 1.8.7 – 2026-10-17
 
 - Startseite: Beim Öffnen ist wieder „Abspielen“ im Banner oben ausgewählt statt „Weiterschauen“.
