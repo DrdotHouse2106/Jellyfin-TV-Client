@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -43,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -349,11 +351,15 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 				Spacer(Modifier.height(20.dp))
 				Text(stringResource(R.string.tvclient_jellyseerr_cast), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
 				Spacer(Modifier.height(8.dp))
-				LazyRow(belowFocus, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+				val firstCast = remember { FocusRequester() }
+				MinimalScroll {
+				LazyRow(belowFocus.focusRestorer(firstCast).focusGroup(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
 					items(info.cast, key = { it.name + it.role }) { person ->
 						// OK öffnet die Personenseite
 						Column(
-							Modifier.width(90.dp).focusFrame { person.id?.let { navigationRepository.navigate(Destinations.jellyseerrPerson(it)) } },
+							Modifier.width(90.dp)
+								.then(if (person == info.cast.first()) Modifier.focusRequester(firstCast) else Modifier)
+								.focusFrame { person.id?.let { navigationRepository.navigate(Destinations.jellyseerrPerson(it)) } },
 							horizontalAlignment = Alignment.CenterHorizontally,
 						) {
 							Box(Modifier.size(72.dp).clip(CircleShape).background(Color(0xFF262626)), contentAlignment = Alignment.Center) {
@@ -372,22 +378,27 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 						}
 					}
 				}
+				}
 			}
+
 			// Das könnte dir auch gefallen
 			if (related.isNotEmpty()) {
 				Spacer(Modifier.height(20.dp))
 				Text(stringResource(R.string.tvclient_jellyseerr_related), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
 				Spacer(Modifier.height(8.dp))
+				val firstRelated = remember { FocusRequester() }
+				MinimalScroll {
 				LazyRow(
-					modifier = belowFocus,
+					modifier = belowFocus.focusRestorer(firstRelated).focusGroup(),
 					horizontalArrangement = Arrangement.spacedBy(16.dp),
 					contentPadding = androidx.compose.foundation.layout.PaddingValues(12.dp),
 				) {
 					items(related.take(20), key = { "${it.type}-${it.id}" }) { media ->
-						MediaCard(media, Modifier.width(120.dp)) {
+						MediaCard(media, Modifier.width(120.dp).then(if (media == related.first()) Modifier.focusRequester(firstRelated) else Modifier)) {
 							navigationRepository.navigate(Destinations.jellyseerrDetails(media.type, media.id))
 						}
 					}
+				}
 				}
 			}
 			Spacer(Modifier.height(24.dp))

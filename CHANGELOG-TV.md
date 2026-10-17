@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.19.2 – 2026-10-17
+
+- Personenseite und Anfragen-Detailseite: Mit „Runter“ in eine Reihe (Filme, Serien, Besetzung, „Das könnte dir auch gefallen“) wird der erste Titel ausgewählt, beim Zurückkommen der zuletzt gewählte. Die Reihen scrollen nur so weit wie nötig, statt den ausgewählten Titel in die Mitte zu schieben.
+
 ## 1.19.1 – 2026-10-17
 
 - Startseite: Nach dem Anmelden bzw. Öffnen bleibt die Auswahl im Banner auf „Abspielen“, auch wenn die Zeilen danach noch laden (bis man eine Taste drückt).

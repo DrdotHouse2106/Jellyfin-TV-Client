@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -36,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -167,10 +169,22 @@ private fun CreditRow(title: Int, items: List<Jellyseerr.Media>, focus: FocusReq
 	Spacer(Modifier.height(20.dp))
 	Text(stringResource(title), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
 	Spacer(Modifier.height(4.dp))
-	LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp), contentPadding = PaddingValues(12.dp)) {
-		items(items, key = { "${it.type}-${it.id}" }) { media ->
-			val modifier = if (focus != null && media == items.first()) Modifier.width(120.dp).focusRequester(focus) else Modifier.width(120.dp)
-			MediaCard(media, modifier) { onClick(media) }
+	// Von oben kommend immer auf den ersten Titel (danach auf den zuletzt gewählten), linksbündig
+	val first = remember { FocusRequester() }
+	MinimalScroll {
+		LazyRow(
+			modifier = Modifier.focusRestorer(first).focusGroup(),
+			horizontalArrangement = Arrangement.spacedBy(16.dp),
+			contentPadding = PaddingValues(12.dp),
+		) {
+			items(items, key = { "${it.type}-${it.id}" }) { media ->
+				var modifier = Modifier.width(120.dp)
+				if (media == items.first()) {
+					modifier = modifier.focusRequester(first)
+					if (focus != null) modifier = modifier.focusRequester(focus)
+				}
+				MediaCard(media, modifier) { onClick(media) }
+			}
 		}
 	}
 }
