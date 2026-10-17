@@ -57,4 +57,6 @@
     <string name="tvclient_autostart">Start automatically when switched on</string>
     <string name="tvclient_autostart_description">Opens Quallenkino when the device starts or wakes from standby</string>
     <string name="tvclient_autostart_unsupported">Not available on Android 10 and newer (the system blocks automatic starts)</string>
+    <string name="tvclient_home_top10">Top 10 here</string>
+    <string name="tvclient_home_top10_description">Most watched movies and shows on your server in the last 60 days (all users if you are an administrator)</string>
 </resources>

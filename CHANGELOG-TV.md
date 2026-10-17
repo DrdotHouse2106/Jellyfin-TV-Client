@@ -1,8 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
-## Unveröffentlicht
+## 1.9.0 – 2026-10-17
 
-- Die webOS-Version für LG-Fernseher wurde wieder entfernt. Ab der nächsten Version enthält das Release nur noch die Android-App.
+- **Top 10 bei euch** (Test): neue Zeile mit den meistgesehenen Filmen und Serien der letzten 60 Tage, mit großen Zahlen neben den Postern. Als Administrator zählen alle Benutzer des Servers, sonst nur das eigene Konto. Abschaltbar unter Einstellungen → Startseite.
+- **Suche schneller:** Ergebnisse erscheinen schon nach 0,35 statt 0,6 Sekunden Tipp-Pause; Filme, Serien und Folgen werden angezeigt, sobald sie da sind.
+- Die webOS-Version für LG-Fernseher wurde wieder entfernt; das Release enthält nur noch die Android-App.
 
 ## 1.8.10 – 2026-10-17
 

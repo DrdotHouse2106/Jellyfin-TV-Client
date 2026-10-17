@@ -52,7 +52,9 @@ import org.jellyfin.androidtv.ui.presentation.PositionableListRowPresenter
 import org.jellyfin.androidtv.tvclient.DeviceAppsPublisher
 import org.jellyfin.androidtv.tvclient.HomeFragmentAppsRow
 import org.jellyfin.androidtv.tvclient.HomeFragmentDeviceSettingsRow
+import org.jellyfin.androidtv.tvclient.HomeFragmentTop10Row
 import org.jellyfin.androidtv.tvclient.HomeHeroState
+import org.jellyfin.androidtv.tvclient.Top10
 import org.jellyfin.androidtv.tvclient.GenreRows
 import org.jellyfin.androidtv.tvclient.HomeRow
 import org.jellyfin.androidtv.tvclient.HomeScreenSections
@@ -128,6 +130,7 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 					rows.add(helper.loadOnNow())
 				}
 
+				HomeRow.TOP10 -> rows.add(HomeFragmentTop10Row(Top10.load(api, currentUser)))
 				HomeRow.LATEST_MEDIA -> rows.add(helper.loadRecentlyAdded(userViewsRepository.views.first()))
 				HomeRow.LIBRARIES -> rows.add(HomeFragmentViewsRow(small = false))
 				HomeRow.WEB_SECTIONS -> rows.addAll(HomeScreenSections.loadRows(api, currentUser.id))

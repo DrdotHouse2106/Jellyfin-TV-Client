@@ -3,8 +3,7 @@ package org.jellyfin.androidtv.ui.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +17,9 @@ class SearchViewModel(
 	private val searchRepository: SearchRepository
 ) : ViewModel() {
 	companion object {
-		private val debounceDuration = 600.milliseconds
+		// Jellyfin-TV-Client: schneller reagieren beim Tippen (vorher 600 ms)
+		private val debounceDuration = 350.milliseconds
+		private const val EARLY_GROUPS = 3
 
 		private val groups = mapOf(
 			R.string.lbl_movies to setOf(BaseItemKind.MOVIE),
@@ -62,14 +63,22 @@ class SearchViewModel(
 		searchJob = viewModelScope.launch {
 			delay(debounce)
 
-			_searchResultsFlow.value = groups.map { (stringRes, itemKinds) ->
-				async {
+			// Jellyfin-TV-Client: Filme, Serien und Folgen sofort zeigen, sobald sie da sind, statt auf
+			// alle 14 Abfragen zu warten; der Rest folgt einmal am Ende (die Zeilen werden dabei neu
+			// aufgebaut, deshalb nicht nach jeder einzelnen Gruppe).
+			val results = arrayOfNulls<SearchResultGroup>(groups.size)
+			var earlyShown = false
+			groups.entries.mapIndexed { index, (stringRes, itemKinds) ->
+				launch {
 					val result = searchRepository.search(trimmed, itemKinds)
-					val items = result.getOrNull().orEmpty()
-
-					SearchResultGroup(stringRes, items)
+					results[index] = SearchResultGroup(stringRes, result.getOrNull().orEmpty())
+					if (!earlyShown && (0 until EARLY_GROUPS).all { results[it] != null }) {
+						earlyShown = true
+						_searchResultsFlow.value = results.take(EARLY_GROUPS).filterNotNull()
+					}
 				}
-			}.awaitAll()
+			}.joinAll()
+			_searchResultsFlow.value = results.filterNotNull()
 		}
 
 		return true
