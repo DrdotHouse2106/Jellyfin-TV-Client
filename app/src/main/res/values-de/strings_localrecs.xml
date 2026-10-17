@@ -60,8 +60,8 @@
     <string name="tvclient_home_top10">Top 10 bei euch</string>
     <string name="tvclient_home_top10_description">Die meistgesehenen Filme und Serien aller Benutzer der letzten 60 Tage (braucht das Plugin „Local Recommendations“ ab 12.6.0; ohne Plugin sehen nur Administratoren alle Benutzer)</string>
     <string name="tvclient_jellyseerr_title">Anfragen</string>
-    <string name="tvclient_jellyseerr_enable">Filme und Serien anfragen (Jellyseerr)</string>
-    <string name="tvclient_jellyseerr_enable_description">Zeigt in der Navigation links einen Knopf, um Titel bei Jellyseerr oder Overseerr zu suchen und anzufragen</string>
+    <string name="tvclient_jellyseerr_enable">Anfragen-Knopf anzeigen (Jellyseerr)</string>
+    <string name="tvclient_jellyseerr_enable_description">Erscheint automatisch, wenn auf dem Server das Plugin „Jellyfin Enhanced“ mit Jellyseerr eingerichtet und dein Konto verknüpft ist</string>
     <string name="tvclient_jellyseerr_url">Jellyseerr-Adresse</string>
     <string name="tvclient_jellyseerr_url_hint">z. B. jellyseerr.beispiel.de oder 192.168.1.10:5055</string>
     <string name="tvclient_jellyseerr_api_key">API-Schlüssel</string>
@@ -70,7 +70,7 @@
     <string name="tvclient_jellyseerr_loading">Lädt …</string>
     <string name="tvclient_jellyseerr_trending">Gerade beliebt – oder nach einem Titel suchen</string>
     <string name="tvclient_jellyseerr_nothing">Nichts gefunden</string>
-    <string name="tvclient_jellyseerr_error">Jellyseerr ist nicht erreichbar. Bitte Adresse und API-Schlüssel prüfen.</string>
+    <string name="tvclient_jellyseerr_error">Anfragen sind gerade nicht möglich.</string>
     <string name="tvclient_jellyseerr_confirm">„%1$s“ anfragen?</string>
     <string name="tvclient_jellyseerr_request">Anfragen</string>
     <string name="tvclient_jellyseerr_requested">„%1$s“ wurde angefragt</string>
@@ -81,4 +81,8 @@
     <string name="tvclient_like">Gefällt mir</string>
     <string name="tvclient_dislike">Nichts für mich</string>
     <string name="tvclient_audio_subtitles">Ton &amp; Untertitel</string>
+    <string name="tvclient_jellyseerr_direct">Ohne Plugin: optional eigene Jellyseerr-Adresse und API-Schlüssel eintragen</string>
+    <string name="tvclient_jellyseerr_search_hint">Film oder Serie suchen, um sie anzufragen</string>
+    <string name="tvclient_jellyseerr_already">Schon angefragt oder Anfrage-Limit erreicht</string>
+    <string name="tvclient_jellyseerr_no_permission">Dein Jellyseerr-Konto darf nichts anfragen</string>
 </resources>

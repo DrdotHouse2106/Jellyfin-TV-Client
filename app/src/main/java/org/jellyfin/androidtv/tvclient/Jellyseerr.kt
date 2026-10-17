@@ -3,10 +3,11 @@ package org.jellyfin.androidtv.tvclient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.int
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -15,7 +16,10 @@ import kotlinx.serialization.json.put
 import org.jellyfin.androidtv.preference.UserPreferences
 import org.jellyfin.preference.booleanPreference
 import org.jellyfin.preference.stringPreference
+import org.jellyfin.sdk.api.client.ApiClient
+import org.jellyfin.sdk.model.serializer.toUUIDOrNull
 import org.koin.java.KoinJavaComponent
+import timber.log.Timber
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
@@ -23,15 +27,20 @@ import java.util.UUID
 
 /**
  * Jellyfin-TV-Client: Filme und Serien bei Jellyseerr (bzw. Overseerr) suchen und anfragen.
- * Standardmäßig aus; braucht Adresse und API-Schlüssel (Jellyseerr → Einstellungen → Allgemein).
+ *
+ * Bevorzugt über das Jellyfin-Plugin „Jellyfin Enhanced“: Dann braucht die App nur die normale
+ * Jellyfin-Anmeldung, der Jellyseerr-Schlüssel bleibt auf dem Server und die Anfrage läuft unter dem
+ * verknüpften Benutzer. Der Knopf erscheint nur, wenn das Plugin eingerichtet und der Benutzer
+ * verknüpft ist. Ohne Plugin geht es optional direkt mit Jellyseerr-Adresse und API-Schlüssel.
  */
 object Jellyseerr {
-	val enabledPreference = booleanPreference("pref_tvclient_jellyseerr", false)
+	val enabledPreference = booleanPreference("pref_tvclient_jellyseerr_button", true)
 	val urlPreference = stringPreference("pref_tvclient_jellyseerr_url", "")
 	val apiKeyPreference = stringPreference("pref_tvclient_jellyseerr_api_key", "")
 
 	private const val TIMEOUT_MS = 10_000
 	private const val TMDB_IMAGES = "https://image.tmdb.org/t/p/w342"
+	private const val PLUGIN_PATH = "/JellyfinEnhanced/jellyseerr"
 	private val json = Json { ignoreUnknownKeys = true }
 
 	enum class Status { NONE, REQUESTED, PARTIAL, AVAILABLE }
@@ -44,13 +53,25 @@ object Jellyseerr {
 		val overview: String?,
 		val posterUrl: String?,
 		val status: Status,
+		/** Jellyfin-Eintrag, falls schon in der Bibliothek. */
+		val jellyfinId: UUID?,
 	)
 
-	private fun prefs() = KoinJavaComponent.get<UserPreferences>(UserPreferences::class.java)
+	/** Wohin die Anfragen gehen. */
+	sealed interface Backend {
+		/** Über das Jellyfin-Plugin „Jellyfin Enhanced“. */
+		data class Plugin(val baseUrl: String, val token: String) : Backend
 
-	fun isConfigured(): Boolean = prefs().let {
-		it[enabledPreference] && it[urlPreference].isNotBlank() && it[apiKeyPreference].isNotBlank()
+		/** Direkt an Jellyseerr mit API-Schlüssel. */
+		data class Direct(val baseUrl: String, val apiKey: String) : Backend
 	}
+
+	class RequestException(val code: Int) : Exception("Jellyseerr antwortet mit $code")
+
+	@Volatile
+	private var backend: Backend? = null
+
+	private fun prefs() = KoinJavaComponent.get<UserPreferences>(UserPreferences::class.java)
 
 	/** Adresse vereinheitlichen: ohne Schema wird https angenommen, ohne Schrägstrich am Ende. */
 	fun normalizeUrl(input: String): String {
@@ -59,14 +80,50 @@ object Jellyseerr {
 		return if (trimmed.startsWith("http://", true) || trimmed.startsWith("https://", true)) trimmed else "https://$trimmed"
 	}
 
-	private suspend fun call(path: String, method: String = "GET", body: String? = null): String = withContext(Dispatchers.IO) {
-		val base = normalizeUrl(prefs()[urlPreference])
-		val connection = URL("$base/api/v1$path").openConnection() as HttpURLConnection
+	/**
+	 * Prüft, ob Anfragen möglich sind (Plugin eingerichtet und Benutzer verknüpft, sonst eigene
+	 * Adresse und Schlüssel). Gibt null zurück, wenn der Knopf nicht erscheinen soll.
+	 */
+	suspend fun detect(api: ApiClient): Backend? {
+		if (!prefs()[enabledPreference]) return null.also { backend = null }
+
+		val baseUrl = api.baseUrl?.trimEnd('/')
+		val token = api.accessToken
+		if (baseUrl != null && token != null) {
+			val plugin = Backend.Plugin("$baseUrl$PLUGIN_PATH", token)
+			val usable = runCatching {
+				val status = json.parseToJsonElement(call(plugin, "/status")).jsonObject
+				if (status["active"]?.jsonPrimitive?.booleanOrNull != true) return@runCatching false
+				val user = json.parseToJsonElement(call(plugin, "/user-status")).jsonObject
+				user["active"]?.jsonPrimitive?.booleanOrNull == true && user["userFound"]?.jsonPrimitive?.booleanOrNull == true
+			}.onFailure { Timber.i("Jellyseerr über Jellyfin Enhanced nicht verfügbar: %s", it.message) }.getOrDefault(false)
+			if (usable) return plugin.also { backend = it }
+		}
+
+		val url = normalizeUrl(prefs()[urlPreference])
+		val key = prefs()[apiKeyPreference].trim()
+		return (if (url.isNotEmpty() && key.isNotEmpty()) Backend.Direct("$url/api/v1", key) else null).also { backend = it }
+	}
+
+	private fun current(): Backend = backend ?: throw IllegalStateException("Jellyseerr nicht eingerichtet")
+
+	val supportsTrending: Boolean get() = backend is Backend.Direct
+
+	private suspend fun call(target: Backend, path: String, method: String = "GET", body: String? = null): String = withContext(Dispatchers.IO) {
+		val base = when (target) {
+			is Backend.Plugin -> target.baseUrl
+			is Backend.Direct -> target.baseUrl
+		}
+		val connection = URL(base + path).openConnection() as HttpURLConnection
 		try {
 			connection.requestMethod = method
 			connection.connectTimeout = TIMEOUT_MS
 			connection.readTimeout = TIMEOUT_MS
-			connection.setRequestProperty("X-Api-Key", prefs()[apiKeyPreference].trim())
+			when (target) {
+				// Dieser Server akzeptiert nur den Authorization-Header, nicht X-Emby-Token
+				is Backend.Plugin -> connection.setRequestProperty("Authorization", "MediaBrowser Token=\"${target.token}\"")
+				is Backend.Direct -> connection.setRequestProperty("X-Api-Key", target.apiKey)
+			}
 			connection.setRequestProperty("Accept", "application/json")
 			if (body != null) {
 				connection.doOutput = true
@@ -76,29 +133,15 @@ object Jellyseerr {
 			val code = connection.responseCode
 			val stream = if (code in 200..299) connection.inputStream else connection.errorStream
 			val text = stream?.bufferedReader()?.use { it.readText() }.orEmpty()
-			if (code !in 200..299) error("Jellyseerr antwortet mit $code")
+			if (code !in 200..299) throw RequestException(code)
 			text
 		} finally {
 			connection.disconnect()
 		}
 	}
 
-	private fun parseResults(text: String): List<Media> =
-		json.parseToJsonElement(text).jsonObject["results"]?.jsonArray.orEmpty().mapNotNull { element ->
-			val obj = element as? JsonObject ?: return@mapNotNull null
-			val type = obj.string("mediaType") ?: return@mapNotNull null
-			if (type != "movie" && type != "tv") return@mapNotNull null
-			val date = obj.string("releaseDate") ?: obj.string("firstAirDate")
-			Media(
-				id = obj["id"]?.jsonPrimitive?.int ?: return@mapNotNull null,
-				type = type,
-				title = obj.string("title") ?: obj.string("name") ?: return@mapNotNull null,
-				year = date?.take(4)?.takeIf { it.length == 4 },
-				overview = obj.string("overview"),
-				posterUrl = obj.string("posterPath")?.let { TMDB_IMAGES + it },
-				status = statusOf((obj["mediaInfo"] as? JsonObject)?.get("status")?.jsonPrimitive?.intOrNull),
-			)
-		}
+	private fun JsonObject.string(key: String): String? =
+		(this[key] as? JsonPrimitive)?.takeIf { it.isString }?.content?.takeIf { it.isNotBlank() }
 
 	/** Jellyseerr-Status: 2 angefragt, 3 in Bearbeitung, 4 teilweise da, 5 verfügbar. */
 	fun statusOf(code: Int?): Status = when (code) {
@@ -108,20 +151,41 @@ object Jellyseerr {
 		else -> Status.NONE
 	}
 
-	private fun JsonObject.string(key: String): String? =
-		(this[key] as? kotlinx.serialization.json.JsonPrimitive)?.takeIf { it.isString }?.content?.takeIf { it.isNotBlank() }
+	/** Suchergebnisse (Plugin und Jellyseerr liefern dasselbe Format); Personen werden ausgelassen. */
+	fun parseResults(text: String): List<Media> =
+		(json.parseToJsonElement(text).jsonObject["results"]?.jsonArray ?: emptyList<JsonElement>()).mapNotNull { element ->
+			val obj = element as? JsonObject ?: return@mapNotNull null
+			val type = obj.string("mediaType") ?: return@mapNotNull null
+			if (type != "movie" && type != "tv") return@mapNotNull null
+			val date = obj.string("releaseDate") ?: obj.string("firstAirDate")
+			val mediaInfo = obj["mediaInfo"] as? JsonObject
+			Media(
+				id = (obj["id"] as? JsonPrimitive)?.intOrNull ?: return@mapNotNull null,
+				type = type,
+				title = obj.string("title") ?: obj.string("name") ?: return@mapNotNull null,
+				year = date?.take(4)?.takeIf { it.length == 4 },
+				overview = obj.string("overview"),
+				posterUrl = obj.string("posterPath")?.let { TMDB_IMAGES + it },
+				status = statusOf((mediaInfo?.get("status") as? JsonPrimitive)?.intOrNull),
+				jellyfinId = mediaInfo?.string("jellyfinMediaId")?.toUUIDOrNull(),
+			)
+		}
 
-	suspend fun search(query: String): List<Media> =
-		parseResults(call("/search?query=${URLEncoder.encode(query, "UTF-8").replace("+", "%20")}&page=1&language=de"))
+	suspend fun search(query: String): List<Media> {
+		val encoded = URLEncoder.encode(query.take(256), "UTF-8").replace("+", "%20")
+		return parseResults(call(current(), "/search?query=$encoded&page=1&language=de"))
+	}
 
-	suspend fun trending(): List<Media> = parseResults(call("/discover/trending?page=1&language=de"))
+	/** Gerade beliebte Titel (nur direkt mit Jellyseerr; das Plugin bietet dafür keinen Endpunkt). */
+	suspend fun trending(): List<Media> =
+		if (supportsTrending) parseResults(call(current(), "/discover/trending?page=1&language=de")) else emptyList()
 
-	/** Jellyseerr-Benutzer zum Jellyfin-Konto, damit die Anfrage unter dem richtigen Namen läuft. */
-	private suspend fun userIdFor(jellyfinUserId: UUID?): Int? {
+	/** Jellyseerr-Benutzer zum Jellyfin-Konto (nur direkt; das Plugin ordnet selbst zu). */
+	private suspend fun userIdFor(target: Backend.Direct, jellyfinUserId: UUID?): Int? {
 		if (jellyfinUserId == null) return null
 		val wanted = jellyfinUserId.toString().replace("-", "")
 		return runCatching {
-			json.parseToJsonElement(call("/user?take=200")).jsonObject["results"]?.jsonArray.orEmpty()
+			(json.parseToJsonElement(call(target, "/user?take=200")).jsonObject["results"]?.jsonArray ?: emptyList<JsonElement>())
 				.map { it.jsonObject }
 				.firstOrNull { it.string("jellyfinUserId")?.replace("-", "").equals(wanted, true) }
 				?.get("id")?.jsonPrimitive?.intOrNull
@@ -129,14 +193,14 @@ object Jellyseerr {
 	}
 
 	suspend fun request(media: Media, jellyfinUserId: UUID?) {
-		val userId = userIdFor(jellyfinUserId)
+		val target = current()
+		val userId = (target as? Backend.Direct)?.let { userIdFor(it, jellyfinUserId) }
 		val body = buildJsonObject {
 			put("mediaType", media.type)
 			put("mediaId", media.id)
 			if (media.type == "tv") put("seasons", "all")
 			if (userId != null) put("userId", userId)
 		}
-		call("/request", method = "POST", body = body.toString())
+		call(target, "/request", method = "POST", body = body.toString())
 	}
-
 }

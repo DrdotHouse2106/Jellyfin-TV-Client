@@ -12,6 +12,7 @@ import org.jellyfin.androidtv.tvclient.TimeFormat
 import org.jellyfin.androidtv.tvclient.TrailerPreview
 import org.jellyfin.androidtv.ui.preference.dsl.OptionsFragment
 import org.jellyfin.androidtv.ui.preference.dsl.action
+import org.jellyfin.androidtv.ui.preference.dsl.info
 import org.jellyfin.androidtv.ui.preference.dsl.checkbox
 import org.jellyfin.androidtv.ui.preference.dsl.optionsScreen
 import org.jellyfin.preference.store.PreferenceStore
@@ -66,6 +67,10 @@ class HomePreferencesScreen : OptionsFragment() {
 				setTitle(R.string.tvclient_jellyseerr_enable)
 				setContent(R.string.tvclient_jellyseerr_enable_description)
 				bind(userPreferences, Jellyseerr.enabledPreference)
+			}
+
+			info {
+				setTitle(R.string.tvclient_jellyseerr_direct)
 			}
 
 			action {

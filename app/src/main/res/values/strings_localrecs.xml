@@ -60,8 +60,8 @@
     <string name="tvclient_home_top10">Top 10 here</string>
     <string name="tvclient_home_top10_description">Most watched movies and shows of all users in the last 60 days (needs the plugin "Local Recommendations" 12.6.0 or newer; without it only administrators see all users)</string>
     <string name="tvclient_jellyseerr_title">Requests</string>
-    <string name="tvclient_jellyseerr_enable">Request movies and shows (Jellyseerr)</string>
-    <string name="tvclient_jellyseerr_enable_description">Adds a button to the navigation to search and request titles in Jellyseerr or Overseerr</string>
+    <string name="tvclient_jellyseerr_enable">Show requests button (Jellyseerr)</string>
+    <string name="tvclient_jellyseerr_enable_description">Appears automatically if the server plugin „Jellyfin Enhanced“ has Jellyseerr set up and your account is linked</string>
     <string name="tvclient_jellyseerr_url">Jellyseerr address</string>
     <string name="tvclient_jellyseerr_url_hint">e.g. jellyseerr.example.com or 192.168.1.10:5055</string>
     <string name="tvclient_jellyseerr_api_key">API key</string>
@@ -70,7 +70,7 @@
     <string name="tvclient_jellyseerr_loading">Loading …</string>
     <string name="tvclient_jellyseerr_trending">Popular right now – or search for a title</string>
     <string name="tvclient_jellyseerr_nothing">Nothing found</string>
-    <string name="tvclient_jellyseerr_error">Jellyseerr is not reachable. Please check address and API key.</string>
+    <string name="tvclient_jellyseerr_error">Requests are not available right now.</string>
     <string name="tvclient_jellyseerr_confirm">Request „%1$s“?</string>
     <string name="tvclient_jellyseerr_request">Request</string>
     <string name="tvclient_jellyseerr_requested">„%1$s“ has been requested</string>
@@ -81,4 +81,8 @@
     <string name="tvclient_like">Like</string>
     <string name="tvclient_dislike">Not for me</string>
     <string name="tvclient_audio_subtitles">Audio &amp; subtitles</string>
+    <string name="tvclient_jellyseerr_direct">Without the plugin: optionally enter your own Jellyseerr address and API key</string>
+    <string name="tvclient_jellyseerr_search_hint">Search for a movie or show to request it</string>
+    <string name="tvclient_jellyseerr_already">Already requested or request limit reached</string>
+    <string name="tvclient_jellyseerr_no_permission">Your Jellyseerr account is not allowed to request</string>
 </resources>

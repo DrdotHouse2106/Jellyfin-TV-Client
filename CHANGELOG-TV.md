@@ -1,5 +1,12 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.12.0 – 2026-10-17
+
+- **Anfragen über „Jellyfin Enhanced“:** Ist auf dem Server das Plugin „Jellyfin Enhanced“ mit Jellyseerr eingerichtet und dein Konto verknüpft, erscheint links in der Navigation automatisch ein „+“ – ohne Adresse oder API-Schlüssel am Fernseher. Die Anfrage läuft über den Jellyfin-Server unter deinem Benutzer und mit deinen Jellyseerr-Rechten. Auf Servern ohne das Plugin erscheint nichts.
+- Titel, die schon in der Bibliothek sind, öffnen mit OK direkt die Detailseite in Jellyfin.
+- Klare Meldungen bei „schon angefragt / Limit erreicht“ und „keine Berechtigung“.
+- Eigene Jellyseerr-Adresse und API-Schlüssel bleiben als Notlösung ohne Plugin möglich (Einstellungen → Startseite → Anfragen).
+
 ## 1.11.0 – 2026-10-17
 
 - **Top 10 über alle Benutzer:** Die Zeile „Top 10 bei euch“ nimmt jetzt die Zahlen vom Plugin „Local Recommendations“ (ab 12.6.0) – über alle Benutzer des Servers, auch ohne Administrator-Rechte. Ohne das neue Plugin zählt die App wie bisher selbst.

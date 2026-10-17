@@ -12,6 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import org.jellyfin.sdk.api.client.ApiClient
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -58,7 +63,10 @@ fun SideRail(
 	val guide = remember { FocusRequester() }
 	val settings = remember { FocusRequester() }
 	val requests = remember { FocusRequester() }
-	val showRequests = remember { Jellyseerr.isConfigured() }
+	// Anfragen-Knopf nur, wenn Jellyseerr (über Jellyfin Enhanced oder direkt) nutzbar ist
+	val api = koinInject<ApiClient>()
+	var showRequests by remember { mutableStateOf(false) }
+	LaunchedEffect(Unit) { showRequests = Jellyseerr.detect(api) != null }
 	val order = listOfNotNull(user, search, home, guide, requests.takeIf { showRequests }, settings)
 
 	fun Modifier.railFocus(self: FocusRequester): Modifier {

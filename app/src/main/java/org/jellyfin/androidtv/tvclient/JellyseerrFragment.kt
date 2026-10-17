@@ -56,7 +56,10 @@ import org.jellyfin.androidtv.ui.base.JellyfinTheme
 import org.jellyfin.androidtv.ui.base.Text
 import org.jellyfin.androidtv.ui.base.button.Button
 import org.jellyfin.androidtv.ui.composable.AsyncImage
+import org.jellyfin.androidtv.ui.navigation.Destinations
+import org.jellyfin.androidtv.ui.navigation.NavigationRepository
 import org.jellyfin.androidtv.ui.search.composable.SearchTextInput
+import org.jellyfin.sdk.api.client.ApiClient
 import org.koin.compose.koinInject
 import timber.log.Timber
 
@@ -74,6 +77,8 @@ private fun JellyseerrScreen() {
 	val context = LocalContext.current
 	val scope = rememberCoroutineScope()
 	val userRepository = koinInject<UserRepository>()
+	val api = koinInject<ApiClient>()
+	val navigationRepository = koinInject<NavigationRepository>()
 	var query by remember { mutableStateOf("") }
 	val results = remember { mutableStateListOf<Jellyseerr.Media>() }
 	var loading by remember { mutableStateOf(true) }
@@ -83,7 +88,21 @@ private fun JellyseerrScreen() {
 	val confirmFocus = remember { FocusRequester() }
 
 	// Ohne Suchbegriff: gerade beliebte Titel; sonst nach kurzer Tipp-Pause suchen
-	LaunchedEffect(query) {
+	var available by remember { mutableStateOf<Boolean?>(null) }
+	LaunchedEffect(Unit) {
+		available = Jellyseerr.detect(api) != null
+		if (available != true) {
+			error = context.getString(R.string.tvclient_jellyseerr_error)
+			loading = false
+		}
+	}
+	LaunchedEffect(query, available) {
+		if (available != true) return@LaunchedEffect
+		if (query.isBlank() && !Jellyseerr.supportsTrending) {
+			results.clear()
+			loading = false
+			return@LaunchedEffect
+		}
 		if (query.isNotBlank()) delay(500)
 		loading = true
 		error = null
@@ -113,7 +132,8 @@ private fun JellyseerrScreen() {
 				text = when {
 					error != null -> error!!
 					loading -> stringResource(R.string.tvclient_jellyseerr_loading)
-					query.isBlank() -> stringResource(R.string.tvclient_jellyseerr_trending)
+					query.isBlank() && Jellyseerr.supportsTrending -> stringResource(R.string.tvclient_jellyseerr_trending)
+					query.isBlank() -> stringResource(R.string.tvclient_jellyseerr_search_hint)
 					results.isEmpty() -> stringResource(R.string.tvclient_jellyseerr_nothing)
 					else -> ""
 				},
@@ -127,7 +147,16 @@ private fun JellyseerrScreen() {
 				modifier = Modifier.fillMaxSize(),
 			) {
 				items(results, key = { "${it.type}-${it.id}" }) { media ->
-					MediaCard(media) { if (media.status == Jellyseerr.Status.NONE) selected = media }
+					MediaCard(media) {
+						val jellyfinId = media.jellyfinId
+						when {
+							// Schon da: direkt zum Titel in Jellyfin
+							media.status in setOf(Jellyseerr.Status.AVAILABLE, Jellyseerr.Status.PARTIAL) && jellyfinId != null ->
+								navigationRepository.navigate(Destinations.itemDetails(jellyfinId))
+							media.status == Jellyseerr.Status.NONE -> selected = media
+							else -> Toast.makeText(context, R.string.tvclient_jellyseerr_already, Toast.LENGTH_SHORT).show()
+						}
+					}
 				}
 			}
 		}
@@ -156,7 +185,12 @@ private fun JellyseerrScreen() {
 										}
 										.onFailure {
 											Timber.w(it, "Jellyseerr-Anfrage fehlgeschlagen")
-											Toast.makeText(context, R.string.tvclient_jellyseerr_error, Toast.LENGTH_LONG).show()
+											val message = when ((it as? Jellyseerr.RequestException)?.code) {
+												409 -> R.string.tvclient_jellyseerr_already
+												403 -> R.string.tvclient_jellyseerr_no_permission
+												else -> R.string.tvclient_jellyseerr_error
+											}
+											Toast.makeText(context, message, Toast.LENGTH_LONG).show()
 										}
 									selected = null
 								}
