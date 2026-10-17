@@ -6,6 +6,7 @@
 - Startseite: Nach „Zurück“ bleiben Auswahl und angezeigter Titel, wo sie waren – das Banner holt sich den Fokus nur beim ersten Öffnen.
 - Suche: „Runter“ führt aus dem Suchfeld zu den Ergebnissen, auch ohne die Suchen-Taste der Tastatur. Schließt man die Tastatur mit „Zurück“, springt die Auswahl zu den Ergebnissen.
 - Top 10: Die Rang-Ziffern stehen links neben dem Plakat und sind besser lesbar.
+- Detailseite: Die Knopfleiste lässt sich seitlich scrollen, statt den letzten Knopf („Weitere“) zu stauchen. Beschriftungen werden nicht mehr mitten im Wort getrennt.
 
 ## 1.19.3 – 2026-10-17
 

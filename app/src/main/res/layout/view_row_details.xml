@@ -176,24 +176,35 @@
             app:layout_constraintTop_toBottomOf="@id/fdGenreRow"
             tools:text="fdSummaryText" />
 
-        <LinearLayout
-            android:id="@+id/fdButtonRow"
+        <!-- Jellyfin-TV-Client: Knöpfe seitlich scrollbar, damit keiner gestaucht wird -->
+        <HorizontalScrollView
+            android:id="@+id/fdButtonScroll"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:divider="@drawable/blank10x10"
-            android:orientation="horizontal"
-            android:showDividers="none"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:fillViewport="false"
+            android:scrollbars="none"
             app:layout_constraintEnd_toEndOf="@id/guide_main_end"
             app:layout_constraintStart_toStartOf="@id/guide_main_start"
-            app:layout_constraintTop_toBottomOf="@id/fdSummaryText" />
+            app:layout_constraintTop_toBottomOf="@id/fdSummaryText">
+
+            <LinearLayout
+                android:id="@+id/fdButtonRow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/blank10x10"
+                android:orientation="horizontal"
+                android:showDividers="none" />
+        </HorizontalScrollView>
 
         <!-- Right -->
 
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@id/fdButtonRow"
+            app:layout_constraintBottom_toBottomOf="@id/fdButtonScroll"
             app:layout_constraintEnd_toEndOf="@id/guide_right_end"
             app:layout_constraintStart_toStartOf="@id/guide_right_start"
             app:layout_constraintTop_toTopOf="@id/guide_top"

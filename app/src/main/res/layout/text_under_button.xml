@@ -29,10 +29,13 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="2dp"
         android:alpha=".7"
+        android:breakStrategy="simple"
+        android:hyphenationFrequency="none"
         android:gravity="center"
         android:maxLines="2"
         android:paddingStart="5dp"
         android:paddingEnd="5dp"
         android:textSize="12sp"
+        tools:ignore="UnusedAttribute"
         tools:text="TextView" />
 </RelativeLayout>
