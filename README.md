@@ -163,6 +163,10 @@ Damit Jellyfin Remote dieselben Apps als Knöpfe zeigen kann, legt die App die L
 
 - Optionaler **Startbildschirm-Modus** (Launcher) für Android TV / Google TV. Auf Fire TV lässt Amazon keinen fremden Startbildschirm zu.
 
+## LG-Fernseher (webOS)
+
+Für LG-Fernseher gibt es eine eigene, einfachere Quallenkino-Version im Ordner [`webos/`](webos/README.md). Sie zeigt die Jellyfin-Weboberfläche des Servers mit Quallenkino-Name und -Icon, aber ohne die Extras der Android-Version.
+
 ## Datenschutz
 
 Siehe [Datenschutzerklärung](PRIVACY.md) ([English](PRIVACY.en.md)). Kurz: keine Werbung, kein Tracking, keine Daten an den Entwickler – die App spricht nur mit dem eigenen Jellyfin-Server.

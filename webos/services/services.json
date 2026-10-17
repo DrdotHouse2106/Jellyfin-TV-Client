@@ -1,0 +1,9 @@
+{
+  "id": "de.drdothouse.quallenkino.service",
+  "description": "Quallenkino Server-Suche",
+  "services": [
+    {
+      "name": "de.drdothouse.quallenkino.service"
+    }
+  ]
+}

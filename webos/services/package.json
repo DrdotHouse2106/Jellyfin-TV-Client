@@ -1,0 +1,5 @@
+{
+  "name": "de.drdothouse.quallenkino.service",
+  "description": "Quallenkino Server-Suche",
+  "main": "service.js"
+}

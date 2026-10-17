@@ -1,0 +1,72 @@
+# Quallenkino für webOS (LG-Fernseher): baut die .ipk mit ares-package.
+# Mit „release“ entsteht ein GitHub-Release webos-v{Version aus webos/frontend/appinfo.json}.
+# Das Release wird NICHT als „latest“ markiert, damit der APK-Link
+# releases/latest/download/quallenkino.apk weiter auf die Android-App zeigt.
+name: webOS / Build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'webos/**'
+      - '.github/workflows/webos-build.yaml'
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'GitHub-Release webos-v{Version} mit der .ipk anlegen'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: webos
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20.x
+
+      - name: Install ares-cli
+        run: npm install -g @webosose/ares-cli
+
+      - name: Check packaging
+        run: ares-package --check services frontend
+
+      - name: Build package
+        run: |
+          mkdir -p build
+          ares-package --no-minify --outdir build/ services frontend
+          node tools/gen-manifest.js build/de.drdothouse.quallenkino.manifest.json
+          VERSION=$(node -p "require('./frontend/appinfo.json').version")
+          echo "WEBOS_VERSION=$VERSION" >> $GITHUB_ENV
+          # fester Dateiname für einen gleichbleibenden Download-Link
+          cp build/de.drdothouse.quallenkino_${VERSION}_all.ipk build/quallenkino-webos.ipk
+          ls -la build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: quallenkino-webos
+          if-no-files-found: error
+          path: webos/build/
+
+      - name: Create GitHub release
+        if: inputs.release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="webos-v$WEBOS_VERSION"
+          gh release create "$TAG" build/* --target "$GITHUB_SHA" --latest=false \
+            --title "Quallenkino für webOS $WEBOS_VERSION" --notes "Installation siehe webos/README.md." \
+            || gh release upload "$TAG" build/* --clobber
