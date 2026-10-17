@@ -217,6 +217,7 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 			// Ausblenden, solange der Fokus unterhalb der Knöpfe ist (Inhalt, Staffeln, Besetzung …)
 			enabled = previewOn && !belowFocused,
 			onUnavailable = { autoTrailerFailed = true },
+			label = info.trailerLabel.takeIf { localTrailerUrl == null },
 		)
 
 		Column(

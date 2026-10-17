@@ -54,6 +54,8 @@ fun BoxScope.BackdropTrailer(
 	background: Color,
 	enabled: Boolean = true,
 	onUnavailable: () -> Unit = {},
+	/** Kennzeichnung unter dem YouTube-Player, z. B. „EN“ oder „OmU“ (nichts liegt über dem Player). */
+	label: String? = null,
 ) {
 	val userPreferences = koinInject<UserPreferences>()
 	if (!enabled || !userPreferences[TrailerPreview.enabledPreference]) return
@@ -78,7 +80,8 @@ fun BoxScope.BackdropTrailer(
 			key = youtubeKey,
 			withSound = withSound,
 			onUnavailable = onUnavailable,
-			modifier = Modifier.align(Alignment.TopEnd).padding(top = 64.dp, end = 48.dp).fillMaxWidth(0.4f).aspectRatio(16f / 9f),
+			label = label,
+			modifier = Modifier.align(Alignment.TopEnd).padding(top = 64.dp, end = 48.dp).fillMaxWidth(0.4f),
 		)
 	}
 }
@@ -86,7 +89,7 @@ fun BoxScope.BackdropTrailer(
 /** YouTube-IFrame-Player ohne Bedienung, nicht fokussierbar; blendet sich bei Fehlern/Ende aus. */
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-private fun YoutubeInline(key: String, withSound: Boolean, modifier: Modifier, onUnavailable: () -> Unit) {
+private fun YoutubeInline(key: String, withSound: Boolean, modifier: Modifier, onUnavailable: () -> Unit, label: String?) {
 	var visible by remember(key) { mutableStateOf(false) }
 	var gone by remember(key) { mutableStateOf(false) }
 	val alpha by animateFloatAsState(if (visible && !gone) 1f else 0f, tween(600), label = "YoutubeInlineAlpha")
@@ -108,8 +111,9 @@ private fun YoutubeInline(key: String, withSound: Boolean, modifier: Modifier, o
 		}
 	}
 
+	androidx.compose.foundation.layout.Column(modifier.alpha(alpha), horizontalAlignment = Alignment.End) {
 	AndroidView(
-		modifier = modifier.alpha(alpha),
+		modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f),
 		factory = { context ->
 			WebView(context).apply {
 				layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
@@ -143,6 +147,19 @@ private fun YoutubeInline(key: String, withSound: Boolean, modifier: Modifier, o
 			webView.destroy()
 		},
 	)
+	// Sprache außerhalb des Players kennzeichnen
+	if (label != null) {
+		org.jellyfin.androidtv.ui.base.Text(
+			label,
+			fontSize = androidx.compose.ui.unit.TextUnit(12f, androidx.compose.ui.unit.TextUnitType.Sp),
+			color = Color.White,
+			modifier = Modifier
+				.padding(top = 6.dp)
+				.background(Color(0xFF404040), androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
+				.padding(horizontal = 6.dp, vertical = 2.dp),
+		)
+	}
+	}
 }
 
 /**

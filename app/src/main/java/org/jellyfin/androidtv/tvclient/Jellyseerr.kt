@@ -245,6 +245,19 @@ object Jellyseerr {
 		return usable.filter { it.german() }.minByOrNull { it.rank() } ?: usable.minByOrNull { it.rank() }
 	}
 
+	/**
+	 * Kennzeichnung für nicht-deutsche Trailer (testbar). Im Zweifel lieber „EN“ als fälschlich deutsch:
+	 * „OmU“ bei Untertiteln oder asiatischer Originalsprache, „EN“ bei Englisch bzw. unbekannt,
+	 * sonst das Sprachkürzel.
+	 */
+	fun languageLabel(video: Video, originalLanguage: String?): String? {
+		if (video.language.equals("de", true) || listOf("deutsch", "german", "offiziell", "kinostart").any { video.name.contains(it, true) }) return null
+		val subtitled = Regex("(?i)\\b(subtitled|sub|subs|omu)\\b").containsMatchIn(video.name)
+		if (subtitled || originalLanguage?.lowercase() in setOf("ja", "ko", "zh")) return "OmU"
+		val language = video.language?.lowercase()
+		return if (language == null || language == "en") "EN" else language.uppercase()
+	}
+
 	data class Person(val name: String, val role: String?, val imageUrl: String?)
 	data class Season(val number: Int, val name: String, val episodes: Int?, val status: Status)
 
@@ -261,6 +274,8 @@ object Jellyseerr {
 		val cast: List<Person>,
 		val seasons: List<Season>,
 		val trailerKey: String?,
+		/** Kennzeichnung, wenn der Trailer nicht deutsch ist („EN“, „OmU“ …), sonst null. */
+		val trailerLabel: String? = null,
 	)
 
 	/** Alle Infos für die Detailseite (Film: /movie/{id}, Serie: /tv/{id}). */
@@ -303,11 +318,12 @@ object Jellyseerr {
 				if (number == 0) return@mapNotNull null // Specials
 				Season(number, season.string("name") ?: "Staffel $number", (season["episodeCount"] as? JsonPrimitive)?.intOrNull, requestedSeasons[number] ?: Status.NONE)
 			}
-		val trailer = pickVideo((obj["relatedVideos"] as? kotlinx.serialization.json.JsonArray).orEmpty().mapNotNull { video ->
+		val trailerVideo = pickVideo((obj["relatedVideos"] as? kotlinx.serialization.json.JsonArray).orEmpty().mapNotNull { video ->
 			val o = video as? JsonObject ?: return@mapNotNull null
 			if (!o.string("site").equals("YouTube", true)) return@mapNotNull null
 			Video(o.string("key") ?: return@mapNotNull null, o.string("type").orEmpty(), o.string("name").orEmpty(), o.string("iso_639_1") ?: o.string("language"))
-		})?.key
+		})
+		val trailer = trailerVideo?.key
 
 		return Details(
 			media = Media(
@@ -334,6 +350,7 @@ object Jellyseerr {
 			cast = cast,
 			seasons = seasons,
 			trailerKey = trailer,
+			trailerLabel = trailerVideo?.let { languageLabel(it, obj.string("originalLanguage")) },
 		)
 	}
 }

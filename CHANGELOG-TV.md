@@ -8,6 +8,9 @@
 - Detailseiten: Läuft der Trailer automatisch oben rechts, wird der Knopf „Trailer abspielen“ ausgeblendet. Er erscheint wieder, wenn die Vorschau aus ist oder nicht laufen kann (z. B. YouTube-Fehler, sehr alte Geräte).
 - YouTube-Trailer: **deutsche Trailer zuerst** (Sprache „de“ oder „Deutsch/German/Offiziell/Kinostart“ im Namen), Trailer vor Teaser; englische nur, wenn es keine deutschen gibt.
 - Anfragen – Detailseite: Die Infospalte ist schmaler, damit die Knöpfe nicht unter den Trailer oben rechts reichen.
+- Nicht-deutsche YouTube-Trailer laufen weiterhin automatisch, bekommen aber unter dem Player eine Kennzeichnung: „EN“, „OmU“ (Untertitel bzw. japanisch/koreanisch/chinesisch) oder das Sprachkürzel.
+- Anfragen – Raster: Titel bis zu zwei Zeilen mit „…“, das Jahr immer darunter; nur das Plakat wird beim Auswählen größer. Unten mehr Abstand, damit Titel und Jahr der ausgewählten Reihe ganz zu sehen sind.
+- Anfragen: Beim Öffnen und beim Zurückkommen von einer Detailseite blitzt die Tastatur nicht mehr kurz auf.
 
 ## 1.18.0 – 2026-10-17
 

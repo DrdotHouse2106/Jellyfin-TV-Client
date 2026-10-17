@@ -44,3 +44,13 @@ class JellyseerrVideoTests : io.kotest.core.spec.style.FunSpec({
 		Jellyseerr.pickVideo(listOf(en, Jellyseerr.Video("c", "Clip", "Clip", "de"))) shouldBe en
 	}
 })
+
+class JellyseerrLanguageLabelTests : io.kotest.core.spec.style.FunSpec({
+	test("Kennzeichnung nicht-deutscher Trailer") {
+		Jellyseerr.languageLabel(Jellyseerr.Video("a", "Trailer", "Trailer German Deutsch", null), "en") shouldBe null
+		Jellyseerr.languageLabel(Jellyseerr.Video("b", "Trailer", "Official Trailer [Subtitled]", "en"), "ja") shouldBe "OmU"
+		Jellyseerr.languageLabel(Jellyseerr.Video("c", "Trailer", "Official Trailer", "en"), "en") shouldBe "EN"
+		Jellyseerr.languageLabel(Jellyseerr.Video("d", "Trailer", "Bande-annonce", "fr"), "fr") shouldBe "FR"
+		Jellyseerr.languageLabel(Jellyseerr.Video("e", "Trailer", "Trailer", null), null) shouldBe "EN"
+	}
+})

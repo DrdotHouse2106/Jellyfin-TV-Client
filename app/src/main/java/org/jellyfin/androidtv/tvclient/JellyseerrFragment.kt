@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
@@ -101,6 +102,9 @@ private fun JellyseerrScreen() {
 	val restoreFocus = remember { FocusRequester() }
 	var available by remember { mutableStateOf<Boolean?>(null) }
 	var initialFocusDone by remember { mutableStateOf(false) }
+	// Das Suchfeld ist erst auswählbar, wenn der Fokus gesetzt ist – sonst blitzt beim Öffnen bzw.
+	// beim Zurückkommen kurz die Tastatur auf
+	var inputFocusable by remember { mutableStateOf(false) }
 
 	fun focusResults() {
 		if (results.isEmpty()) return
@@ -136,14 +140,19 @@ private fun JellyseerrScreen() {
 		if (JellyseerrSearchState.focusedKey != null) {
 			delay(100)
 			runCatching { restoreFocus.requestFocus() }
-		} else if (query.isBlank() && !initialFocusDone) {
-			initialFocusDone = true
+			JellyseerrSearchState.focusedKey = null
+		} else if (!initialFocusDone) {
 			// Beim Öffnen: auf „Für dich“ statt ins Suchfeld (sonst geht sofort die Tastatur auf);
 			// ins Suchfeld kommt man mit „Hoch“
 			delay(100)
 			if (results.isNotEmpty()) runCatching { firstResultFocus.requestFocus() }
-			else runCatching { inputFocus.requestFocus() }
+			else {
+				inputFocusable = true
+				runCatching { inputFocus.requestFocus() }
+			}
 		}
+		initialFocusDone = true
+		inputFocusable = true
 	}
 
 	Box(Modifier.fillMaxSize().background(Color(0xFF101010))) {
@@ -157,6 +166,7 @@ private fun JellyseerrScreen() {
 				onQuerySubmit = { focusResults() },
 				modifier = Modifier
 					.fillMaxWidth()
+					.focusProperties { canFocus = inputFocusable }
 					.focusRequester(inputFocus)
 					.onPreviewKeyEvent { event ->
 						// Runter verlässt das Suchfeld (das Textfeld behält die Taste sonst für sich)
@@ -184,7 +194,7 @@ private fun JellyseerrScreen() {
 				horizontalArrangement = Arrangement.spacedBy(16.dp),
 				verticalArrangement = Arrangement.spacedBy(16.dp),
 				// Platz für die vergrößerte Karte, damit sie am Rand nicht abgeschnitten wird
-				contentPadding = androidx.compose.foundation.layout.PaddingValues(12.dp),
+				contentPadding = androidx.compose.foundation.layout.PaddingValues(start = 12.dp, top = 12.dp, end = 12.dp, bottom = 40.dp),
 				modifier = Modifier.fillMaxSize(),
 			) {
 				itemsIndexed(results, key = { _, it -> "${it.type}-${it.id}" }) { index, media ->
@@ -208,7 +218,6 @@ internal fun MediaCard(media: Jellyseerr.Media, modifier: Modifier = Modifier, o
 	val focused by interaction.collectIsFocusedAsState()
 	Column(
 		modifier
-			.scale(if (focused) 1.06f else 1f)
 			// clickable ist selbst fokussierbar und reagiert auf OK (DPAD_CENTER) und Enter
 			.clickable(interactionSource = interaction, indication = null, onClick = onClick)
 	) {
@@ -216,6 +225,8 @@ internal fun MediaCard(media: Jellyseerr.Media, modifier: Modifier = Modifier, o
 			Modifier
 				.fillMaxWidth()
 				.aspectRatio(2f / 3f)
+				// Nur das Plakat vergrößern, der Text bleibt ruhig
+				.scale(if (focused) 1.06f else 1f)
 				.clip(RoundedCornerShape(6.dp))
 				.background(Color(0xFF262626))
 		) {
@@ -241,9 +252,19 @@ internal fun MediaCard(media: Jellyseerr.Media, modifier: Modifier = Modifier, o
 			// Fokusrahmen über dem Bild, mit denselben runden Ecken
 			Box(Modifier.fillMaxSize().border(3.dp, if (focused) Color.White else Color.Transparent, RoundedCornerShape(6.dp)))
 		}
-		Spacer(Modifier.padding(top = 6.dp))
-		Text(media.title, maxLines = 1, color = if (focused) Color.White else Color(0xFFB3B3B3))
-		media.year?.let { Text(it, fontSize = 12.sp, color = Color(0xFF808080)) }
+		Spacer(Modifier.height(8.dp))
+		// Titel: zwei Zeilen fest reserviert, damit alle Karten einer Reihe gleich hoch sind
+		Box(Modifier.height(38.dp)) {
+			Text(
+				media.title,
+				maxLines = 2,
+				overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+				fontSize = 14.sp,
+				lineHeight = 18.sp,
+				color = if (focused) Color.White else Color(0xFFB3B3B3),
+			)
+		}
+		Text(media.year.orEmpty(), fontSize = 12.sp, color = Color(0xFF808080))
 	}
 }
 
