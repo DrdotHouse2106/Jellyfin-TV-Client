@@ -22,8 +22,10 @@ import org.jellyfin.androidtv.auth.repository.SessionRepository
 import org.jellyfin.androidtv.auth.repository.UserRepository
 import org.jellyfin.androidtv.databinding.ActivityMainBinding
 import org.jellyfin.androidtv.integration.LeanbackChannelWorker
+import org.jellyfin.androidtv.tvclient.ScreensaverDetails
 import org.jellyfin.androidtv.ui.InteractionTrackerViewModel
 import org.jellyfin.androidtv.ui.background.AppBackground
+import org.jellyfin.androidtv.ui.navigation.Destinations
 import org.jellyfin.androidtv.ui.navigation.NavigationAction
 import org.jellyfin.androidtv.ui.navigation.NavigationRepository
 import org.jellyfin.androidtv.ui.screensaver.InAppScreensaver
@@ -163,6 +165,16 @@ class MainActivity : FragmentActivity() {
 
 	@Suppress("RestrictedApi") // False positive
 	override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+		// Jellyfin-TV-Client: OK im Bildschirmschoner öffnet den gezeigten Titel
+		if (interactionTrackerViewModel.visible.value && ScreensaverDetails.isOk(event.keyCode)) {
+			val itemId = ScreensaverDetails.current.value
+			if (event.action == KeyEvent.ACTION_UP) {
+				interactionTrackerViewModel.notifyInteraction(canCancel = true, userInitiated = true)
+				if (itemId != null) navigationRepository.navigate(Destinations.itemDetails(itemId))
+			}
+			return true
+		}
+
 		// Ignore the key event that closes the screensaver
 		if (!event.isMediaSessionKeyEvent() && interactionTrackerViewModel.visible.value) {
 			interactionTrackerViewModel.notifyInteraction(canCancel = event.action == KeyEvent.ACTION_UP, userInitiated = true)

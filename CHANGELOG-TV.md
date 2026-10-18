@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.23.5 – 2026-10-18
+
+- Bildschirmschoner: **OK öffnet die Detailseite** des gerade gezeigten Titels, jede andere Taste beendet den Schoner (wie in der webOS-App). Hinweis „OK: Details · andere Taste: zurück“ unter dem Titel. Gilt für den Schoner in der App und für den System-Bildschirmschoner (Daydream): dort startet OK Quallenkino direkt mit dem Titel.
+
 ## 1.23.4 – 2026-10-18
 
 - Programm-Detailseite: Links steht bei „Regie“ der Regisseur aus dem EPG statt „Unbekannt“.

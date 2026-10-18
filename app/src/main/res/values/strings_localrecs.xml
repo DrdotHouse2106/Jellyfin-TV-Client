@@ -123,4 +123,5 @@
         <item quantity="one">%d title</item>
         <item quantity="other">%d titles</item>
     </plurals>
+    <string name="tvclient_screensaver_hint">OK: details · other key: back</string>
 </resources>

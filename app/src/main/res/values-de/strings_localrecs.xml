@@ -123,4 +123,5 @@
         <item quantity="one">%d Titel</item>
         <item quantity="other">%d Titel</item>
     </plurals>
+    <string name="tvclient_screensaver_hint">OK: Details · andere Taste: zurück</string>
 </resources>
