@@ -128,4 +128,16 @@
     <string name="tvclient_volume_mute">Stumm</string>
     <string name="tvclient_volume_quiet">Leise</string>
     <string name="tvclient_volume_normal">Normal</string>
+    <string name="tvclient_quick_on">An</string>
+    <string name="tvclient_quick_off">Aus</string>
+    <string name="tvclient_quick_subtitles">Untertitel beim Start</string>
+    <string name="tvclient_quick_subtitles_smart">Intelligent</string>
+    <string name="tvclient_quick_subtitles_server">Wie vom Server</string>
+    <string name="tvclient_quick_subtitles_hint">Intelligent: Deutscher Ton → nur erzwungene Untertitel, fremder Ton → deutsche Untertitel.</string>
+    <string name="tvclient_quick_trailer_sound">Ton der Trailer-Vorschau</string>
+    <string name="tvclient_quick_screensaver">Bildschirmschoner nach</string>
+    <string name="tvclient_quick_servers">Server und Konten</string>
+    <string name="tvclient_quick_more">Mehr</string>
+    <string name="tvclient_quick_more_button">Weitere Einstellungen …</string>
+    <string name="tvclient_quick_tmdb">Dieses Produkt nutzt die TMDB-API, ist aber nicht von TMDB unterstützt oder zertifiziert.</string>
 </resources>

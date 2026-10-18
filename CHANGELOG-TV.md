@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.23.8 – 2026-10-18
+
+- **Schlanke Einstellungen (wie in der webOS-App):** Das Zahnrad in der Navigation öffnet eine übersichtliche Seite mit großen Auswahlknöpfen – Untertitel beim Start, Trailer-Vorschau und deren Ton, Bildschirmschoner (Zeit, Teaser, Ton der Teaser), Anfragen (Jellyseerr), Konto (Profil wechseln, Abmelden, Server und Konten) und Über. Alles andere liegt unter **„Weitere Einstellungen …“** im bisherigen Menü.
+
 ## 1.23.7 – 2026-10-18
 
 - Neue Einstellung **„Ton der Teaser“** im Bildschirmschoner: Stumm (Standard), Leise oder Normal – wie in der webOS-App. Vorher richtete sich der Ton nach der Trailer-Vorschau.

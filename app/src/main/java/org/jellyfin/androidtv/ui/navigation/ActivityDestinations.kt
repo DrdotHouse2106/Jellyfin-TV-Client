@@ -27,6 +27,8 @@ object ActivityDestinations {
 	}
 
 	fun userPreferences(context: Context) = preferenceIntent<UserPreferencesScreen>(context)
+	// Jellyfin-TV-Client: Server und Konten (aus den schlanken Einstellungen)
+	fun authPreferences(context: Context) = preferenceIntent<org.jellyfin.androidtv.ui.preference.screen.AuthPreferencesScreen>(context)
 	fun displayPreferences(context: Context, displayPreferencesId: String, allowViewSelection: Boolean) =
 		preferenceIntent<DisplayPreferencesScreen>(
 			context,

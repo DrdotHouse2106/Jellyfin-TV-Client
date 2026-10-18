@@ -42,6 +42,8 @@ object Destinations {
 		org.jellyfin.androidtv.tvclient.JellyseerrDetailsFragment.ARG_TYPE to type,
 		org.jellyfin.androidtv.tvclient.JellyseerrDetailsFragment.ARG_ID to tmdbId,
 	)
+	// Jellyfin-TV-Client: schlanke Einstellungen (wie webOS)
+	val quickSettings = fragmentDestination<org.jellyfin.androidtv.tvclient.QuickSettingsFragment>()
 	// Jellyfin-TV-Client: Welten (Marvel, Disney, …)
 	fun world(key: String) = fragmentDestination<org.jellyfin.androidtv.tvclient.WorldFragment>(
 		org.jellyfin.androidtv.tvclient.WorldFragment.ARG_KEY to key,

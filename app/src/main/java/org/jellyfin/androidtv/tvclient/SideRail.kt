@@ -112,7 +112,7 @@ fun SideRail(
 			}
 		}
 		RailButton(R.drawable.ic_settings, R.string.lbl_settings, Modifier.railFocus(settings)) {
-			activity?.let { it.startActivity(ActivityDestinations.userPreferences(it)) }
+			navigationRepository.navigate(Destinations.quickSettings)
 		}
 	}
 }
