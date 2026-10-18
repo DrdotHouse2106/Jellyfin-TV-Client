@@ -3,6 +3,8 @@
 ## 1.22.3 – 2026-10-18
 
 - Welt-Seite: Logo und Name stehen fest oben, nur die Reihen darunter scrollen. Vorher schob der Fokus auf die erste Reihe den Namen aus dem Bild.
+- Welten-Logos: Nur noch dunkle Logos (schwarz, dunkelgrau, dunkelblau) werden weiß eingefärbt. Farbige und helle Logos bleiben unverändert, z. B. der rote Marvel-Kasten mit ausgestanzter Schrift.
+- Welten: Harry Potter passt auch zur Plugin-Welt „Wizarding World“.
 - Live-TV-Besetzung: Protokoll in logcat (`adb logcat -s Quallenkino`) mit Adresse, HTTP-Status und Anzahl der Darsteller – zur Fehlersuche im Programmführer.
 
 ## 1.22.2 – 2026-10-18

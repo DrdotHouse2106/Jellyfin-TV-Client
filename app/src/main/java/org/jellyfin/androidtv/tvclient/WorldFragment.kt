@@ -55,6 +55,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.compose.content
+import coil3.request.allowHardware
+import coil3.toBitmap
 import kotlinx.coroutines.delay
 import org.jellyfin.androidtv.R
 import org.jellyfin.androidtv.auth.repository.UserRepository
@@ -140,16 +142,23 @@ private fun WorldScreen(key: String) {
 			// Kopf: Logo des Studios, sonst der Name
 			val current = world
 			var logoLoaded by remember(current?.imageUrl) { mutableStateOf(false) }
+			var logoDark by remember(current?.imageUrl) { mutableStateOf(false) }
 			if (current?.imageUrl != null) {
+				val request = remember(current.imageUrl) {
+					coil3.request.ImageRequest.Builder(context).data(current.imageUrl).allowHardware(false).build()
+				}
 				coil3.compose.AsyncImage(
-					model = current.imageUrl,
+					model = request,
 					contentDescription = current.name,
 					imageLoader = koinInject<coil3.ImageLoader>(),
 					contentScale = ContentScale.Fit,
 					alignment = Alignment.CenterStart,
-					onSuccess = { logoLoaded = true },
-					// Firmenlogos sind oft farbig oder dunkel – weiß einfärben
-					colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.White),
+					onSuccess = { state ->
+						logoLoaded = true
+						logoDark = LogoTint.isDark(state.result.image.toBitmap())
+					},
+					// Nur dunkle Logos weiß einfärben, farbige/helle bleiben unverändert
+					colorFilter = if (logoDark) androidx.compose.ui.graphics.ColorFilter.tint(Color.White) else null,
 					modifier = Modifier.heightIn(max = 90.dp).widthIn(max = 320.dp),
 				)
 			}

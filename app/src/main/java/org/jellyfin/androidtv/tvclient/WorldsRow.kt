@@ -17,6 +17,8 @@ import androidx.leanback.widget.ListRow
 import androidx.leanback.widget.Presenter
 import androidx.leanback.widget.Row
 import org.jellyfin.androidtv.R
+import coil3.request.allowHardware
+import coil3.toBitmap
 import org.jellyfin.androidtv.ui.AsyncImageView
 import org.jellyfin.androidtv.ui.home.HomeFragmentRow
 import org.jellyfin.androidtv.ui.navigation.Destinations
@@ -47,7 +49,7 @@ private class WorldPresenter : Presenter() {
 		view: View,
 		val backdrop: AsyncImageView,
 		val shade: View,
-		val image: AsyncImageView,
+		val image: ImageView,
 		val name: TextView,
 		val background: GradientDrawable,
 	) : ViewHolder(view)
@@ -59,10 +61,8 @@ private class WorldPresenter : Presenter() {
 		val background = GradientDrawable().apply { cornerRadius = dp(8).toFloat() }
 		val backdrop = AsyncImageView(context).apply { scaleType = ImageView.ScaleType.CENTER_CROP }
 		val shade = View(context)
-		val image = AsyncImageView(context).apply {
+		val image = ImageView(context).apply {
 			scaleType = ImageView.ScaleType.FIT_CENTER
-			// Firmenlogos sind oft farbig oder dunkel – auf dem dunklen Hintergrund weiß einfärben
-			setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN)
 			setPadding(dp(18), dp(14), dp(18), dp(26))
 		}
 		val name = TextView(context).apply {
@@ -122,11 +122,29 @@ private class WorldPresenter : Presenter() {
 		holder.name.gravity = if (url == null) Gravity.CENTER else Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 		holder.name.setPadding(0, 0, 0, if (url == null) 0 else (6 * holder.name.resources.displayMetrics.density).toInt())
 		holder.image.isVisible = url != null
-		if (url != null) holder.image.load(url = url, aspectRatio = 16.0 / 9.0)
+		holder.image.setImageDrawable(null)
+		holder.image.clearColorFilter()
+		holder.image.tag = url
+		if (url != null) {
+			val imageLoader = KoinJavaComponent.get<coil3.ImageLoader>(coil3.ImageLoader::class.java)
+			val request = coil3.request.ImageRequest.Builder(holder.image.context)
+				.data(url)
+				.allowHardware(false)
+				.target(onSuccess = { result ->
+					if (holder.image.tag != url) return@target
+					val bitmap = result.toBitmap()
+					// Nur dunkle Logos weiß einfärben, farbige/helle bleiben unverändert
+					if (LogoTint.isDark(bitmap)) holder.image.setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN)
+					holder.image.setImageBitmap(bitmap)
+				})
+				.build()
+			imageLoader.enqueue(request)
+		}
 	}
 
 	override fun onUnbindViewHolder(viewHolder: ViewHolder) {
 		(viewHolder as Holder).image.setImageDrawable(null)
+		viewHolder.image.tag = null
 		viewHolder.backdrop.setImageDrawable(null)
 	}
 
