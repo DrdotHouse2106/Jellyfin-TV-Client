@@ -40,6 +40,7 @@ Besonderheiten gegenüber anderen Jellyfin-Apps:
 • Komplett per Handy steuerbar, z. B. mit „Jellyfin Remote“: Steuerkreuz, Suche, Bibliotheken, TV-Programm
 • Startseite im Kino-Stil mit großem Infobereich, wechselnden Vorschlägen und Trailer-Vorschau
 • Empfehlungen mit Begründung („Weil du … geschaut hast“)
+• „Welten“: Marvel, Disney, Pixar & Co. mit eigener Seite und Filmreihen
 • „Top 10 bei euch“: die meistgesehenen Filme und Serien aller Benutzer auf deinem Server
 • Daumen hoch/runter auf der Detailseite, im Player und vor der nächsten Folge – fließt in die Empfehlungen ein
 • Filme und Serien direkt am Fernseher anfragen (Jellyseerr, wenn auf dem Server eingerichtet)
@@ -83,6 +84,7 @@ What makes it different:
 • Fully controllable from your phone, e.g. with "Jellyfin Remote"
 • Cinematic home screen with a large info area, rotating suggestions and trailer preview
 • Recommendations with a reason ("Because you watched …")
+• "Worlds": Marvel, Disney, Pixar and more with their own page and film series
 • "Top 10": the most watched movies and shows of all users on your server
 • Thumbs up/down on the detail page, in the player and before the next episode – improves your recommendations
 • Request movies and shows right from the TV (Jellyseerr, if set up on the server)

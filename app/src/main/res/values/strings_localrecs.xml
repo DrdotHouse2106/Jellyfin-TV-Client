@@ -113,4 +113,10 @@
     <string name="tvclient_jellyseerr_series">Shows</string>
     <string name="tvclient_livetv_director">Director: %1$s</string>
     <string name="tvclient_livetv_with">With: %1$s</string>
+    <string name="tvclient_home_worlds">Worlds</string>
+    <string name="tvclient_home_worlds_description">Large tiles for Marvel, Disney, Pixar, DreamWorks and more – only worlds with at least 5 titles (by studio and collection)</string>
+    <string name="tvclient_world_for_you">For you in this world</string>
+    <string name="tvclient_world_latest">Recently added</string>
+    <string name="tvclient_world_series">Shows from the world of %1$s</string>
+    <string name="tvclient_world_empty">Nothing here yet</string>
 </resources>

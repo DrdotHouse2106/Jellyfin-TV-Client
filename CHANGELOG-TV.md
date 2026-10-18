@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.22.0 – 2026-10-18
+
+- **Welten:** Neue Reihe „Welten“ auf der Startseite mit großen Kacheln für Marvel, Disney, Pixar, Minions & Co. (Illumination), DreamWorks, DC, Star Wars und Studio Ghibli – mit dem Logo des Studios, falls der Server eines hat. OK öffnet die Welt-Seite mit eigenem Hintergrund und den Reihen „Neu dazugekommen“, einer Reihe pro Filmreihe (z. B. „Avengers“, „Iron Man“), „Filme“ und „Serien aus der Welt von …“. Die Titel kommen über die Studios und passende Sammlungen; Welten mit weniger als 5 Titeln erscheinen nicht. Abschaltbar unter Einstellungen → Startseite.
+- Vorbereitet: „Für dich in dieser Welt“ vom Plugin Local Recommendations, sobald es den Endpunkt gibt.
+
 ## 1.21.0 – 2026-10-18
 
 - **Warum empfohlen?** Bei empfohlenen Titeln steht im Infobereich der Startseite und auf der Detailseite (vor den Genres) eine kurze Begründung, z. B. „Weil du „Minions & Monster“ geschaut hast“ oder „Nächster Teil nach „Leberkäsjunkie““. Benötigt Local Recommendations ab 12.9.0; ohne Begründung erscheint nichts.

@@ -113,4 +113,10 @@
     <string name="tvclient_jellyseerr_series">Serien</string>
     <string name="tvclient_livetv_director">Regie: %1$s</string>
     <string name="tvclient_livetv_with">Mit: %1$s</string>
+    <string name="tvclient_home_worlds">Welten</string>
+    <string name="tvclient_home_worlds_description">Große Kacheln für Marvel, Disney, Pixar, DreamWorks und mehr – nur Welten mit mindestens 5 Titeln (nach Studio und Sammlung)</string>
+    <string name="tvclient_world_for_you">Für dich in dieser Welt</string>
+    <string name="tvclient_world_latest">Neu dazugekommen</string>
+    <string name="tvclient_world_series">Serien aus der Welt von %1$s</string>
+    <string name="tvclient_world_empty">Hier gibt es noch nichts</string>
 </resources>

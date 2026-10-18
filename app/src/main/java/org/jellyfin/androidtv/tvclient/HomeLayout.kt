@@ -22,6 +22,7 @@ enum class HomeRow(
 	RECOMMENDED_SERIES("localrecs_series", R.string.lbl_localrecs_series, true, R.string.tvclient_home_requires_plugin),
 	RECOMMENDED_LIVE_TV("localrecs_livetv", R.string.lbl_localrecs_livetv, true, R.string.tvclient_home_requires_plugin),
 	TOP10("top10", R.string.tvclient_home_top10, true, R.string.tvclient_home_top10_description),
+	WORLDS("worlds", R.string.tvclient_home_worlds, true, R.string.tvclient_home_worlds_description),
 	LIVE_TV("livetv", R.string.home_section_livetv, false, R.string.tvclient_home_livetv_description),
 	LATEST_MEDIA("latest", R.string.home_section_latest_media, true),
 	WEB_SECTIONS("web_sections", R.string.tvclient_home_web_sections, true, R.string.tvclient_home_web_sections_description),

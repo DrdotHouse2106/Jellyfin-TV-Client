@@ -14,6 +14,7 @@ class HomeRowTests : FunSpec({
 			HomeRow.RECOMMENDED_SERIES,
 			HomeRow.RECOMMENDED_LIVE_TV,
 			HomeRow.TOP10,
+			HomeRow.WORLDS,
 			HomeRow.LATEST_MEDIA,
 			HomeRow.WEB_SECTIONS,
 			HomeRow.GENRES,

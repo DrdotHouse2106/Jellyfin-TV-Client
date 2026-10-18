@@ -56,6 +56,9 @@ import org.jellyfin.androidtv.tvclient.HomeFragmentDeviceSettingsRow
 import org.jellyfin.androidtv.tvclient.HomeFragmentTop10Row
 import org.jellyfin.androidtv.tvclient.HomeHeroState
 import org.jellyfin.androidtv.tvclient.Top10
+import org.jellyfin.androidtv.tvclient.HomeFragmentWorldsRow
+import org.jellyfin.androidtv.tvclient.Worlds
+import org.jellyfin.androidtv.tvclient.onWorldClicked
 import org.jellyfin.androidtv.tvclient.GenreRows
 import org.jellyfin.androidtv.tvclient.HomeRow
 import org.jellyfin.androidtv.tvclient.HomeScreenSections
@@ -132,6 +135,7 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 				}
 
 				HomeRow.TOP10 -> rows.add(HomeFragmentTop10Row(Top10.load(api, currentUser)))
+				HomeRow.WORLDS -> rows.add(HomeFragmentWorldsRow(Worlds.available(api, currentUser.id)))
 				HomeRow.LATEST_MEDIA -> rows.add(helper.loadRecentlyAdded(userViewsRepository.views.first()))
 				HomeRow.LIBRARIES -> rows.add(HomeFragmentViewsRow(small = false))
 				HomeRow.WEB_SECTIONS -> rows.addAll(HomeScreenSections.loadRows(api, currentUser.id))
@@ -175,6 +179,7 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 		onItemViewClickedListener = CompositeClickedListener().apply {
 			registerListener(ItemViewClickedListener())
 			registerListener { _, item, _, _ -> onDeviceCardClicked(requireContext(), item) }
+			registerListener { _, item, _, _ -> onWorldClicked(item) }
 			registerListener(liveTVRow::onItemClicked)
 			registerListener(notificationsRow::onItemClicked)
 		}
@@ -313,7 +318,8 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			row: Row?,
 		) {
 			// Jellyfin-TV-Client: Infobereich oben (Netflix-Ansicht) zeigt den ausgewählten Titel
-			HomeHeroState.item.value = (item as? BaseRowItem)?.baseItem
+			// Welt-Kacheln haben keinen eigenen Titel – der Infobereich zeigt weiter den letzten
+			if (item !is Worlds.World) HomeHeroState.item.value = (item as? BaseRowItem)?.baseItem
 
 			if (item !is BaseRowItem) {
 				currentItem = null

@@ -21,6 +21,7 @@ Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** 
 - Zeilen **Empfohlene Filme / Serien für dich** und **Heute im TV für dich** *
 - **Warum empfohlen?** Kurze Begründung im Infobereich und auf der Detailseite, z. B. „Weil du „…“ geschaut hast“ oder „Nächster Teil nach „…““ (Plugin ab 12.9.0) *
 - **Top 10 bei euch:** die meistgesehenen Filme und Serien aller Benutzer der letzten 60 Tage, mit großen Zahlen *
+- **Welten:** große Kacheln für Marvel, Disney, Pixar, Minions & Co., DreamWorks, DC, Star Wars und Studio Ghibli; jede Welt hat eine eigene Seite mit Filmreihen (z. B. Avengers, Iron Man), Filmen, Serien und Neuem. Zusammengestellt über Studios und Sammlungen, nur Welten mit mindestens 5 Titeln
 - Genre-Zeilen mit zufälligen Titeln, Abschnitte aus „Home Screen Sections“, feste Reihenfolge mit Ein/Aus-Schaltern
 - 24-Stunden-Uhr
 
@@ -108,15 +109,16 @@ Die Zeilen der Startseite stehen in einer festen Reihenfolge und lassen sich unt
 4. Empfohlene Serien für dich *
 5. Heute im TV für dich * (nur mit Live-TV-Zugriff)
 6. Top 10 bei euch *
-7. Live-TV (TV-Programm, Aufnahmen, Läuft gerade; anfangs aus)
-8. Kürzlich hinzugefügt
-9. Weitere Abschnitte aus dem Web **
-10. Genres (zufällige Titel, bei jedem Öffnen neu gemischt)
-11. Weiterhören (anfangs aus)
-12. Aktive Aufnahmen (anfangs aus)
-13. Apps (anfangs aus)
-14. Gerät (anfangs aus)
-15. Meine Medien (Bibliotheken)
+7. Welten (Marvel, Disney, Pixar …)
+8. Live-TV (TV-Programm, Aufnahmen, Läuft gerade; anfangs aus)
+9. Kürzlich hinzugefügt
+10. Weitere Abschnitte aus dem Web **
+11. Genres (zufällige Titel, bei jedem Öffnen neu gemischt)
+12. Weiterhören (anfangs aus)
+13. Aktive Aufnahmen (anfangs aus)
+14. Apps (anfangs aus)
+15. Gerät (anfangs aus)
+16. Meine Medien (Bibliotheken)
 
 \* benötigt das Server-Plugin „Local Recommendations“ (Top 10 über alle Benutzer ab 12.6.0); ohne Plugin bleiben die Zeilen unsichtbar bzw. Top 10 zählt nur, was die App selbst sehen darf. Gesehene Titel verschwinden nach dem Anschauen.
 
