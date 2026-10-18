@@ -24,6 +24,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.jellyfin.androidtv.auth.repository.UserRepository
@@ -116,34 +118,35 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			val homeRows = HomeRow.enabled(userPreferences)
 			val liveTvAccess = currentUser.policy?.enableLiveTvAccess == true
 
-			// Make sure the rows are empty
-			val rows = mutableListOf<HomeFragmentRow>()
-
 			// Check for coroutine cancellation
 			if (!isActive) return@launch
 
 			// Actually add the sections
-			for (homeRow in homeRows) when (homeRow) {
-				HomeRow.RESUME -> rows.add(helper.loadResumeVideo())
-				HomeRow.NEXT_UP -> rows.add(helper.loadNextUp())
-				HomeRow.RECOMMENDED_MOVIES -> rows.add(helper.loadLocalRecommendations(LocalRecommendationsType.MOVIES))
-				HomeRow.RECOMMENDED_SERIES -> rows.add(helper.loadLocalRecommendations(LocalRecommendationsType.SERIES))
-				HomeRow.RECOMMENDED_LIVE_TV -> if (liveTvAccess) rows.add(helper.loadLocalRecommendations(LocalRecommendationsType.LIVE_TV))
-				HomeRow.LIVE_TV -> if (liveTvAccess) {
-					rows.add(liveTVRow)
-					rows.add(helper.loadOnNow())
-				}
-
-				HomeRow.TOP10 -> rows.add(HomeFragmentTop10Row(Top10.load(api, currentUser)))
-				HomeRow.WORLDS -> rows.add(HomeFragmentWorldsRow(Worlds.available(api, currentUser.id)))
-				HomeRow.LATEST_MEDIA -> rows.add(helper.loadRecentlyAdded(userViewsRepository.views.first()))
-				HomeRow.LIBRARIES -> rows.add(HomeFragmentViewsRow(small = false))
-				HomeRow.WEB_SECTIONS -> rows.addAll(HomeScreenSections.loadRows(api, currentUser.id))
-				HomeRow.GENRES -> rows.addAll(GenreRows.loadRows(api, currentUser.id))
-				HomeRow.RESUME_AUDIO -> rows.add(helper.loadResumeAudio())
-				HomeRow.ACTIVE_RECORDINGS -> if (liveTvAccess) rows.add(helper.loadLatestLiveTvRecordings())
-				HomeRow.APPS -> rows.add(HomeFragmentAppsRow())
-				HomeRow.DEVICE -> rows.add(HomeFragmentDeviceSettingsRow())
+			// Jellyfin-TV-Client: alle Zeilen gleichzeitig vorbereiten (Top 10, Welten, Web-Abschnitte und
+			// Genres brauchen eigene Abfragen – nacheinander dauerte das mehrere Sekunden), Reihenfolge bleibt
+			val rows = kotlinx.coroutines.coroutineScope {
+				homeRows.map { homeRow ->
+					async {
+						when (homeRow) {
+							HomeRow.RESUME -> listOf(helper.loadResumeVideo())
+							HomeRow.NEXT_UP -> listOf(helper.loadNextUp())
+							HomeRow.RECOMMENDED_MOVIES -> listOf(helper.loadLocalRecommendations(LocalRecommendationsType.MOVIES))
+							HomeRow.RECOMMENDED_SERIES -> listOf(helper.loadLocalRecommendations(LocalRecommendationsType.SERIES))
+							HomeRow.RECOMMENDED_LIVE_TV -> if (liveTvAccess) listOf(helper.loadLocalRecommendations(LocalRecommendationsType.LIVE_TV)) else emptyList()
+							HomeRow.LIVE_TV -> if (liveTvAccess) listOf(liveTVRow, helper.loadOnNow()) else emptyList()
+							HomeRow.TOP10 -> listOf(HomeFragmentTop10Row(Top10.load(api, currentUser)))
+							HomeRow.WORLDS -> listOf(HomeFragmentWorldsRow(Worlds.available(api, currentUser.id)))
+							HomeRow.LATEST_MEDIA -> listOf(helper.loadRecentlyAdded(userViewsRepository.views.first()))
+							HomeRow.LIBRARIES -> listOf(HomeFragmentViewsRow(small = false))
+							HomeRow.WEB_SECTIONS -> HomeScreenSections.loadRows(api, currentUser.id)
+							HomeRow.GENRES -> GenreRows.loadRows(api, currentUser.id)
+							HomeRow.RESUME_AUDIO -> listOf(helper.loadResumeAudio())
+							HomeRow.ACTIVE_RECORDINGS -> if (liveTvAccess) listOf(helper.loadLatestLiveTvRecordings()) else emptyList()
+							HomeRow.APPS -> listOf(HomeFragmentAppsRow())
+							HomeRow.DEVICE -> listOf(HomeFragmentDeviceSettingsRow())
+						}
+					}
+				}.awaitAll().flatten()
 			}
 
 			// App-Liste nur an den eigenen Jellyfin-Server melden, wenn die Zeile „Apps“ eingeschaltet ist

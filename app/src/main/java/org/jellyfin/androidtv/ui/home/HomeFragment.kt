@@ -36,6 +36,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -103,7 +106,17 @@ class HomeFragment : Fragment() {
 			val firstStart = !billboardStarted
 			billboardStarted = true
 			if (firstStart) HomeHeroState.rowsFocusBlocked.value = true
-			billboardItems = HomeBillboard.load(api)
+			// Sofort das Banner vom letzten Start zeigen, frisch geladen wird im Hintergrund
+			val cachedItems = withContext(Dispatchers.IO) { HomeBillboard.cached(api) }
+			if (cachedItems.isNotEmpty()) {
+				billboardItems = cachedItems
+				if (firstStart) HomeHeroState.item.value = cachedItems.first()
+				launch {
+					HomeBillboard.load(api).takeIf { it.isNotEmpty() }?.let { billboardItems = it }
+				}
+			} else {
+				billboardItems = HomeBillboard.load(api)
+			}
 			if (billboardItems.isEmpty() || !firstStart) HomeHeroState.rowsFocusBlocked.value = false
 			if (billboardItems.isEmpty() && firstStart) runCatching { rowsFocusRequester.requestFocus() }
 			if (firstStart && billboardItems.isNotEmpty()) {

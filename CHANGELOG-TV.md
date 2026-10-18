@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.23.0 – 2026-10-18
+
+- **Schnellerer Start der Startseite:** Alle Zeilen werden gleichzeitig vorbereitet, also Top 10, Welten, Web-Abschnitte und Genres. Bisher lief das nacheinander, und bis dahin war nur das Banner zu sehen.
+- Das Banner vom letzten Start wird pro Profil gespeichert und erscheint nach der Profilauswahl sofort. Die frischen Vorschläge werden im Hintergrund geladen und unauffällig übernommen.
+
 ## 1.22.6 – 2026-10-18
 
 - Welt-Seite: „Filme“, „Serien“ und „Neu dazugekommen“ erscheinen wieder. Vom Plugin kommen nur die Ids, die Titel lädt die App selbst über Jellyfin. Die Reihen haben mehr Platz, die Überschrift bleibt sichtbar.

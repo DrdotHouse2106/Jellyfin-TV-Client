@@ -72,6 +72,7 @@ import org.jellyfin.sdk.model.api.ItemSortBy
 import org.jellyfin.sdk.model.api.SortOrder
 import org.jellyfin.sdk.model.api.request.GetItemsRequest
 import org.koin.compose.koinInject
+import org.koin.java.KoinJavaComponent
 import timber.log.Timber
 import kotlin.time.Duration.Companion.seconds
 
@@ -118,7 +119,28 @@ object HomeBillboard {
 			}
 		}.onFailure { Timber.w(it, "Billboard konnte nicht geladen werden") }.getOrDefault(emptyList())
 
-		interleave(items.filter { heroBackdropImage(it) != null }).take(MAX_ITEMS)
+		interleave(items.filter { heroBackdropImage(it) != null }).take(MAX_ITEMS).also { saveCache(api, it) }
+	}
+
+	private const val CACHE_PREFS = "tvclient_home_cache"
+	private val cacheJson = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
+
+	private fun cacheKey(api: ApiClient) = "billboard_" + "${api.baseUrl}|${api.accessToken}".hashCode()
+
+	/** Vorschläge vom letzten Start (pro Profil gespeichert), damit das Banner sofort da ist. */
+	fun cached(api: ApiClient): List<BaseItemDto> = runCatching {
+		val context = KoinJavaComponent.get<Context>(Context::class.java)
+		val text = context.getSharedPreferences(CACHE_PREFS, Context.MODE_PRIVATE).getString(cacheKey(api), null) ?: return emptyList()
+		cacheJson.decodeFromString(kotlinx.serialization.builtins.ListSerializer(BaseItemDto.serializer()), text)
+	}.onFailure { Timber.w(it, "Gespeichertes Banner nicht lesbar") }.getOrDefault(emptyList())
+
+	fun saveCache(api: ApiClient, items: List<BaseItemDto>) {
+		if (items.isEmpty()) return
+		runCatching {
+			val context = KoinJavaComponent.get<Context>(Context::class.java)
+			val text = cacheJson.encodeToString(kotlinx.serialization.builtins.ListSerializer(BaseItemDto.serializer()), items)
+			context.getSharedPreferences(CACHE_PREFS, Context.MODE_PRIVATE).edit().putString(cacheKey(api), text).apply()
+		}.onFailure { Timber.w(it, "Banner konnte nicht gespeichert werden") }
 	}
 
 	/** Filme und Serien abwechselnd. */
