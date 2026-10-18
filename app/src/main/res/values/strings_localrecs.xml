@@ -144,4 +144,5 @@
     <string name="tvclient_quick_audio">Audio at start</string>
     <string name="tvclient_quick_audio_own">Prefer my language</string>
     <string name="tvclient_quick_audio_original">Original audio</string>
+    <string name="tvclient_quick_minutes">%s min</string>
 </resources>

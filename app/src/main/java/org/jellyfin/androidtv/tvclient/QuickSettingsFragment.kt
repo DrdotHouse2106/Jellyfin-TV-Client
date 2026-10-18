@@ -24,7 +24,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -57,7 +56,6 @@ import org.jellyfin.androidtv.preference.UserPreferences
 import org.jellyfin.androidtv.ui.base.JellyfinTheme
 import org.jellyfin.androidtv.ui.base.Text
 import org.jellyfin.androidtv.ui.navigation.ActivityDestinations
-import org.jellyfin.androidtv.util.getQuantityString
 import org.jellyfin.preference.Preference
 import org.koin.compose.koinInject
 import kotlin.time.Duration.Companion.minutes
@@ -103,7 +101,10 @@ private fun QuickSettings() {
 
 	val on = stringResource(R.string.tvclient_quick_on)
 	val off = stringResource(R.string.tvclient_quick_off)
-	fun minutes(value: Double) = context.getQuantityString(R.plurals.minutes, value)
+	// „1 Min.“, „2,5 Min.“ (Zahl im Format der Sprache, ohne „.0“)
+	val minuteFormat = remember { java.text.NumberFormat.getNumberInstance().apply { maximumFractionDigits = 1 } }
+	val minuteLabel = stringResource(R.string.tvclient_quick_minutes)
+	fun minutes(value: Double) = minuteLabel.format(minuteFormat.format(value))
 
 	fun restart() {
 		context.startActivity(ActivityDestinations.startup(context))
@@ -117,8 +118,8 @@ private fun QuickSettings() {
 			.verticalScroll(rememberScrollState())
 			.padding(horizontal = 64.dp, vertical = 36.dp),
 	) {
-		// Neu lesen, wenn sich etwas geändert hat
-		key(revision) {
+		// Neu lesen, wenn sich etwas geändert hat (ohne Neuaufbau, damit der Fokus auf dem Knopf bleibt)
+		@Suppress("UNUSED_EXPRESSION") revision
 		Text(stringResource(R.string.lbl_settings), fontSize = 34.sp, fontWeight = FontWeight.Bold, color = Color.White)
 
 		Section(stringResource(R.string.tvclient_quick_subtitles))
@@ -207,7 +208,6 @@ private fun QuickSettings() {
 		Text("Quallenkino ${BuildConfig.VERSION_NAME}", fontSize = 16.sp, color = Color(0xFFB3B3B3))
 		Text(stringResource(R.string.tvclient_quick_tmdb), fontSize = 14.sp, color = Color(0xFF8A8F99), modifier = Modifier.padding(top = 4.dp))
 		Spacer(Modifier.height(48.dp))
-		}
 	}
 }
 

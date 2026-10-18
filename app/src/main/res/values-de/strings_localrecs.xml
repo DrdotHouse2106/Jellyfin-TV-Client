@@ -144,4 +144,5 @@
     <string name="tvclient_quick_audio">Ton beim Start</string>
     <string name="tvclient_quick_audio_own">Deutsch bevorzugen</string>
     <string name="tvclient_quick_audio_original">Originalton</string>
+    <string name="tvclient_quick_minutes">%s Min.</string>
 </resources>

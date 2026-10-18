@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.23.10 – 2026-10-18
+
+- Einstellungsseite: Nach der Auswahl eines Werts bleibt der Fokus auf dem gewählten Knopf (vorher war kein Element mehr fokussiert, die nächste Pfeiltaste sprang in eine falsche Reihe).
+- Bildschirmschoner-Zeiten heißen jetzt „1 Min.“, „2,5 Min.“, „5 Min.“, „10 Min.“ (wie in der webOS-App).
+
 ## 1.23.9 – 2026-10-18
 
 - **Untertitel beim Start** mit vier Möglichkeiten (wie in der webOS-App): Intelligent (Standard), Immer deutsche, Aus (nur erzwungene Untertitel) oder Wie vom Server.
