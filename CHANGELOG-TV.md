@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.23.3 – 2026-10-18
+
+- Live-TV-Besetzung: Darsteller mit Apostroph oder Akzent im Namen öffnen ihre Personenseite (EPG „M’Barek“ = TMDB „M'Barek“).
+
 ## 1.23.2 – 2026-10-18
 
 - Startseite: Der Infobereich zeigt auch in den unteren Reihen eine Beschreibung. Liefert eine Reihe sie nicht mit (z. B. Web-Abschnitte), lädt die App sie beim Fokus nach und merkt sie sich.

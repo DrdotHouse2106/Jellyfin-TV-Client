@@ -188,12 +188,24 @@ object Jellyseerr {
 		return if (year == null) results else results.filter { it.year == year }.ifEmpty { results }
 	}
 
+	/**
+	 * Name zum Vergleichen: typografische Apostrophe und Anführungszeichen vereinheitlicht (EPG schreibt
+	 * „M’Barek“, TMDB „M'Barek“), Unicode-NFKC, ohne Akzente, klein, einfache Leerzeichen.
+	 */
+	fun personKey(name: String): String {
+		val unified = name
+			.replace(Regex("[\u2018\u2019\u201A\u201B\u00B4\u0060]"), "'")
+			.replace(Regex("[\u201C\u201D\u201E\u201F]"), "\"")
+		val decomposed = java.text.Normalizer.normalize(java.text.Normalizer.normalize(unified, java.text.Normalizer.Form.NFKC), java.text.Normalizer.Form.NFD)
+		return decomposed.replace(Regex("\\p{M}+"), "").lowercase().replace(Regex("\\s+"), " ").trim()
+	}
+
 	/** TMDB-Id einer Person, deren Name genau passt – nur wenn es genau einen solchen Treffer gibt. */
 	suspend fun findPerson(name: String): Int? {
 		val encoded = URLEncoder.encode(name.take(256), "UTF-8").replace("+", "%20")
 		val results = json.parseToJsonElement(call(current(), "/search?query=$encoded&page=1&language=de")).jsonObject["results"]?.jsonArray.orEmpty()
 		val matches = results.mapNotNull { it as? JsonObject }
-			.filter { it.string("mediaType") == "person" && it.string("name").equals(name.trim(), ignoreCase = true) }
+			.filter { it.string("mediaType") == "person" && personKey(it.string("name").orEmpty()) == personKey(name) }
 			.mapNotNull { (it["id"] as? JsonPrimitive)?.intOrNull }
 			.distinct()
 		return matches.singleOrNull()
