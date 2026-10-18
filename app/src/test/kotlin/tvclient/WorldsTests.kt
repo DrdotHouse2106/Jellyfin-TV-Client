@@ -52,6 +52,12 @@ class WorldsTests : FunSpec({
 		Worlds.normalize("Mittelerde – Die Rückkehr") shouldBe "mittelerdedierueckkehr"
 	}
 
+	test("Logo-Adresse der Plugin-Welt") {
+		val text = """[{"Id":"marvel","Name":"Marvel","LogoUrl":"/LocalRecs/Worlds/marvel/Logo"},{"Id":"pixar","Name":"Pixar"}]"""
+		Worlds.pluginField(text, marvel, "LogoUrl") shouldBe "/LocalRecs/Worlds/marvel/Logo"
+		Worlds.pluginField(text, Worlds.definitions.first { it.key == "pixar" }, "LogoUrl") shouldBe null
+	}
+
 	test("Jede Welt hat einen eigenen Schlüssel") {
 		Worlds.definitions.map { it.key }.distinct().size shouldBe Worlds.definitions.size
 	}

@@ -185,7 +185,9 @@ object Worlds {
 						val pluginImage = pluginWorlds?.let { pluginImageItemId(it, definition) }
 						val backdrop = pluginImage?.let { "${api.baseUrl?.trimEnd('/')}/Items/$it/Images/Backdrop?maxWidth=640&quality=80" }
 							?: matchedCollections.firstNotNullOfOrNull { heroBackdropImage(it)?.getUrl(api, maxWidth = 640) }
-						World(definition, matchedStudios.map { it.id }, matchedCollections, count, image, backdrop)
+						// Logo der Welt vom eigenen Server (Plugin, aus dem Welten-Repo), sonst das Studio-Bild
+						val logo = pluginWorlds?.let { pluginField(it, definition, "LogoUrl") }?.let { serverUrl(api, it) }
+						World(definition, matchedStudios.map { it.id }, matchedCollections, count, logo ?: image, backdrop)
 					}
 				}.awaitAll()
 			}.filter { it.count >= MIN_ITEMS }
@@ -289,12 +291,25 @@ object Worlds {
 		.filter { it.isLetterOrDigit() }
 
 	/** ImageItemId der passenden Plugin-Welt. */
-	fun pluginImageItemId(text: String, definition: Definition): String? {
+	fun pluginImageItemId(text: String, definition: Definition): String? = pluginField(text, definition, "ImageItemId")
+
+	/** Ein Textfeld der passenden Plugin-Welt (z. B. „LogoUrl“). */
+	fun pluginField(text: String, definition: Definition, field: String): String? {
 		val id = pluginWorldId(text, definition) ?: return null
 		val list = runCatching { json.parseToJsonElement(text) as? JsonArray }.getOrNull() ?: return null
 		return list.mapNotNull { it as? JsonObject }
 			.firstOrNull { (it["Id"] as? JsonPrimitive)?.content == id }
-			?.let { (it["ImageItemId"] as? JsonPrimitive)?.content }
+			?.let { it[field] as? JsonPrimitive }
+			?.takeIf { it.isString }?.content?.takeIf { it.isNotBlank() }
+	}
+
+	/** Adresse auf dem eigenen Server („/LocalRecs/…“) vollständig machen, mit Token für geschützte Endpunkte. */
+	fun serverUrl(api: ApiClient, url: String): String? {
+		if (url.startsWith("http://") || url.startsWith("https://")) return url
+		val base = api.baseUrl?.trimEnd('/') ?: return null
+		val path = if (url.startsWith("/")) url else "/$url"
+		val token = api.accessToken ?: return base + path
+		return base + path + (if ('?' in path) "&" else "?") + "api_key=" + token
 	}
 
 	/** Id der Plugin-Welt, die zu dieser Welt passt (über Id, Name oder Studio), sonst null. */
