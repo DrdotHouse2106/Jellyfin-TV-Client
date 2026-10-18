@@ -3,6 +3,7 @@
 ## 1.22.3 – 2026-10-18
 
 - Welt-Seite: Logo und Name stehen fest oben, nur die Reihen darunter scrollen. Vorher schob der Fokus auf die erste Reihe den Namen aus dem Bild.
+- Welten-Kacheln: neutral dunkel – Hintergrundbild eines Titels der Welt, schwarz abgedunkelt, ohne farbigen Schleier. Die Farbe der Welt erscheint nur als Rand der ausgewählten Kachel und als schmaler Strich unter dem Namen auf der Welt-Seite.
 - Welten-Logos: Logos erscheinen in Originalfarbe (z. B. der rote Marvel-Kasten oder die goldenen Reihen-Logos von fanart.tv). Nur fast schwarze Logos werden weiß eingefärbt.
 - Welten: „Harry Potter“ heißt jetzt „Wizarding World“ (mit Phantastische Tierwesen), passend zum Plugin.
 - Live-TV-Besetzung: Protokoll in logcat (`adb logcat -s Quallenkino`) mit Adresse, HTTP-Status und Anzahl der Darsteller – zur Fehlersuche im Programmführer.

@@ -117,11 +117,6 @@ private fun WorldScreen(key: String) {
 	val backdrop = sections.orEmpty().asSequence().flatMap { it.items.asSequence() }.firstNotNullOfOrNull(::heroBackdropImage)
 
 	Box(Modifier.fillMaxSize().background(Color.Black)) {
-		Box(
-			Modifier
-				.fillMaxSize()
-				.background(Brush.verticalGradient(0f to accent.copy(alpha = 0.55f), 0.6f to Color.Black))
-		)
 		if (backdrop != null) {
 			Box(Modifier.align(Alignment.TopEnd).fillMaxWidth(0.7f).fillMaxHeight(0.6f)) {
 				coil3.compose.AsyncImage(
@@ -170,6 +165,8 @@ private fun WorldScreen(key: String) {
 				color = Color.White,
 				modifier = Modifier.padding(top = if (logoLoaded) 6.dp else 0.dp),
 			)
+			// Farbe der Welt nur als schmaler Akzent unter dem Namen
+			Box(Modifier.padding(top = 8.dp).width(64.dp).height(3.dp).clip(RoundedCornerShape(2.dp)).background(accent))
 			Spacer(Modifier.height(120.dp))
 			Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
 				when {

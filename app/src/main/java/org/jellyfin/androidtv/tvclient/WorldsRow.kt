@@ -51,14 +51,19 @@ private class WorldPresenter : Presenter() {
 		val shade: View,
 		val image: ImageView,
 		val name: TextView,
-		val background: GradientDrawable,
+		val border: GradientDrawable,
 	) : ViewHolder(view)
 
 	override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
 		val context = parent.context
 		fun dp(value: Int) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value.toFloat(), context.resources.displayMetrics).toInt()
 
-		val background = GradientDrawable().apply { cornerRadius = dp(8).toFloat() }
+		// Neutral dunkel; die Farbe der Welt erscheint nur als Rand der ausgewählten Kachel
+		val background = GradientDrawable().apply {
+			cornerRadius = dp(8).toFloat()
+			setColor(Color.parseColor("#141414"))
+		}
+		val borderDrawable = GradientDrawable().apply { cornerRadius = dp(8).toFloat() }
 		val backdrop = AsyncImageView(context).apply { scaleType = ImageView.ScaleType.CENTER_CROP }
 		val shade = View(context)
 		val image = ImageView(context).apply {
@@ -74,10 +79,7 @@ private class WorldPresenter : Presenter() {
 			setShadowLayer(dp(4).toFloat(), 0f, 0f, Color.BLACK)
 		}
 		val border = View(context).apply {
-			this.background = GradientDrawable().apply {
-				cornerRadius = dp(8).toFloat()
-				setStroke(dp(3), Color.WHITE)
-			}
+			this.background = borderDrawable
 			visibility = View.INVISIBLE
 		}
 		val root = FrameLayout(context).apply {
@@ -97,23 +99,24 @@ private class WorldPresenter : Presenter() {
 				border.visibility = if (focused) View.VISIBLE else View.INVISIBLE
 			}
 		}
-		return Holder(root, backdrop, shade, image, name, background)
+		return Holder(root, backdrop, shade, image, name, borderDrawable)
 	}
 
 	override fun onBindViewHolder(viewHolder: ViewHolder, item: Any?) {
 		val holder = viewHolder as Holder
 		val world = item as? Worlds.World ?: return
 		val color = world.definition.color.toInt()
-		holder.background.orientation = GradientDrawable.Orientation.TL_BR
-		holder.background.colors = intArrayOf(color, darken(color))
+		val density = holder.name.resources.displayMetrics.density
+		// Rand der ausgewählten Kachel in der Farbe der Welt (sehr dunkle Farben hell, damit man ihn sieht)
+		holder.border.setStroke((3 * density).toInt(), accent(color))
 		holder.name.text = world.name
-		// Hintergrundbild eines Titels der Welt, in der Farbe der Welt abgedunkelt
+		// Hintergrundbild eines Titels der Welt, neutral schwarz abgedunkelt
 		val backdropUrl = world.backdropUrl
 		holder.backdrop.isVisible = backdropUrl != null
 		if (backdropUrl != null) holder.backdrop.load(url = backdropUrl, aspectRatio = 16.0 / 9.0)
 		holder.shade.background = GradientDrawable(
-			GradientDrawable.Orientation.TL_BR,
-			intArrayOf(withAlpha(color, 0xB0), withAlpha(darken(color), 0xE0)),
+			GradientDrawable.Orientation.TOP_BOTTOM,
+			intArrayOf(Color.argb(0x99, 0, 0, 0), Color.argb(0xC8, 0, 0, 0)),
 		)
 		val url = world.imageUrl
 		// Mit Logo steht der Name klein unten (falls das Logo nicht lädt, bleibt die Kachel lesbar)
@@ -133,7 +136,7 @@ private class WorldPresenter : Presenter() {
 				.target(onSuccess = { result ->
 					if (holder.image.tag != url) return@target
 					val bitmap = result.toBitmap()
-					// Nur dunkle Logos weiß einfärben, farbige/helle bleiben unverändert
+					// Logos in Originalfarbe; nur fast schwarze werden aufgehellt
 					if (LogoTint.isDark(bitmap)) holder.image.setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN)
 					holder.image.setImageBitmap(bitmap)
 				})
@@ -148,11 +151,7 @@ private class WorldPresenter : Presenter() {
 		viewHolder.backdrop.setImageDrawable(null)
 	}
 
-	private fun withAlpha(color: Int, alpha: Int): Int = Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color))
-
-	private fun darken(color: Int): Int = Color.rgb(
-		(Color.red(color) * 0.35f).toInt(),
-		(Color.green(color) * 0.35f).toInt(),
-		(Color.blue(color) * 0.35f).toInt(),
-	)
+	/** Akzentfarbe für den Rand: sehr dunkle Weltfarben (z. B. Star Wars) werden weiß. */
+	private fun accent(color: Int): Int =
+		if (maxOf(Color.red(color), Color.green(color), Color.blue(color)) < 100) Color.WHITE else color
 }
