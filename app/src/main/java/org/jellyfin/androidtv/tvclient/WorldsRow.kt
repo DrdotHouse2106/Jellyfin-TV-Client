@@ -63,7 +63,7 @@ private class WorldPresenter : Presenter() {
 			scaleType = ImageView.ScaleType.FIT_CENTER
 			// Firmenlogos sind oft farbig oder dunkel – auf dem dunklen Hintergrund weiß einfärben
 			setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN)
-			setPadding(dp(18), dp(14), dp(18), dp(14))
+			setPadding(dp(18), dp(14), dp(18), dp(26))
 		}
 		val name = TextView(context).apply {
 			gravity = Gravity.CENTER
@@ -116,7 +116,11 @@ private class WorldPresenter : Presenter() {
 			intArrayOf(withAlpha(color, 0xB0), withAlpha(darken(color), 0xE0)),
 		)
 		val url = world.imageUrl
-		holder.name.isVisible = url == null
+		// Mit Logo steht der Name klein unten (falls das Logo nicht lädt, bleibt die Kachel lesbar)
+		holder.name.isVisible = true
+		holder.name.setTextSize(TypedValue.COMPLEX_UNIT_SP, if (url == null) 24f else 13f)
+		holder.name.gravity = if (url == null) Gravity.CENTER else Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+		holder.name.setPadding(0, 0, 0, if (url == null) 0 else (6 * holder.name.resources.displayMetrics.density).toInt())
 		holder.image.isVisible = url != null
 		if (url != null) holder.image.load(url = url, aspectRatio = 16.0 / 9.0)
 	}
