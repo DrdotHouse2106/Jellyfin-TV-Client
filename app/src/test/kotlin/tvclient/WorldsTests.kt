@@ -44,6 +44,14 @@ class WorldsTests : FunSpec({
 		Worlds.pluginWorldId("""[{"Id":"harry-potter","Name":"Harry Potter / Wizarding World"}]""", Worlds.definitions.first { it.key == "harrypotter" }) shouldBe "harry-potter"
 	}
 
+	test("Plugin-Ids mit Bindestrichen passen zu den eigenen Schlüsseln") {
+		val text = """[{"Id":"star-wars","Name":"Star Wars"},{"Id":"studio-ghibli","Name":"Studio Ghibli"},{"Id":"jurassic-park","Name":"Jurassic Park"}]"""
+		Worlds.pluginWorldId(text, Worlds.definitions.first { it.key == "starwars" }) shouldBe "star-wars"
+		Worlds.pluginWorldId(text, Worlds.definitions.first { it.key == "ghibli" }) shouldBe "studio-ghibli"
+		Worlds.pluginWorldId(text, Worlds.definitions.first { it.key == "jurassicpark" }) shouldBe "jurassic-park"
+		Worlds.normalize("Mittelerde – Die Rückkehr") shouldBe "mittelerdedierueckkehr"
+	}
+
 	test("Jede Welt hat einen eigenen Schlüssel") {
 		Worlds.definitions.map { it.key }.distinct().size shouldBe Worlds.definitions.size
 	}

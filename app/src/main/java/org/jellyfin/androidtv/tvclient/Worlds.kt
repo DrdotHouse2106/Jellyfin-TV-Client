@@ -82,6 +82,14 @@ object Worlds {
 		Definition("starwars", "Star Wars", 0xFF2B2B2B, listOf("lucasfilm"), listOf("star wars")),
 		Definition("ghibli", "Studio Ghibli", 0xFF4E8F3A, listOf("ghibli"), emptyList()),
 		Definition(
+			"jamesbond", "James Bond", 0xFF7A6A3A, listOf("eon productions"),
+			listOf("james bond", "007"),
+		),
+		Definition(
+			"jurassicpark", "Jurassic Park", 0xFF3E5C2E, listOf("amblin"),
+			listOf("jurassic park", "jurassic world"),
+		),
+		Definition(
 			"harrypotter", "Harry Potter", 0xFF6B4E16, listOf("heyday films"),
 			listOf("harry potter", "phantastische tierwesen", "fantastic beasts"),
 		),
@@ -267,15 +275,24 @@ object Worlds {
 		}.getOrNull()
 	}
 
-	/** Id der Plugin-Welt mit passendem Namen (z. B. „Marvel“, „Pixar“), sonst null. */
+	/** Kleingeschrieben, nur Buchstaben und Ziffern, Umlaute ausgeschrieben („Star Wars“ → „starwars“). */
+	fun normalize(text: String): String = text.lowercase()
+		.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss")
+		.filter { it.isLetterOrDigit() }
+
+	/** Id der Plugin-Welt, die zu dieser Welt passt (über Id, Name oder Studio), sonst null. */
 	fun pluginWorldId(text: String, definition: Definition): String? {
 		val list = json.parseToJsonElement(text) as? JsonArray ?: return null
-		val candidates = setOf(definition.name.lowercase(), definition.key.lowercase())
+		val candidates = setOf(normalize(definition.name), normalize(definition.key))
 		return list.firstNotNullOfOrNull { element ->
 			val obj = element as? JsonObject ?: return@firstNotNullOfOrNull null
-			val name = (obj["Name"] as? JsonPrimitive)?.content?.lowercase() ?: return@firstNotNullOfOrNull null
 			val id = (obj["Id"] as? JsonPrimitive)?.content ?: return@firstNotNullOfOrNull null
-			id.takeIf { name in candidates || candidates.any { name.contains(it) } || definition.studios.any { name.contains(it) } }
+			val name = (obj["Name"] as? JsonPrimitive)?.content.orEmpty()
+			val keys = setOf(normalize(id), normalize(name))
+			val matched = keys.any { it in candidates } ||
+				candidates.any { candidate -> keys.any { it.contains(candidate) } } ||
+				definition.studios.any { name.lowercase().contains(it) }
+			id.takeIf { matched }
 		}
 	}
 
