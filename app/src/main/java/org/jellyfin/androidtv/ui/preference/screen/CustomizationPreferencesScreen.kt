@@ -109,6 +109,22 @@ class CustomizationPreferencesScreen : OptionsFragment() {
 				bind(userPreferences, ScreensaverTrailers.enabledPreference)
 			}
 
+			// Jellyfin-TV-Client: Ton der Teaser im Bildschirmschoner
+			list {
+				setTitle(R.string.tvclient_screensaver_volume)
+				entries = mapOf(
+					"0" to context.getString(R.string.tvclient_volume_mute),
+					"30" to context.getString(R.string.tvclient_volume_quiet),
+					"75" to context.getString(R.string.tvclient_volume_normal),
+				)
+				bind {
+					get { userPreferences[ScreensaverTrailers.volumePreference].toString() }
+					set { value -> userPreferences[ScreensaverTrailers.volumePreference] = value.toInt() }
+					default { ScreensaverTrailers.volumePreference.defaultValue.toString() }
+				}
+				depends { userPreferences[ScreensaverTrailers.enabledPreference] }
+			}
+
 			checkbox {
 				setTitle(R.string.pref_screensaver_inapp_enabled)
 				setContent(R.string.pref_screensaver_inapp_enabled_description)

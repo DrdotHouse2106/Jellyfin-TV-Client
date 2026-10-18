@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.23.7 – 2026-10-18
+
+- Neue Einstellung **„Ton der Teaser“** im Bildschirmschoner: Stumm (Standard), Leise oder Normal – wie in der webOS-App. Vorher richtete sich der Ton nach der Trailer-Vorschau.
+
 ## 1.23.6 – 2026-10-18
 
 - Bildschirmschoner springt nicht mehr an, solange ein Trailer im Hintergrund läuft (Detailseite, Banner, Welten, YouTube-Vorschau). Erst nach dem Trailer beginnt die Wartezeit. Erscheint der Schoner doch, hält der Trailer an – es laufen nie zwei Trailer gleichzeitig.

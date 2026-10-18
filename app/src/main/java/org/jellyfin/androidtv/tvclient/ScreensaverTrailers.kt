@@ -3,6 +3,7 @@ package org.jellyfin.androidtv.tvclient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jellyfin.preference.booleanPreference
+import org.jellyfin.preference.intPreference
 import org.jellyfin.sdk.api.client.ApiClient
 import org.jellyfin.sdk.api.client.extensions.userLibraryApi
 import org.jellyfin.sdk.model.api.BaseItemDto
@@ -17,6 +18,9 @@ import kotlin.time.Duration.Companion.seconds
  */
 object ScreensaverTrailers {
 	val enabledPreference = booleanPreference("pref_tvclient_screensaver_trailers", false)
+
+	/** Lautstärke der Teaser im Schoner in Prozent: 0 = stumm (Standard), 30 = leise, 75 = normal. */
+	val volumePreference = intPreference("pref_tvclient_screensaver_volume", 0)
 
 	private val defaultDuration = 120.seconds
 	private val maxDuration = 180.seconds

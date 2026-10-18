@@ -124,4 +124,8 @@
         <item quantity="other">%d Titel</item>
     </plurals>
     <string name="tvclient_screensaver_hint">OK: Details · andere Taste: zurück</string>
+    <string name="tvclient_screensaver_volume">Ton der Teaser</string>
+    <string name="tvclient_volume_mute">Stumm</string>
+    <string name="tvclient_volume_quiet">Leise</string>
+    <string name="tvclient_volume_normal">Normal</string>
 </resources>

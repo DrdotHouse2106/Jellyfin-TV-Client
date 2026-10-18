@@ -56,13 +56,15 @@ fun DreamContentLibraryShowcase(
 		DreamContentVignette()
 	}
 
-	// Jellyfin-TV-Client: Trailer über dem Bild (Ton wie in den Einstellungen) (blendet sich erst mit dem ersten Bild ein)
+	// Jellyfin-TV-Client: Trailer über dem Bild (Ton laut „Ton der Teaser“) (blendet sich erst mit dem ersten Bild ein)
 	content.trailerUrl?.let { url ->
 		TrailerVideo(
 			url = url,
 			// Läuft im Schoner selbst – nicht zurückhalten
 			holdScreensaver = false,
-			withSound = org.koin.java.KoinJavaComponent.get<org.jellyfin.androidtv.preference.UserPreferences>(org.jellyfin.androidtv.preference.UserPreferences::class.java)[org.jellyfin.androidtv.tvclient.TrailerPreview.soundPreference],
+			withSound = true,
+			// Ton der Teaser im Schoner: eigene Einstellung (ab Werk stumm)
+			volumeOverride = org.koin.java.KoinJavaComponent.get<org.jellyfin.androidtv.preference.UserPreferences>(org.jellyfin.androidtv.preference.UserPreferences::class.java)[org.jellyfin.androidtv.tvclient.ScreensaverTrailers.volumePreference] / 100f,
 			modifier = Modifier.fillMaxSize(),
 		)
 		DreamContentVignette()

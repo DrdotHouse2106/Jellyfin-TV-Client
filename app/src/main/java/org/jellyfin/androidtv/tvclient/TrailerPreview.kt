@@ -100,6 +100,8 @@ fun TrailerVideo(
 	onPlayingChange: (Boolean) -> Unit = {},
 	/** Bildschirmschoner zurückhalten, solange der Trailer läuft (nicht im Schoner selbst). */
 	holdScreensaver: Boolean = true,
+	/** Eigene Lautstärke (0–1) statt der Trailer-Vorschau, z. B. im Bildschirmschoner. */
+	volumeOverride: Float? = null,
 ) {
 	val context = LocalContext.current
 	val lifecycleOwner = LocalLifecycleOwner.current
@@ -109,7 +111,7 @@ fun TrailerVideo(
 		ExoPlayer.Builder(context).build().apply {
 			setMediaItem(MediaItem.fromUri(url))
 			TrailerPreview.resumePosition(url)?.let { seekTo(it) }
-			volume = if (withSound) TrailerPreview.volume else 0f
+			volume = volumeOverride ?: if (withSound) TrailerPreview.volume else 0f
 			repeatMode = Player.REPEAT_MODE_OFF
 			playWhenReady = true
 			prepare()
