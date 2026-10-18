@@ -98,6 +98,8 @@ fun TrailerVideo(
 	withSound: Boolean,
 	modifier: Modifier = Modifier,
 	onPlayingChange: (Boolean) -> Unit = {},
+	/** Bildschirmschoner zurückhalten, solange der Trailer läuft (nicht im Schoner selbst). */
+	holdScreensaver: Boolean = true,
 ) {
 	val context = LocalContext.current
 	val lifecycleOwner = LocalLifecycleOwner.current
@@ -147,6 +149,23 @@ fun TrailerVideo(
 			player.removeListener(listener)
 			player.release()
 		}
+	}
+
+	// Jellyfin-TV-Client: kein Bildschirmschoner über einem laufenden Trailer; erscheint er doch, anhalten
+	var playing by remember(url) { mutableStateOf(false) }
+	val screensaverVisible by rememberScreensaverHold(holdScreensaver && playing)
+	DisposableEffect(player) {
+		val listener = object : Player.Listener {
+			override fun onIsPlayingChanged(isPlaying: Boolean) {
+				if (isPlaying) playing = true
+				else if (player.playbackState == Player.STATE_ENDED || player.playbackState == Player.STATE_IDLE) playing = false
+			}
+		}
+		player.addListener(listener)
+		onDispose { player.removeListener(listener) }
+	}
+	LaunchedEffect(screensaverVisible) {
+		if (holdScreensaver && screensaverVisible && player.isPlaying) player.pause()
 	}
 
 	// Position laufend merken (die nächste Seite kann schon starten, bevor diese hier verschwindet)

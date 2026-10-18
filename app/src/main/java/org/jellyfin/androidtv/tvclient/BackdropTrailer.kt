@@ -94,6 +94,9 @@ private fun YoutubeInline(key: String, withSound: Boolean, modifier: Modifier, o
 	var visible by remember(key) { mutableStateOf(false) }
 	var gone by remember(key) { mutableStateOf(false) }
 	val alpha by animateFloatAsState(if (visible && !gone) 1f else 0f, tween(600), label = "YoutubeInlineAlpha")
+	// Kein Bildschirmschoner über dem laufenden YouTube-Trailer; erscheint er doch, Vorschau beenden
+	val screensaverVisible by rememberScreensaverHold(visible && !gone)
+	LaunchedEffect(screensaverVisible) { if (screensaverVisible && visible) gone = true }
 	if (gone) return
 
 	val handler = remember { Handler(Looper.getMainLooper()) }

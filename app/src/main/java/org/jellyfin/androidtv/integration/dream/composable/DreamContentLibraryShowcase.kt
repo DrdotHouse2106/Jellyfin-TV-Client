@@ -60,6 +60,8 @@ fun DreamContentLibraryShowcase(
 	content.trailerUrl?.let { url ->
 		TrailerVideo(
 			url = url,
+			// Läuft im Schoner selbst – nicht zurückhalten
+			holdScreensaver = false,
 			withSound = org.koin.java.KoinJavaComponent.get<org.jellyfin.androidtv.preference.UserPreferences>(org.jellyfin.androidtv.preference.UserPreferences::class.java)[org.jellyfin.androidtv.tvclient.TrailerPreview.soundPreference],
 			modifier = Modifier.fillMaxSize(),
 		)
