@@ -53,10 +53,6 @@ object LiveTvCredits {
 		val isEmpty get() = actors.isEmpty() && directors.isEmpty()
 	}
 
-	/** null = noch nicht geprüft; danach gemerkt, ob das Plugin EPG-Personen hat (pro Server). */
-	@Volatile
-	private var available: Pair<String, Boolean>? = null
-
 	private fun api() = KoinJavaComponent.get<ApiClient>(ApiClient::class.java)
 
 	private fun call(api: ApiClient, path: String): String? {
@@ -73,17 +69,6 @@ object LiveTvCredits {
 		} finally {
 			connection.disconnect()
 		}
-	}
-
-	private suspend fun isAvailable(api: ApiClient): Boolean = withContext(Dispatchers.IO) {
-		val server = api.baseUrl.orEmpty()
-		available?.takeIf { it.first == server }?.let { return@withContext it.second }
-		val result = runCatching {
-			val status = call(api, "/LocalRecs/Status")?.let { json.parseToJsonElement(it).jsonObject }
-			(status?.get("XmltvConfigured") as? JsonPrimitive)?.booleanOrNull == true
-		}.getOrDefault(false)
-		available = server to result
-		result
 	}
 
 	private fun JsonObject.string(key: String): String? =
@@ -110,7 +95,6 @@ object LiveTvCredits {
 	}
 
 	suspend fun load(programId: UUID, api: ApiClient = api()): Credits? = withContext(Dispatchers.IO) {
-		if (!isAvailable(api)) return@withContext null
 		runCatching {
 			call(api, "/LocalRecs/LiveTv/Program/${programId.toString().replace("-", "")}/Credits")?.let(::parse)
 		}.onFailure { Timber.i("Besetzung für Sendung nicht verfügbar: %s", it.message) }.getOrNull()

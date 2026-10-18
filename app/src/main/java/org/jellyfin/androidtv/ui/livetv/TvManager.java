@@ -191,7 +191,7 @@ public class TvManager {
                 .append(" @ ")
                 .append(DateTimeExtensionsKt.getTimeFormatter(context).format(local))
                 .append(" (")
-                .append(DateUtils.getRelativeTimeSpanString(local.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli(), Instant.now().toEpochMilli(), 0) /* Jellyfin-TV-Client: Ortszeit, nicht UTC */)
+                .append(org.jellyfin.androidtv.tvclient.RelativeTime.inLocal(local) /* Jellyfin-TV-Client: Ortszeit statt UTC, gerundet */)
                 .append(")")
         );
         timelineRow.addView(datetime);

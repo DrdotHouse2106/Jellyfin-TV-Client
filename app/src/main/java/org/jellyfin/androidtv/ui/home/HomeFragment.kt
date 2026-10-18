@@ -76,7 +76,9 @@ class HomeFragment : Fragment() {
 	) = content {
 		val rowsFocusRequester = remember { FocusRequester() }
 		val showHero = remember { userPreferences[HomeRow.heroPreference] }
-		LaunchedEffect(rowsFocusRequester) { rowsFocusRequester.requestFocus() }
+		// Jellyfin-TV-Client: beim ersten Öffnen mit Banner nicht in die Zeilen (sonst hält deren onExit
+		// den Fokus fest und „Abspielen“ bekommt ihn nie); nach „Zurück“ wie gewohnt in die Zeilen
+		LaunchedEffect(rowsFocusRequester) { if (!showHero || billboardStarted) rowsFocusRequester.requestFocus() }
 
 		// Jellyfin-TV-Client: Billboard mit wechselnden Vorschlägen (Netflix-Ansicht)
 		val api = koinInject<ApiClient>()
@@ -96,6 +98,7 @@ class HomeFragment : Fragment() {
 			if (firstStart) HomeHeroState.rowsFocusBlocked.value = true
 			billboardItems = HomeBillboard.load(api)
 			if (billboardItems.isEmpty() || !firstStart) HomeHeroState.rowsFocusBlocked.value = false
+			if (billboardItems.isEmpty() && firstStart) runCatching { rowsFocusRequester.requestFocus() }
 			if (firstStart && billboardItems.isNotEmpty()) {
 				HomeHeroState.item.value = billboardItems.first()
 				// Beim Öffnen (z. B. nach dem Anmelden) auf „Abspielen“ im Banner starten. Die Zeilen laden
@@ -170,6 +173,8 @@ class HomeFragment : Fragment() {
 									onExit = {
 										val isFirstRowSelected = rowsSupportFragment?.selectedPosition?.let { it <= 0 } ?: false
 										when {
+											// Beim Start (Zeilen noch gesperrt) darf der Fokus immer ins Banner
+											HomeHeroState.rowsFocusBlocked.value -> rowsSupportFragment?.verticalGridView?.clearFocus()
 											// Netflix-Ansicht: mit „Links“ in die Navigation am Rand – nur vom ersten Titel einer Zeile.
 											// Der Fokus der Zeilen wird dabei gelöscht, sonst öffnet OK weiterhin den zuletzt gewählten Titel.
 											showHero && requestedFocusDirection == FocusDirection.Left -> {

@@ -154,7 +154,14 @@ private fun WorldScreen(key: String) {
 					modifier = Modifier.heightIn(max = 90.dp).widthIn(max = 320.dp),
 				)
 			}
-			if (!logoLoaded) Text(current?.name.orEmpty(), fontSize = 40.sp, fontWeight = FontWeight.Bold, color = Color.White)
+			// Name immer zeigen (ein dunkles Logo wäre auf dem dunklen Hintergrund unsichtbar)
+			Text(
+				current?.name.orEmpty(),
+				fontSize = if (logoLoaded) 22.sp else 40.sp,
+				fontWeight = FontWeight.Bold,
+				color = Color.White,
+				modifier = Modifier.padding(top = if (logoLoaded) 6.dp else 0.dp),
+			)
 			Spacer(Modifier.height(160.dp))
 
 			when {
