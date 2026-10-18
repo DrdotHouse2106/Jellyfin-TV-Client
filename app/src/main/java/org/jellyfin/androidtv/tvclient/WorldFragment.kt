@@ -151,6 +151,8 @@ private fun WorldScreen(key: String) {
 					contentScale = ContentScale.Fit,
 					alignment = Alignment.CenterStart,
 					onSuccess = { logoLoaded = true },
+					// Firmenlogos sind oft farbig oder dunkel – weiß einfärben
+					colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.White),
 					modifier = Modifier.heightIn(max = 90.dp).widthIn(max = 320.dp),
 				)
 			}

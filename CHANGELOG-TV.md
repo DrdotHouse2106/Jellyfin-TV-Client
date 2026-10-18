@@ -5,7 +5,7 @@
 - Startseite: Fokus nach dem Anmelden auf „Abspielen“ – die Ursache war, dass beim Start zuerst die Zeilen den Fokus bekamen und ihn wegen der Sperre nicht mehr abgaben (nur „Hoch“ kam heraus).
 - Live-TV: Besetzung und Regie werden direkt beim Plugin abgefragt, ohne vorherige Status-Prüfung (sie blieb im Programmführer leer).
 - Welt-Seite: Der Name der Welt steht immer oben (auch unter einem Logo).
-- Welten: Logos kommen vom eigenen Server (Plugin Local Recommendations, Feld „LogoUrl“ aus dem Welten-Repo) – in der Kachel und oben auf der Welt-Seite. Ohne Logo steht der Name da.
+- Welten: Logos kommen vom eigenen Server (Plugin Local Recommendations, Feld „LogoUrl“ aus dem Welten-Repo) – in der Kachel und oben auf der Welt-Seite, weiß eingefärbt. Ohne Logo steht der Name da.
 - Programmführer: „In 2 Stunden“ wird gerundet statt abgeschnitten (1 h 59 min → „In 2 Stunden“).
 
 ## 1.22.1 – 2026-10-18

@@ -61,6 +61,8 @@ private class WorldPresenter : Presenter() {
 		val shade = View(context)
 		val image = AsyncImageView(context).apply {
 			scaleType = ImageView.ScaleType.FIT_CENTER
+			// Firmenlogos sind oft farbig oder dunkel – auf dem dunklen Hintergrund weiß einfärben
+			setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN)
 			setPadding(dp(18), dp(14), dp(18), dp(14))
 		}
 		val name = TextView(context).apply {
