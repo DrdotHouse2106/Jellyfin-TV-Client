@@ -124,21 +124,26 @@ object TvClientSubtitles {
 	}
 
 	/**
-	 * Reine Entscheidung (testbar): Keine (nicht erzwungenen) Untertitel, wenn der Ton in der eigenen
-	 * Sprache läuft oder die Untertitel dieselbe Sprache wie der Ton haben.
+	 * Reine Entscheidung (testbar):
+	 * - Ton in der eigenen Sprache: keine Untertitel, nur erzwungene in der Sprache des Tons.
+	 * - Fremder Ton (z. B. Originalton): volle Untertitel in der eigenen Sprache – auch wenn der Server
+	 *   erzwungene oder keine vorschlägt (sein Vorschlag gilt meist für den Standardton).
+	 * - Gibt es keine eigenen, Untertitel in der Sprache des Tons weglassen, sonst den Vorschlag des Servers.
 	 */
 	fun decide(streams: List<MediaStream>, serverDefault: Int?, audioIndex: Int?, ownLanguages: Set<String>): Int? {
 		val subtitles = streams.filter { it.type == MediaStreamType.SUBTITLE }
-		val defaultSubtitle = subtitles.firstOrNull { it.index == serverDefault } ?: return serverDefault
-		if (defaultSubtitle.isForced == true) return serverDefault
-
 		val audioLanguage = audioLanguage(streams, audioIndex) ?: return serverDefault
-		val subtitleLanguage = normalize(defaultSubtitle.language)
-		return if (audioLanguage in ownLanguages || audioLanguage == subtitleLanguage) {
-			forcedIndex(subtitles, setOf(audioLanguage)) ?: -1
-		} else {
-			serverDefault
+		if (audioLanguage in ownLanguages) return forcedIndex(subtitles, setOf(audioLanguage)) ?: -1
+
+		val defaultSubtitle = subtitles.firstOrNull { it.index == serverDefault }
+		// Vorschlag des Servers behalten, wenn er schon volle Untertitel in der eigenen Sprache sind
+		if (defaultSubtitle != null && defaultSubtitle.isForced != true && normalize(defaultSubtitle.language) in ownLanguages) {
+			return serverDefault
 		}
+		alwaysOwn(subtitles.filter { it.isForced != true }, ownLanguages)?.let { return it }
+
+		if (defaultSubtitle == null || defaultSubtitle.isForced == true) return serverDefault
+		return if (normalize(defaultSubtitle.language) == audioLanguage) forcedIndex(subtitles, setOf(audioLanguage)) ?: -1 else serverDefault
 	}
 
 	/** Untertitel in der eigenen Sprache (nicht erzwungen zuerst), sonst null. */

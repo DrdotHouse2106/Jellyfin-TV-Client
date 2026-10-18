@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.23.11 – 2026-10-18
+
+- Intelligente Untertitel mit **Originalton**: Es starten die vollen deutschen Untertitel. Vorher kamen nur die erzwungenen, weil der Vorschlag des Servers für den deutschen Standardton berechnet war.
+
 ## 1.23.10 – 2026-10-18
 
 - Einstellungsseite: Nach der Auswahl eines Werts bleibt der Fokus auf dem gewählten Knopf (vorher war kein Element mehr fokussiert, die nächste Pfeiltaste sprang in eine falsche Reihe).
