@@ -3,7 +3,11 @@
 ## 1.22.0 – 2026-10-18
 
 - **Welten:** Neue Reihe „Welten“ auf der Startseite mit großen Kacheln für Marvel, Disney, Pixar, Minions & Co. (Illumination), DreamWorks, DC, Star Wars und Studio Ghibli – mit dem Logo des Studios, falls der Server eines hat. OK öffnet die Welt-Seite mit eigenem Hintergrund und den Reihen „Neu dazugekommen“, einer Reihe pro Filmreihe (z. B. „Avengers“, „Iron Man“), „Filme“ und „Serien aus der Welt von …“. Die Titel kommen über die Studios und passende Sammlungen; Welten mit weniger als 5 Titeln erscheinen nicht. Abschaltbar unter Einstellungen → Startseite.
-- Vorbereitet: „Für dich in dieser Welt“ vom Plugin Local Recommendations, sobald es den Endpunkt gibt.
+- „Für dich in dieser Welt“ vom Plugin Local Recommendations ab 12.10 (sonst ohne diese Reihe).
+- Startseite: Nach dem Anmelden bleibt der Infobereich beim Banner, auch wenn die Zeilen beim Laden schon eine Karte auswählen. Die Liste der Zeilen kann den Fokus beim Start nicht mehr ohne sichtbare Auswahl übernehmen; der Schutz hält bis zu 20 Sekunden.
+- Startseite: Steht die Auswahl in einer Reihe, zeigt der Infobereich immer die ausgewählte Karte.
+- Banner: Der Wechsel zwischen „Abspielen“, „Mehr Infos“ und „Trailer“ startet weder den Trailer neu noch schaltet er den Vorschlag weiter.
+- **Trailer läuft nahtlos weiter:** Wer im Banner „Mehr Infos“ öffnet, sieht den Trailer auf der Detailseite an derselben Stelle weiterlaufen, und nach „Zurück“ wieder im Banner (Trailer vom Server).
 
 ## 1.21.0 – 2026-10-18
 

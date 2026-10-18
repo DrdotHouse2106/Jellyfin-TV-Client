@@ -36,6 +36,13 @@ class WorldsTests : FunSpec({
 		Worlds.parseIds("""[{"Id":"2a34445fbe389aaa2a2761e2e0aa0160"},"kaputt"]""") shouldContainExactly listOf(id)
 	}
 
+	test("Plugin-Welt über den Namen finden") {
+		val text = """[{"Id":"w1","Name":"Pixar","ItemCount":7},{"Id":"w2","Name":"Marvel Cinematic Universe","ItemCount":58}]"""
+		Worlds.pluginWorldId(text, marvel) shouldBe "w2"
+		Worlds.pluginWorldId(text, Worlds.definitions.first { it.key == "pixar" }) shouldBe "w1"
+		Worlds.pluginWorldId(text, illumination) shouldBe null
+	}
+
 	test("Jede Welt hat einen eigenen Schlüssel") {
 		Worlds.definitions.map { it.key }.distinct().size shouldBe Worlds.definitions.size
 	}

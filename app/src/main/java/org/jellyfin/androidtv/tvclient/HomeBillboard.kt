@@ -184,10 +184,19 @@ fun HomeBillboardButtons(
 
 	var focused by remember { mutableStateOf(false) }
 	var index by remember { mutableIntStateOf(0) }
+	// Entprellt, damit ein Knopfwechsel die Rotation nicht neu startet
+	var stableFocused by remember { mutableStateOf(false) }
+	LaunchedEffect(focused) {
+		if (focused) stableFocused = true
+		else {
+			delay(FOCUS_DEBOUNCE_MS)
+			stableFocused = false
+		}
+	}
 
 	// Solange die Knöpfe ausgewählt sind: Vorschläge durchwechseln
-	LaunchedEffect(focused, items) {
-		if (!focused || items.isEmpty()) return@LaunchedEffect
+	LaunchedEffect(stableFocused, items) {
+		if (!stableFocused || items.isEmpty()) return@LaunchedEffect
 		if (current?.id !in items.map { it.id }) HomeHeroState.item.value = items[index % items.size]
 		while (true) {
 			delay(HomeBillboard.rotationInterval)

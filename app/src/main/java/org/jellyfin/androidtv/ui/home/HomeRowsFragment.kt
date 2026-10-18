@@ -224,12 +224,29 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 		// Jellyfin-TV-Client: Netflix-Ansicht – die ausgewählte Zeile steht ganz oben, die Zeile davor
 		// verschwindet vollständig unter dem Infobereich
 		// Jellyfin-TV-Client: Zeilen nicht fokussierbar, solange das Banner beim Start den Fokus hält
+		// (auch die Liste selbst, sonst nimmt sie den Fokus ohne sichtbare Auswahl an)
 		HomeHeroState.rowsFocusBlocked
 			.onEach { blocked ->
-				verticalGridView?.descendantFocusability =
-					if (blocked) ViewGroup.FOCUS_BLOCK_DESCENDANTS else ViewGroup.FOCUS_AFTER_DESCENDANTS
+				verticalGridView?.apply {
+					descendantFocusability = if (blocked) ViewGroup.FOCUS_BLOCK_DESCENDANTS else ViewGroup.FOCUS_AFTER_DESCENDANTS
+					isFocusable = !blocked
+				}
 			}
 			.launchIn(viewLifecycleOwner.lifecycleScope)
+
+		// Fokus kommt in die Zeilen: Infobereich zeigt die dort ausgewählte Karte
+		val focusListener = android.view.ViewTreeObserver.OnGlobalFocusChangeListener { _, newFocus ->
+			val grid = verticalGridView ?: return@OnGlobalFocusChangeListener
+			if (newFocus != null && newFocus !== grid && isDescendant(grid, newFocus) && selectedHeroItem != null) {
+				if (HomeHeroState.item.value?.id != selectedHeroItem?.id) HomeHeroState.item.value = selectedHeroItem
+			}
+		}
+		view.viewTreeObserver.addOnGlobalFocusChangeListener(focusListener)
+		viewLifecycleOwner.lifecycle.addObserver(object : androidx.lifecycle.DefaultLifecycleObserver {
+			override fun onDestroy(owner: androidx.lifecycle.LifecycleOwner) {
+				if (view.viewTreeObserver.isAlive) view.viewTreeObserver.removeOnGlobalFocusChangeListener(focusListener)
+			}
+		})
 
 		if (netflixStyle) verticalGridView?.apply {
 			windowAlignment = BaseGridView.WINDOW_ALIGN_NO_EDGE
@@ -238,6 +255,15 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			itemAlignmentOffset = 0
 			itemAlignmentOffsetPercent = 0f
 		}
+	}
+
+	private fun isDescendant(parent: View, child: View): Boolean {
+		var current: android.view.ViewParent? = child.parent
+		while (current != null) {
+			if (current === parent) return true
+			current = current.parent
+		}
+		return false
 	}
 
 	override fun onResume() {
@@ -317,9 +343,11 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			rowViewHolder: RowPresenter.ViewHolder?,
 			row: Row?,
 		) {
-			// Jellyfin-TV-Client: Infobereich oben (Netflix-Ansicht) zeigt den ausgewählten Titel
-			// Welt-Kacheln haben keinen eigenen Titel – der Infobereich zeigt weiter den letzten
-			if (item !is Worlds.World) HomeHeroState.item.value = (item as? BaseRowItem)?.baseItem
+			// Jellyfin-TV-Client: Infobereich oben (Netflix-Ansicht) zeigt den ausgewählten Titel – aber nur,
+			// wenn die Zeilen den Fokus haben. Leanback wählt beim Laden schon die erste Karte aus; das darf
+			// das Banner nicht überschreiben. Welt-Kacheln haben keinen eigenen Titel.
+			selectedHeroItem = if (item is Worlds.World) selectedHeroItem else (item as? BaseRowItem)?.baseItem
+			if (item !is Worlds.World && verticalGridView?.hasFocus() == true) HomeHeroState.item.value = selectedHeroItem
 
 			if (item !is BaseRowItem) {
 				currentItem = null
@@ -337,6 +365,9 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			}
 		}
 	}
+
+	// Jellyfin-TV-Client: zuletzt ausgewählte Karte (für den Infobereich, sobald die Zeilen den Fokus bekommen)
+	private var selectedHeroItem: org.jellyfin.sdk.model.api.BaseItemDto? = null
 
 	private companion object {
 		// Höhe der Querformat-Karten in der Netflix-Ansicht (dp)

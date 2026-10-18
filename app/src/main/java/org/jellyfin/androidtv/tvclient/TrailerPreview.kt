@@ -3,6 +3,7 @@ package org.jellyfin.androidtv.tvclient
 import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +22,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.jellyfin.preference.booleanPreference
 import org.jellyfin.sdk.api.client.ApiClient
@@ -45,6 +47,27 @@ object TrailerPreview {
 
 	/** Wartezeit auf einem Titel, bevor der Trailer startet. */
 	val delay = 3.seconds
+
+	// Zuletzt gespielter Trailer und Position – damit er auf der Detailseite (bzw. nach „Zurück“ im
+	// Banner) an derselben Stelle weiterläuft statt neu zu starten
+	private const val RESUME_WINDOW_MS = 2 * 60 * 1000L
+	@Volatile private var resumeUrl: String? = null
+	@Volatile private var resumePositionMs = 0L
+	@Volatile private var resumeAt = 0L
+
+	fun savePosition(url: String, positionMs: Long) {
+		resumeUrl = url
+		resumePositionMs = positionMs
+		resumeAt = System.currentTimeMillis()
+	}
+
+	fun clearPosition(url: String) {
+		if (resumeUrl == url) resumeUrl = null
+	}
+
+	/** Position, an der dieser Trailer eben noch lief (oder null). */
+	fun resumePosition(url: String?): Long? =
+		if (url != null && url == resumeUrl && resumePositionMs > 0 && System.currentTimeMillis() - resumeAt < RESUME_WINDOW_MS) resumePositionMs else null
 
 	/** Adresse des ersten lokalen Trailers oder null. */
 	suspend fun streamUrl(api: ApiClient, item: BaseItemDto): String? {
@@ -83,6 +106,7 @@ fun TrailerVideo(
 	val player = remember(url) {
 		ExoPlayer.Builder(context).build().apply {
 			setMediaItem(MediaItem.fromUri(url))
+			TrailerPreview.resumePosition(url)?.let { seekTo(it) }
 			volume = if (withSound) TrailerPreview.volume else 0f
 			repeatMode = Player.REPEAT_MODE_OFF
 			playWhenReady = true
@@ -100,6 +124,7 @@ fun TrailerVideo(
 			override fun onPlaybackStateChanged(playbackState: Int) {
 				// Am Ende wieder das Bild zeigen
 				if (playbackState == Player.STATE_ENDED) {
+					TrailerPreview.clearPosition(url)
 					visible = false
 					onPlayingChange(false)
 				}
@@ -116,10 +141,19 @@ fun TrailerVideo(
 		lifecycleOwner.lifecycle.addObserver(observer)
 
 		onDispose {
+			if (player.playbackState != Player.STATE_ENDED && player.currentPosition > 0) TrailerPreview.savePosition(url, player.currentPosition)
 			onPlayingChange(false)
 			lifecycleOwner.lifecycle.removeObserver(observer)
 			player.removeListener(listener)
 			player.release()
+		}
+	}
+
+	// Position laufend merken (die nächste Seite kann schon starten, bevor diese hier verschwindet)
+	LaunchedEffect(player) {
+		while (true) {
+			delay(500)
+			if (player.isPlaying) TrailerPreview.savePosition(url, player.currentPosition)
 		}
 	}
 

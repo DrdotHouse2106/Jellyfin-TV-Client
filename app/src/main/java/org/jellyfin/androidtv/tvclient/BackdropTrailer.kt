@@ -63,7 +63,8 @@ fun BoxScope.BackdropTrailer(
 
 	var started by remember(localUrl, youtubeKey) { mutableStateOf(false) }
 	LaunchedEffect(localUrl, youtubeKey) {
-		delay(2.seconds)
+		// Lief der Trailer eben noch im Banner: sofort an derselben Stelle weiter
+		if (TrailerPreview.resumePosition(localUrl) == null) delay(2.seconds)
 		started = true
 	}
 	if (!started) return

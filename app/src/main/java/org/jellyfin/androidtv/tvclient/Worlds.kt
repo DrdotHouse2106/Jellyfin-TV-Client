@@ -226,38 +226,49 @@ object Worlds {
 	}
 
 	/**
-	 * Optional: „Für dich in dieser Welt“ vom Plugin Local Recommendations. Erwartet
-	 * GET /LocalRecs/Worlds/Recommendations?studioIds=…&collectionIds=…&limit=20 mit
-	 * {"Items":["<id>", …]} (auch eine reine Liste von Ids oder Objekten mit "Id" geht). Gibt es den
-	 * Endpunkt nicht, bleibt die Reihe weg.
+	 * Optional: „Für dich in dieser Welt“ vom Plugin Local Recommendations (ab 12.10): Die Welt des
+	 * Plugins wird über den Namen gefunden (GET /LocalRecs/Worlds), die Titel kommen von
+	 * GET /LocalRecs/Worlds/{id}/Recommendations. Ohne Plugin oder ohne passende Welt bleibt die Reihe weg.
 	 */
 	private suspend fun forYou(api: ApiClient, userId: UUID, world: World): List<BaseItemDto> {
-		val base = api.baseUrl?.trimEnd('/') ?: return emptyList()
-		val token = api.accessToken ?: return emptyList()
-		val ids = runCatching {
-			val params = buildList {
-				if (world.studioIds.isNotEmpty()) add("studioIds=" + world.studioIds.joinToString(",") { it.toString().replace("-", "") })
-				if (world.collections.isNotEmpty()) add("collectionIds=" + world.collections.joinToString(",") { it.id.toString().replace("-", "") })
-				add("limit=20")
-			}.joinToString("&")
-			val connection = URL("$base/LocalRecs/Worlds/Recommendations?$params").openConnection() as HttpURLConnection
-			try {
-				connection.connectTimeout = TIMEOUT_MS
-				connection.readTimeout = TIMEOUT_MS
-				connection.setRequestProperty("Authorization", "MediaBrowser Token=\"$token\"")
-				connection.setRequestProperty("Accept", "application/json")
-				if (connection.responseCode !in 200..299) emptyList()
-				else parseIds(connection.inputStream.bufferedReader().use { it.readText() })
-			} finally {
-				connection.disconnect()
-			}
-		}.getOrDefault(emptyList())
+		val worldsText = pluginGet(api, "/LocalRecs/Worlds") ?: return emptyList()
+		val pluginId = pluginWorldId(worldsText, world.definition) ?: return emptyList()
+		val ids = pluginGet(api, "/LocalRecs/Worlds/$pluginId/Recommendations?limit=20")?.let(::parseIds).orEmpty()
 		if (ids.isEmpty()) return emptyList()
 
 		val items = runCatching {
 			api.itemsApi.getItems(GetItemsRequest(userId = userId, ids = ids, fields = ItemRepository.browseFields)).content.items
 		}.getOrDefault(emptyList()).associateBy { it.id }
 		return ids.mapNotNull { items[it] }
+	}
+
+	private fun pluginGet(api: ApiClient, path: String): String? {
+		val base = api.baseUrl?.trimEnd('/') ?: return null
+		val token = api.accessToken ?: return null
+		return runCatching {
+			val connection = URL(base + path).openConnection() as HttpURLConnection
+			try {
+				connection.connectTimeout = TIMEOUT_MS
+				connection.readTimeout = TIMEOUT_MS
+				connection.setRequestProperty("Authorization", "MediaBrowser Token=\"$token\"")
+				connection.setRequestProperty("Accept", "application/json")
+				if (connection.responseCode == 200) connection.inputStream.bufferedReader().use { it.readText() } else null
+			} finally {
+				connection.disconnect()
+			}
+		}.getOrNull()
+	}
+
+	/** Id der Plugin-Welt mit passendem Namen (z. B. „Marvel“, „Pixar“), sonst null. */
+	fun pluginWorldId(text: String, definition: Definition): String? {
+		val list = json.parseToJsonElement(text) as? JsonArray ?: return null
+		val candidates = setOf(definition.name.lowercase(), definition.key.lowercase())
+		return list.firstNotNullOfOrNull { element ->
+			val obj = element as? JsonObject ?: return@firstNotNullOfOrNull null
+			val name = (obj["Name"] as? JsonPrimitive)?.content?.lowercase() ?: return@firstNotNullOfOrNull null
+			val id = (obj["Id"] as? JsonPrimitive)?.content ?: return@firstNotNullOfOrNull null
+			id.takeIf { name in candidates || definition.studios.any { name.contains(it) } }
+		}
 	}
 
 	fun parseIds(text: String): List<UUID> {

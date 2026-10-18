@@ -58,7 +58,7 @@ import org.koin.compose.koinInject
 import org.jellyfin.sdk.api.client.ApiClient
 import org.jellyfin.sdk.model.api.BaseItemDto
 
-private const val BILLBOARD_FOCUS_GUARD_MS = 8_000L
+private const val BILLBOARD_FOCUS_GUARD_MS = 20_000L
 
 class HomeFragment : Fragment() {
 	private val sessionRepository by inject<SessionRepository>()

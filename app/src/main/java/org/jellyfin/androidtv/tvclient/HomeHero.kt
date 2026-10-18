@@ -54,6 +54,9 @@ import kotlin.time.Duration.Companion.microseconds
  * Jellyfin-TV-Client: Infobereich oben auf der Startseite (wie bei Netflix). Zeigt den gerade
  * ausgewählten Titel groß mit Logo bzw. Titel, Eckdaten und Beschreibung.
  */
+/** Wie lange der Banner-Fokus „weg“ sein muss, bevor die Vorschau stoppt. */
+const val FOCUS_DEBOUNCE_MS = 500L
+
 object HomeHeroState {
 	/** Ausgewählter Eintrag; wird von den Startseiten-Zeilen gesetzt. */
 	val item = MutableStateFlow<BaseItemDto?>(null)
@@ -80,7 +83,16 @@ fun HomeHeroBackdrop(modifier: Modifier = Modifier) {
 	val item by HomeHeroState.item.collectAsState()
 	val api = koinInject<ApiClient>()
 	val userPreferences = koinInject<UserPreferences>()
-	val billboardFocused by HomeHeroState.billboardFocused.collectAsState()
+	val billboardFocusedRaw by HomeHeroState.billboardFocused.collectAsState()
+	// Entprellt: beim Wechsel zwischen den Knöpfen ist der Fokus kurz „weg“ – das darf den Trailer nicht neu starten
+	var billboardFocused by remember { mutableStateOf(billboardFocusedRaw) }
+	LaunchedEffect(billboardFocusedRaw) {
+		if (billboardFocusedRaw) billboardFocused = true
+		else {
+			delay(FOCUS_DEBOUNCE_MS)
+			billboardFocused = false
+		}
+	}
 
 	Box(modifier.fillMaxSize().background(Color.Black)) {
 		AnimatedContent(
@@ -102,8 +114,10 @@ fun HomeHeroBackdrop(modifier: Modifier = Modifier) {
 				trailerUrl = null
 				if (!billboardFocused) HomeHeroState.trailerPlaying.value = false
 				if (current == null || !billboardFocused || !userPreferences[TrailerPreview.enabledPreference]) return@LaunchedEffect
-				delay(TrailerPreview.delay)
-				trailerUrl = TrailerPreview.streamUrl(api, current)
+				val url = TrailerPreview.streamUrl(api, current) ?: return@LaunchedEffect
+				// Nach „Zurück“ von der Detailseite gleich an derselben Stelle weiter
+				if (TrailerPreview.resumePosition(url) == null) delay(TrailerPreview.delay)
+				trailerUrl = url
 			}
 
 			if (backdrop != null || trailerUrl != null) {
