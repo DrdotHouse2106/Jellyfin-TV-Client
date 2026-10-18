@@ -92,9 +92,9 @@ object Worlds {
 			listOf("jurassic park", "jurassic world"),
 		),
 		Definition(
-			"harrypotter", "Harry Potter", 0xFF6B4E16, listOf("heyday films"),
+			"harrypotter", "Wizarding World", 0xFF6B4E16, listOf("heyday films"),
 			listOf("harry potter", "phantastische tierwesen", "fantastic beasts"),
-			aliases = listOf("Wizarding World"),
+			aliases = listOf("Harry Potter", "wizarding-world"),
 		),
 		Definition(
 			"mittelerde", "Mittelerde", 0xFF5A4A2A, listOf("wingnut"),

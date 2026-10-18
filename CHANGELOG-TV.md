@@ -4,7 +4,7 @@
 
 - Welt-Seite: Logo und Name stehen fest oben, nur die Reihen darunter scrollen. Vorher schob der Fokus auf die erste Reihe den Namen aus dem Bild.
 - Welten-Logos: Nur noch dunkle Logos (schwarz, dunkelgrau, dunkelblau) werden weiß eingefärbt. Farbige und helle Logos bleiben unverändert, z. B. der rote Marvel-Kasten mit ausgestanzter Schrift.
-- Welten: Harry Potter passt auch zur Plugin-Welt „Wizarding World“.
+- Welten: „Harry Potter“ heißt jetzt „Wizarding World“ (mit Phantastische Tierwesen), passend zum Plugin.
 - Live-TV-Besetzung: Protokoll in logcat (`adb logcat -s Quallenkino`) mit Adresse, HTTP-Status und Anzahl der Darsteller – zur Fehlersuche im Programmführer.
 
 ## 1.22.2 – 2026-10-18
@@ -25,7 +25,7 @@
 
 ## 1.22.0 – 2026-10-18
 
-- **Welten:** Neue Reihe „Welten“ auf der Startseite mit großen Kacheln für Marvel, Disney, Pixar, Minions & Co. (Illumination), DreamWorks, DC, Star Wars, Harry Potter, Mittelerde, James Bond, Jurassic Park und Studio Ghibli – mit dem Logo des Studios, falls der Server eines hat. OK öffnet die Welt-Seite mit eigenem Hintergrund und den Reihen „Neu dazugekommen“, einer Reihe pro Filmreihe (z. B. „Avengers“, „Iron Man“), „Filme“ und „Serien aus der Welt von …“. Die Titel kommen über die Studios und passende Sammlungen; Welten mit weniger als 5 Titeln erscheinen nicht. Abschaltbar unter Einstellungen → Startseite.
+- **Welten:** Neue Reihe „Welten“ auf der Startseite mit großen Kacheln für Marvel, Disney, Pixar, Minions & Co. (Illumination), DreamWorks, DC, Star Wars, Wizarding World, Mittelerde, James Bond, Jurassic Park und Studio Ghibli – mit dem Logo des Studios, falls der Server eines hat. OK öffnet die Welt-Seite mit eigenem Hintergrund und den Reihen „Neu dazugekommen“, einer Reihe pro Filmreihe (z. B. „Avengers“, „Iron Man“), „Filme“ und „Serien aus der Welt von …“. Die Titel kommen über die Studios und passende Sammlungen; Welten mit weniger als 5 Titeln erscheinen nicht. Abschaltbar unter Einstellungen → Startseite.
 - „Für dich in dieser Welt“ vom Plugin Local Recommendations ab 12.10 (sonst ohne diese Reihe).
 - Startseite: Nach dem Anmelden bleibt der Infobereich beim Banner, auch wenn die Zeilen beim Laden schon eine Karte auswählen. Die Liste der Zeilen kann den Fokus beim Start nicht mehr ohne sichtbare Auswahl übernehmen; der Schutz hält bis zu 20 Sekunden.
 - Startseite: Steht die Auswahl in einer Reihe, zeigt der Infobereich immer die ausgewählte Karte.
