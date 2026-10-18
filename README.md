@@ -2,6 +2,15 @@
 
 Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** ([jellyfin/jellyfin-androidtv](https://github.com/jellyfin/jellyfin-androidtv)) mit einer Startseite im Kino-Stil und persönlichen Empfehlungen vom Plugin [Local Recommendations](https://github.com/DrdotHouse2106/Lokal-Vorschlag-Jellyfin).
 
+**Plugins auf dem Jellyfin-Server** – keines ist Pflicht, die App läuft auch ohne, nur ohne die jeweiligen Zusatzfunktionen:
+
+| Plugin | Wofür | Ohne Plugin |
+|---|---|---|
+| [Local Recommendations](https://github.com/DrdotHouse2106/Lokal-Vorschlag-Jellyfin) **ab 12.9.0** (empfohlen) | Empfehlungen „für dich“ mit Begründung, Banner-Vorschläge, Top 10 über alle Benutzer, Daumen hoch/runter, „Heute im TV für dich“, Live-TV-Besetzung (mit XMLTV) | keine Empfehlungs-Zeilen, Top 10 nur aus Sicht der App, Banner zeigt die neuesten Titel |
+| [Jellyfin Enhanced](https://github.com/n00bcodr/Jellyfin-Enhanced) mit eingerichtetem Jellyseerr | Anfragen („+“ in der Navigation), Personenseiten, „Für dich“-Vorschläge zum Anfragen | kein „+“ (außer mit eigener Jellyseerr-Adresse und API-Schlüssel) |
+| [Home Screen Sections](https://github.com/IAmParadox27/jellyfin-plugin-home-sections) | weitere Abschnitte der Startseite aus der Weboberfläche | nur die eigenen Zeilen |
+| [Intro Skipper](https://github.com/intro-skipper/intro-skipper) (oder andere Mediensegmente) | Knopf „Überspringen“ für Intro und Abspann | kein Überspringen |
+
 ## Funktionen
 
 **Startseite**

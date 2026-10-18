@@ -2,6 +2,13 @@
 
 Customized build of the official **Jellyfin app for Android TV and Fire TV** ([jellyfin/jellyfin-androidtv](https://github.com/jellyfin/jellyfin-androidtv), base v0.19.10, GPL v2) with a cinematic home screen and personal recommendations from the [Local Recommendations](https://github.com/DrdotHouse2106/Lokal-Vorschlag-Jellyfin) plugin.
 
+**Server plugins** – none is required; without them the app works normally, just without the related extras:
+
+- [Local Recommendations](https://github.com/DrdotHouse2106/Lokal-Vorschlag-Jellyfin) **12.9.0 or newer** (recommended): recommendations with reasons, banner suggestions, Top 10 of all users, thumbs up/down, "on TV today for you", live TV cast (with XMLTV)
+- [Jellyfin Enhanced](https://github.com/n00bcodr/Jellyfin-Enhanced) with Jellyseerr set up: requests ("+" in the navigation), person pages
+- [Home Screen Sections](https://github.com/IAmParadox27/jellyfin-plugin-home-sections): additional home screen sections from the web UI
+- [Intro Skipper](https://github.com/intro-skipper/intro-skipper) (or other media segments): "Skip" button for intro and credits
+
 German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md](CHANGELOG-TV.md)
 
 **Download (always the latest):** https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk
