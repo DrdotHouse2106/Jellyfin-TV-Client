@@ -142,6 +142,7 @@ private fun WorldScreen(key: String) {
 		) {
 			// Kopf: Logo des Studios, sonst der Name
 			val current = world
+			var logoLoaded by remember(current?.imageUrl) { mutableStateOf(false) }
 			if (current?.imageUrl != null) {
 				coil3.compose.AsyncImage(
 					model = current.imageUrl,
@@ -149,11 +150,11 @@ private fun WorldScreen(key: String) {
 					imageLoader = koinInject<coil3.ImageLoader>(),
 					contentScale = ContentScale.Fit,
 					alignment = Alignment.CenterStart,
+					onSuccess = { logoLoaded = true },
 					modifier = Modifier.heightIn(max = 90.dp).widthIn(max = 320.dp),
 				)
-			} else {
-				Text(current?.name.orEmpty(), fontSize = 40.sp, fontWeight = FontWeight.Bold, color = Color.White)
 			}
+			if (!logoLoaded) Text(current?.name.orEmpty(), fontSize = 40.sp, fontWeight = FontWeight.Bold, color = Color.White)
 			Spacer(Modifier.height(160.dp))
 
 			when {

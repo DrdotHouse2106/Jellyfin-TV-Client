@@ -1,5 +1,13 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.22.1 – 2026-10-18
+
+- Startseite: Nach dem Anmelden hat „Abspielen“ im Banner wirklich den Fokus. Vorher hielt sich die Oberfläche für fokussiert, obwohl Android den Fokus nirgends hatte.
+- Startseite: Nach „Zurück“ (z. B. von einer Welt oder aus der Suche) ist der Infobereich nicht mehr leer.
+- Suche (auch Anfragen-Suche): „Zurück“ im Suchfeld führt zu den Ergebnissen. Das erste „Zurück“ schließt die Tastatur, das zweite springt zu den Treffern.
+- Programmführer: „In 2 Stunden“ stimmt wieder („In 23 Minuten“). Die Startzeit wurde als UTC statt als Ortszeit gerechnet (Fehler der offiziellen App).
+- Welten: Kacheln mit abgedunkeltem Hintergrundbild eines Titels der Welt (vom Plugin bzw. aus einer Sammlung), darüber Logo oder Name. Die Welt-Seite zeigt immer den Namen, wenn kein Logo lädt.
+
 ## 1.22.0 – 2026-10-18
 
 - **Welten:** Neue Reihe „Welten“ auf der Startseite mit großen Kacheln für Marvel, Disney, Pixar, Minions & Co. (Illumination), DreamWorks, DC, Star Wars, Harry Potter, Mittelerde, James Bond, Jurassic Park und Studio Ghibli – mit dem Logo des Studios, falls der Server eines hat. OK öffnet die Welt-Seite mit eigenem Hintergrund und den Reihen „Neu dazugekommen“, einer Reihe pro Filmreihe (z. B. „Avengers“, „Iron Man“), „Filme“ und „Serien aus der Welt von …“. Die Titel kommen über die Studios und passende Sammlungen; Welten mit weniger als 5 Titeln erscheinen nicht. Abschaltbar unter Einstellungen → Startseite.

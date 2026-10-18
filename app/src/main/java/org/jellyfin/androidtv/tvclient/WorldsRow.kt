@@ -43,13 +43,22 @@ fun onWorldClicked(item: Any?): Boolean {
 }
 
 private class WorldPresenter : Presenter() {
-	private class Holder(view: View, val image: AsyncImageView, val name: TextView, val background: GradientDrawable) : ViewHolder(view)
+	private class Holder(
+		view: View,
+		val backdrop: AsyncImageView,
+		val shade: View,
+		val image: AsyncImageView,
+		val name: TextView,
+		val background: GradientDrawable,
+	) : ViewHolder(view)
 
 	override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
 		val context = parent.context
 		fun dp(value: Int) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value.toFloat(), context.resources.displayMetrics).toInt()
 
 		val background = GradientDrawable().apply { cornerRadius = dp(8).toFloat() }
+		val backdrop = AsyncImageView(context).apply { scaleType = ImageView.ScaleType.CENTER_CROP }
+		val shade = View(context)
 		val image = AsyncImageView(context).apply {
 			scaleType = ImageView.ScaleType.FIT_CENTER
 			setPadding(dp(18), dp(14), dp(18), dp(14))
@@ -60,6 +69,7 @@ private class WorldPresenter : Presenter() {
 			setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f)
 			typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
 			maxLines = 2
+			setShadowLayer(dp(4).toFloat(), 0f, 0f, Color.BLACK)
 		}
 		val border = View(context).apply {
 			this.background = GradientDrawable().apply {
@@ -74,6 +84,8 @@ private class WorldPresenter : Presenter() {
 			clipToOutline = true
 			isFocusable = true
 			isFocusableInTouchMode = true
+			addView(backdrop, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+			addView(shade, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 			addView(name, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 			addView(image, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 			addView(border, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
@@ -83,7 +95,7 @@ private class WorldPresenter : Presenter() {
 				border.visibility = if (focused) View.VISIBLE else View.INVISIBLE
 			}
 		}
-		return Holder(root, image, name, background)
+		return Holder(root, backdrop, shade, image, name, background)
 	}
 
 	override fun onBindViewHolder(viewHolder: ViewHolder, item: Any?) {
@@ -93,6 +105,14 @@ private class WorldPresenter : Presenter() {
 		holder.background.orientation = GradientDrawable.Orientation.TL_BR
 		holder.background.colors = intArrayOf(color, darken(color))
 		holder.name.text = world.name
+		// Hintergrundbild eines Titels der Welt, in der Farbe der Welt abgedunkelt
+		val backdropUrl = world.backdropUrl
+		holder.backdrop.isVisible = backdropUrl != null
+		if (backdropUrl != null) holder.backdrop.load(url = backdropUrl, aspectRatio = 16.0 / 9.0)
+		holder.shade.background = GradientDrawable(
+			GradientDrawable.Orientation.TL_BR,
+			intArrayOf(withAlpha(color, 0xB0), withAlpha(darken(color), 0xE0)),
+		)
 		val url = world.imageUrl
 		holder.name.isVisible = url == null
 		holder.image.isVisible = url != null
@@ -101,7 +121,10 @@ private class WorldPresenter : Presenter() {
 
 	override fun onUnbindViewHolder(viewHolder: ViewHolder) {
 		(viewHolder as Holder).image.setImageDrawable(null)
+		viewHolder.backdrop.setImageDrawable(null)
 	}
+
+	private fun withAlpha(color: Int, alpha: Int): Int = Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color))
 
 	private fun darken(color: Int): Int = Color.rgb(
 		(Color.red(color) * 0.35f).toInt(),

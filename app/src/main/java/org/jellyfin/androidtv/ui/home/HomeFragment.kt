@@ -80,6 +80,7 @@ class HomeFragment : Fragment() {
 
 		// Jellyfin-TV-Client: Billboard mit wechselnden Vorschlägen (Netflix-Ansicht)
 		val api = koinInject<ApiClient>()
+		val composeView = androidx.compose.ui.platform.LocalView.current
 		val billboardFocusRequester = remember { FocusRequester() }
 		val railHomeFocusRequester = remember { FocusRequester() }
 		var billboardItems by remember { mutableStateOf<List<BaseItemDto>>(emptyList()) }
@@ -102,9 +103,18 @@ class HomeFragment : Fragment() {
 				// zurück ins Banner holen, solange niemand eine Taste gedrückt hat.
 				val until = System.currentTimeMillis() + BILLBOARD_FOCUS_GUARD_MS
 				while (!userInteracted && System.currentTimeMillis() < until) {
-					if (!billboardFocused) runCatching { billboardFocusRequester.requestFocus() }
+					// Compose kann sich für fokussiert halten, obwohl Android den Fokus nirgends hat (die Zeilen
+					// waren beim Start kurz fokussiert und sind dann gesperrt worden) – dann beide neu setzen
+					val viewFocused = composeView.hasFocus()
+					if (!billboardFocused || !viewFocused) runCatching {
+						if (!viewFocused) composeView.requestFocus()
+						billboardFocusRequester.requestFocus()
+					}
 					delay(100)
 				}
+			} else if (HomeHeroState.item.value == null && billboardItems.isNotEmpty()) {
+				// Zurück auf die Startseite mit leerem Infobereich: wieder den Banner-Titel zeigen
+				HomeHeroState.item.value = billboardItems.first()
 			}
 		}
 

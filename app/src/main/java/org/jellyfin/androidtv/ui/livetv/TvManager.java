@@ -191,7 +191,7 @@ public class TvManager {
                 .append(" @ ")
                 .append(DateTimeExtensionsKt.getTimeFormatter(context).format(local))
                 .append(" (")
-                .append(DateUtils.getRelativeTimeSpanString(local.toInstant(ZoneOffset.UTC).toEpochMilli(), Instant.now().toEpochMilli(), 0))
+                .append(DateUtils.getRelativeTimeSpanString(local.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli(), Instant.now().toEpochMilli(), 0) /* Jellyfin-TV-Client: Ortszeit, nicht UTC */)
                 .append(")")
         );
         timelineRow.addView(datetime);

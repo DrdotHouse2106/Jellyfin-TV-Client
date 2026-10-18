@@ -346,8 +346,9 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			// Jellyfin-TV-Client: Infobereich oben (Netflix-Ansicht) zeigt den ausgewählten Titel – aber nur,
 			// wenn die Zeilen den Fokus haben. Leanback wählt beim Laden schon die erste Karte aus; das darf
 			// das Banner nicht überschreiben. Welt-Kacheln haben keinen eigenen Titel.
-			selectedHeroItem = if (item is Worlds.World) selectedHeroItem else (item as? BaseRowItem)?.baseItem
-			if (item !is Worlds.World && verticalGridView?.hasFocus() == true) HomeHeroState.item.value = selectedHeroItem
+			// Nie auf leer setzen (Leanback meldet beim Neuaufbau der Zeilen auch „nichts ausgewählt“)
+			(item as? BaseRowItem)?.baseItem?.let { selectedHeroItem = it }
+			if (item is BaseRowItem && verticalGridView?.hasFocus() == true) HomeHeroState.item.value = selectedHeroItem
 
 			if (item !is BaseRowItem) {
 				currentItem = null

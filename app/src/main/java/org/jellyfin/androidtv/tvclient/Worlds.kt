@@ -106,6 +106,8 @@ object Worlds {
 		val count: Int,
 		/** Bild des Studios (Logo), falls der Server eines hat. */
 		val imageUrl: String?,
+		/** Hintergrundbild eines Titels der Welt (abgedunkelt hinter der Kachel). */
+		val backdropUrl: String? = null,
 	) {
 		val key get() = definition.key
 		val name get() = definition.name
@@ -154,6 +156,9 @@ object Worlds {
 				)
 			).content.items
 
+			// Bilder der Plugin-Welten (ImageItemId = bestbewerteter Titel mit Hintergrundbild), falls vorhanden
+			val pluginWorlds = pluginGet(api, "/LocalRecs/Worlds")
+
 			coroutineScope {
 				definitions.map { definition ->
 					async {
@@ -177,7 +182,10 @@ object Worlds {
 						val image = matchedStudios.firstNotNullOfOrNull { studio ->
 							(studio.itemImages[ImageType.THUMB] ?: studio.itemImages[ImageType.PRIMARY])?.getUrl(api, maxWidth = 600)
 						}
-						World(definition, matchedStudios.map { it.id }, matchedCollections, count, image)
+						val pluginImage = pluginWorlds?.let { pluginImageItemId(it, definition) }
+						val backdrop = pluginImage?.let { "${api.baseUrl?.trimEnd('/')}/Items/$it/Images/Backdrop?maxWidth=640&quality=80" }
+							?: matchedCollections.firstNotNullOfOrNull { heroBackdropImage(it)?.getUrl(api, maxWidth = 640) }
+						World(definition, matchedStudios.map { it.id }, matchedCollections, count, image, backdrop)
 					}
 				}.awaitAll()
 			}.filter { it.count >= MIN_ITEMS }
@@ -280,9 +288,18 @@ object Worlds {
 		.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss")
 		.filter { it.isLetterOrDigit() }
 
+	/** ImageItemId der passenden Plugin-Welt. */
+	fun pluginImageItemId(text: String, definition: Definition): String? {
+		val id = pluginWorldId(text, definition) ?: return null
+		val list = runCatching { json.parseToJsonElement(text) as? JsonArray }.getOrNull() ?: return null
+		return list.mapNotNull { it as? JsonObject }
+			.firstOrNull { (it["Id"] as? JsonPrimitive)?.content == id }
+			?.let { (it["ImageItemId"] as? JsonPrimitive)?.content }
+	}
+
 	/** Id der Plugin-Welt, die zu dieser Welt passt (über Id, Name oder Studio), sonst null. */
 	fun pluginWorldId(text: String, definition: Definition): String? {
-		val list = json.parseToJsonElement(text) as? JsonArray ?: return null
+		val list = runCatching { json.parseToJsonElement(text) as? JsonArray }.getOrNull() ?: return null
 		val candidates = setOf(normalize(definition.name), normalize(definition.key))
 		return list.firstNotNullOfOrNull { element ->
 			val obj = element as? JsonObject ?: return@firstNotNullOfOrNull null

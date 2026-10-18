@@ -129,7 +129,8 @@ class SearchFragment : Fragment() {
 							.focusRequester(textInputFocusRequester)
 							// Jellyfin-TV-Client: „Runter“ verlässt das Suchfeld immer (das Textfeld behält die Taste sonst für sich)
 							.onPreviewKeyEvent { event ->
-								if (event.type == KeyEventType.KeyDown && event.key == Key.DirectionDown && searchFragmentDelegate.rowsAdapter.size() > 0) {
+								val toResults = event.key == Key.DirectionDown || event.key == Key.Back
+								if (event.type == KeyEventType.KeyDown && toResults && searchFragmentDelegate.rowsAdapter.size() > 0) {
 									resultFocusRequester.requestFocus()
 									true
 								} else false

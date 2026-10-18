@@ -170,7 +170,7 @@ private fun JellyseerrScreen() {
 					.focusRequester(inputFocus)
 					.onPreviewKeyEvent { event ->
 						// Runter verlässt das Suchfeld (das Textfeld behält die Taste sonst für sich)
-						if (event.type == KeyEventType.KeyDown && event.key == Key.DirectionDown && results.isNotEmpty()) {
+						if (event.type == KeyEventType.KeyDown && (event.key == Key.DirectionDown || event.key == Key.Back) && results.isNotEmpty()) {
 							focusResults()
 							true
 						} else false
