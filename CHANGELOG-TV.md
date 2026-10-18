@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.22.5 – 2026-10-18
+
+- Welten: „Neu dazugekommen“ zeigt die zuletzt auf dem Server hinzugefügten Titel der Welt direkt vom Plugin (ab 12.15.1).
+
 ## 1.22.4 – 2026-10-18
 
 - Welten: Mit dem Plugin Local Recommendations übernimmt die App dessen Liste, also Reihenfolge, Namen, Anzahl, Logos und Bilder. Neue Welten wie „Bud Spencer & Terence Hill“, „Star Trek“, „Alien & Predator“ oder „Horror-Klassiker“ erscheinen dadurch ohne App-Update. Die Reihen „Filme“, „Serien“ und „Neu dazugekommen“ kommen ab Plugin 12.15 direkt vom Plugin, so wie es die Titel zuordnet: auch über TMDB-Ids, mit Ausschlüssen, also z. B. Loki bei Marvel, aber Indiana Jones nicht bei Star Wars. Ohne Plugin gilt weiter die eigene Liste.
