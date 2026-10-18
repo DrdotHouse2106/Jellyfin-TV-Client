@@ -5,12 +5,12 @@ import androidx.core.graphics.scale
 
 /**
  * Jellyfin-TV-Client: Logos nur dann weiß einfärben, wenn sie auf dunklem Hintergrund kaum zu sehen
- * wären (schwarz, dunkelgrau, dunkelblau). Farbige und helle Logos – z. B. der rote Marvel-Kasten mit
+ * wären (fast schwarz). Farbige und helle Logos – z. B. der rote Marvel-Kasten mit
  * ausgestanzter Schrift – bleiben, wie sie sind.
  */
 object LogoTint {
 	/** Grenze für den hellsten Farbkanal (0–1), gemittelt über die sichtbaren Pixel. */
-	private const val DARK_LIMIT = 0.45
+	private const val DARK_LIMIT = 0.3
 	private const val SAMPLE_SIZE = 48
 
 	/** Pixel als ARGB-Ganzzahlen; durchsichtige Pixel zählen nicht. */
