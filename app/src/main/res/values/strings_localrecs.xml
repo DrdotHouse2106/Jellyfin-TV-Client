@@ -119,4 +119,8 @@
     <string name="tvclient_world_latest">Recently added</string>
     <string name="tvclient_world_series">Shows from the world of %1$s</string>
     <string name="tvclient_world_empty">Nothing here yet</string>
+    <plurals name="tvclient_world_titles">
+        <item quantity="one">%d title</item>
+        <item quantity="other">%d titles</item>
+    </plurals>
 </resources>

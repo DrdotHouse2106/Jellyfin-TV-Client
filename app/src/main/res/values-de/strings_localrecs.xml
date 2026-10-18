@@ -119,4 +119,8 @@
     <string name="tvclient_world_latest">Neu dazugekommen</string>
     <string name="tvclient_world_series">Serien aus der Welt von %1$s</string>
     <string name="tvclient_world_empty">Hier gibt es noch nichts</string>
+    <plurals name="tvclient_world_titles">
+        <item quantity="one">%d Titel</item>
+        <item quantity="other">%d Titel</item>
+    </plurals>
 </resources>

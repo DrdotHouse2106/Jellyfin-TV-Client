@@ -1,5 +1,6 @@
 package org.jellyfin.androidtv.tvclient
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -38,6 +39,7 @@ object Worlds {
 	const val MIN_ITEMS = 5
 	private const val DEFAULT_COLOR = 0xFF8A8A8A
 	private const val LATEST_CANDIDATES = 120
+	private const val LOG_TAG = "Quallenkino"
 	private const val CACHE_MS = 10 * 60 * 1000L
 	private const val ROW_LIMIT = 40
 	private const val TIMEOUT_MS = 8_000
@@ -115,6 +117,8 @@ object Worlds {
 		val imageUrl: String?,
 		/** Hintergrundbild eines Titels der Welt (abgedunkelt hinter der Kachel). */
 		val backdropUrl: String? = null,
+		/** Titel mit lokalem Trailer für die Vorschau (Plugin-Feld „TrailerItemId“). */
+		val trailerItemId: String? = null,
 	) {
 		val key get() = definition.key
 		val name get() = definition.name
@@ -197,7 +201,8 @@ object Worlds {
 							?: matchedCollections.firstNotNullOfOrNull { heroBackdropImage(it)?.getUrl(api, maxWidth = 640) }
 						// Logo der Welt vom eigenen Server (Plugin, aus dem Welten-Repo), sonst das Studio-Bild
 						val logo = pluginWorlds?.let { pluginField(it, definition, "LogoUrl") }?.let { serverUrl(api, it) }
-						World(definition, matchedStudios.map { it.id }, matchedCollections, count, logo ?: image, backdrop)
+						val trailerItemId = pluginWorlds?.let { pluginField(it, definition, "TrailerItemId") }
+						World(definition, matchedStudios.map { it.id }, matchedCollections, count, logo ?: image, backdrop, trailerItemId)
 					}
 				}.awaitAll()
 			}.filter { it.count >= MIN_ITEMS }
@@ -250,17 +255,17 @@ object Worlds {
 			val hasStudios = world.studioIds.isNotEmpty()
 			// Mit Plugin: alle Titel der Welt genau wie dort zugeordnet (auch über TMDB-Ids, mit Ausschlüssen)
 			val movies = async {
-				pluginId?.let { pluginItems(api, it, "movies") }
+				pluginId?.let { pluginItems(api, userId, it, "type=movies&sort=year&limit=$ROW_LIMIT") }
 					?: if (hasStudios) query(byStudio(setOf(BaseItemKind.MOVIE), ItemSortBy.PREMIERE_DATE, SortOrder.DESCENDING)) else emptyList()
 			}
 			val series = async {
-				pluginId?.let { pluginItems(api, it, "series") }
+				pluginId?.let { pluginItems(api, userId, it, "type=series&sort=year&limit=$ROW_LIMIT") }
 					?: if (hasStudios) query(byStudio(setOf(BaseItemKind.SERIES), ItemSortBy.PREMIERE_DATE, SortOrder.DESCENDING)) else emptyList()
 			}
 			val latest = async {
 				if (pluginId != null) {
 					// Zuletzt auf dem Server hinzugekommen: ab Plugin 12.15.1 direkt (sort=added), sonst über die Ids
-					pluginGet(api, "/LocalRecs/Worlds/$pluginId/Items?sort=added&limit=20")?.let(::parseItems)?.takeIf { it.isNotEmpty() }?.let { return@async it }
+					pluginItems(api, userId, pluginId, "sort=added&limit=20")?.takeIf { it.isNotEmpty() }?.let { return@async it }
 					val ids = (movies.await() + series.await()).map { it.id }.take(LATEST_CANDIDATES)
 					if (ids.isEmpty()) emptyList() else query(
 						GetItemsRequest(
@@ -303,10 +308,19 @@ object Worlds {
 		return ids.mapNotNull { items[it] }
 	}
 
-	/** Titel einer Plugin-Welt (Filme oder Serien), neueste zuerst; null, wenn das Plugin den Endpunkt nicht hat. */
-	private fun pluginItems(api: ApiClient, pluginId: String, type: String): List<BaseItemDto>? {
-		val text = pluginGet(api, "/LocalRecs/Worlds/$pluginId/Items?type=$type&sort=year&limit=$ROW_LIMIT") ?: return null
-		return parseItems(text)
+	/**
+	 * Titel einer Plugin-Welt in der Reihenfolge des Plugins; null, wenn das Plugin den Endpunkt nicht hat.
+	 * Vom Plugin kommen nur die Ids, die Titel selbst lädt Jellyfin (mit allen Feldern für die Karten).
+	 */
+	private suspend fun pluginItems(api: ApiClient, userId: UUID, pluginId: String, query: String): List<BaseItemDto>? {
+		val text = pluginGet(api, "/LocalRecs/Worlds/$pluginId/Items?$query") ?: return null
+		val ids = parseIds(text)
+		if (ids.isEmpty()) return emptyList()
+		val byId = runCatching {
+			api.itemsApi.getItems(GetItemsRequest(userId = userId, ids = ids, fields = ItemRepository.browseFields, enableTotalRecordCount = false)).content.items
+		}.onFailure { Log.w(LOG_TAG, "Welt $pluginId: Titel nicht geladen", it) }.getOrDefault(emptyList()).associateBy { it.id }
+		Log.i(LOG_TAG, "Welt $pluginId ($query): ${ids.size} Ids vom Plugin, ${byId.size} Titel geladen")
+		return ids.mapNotNull { byId[it] }
 	}
 
 	/** {"Items":[BaseItemDto …]} lesen; fehlerhafte Einträge werden übersprungen. */

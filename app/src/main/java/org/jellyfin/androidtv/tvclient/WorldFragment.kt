@@ -167,7 +167,7 @@ private fun WorldScreen(key: String) {
 			)
 			// Farbe der Welt nur als schmaler Akzent unter dem Namen
 			Box(Modifier.padding(top = 8.dp).width(64.dp).height(3.dp).clip(RoundedCornerShape(2.dp)).background(accent))
-			Spacer(Modifier.height(120.dp))
+			Spacer(Modifier.height(16.dp))
 			Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
 				when {
 					sections == null -> Text(stringResource(R.string.loading), color = Color(0xFFB3B3B3))

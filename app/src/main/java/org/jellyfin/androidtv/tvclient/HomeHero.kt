@@ -70,6 +70,9 @@ object HomeHeroState {
 	/** Läuft gerade eine Trailer-Vorschau? Solange wechselt das Banner nicht automatisch. */
 	val trailerPlaying = MutableStateFlow(false)
 
+	/** Ausgewählte Welt-Kachel – dann zeigt der Infobereich die Welt statt eines Titels. */
+	val world = MutableStateFlow<Worlds.World?>(null)
+
 	/** Ist die Banner-Knopfzeile ausgewählt? Nur dann läuft die Trailer-Vorschau. */
 	val billboardFocused = MutableStateFlow(false)
 }
@@ -80,6 +83,11 @@ object HomeHeroState {
  */
 @Composable
 fun HomeHeroBackdrop(modifier: Modifier = Modifier) {
+	val selectedWorld by HomeHeroState.world.collectAsState()
+	selectedWorld?.let {
+		WorldHeroBackdrop(it)
+		return
+	}
 	val item by HomeHeroState.item.collectAsState()
 	val api = koinInject<ApiClient>()
 	val userPreferences = koinInject<UserPreferences>()
@@ -175,6 +183,11 @@ fun heroBackdropImage(item: BaseItemDto): JellyfinImage? =
 
 @Composable
 fun HomeHero(modifier: Modifier = Modifier) {
+	val selectedWorld by HomeHeroState.world.collectAsState()
+	selectedWorld?.let {
+		Box(modifier) { WorldHeroContent(it) }
+		return
+	}
 	val item by HomeHeroState.item.collectAsState()
 
 	AnimatedContent(

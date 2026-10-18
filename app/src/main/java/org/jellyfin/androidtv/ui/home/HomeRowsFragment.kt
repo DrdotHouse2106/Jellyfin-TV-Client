@@ -237,8 +237,9 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 		// Fokus kommt in die Zeilen: Infobereich zeigt die dort ausgewählte Karte
 		val focusListener = android.view.ViewTreeObserver.OnGlobalFocusChangeListener { _, newFocus ->
 			val grid = verticalGridView ?: return@OnGlobalFocusChangeListener
-			if (newFocus != null && newFocus !== grid && isDescendant(grid, newFocus) && selectedHeroItem != null) {
-				if (HomeHeroState.item.value?.id != selectedHeroItem?.id) HomeHeroState.item.value = selectedHeroItem
+			if (newFocus != null && newFocus !== grid && isDescendant(grid, newFocus)) {
+				HomeHeroState.world.value = selectedWorld
+				if (selectedWorld == null && selectedHeroItem != null && HomeHeroState.item.value?.id != selectedHeroItem?.id) HomeHeroState.item.value = selectedHeroItem
 			}
 		}
 		view.viewTreeObserver.addOnGlobalFocusChangeListener(focusListener)
@@ -348,7 +349,15 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			// das Banner nicht überschreiben. Welt-Kacheln haben keinen eigenen Titel.
 			// Nie auf leer setzen (Leanback meldet beim Neuaufbau der Zeilen auch „nichts ausgewählt“)
 			(item as? BaseRowItem)?.baseItem?.let { selectedHeroItem = it }
-			if (item is BaseRowItem && verticalGridView?.hasFocus() == true) HomeHeroState.item.value = selectedHeroItem
+			// Welt-Kachel: Infobereich zeigt die Welt; sonst die ausgewählte Karte
+			if (item is Worlds.World || item is BaseRowItem) selectedWorld = item as? Worlds.World
+			if (verticalGridView?.hasFocus() == true) {
+				if (item is Worlds.World) HomeHeroState.world.value = item
+				else if (item is BaseRowItem) {
+					HomeHeroState.world.value = null
+					HomeHeroState.item.value = selectedHeroItem
+				}
+			}
 
 			if (item !is BaseRowItem) {
 				currentItem = null
@@ -369,6 +378,7 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 
 	// Jellyfin-TV-Client: zuletzt ausgewählte Karte (für den Infobereich, sobald die Zeilen den Fokus bekommen)
 	private var selectedHeroItem: org.jellyfin.sdk.model.api.BaseItemDto? = null
+	private var selectedWorld: Worlds.World? = null
 
 	private companion object {
 		// Höhe der Querformat-Karten in der Netflix-Ansicht (dp)

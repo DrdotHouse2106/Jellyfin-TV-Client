@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.22.6 – 2026-10-18
+
+- Welt-Seite: „Filme“, „Serien“ und „Neu dazugekommen“ erscheinen wieder. Vom Plugin kommen nur die Ids, die Titel lädt die App selbst über Jellyfin. Die Reihen haben mehr Platz, die Überschrift bleibt sichtbar.
+- Startseite: Steht die Auswahl auf einer Welt-Kachel, zeigt der Infobereich die Welt: großes Logo, Name, Anzahl der Titel und Hintergrundbild. Die Banner-Knöpfe sind solange ausgeblendet. Liefert das Plugin einen Titel mit Trailer („TrailerItemId“), läuft nach drei Sekunden dessen Trailer.
+- Programmführer: „Regie“ und „Mit“ stehen jetzt vor der Beschreibung. Bei langen Beschreibungen wurden sie bisher abgeschnitten.
+
 ## 1.22.5 – 2026-10-18
 
 - Welten: „Neu dazugekommen“ zeigt die zuletzt auf dem Server hinzugefügten Titel der Welt direkt vom Plugin (ab 12.15.1).

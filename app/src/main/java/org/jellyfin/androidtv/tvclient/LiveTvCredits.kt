@@ -129,7 +129,10 @@ object LiveTvCredits {
 			}
 			val overview = program.overview.orEmpty()
 			val lines = summaryLines(summary.context, credits)
-			summary.text = if (overview.isBlank()) lines else "$overview\n\n$lines"
+			// Vor die Beschreibung, sonst schneidet maxLines die Besetzung bei langen Texten ab
+			summary.text = if (overview.isBlank()) lines else "$lines\n\n$overview"
+			summary.maxLines = 12
+			Log.i(LOG_TAG, "Besetzung: im Popup angezeigt")
 			summary.gravity = Gravity.START or Gravity.CENTER_VERTICAL
 		}
 	}
