@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.22.4 – 2026-10-18
+
+- Welten: Mit dem Plugin Local Recommendations übernimmt die App dessen Liste, also Reihenfolge, Namen, Anzahl, Logos und Bilder. Neue Welten wie „Bud Spencer & Terence Hill“, „Star Trek“, „Alien & Predator“ oder „Horror-Klassiker“ erscheinen dadurch ohne App-Update. Ohne Plugin gilt weiter die eigene Liste.
+
 ## 1.22.3 – 2026-10-18
 
 - Welt-Seite: Logo und Name stehen fest oben, nur die Reihen darunter scrollen. Vorher schob der Fokus auf die erste Reihe den Namen aus dem Bild.

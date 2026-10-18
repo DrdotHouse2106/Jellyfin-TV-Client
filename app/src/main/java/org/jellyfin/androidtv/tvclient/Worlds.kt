@@ -36,6 +36,7 @@ import java.util.UUID
  */
 object Worlds {
 	const val MIN_ITEMS = 5
+	private const val DEFAULT_COLOR = 0xFF8A8A8A
 	private const val CACHE_MS = 10 * 60 * 1000L
 	private const val ROW_LIMIT = 40
 	private const val TIMEOUT_MS = 8_000
@@ -159,11 +160,13 @@ object Worlds {
 				)
 			).content.items
 
-			// Bilder der Plugin-Welten (ImageItemId = bestbewerteter Titel mit Hintergrundbild), falls vorhanden
+			// Welten des Plugins (Liste, Reihenfolge, Logos, Bilder) – ohne Plugin die eigene Liste
 			val pluginWorlds = pluginGet(api, "/LocalRecs/Worlds")
+			val fromPlugin = pluginWorlds?.let(::pluginDefinitions).orEmpty()
+			val chosen = fromPlugin.ifEmpty { definitions.map { it to null } }
 
 			coroutineScope {
-				definitions.map { definition ->
+				chosen.map { (definition, pluginCount) ->
 					async {
 						val matchedStudios = studios.filter { matches(it.name, definition.studios) }
 						val matchedCollections = boxSets
@@ -181,7 +184,8 @@ object Worlds {
 								)
 							).content.totalRecordCount
 						}.getOrDefault(0)
-						val count = studioCount + matchedCollections.sumOf { it.childCount ?: 0 }
+						// Das Plugin kennt die genaue Zahl (nur für den Benutzer sichtbare Titel)
+						val count = pluginCount ?: (studioCount + matchedCollections.sumOf { it.childCount ?: 0 })
 						val image = matchedStudios.firstNotNullOfOrNull { studio ->
 							(studio.itemImages[ImageType.THUMB] ?: studio.itemImages[ImageType.PRIMARY])?.getUrl(api, maxWidth = 600)
 						}
@@ -292,6 +296,32 @@ object Worlds {
 	fun normalize(text: String): String = text.lowercase()
 		.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss")
 		.filter { it.isLetterOrDigit() }
+
+	/**
+	 * Welten aus der Liste des Plugins, mit der eigenen Definition verknüpft (für Akzentfarbe und
+	 * Schlüssel), soweit eine passt. Studios und Sammlungen kommen vom Plugin.
+	 */
+	fun pluginDefinitions(text: String): List<Pair<Definition, Int?>> {
+		val list = runCatching { json.parseToJsonElement(text) as? JsonArray }.getOrNull() ?: return emptyList()
+		fun JsonObject.strings(key: String) = (this[key] as? JsonArray).orEmpty()
+			.mapNotNull { (it as? JsonPrimitive)?.takeIf { p -> p.isString }?.content?.trim()?.lowercase()?.takeIf { s -> s.isNotEmpty() } }
+
+		return list.mapNotNull { element ->
+			val obj = element as? JsonObject ?: return@mapNotNull null
+			val id = (obj["Id"] as? JsonPrimitive)?.content ?: return@mapNotNull null
+			val name = (obj["Name"] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() } ?: id
+			val local = definitions.firstOrNull { pluginWorldId(JsonArray(listOf(obj)).toString(), it) == id }
+			val definition = Definition(
+				key = local?.key ?: normalize(id),
+				name = name,
+				color = local?.color ?: DEFAULT_COLOR,
+				studios = obj.strings("Studios").ifEmpty { local?.studios.orEmpty() },
+				collections = obj.strings("Collections").ifEmpty { local?.collections.orEmpty() },
+				aliases = listOf(id) + local?.aliases.orEmpty(),
+			)
+			definition to (obj["ItemCount"] as? JsonPrimitive)?.content?.toIntOrNull()
+		}
+	}
 
 	/** ImageItemId der passenden Plugin-Welt. */
 	fun pluginImageItemId(text: String, definition: Definition): String? = pluginField(text, definition, "ImageItemId")

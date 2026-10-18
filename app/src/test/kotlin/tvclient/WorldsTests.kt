@@ -59,6 +59,17 @@ class WorldsTests : FunSpec({
 		Worlds.pluginField(text, Worlds.definitions.first { it.key == "pixar" }, "LogoUrl") shouldBe null
 	}
 
+	test("Welten aus der Liste des Plugins, auch unbekannte") {
+		val text = """[{"Id":"marvel","Name":"Marvel","ItemCount":58,"Studios":["Marvel Studios"],"Collections":["Avengers Filmreihe"]},{"Id":"bud-spencer-terence-hill","Name":"Bud Spencer & Terence Hill","ItemCount":12,"Studios":[],"Collections":["Bud Spencer"]}]"""
+		val worlds = Worlds.pluginDefinitions(text)
+		worlds.map { it.first.key } shouldContainExactly listOf("marvel", "budspencerterencehill")
+		worlds[0].first.color shouldBe marvel.color
+		worlds[0].first.studios shouldContainExactly listOf("marvel studios")
+		worlds[1].first.name shouldBe "Bud Spencer & Terence Hill"
+		worlds[1].second shouldBe 12
+		Worlds.pluginWorldId(text, worlds[1].first) shouldBe "bud-spencer-terence-hill"
+	}
+
 	test("Jede Welt hat einen eigenen Schlüssel") {
 		Worlds.definitions.map { it.key }.distinct().size shouldBe Worlds.definitions.size
 	}
