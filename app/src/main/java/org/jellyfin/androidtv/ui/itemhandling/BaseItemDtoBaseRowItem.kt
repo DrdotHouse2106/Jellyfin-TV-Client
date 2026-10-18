@@ -22,8 +22,8 @@ open class BaseItemDtoBaseRowItem @JvmOverloads constructor(
 	staticHeight: Boolean = false,
 	selectAction: BaseRowItemSelectAction = BaseRowItemSelectAction.ShowDetails,
 	val preferSeriesPoster: Boolean = false,
-	/** Jellyfin-TV-Client: Serien, Staffeln und Folgen einheitlich als Poster der Serie (z. B. „Kürzlich hinzugefügt“). */
-	val uniformPoster: Boolean = false,
+	/** Jellyfin-TV-Client: Serien, Staffeln und Folgen einheitlich im Querformat (z. B. „Kürzlich hinzugefügt“). */
+	val uniformCards: Boolean = false,
 ) : BaseRowItem(
 	baseRowType = when (item.type) {
 		BaseItemKind.TV_CHANNEL,
@@ -82,8 +82,8 @@ open class BaseItemDtoBaseRowItem @JvmOverloads constructor(
 		}
 
 	override fun getCardName(context: Context) = when {
-		// Jellyfin-TV-Client: einheitliche Poster – oben immer der Serienname
-		uniformPoster && (baseItem?.type == BaseItemKind.EPISODE || baseItem?.type == BaseItemKind.SEASON) && baseItem.seriesName != null -> baseItem.seriesName
+		// Jellyfin-TV-Client: einheitliche Karten – oben immer der Serienname
+		uniformCards && (baseItem?.type == BaseItemKind.EPISODE || baseItem?.type == BaseItemKind.SEASON) && baseItem.seriesName != null -> baseItem.seriesName
 		baseItem?.type == BaseItemKind.AUDIO && baseItem.artists != null -> baseItem.artists?.joinToString(", ")
 		baseItem?.type == BaseItemKind.AUDIO && baseItem.albumArtists != null -> baseItem.albumArtists?.joinToString(", ")
 		baseItem?.type == BaseItemKind.AUDIO && baseItem.albumArtist != null -> baseItem.albumArtist
@@ -99,7 +99,7 @@ open class BaseItemDtoBaseRowItem @JvmOverloads constructor(
 
 	override fun getSummary(context: Context) = baseItem?.overview
 
-	override fun getSubText(context: Context) = if (uniformPoster) uniformSubText(context) else defaultSubText(context)
+	override fun getSubText(context: Context) = if (uniformCards) uniformSubText(context) else defaultSubText(context)
 
 	/** „S3:F5 · Folgentitel“, „Staffel 3“ oder „3 neue Folgen“. */
 	private fun uniformSubText(context: Context): String? = when (baseItem?.type) {

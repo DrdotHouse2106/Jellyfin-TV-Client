@@ -2,7 +2,7 @@
 
 ## 1.24.1 – 2026-10-18
 
-- **„Kürzlich hinzugefügt“ einheitlich:** Serien, Staffeln und einzelne neue Folgen erscheinen alle als Hochformat-Poster der Serie. Darunter steht „S3:F5 · Folgentitel“, „Staffel 3“ oder „3 neue Folgen“.
+- **„Kürzlich hinzugefügt“ einheitlich im Querformat:** Serien, Staffeln und einzelne neue Folgen zeigen das Vorschaubild der Serie (sonst ihren Hintergrund, zuletzt das Standbild der Folge) – passend zu den anderen Reihen der Startseite. Darunter steht „S3:F5 · Folgentitel“, „Staffel 3“ oder „3 neue Folgen“.
 - **Staffelkarten öffnen die Serie:** OK auf eine Staffel außerhalb der Serienseite (z. B. in „Kürzlich hinzugefügt“) öffnet die Serienseite. Von dort geht es zu den Folgen, und BACK führt zurück zur Serie statt zur Startseite.
 - **Beschreibung bei Staffeln und Folgen ohne Text:** Der Infobereich zeigt dann die Beschreibung der Serie (häufig bei Folgestaffeln aus AniDB). Über dem Staffelnamen steht der Serienname.
 
