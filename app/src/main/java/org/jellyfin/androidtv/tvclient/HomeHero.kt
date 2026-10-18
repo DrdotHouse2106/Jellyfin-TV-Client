@@ -13,6 +13,7 @@ import org.jellyfin.androidtv.util.apiclient.itemImages
 import org.jellyfin.androidtv.util.apiclient.parentBackdropImages
 import org.jellyfin.androidtv.util.apiclient.parentImages
 import org.jellyfin.sdk.api.client.ApiClient
+import org.jellyfin.sdk.api.client.extensions.userLibraryApi
 import org.jellyfin.sdk.model.api.ImageType
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -269,7 +270,16 @@ private fun HeroContent(item: BaseItemDto) {
 			)
 		}
 
-		item.overview?.let(::cleanOverview)?.takeIf { it.isNotBlank() }?.let {
+		// Manche Reihen (z. B. Web-Abschnitte) liefern keine Beschreibung mit – dann kurz nachladen
+		val api = koinInject<ApiClient>()
+		var overview by remember(item.id) { mutableStateOf(item.overview) }
+		LaunchedEffect(item.id) {
+			if (overview.isNullOrBlank()) {
+				delay(300)
+				overview = OverviewCache.get(api, item.id)
+			}
+		}
+		overview?.let(::cleanOverview)?.takeIf { it.isNotBlank() }?.let {
 			Text(
 				text = it,
 				fontSize = 15.sp,
@@ -280,6 +290,25 @@ private fun HeroContent(item: BaseItemDto) {
 				modifier = Modifier.fillMaxWidth(),
 			)
 		}
+	}
+}
+
+/** Nachgeladene Beschreibungen (für Karten ohne Overview), begrenzt auf die letzten Titel. */
+object OverviewCache {
+	private const val MAX_ENTRIES = 200
+	private val cache = object : LinkedHashMap<java.util.UUID, String>(MAX_ENTRIES, 0.75f, true) {
+		override fun removeEldestEntry(eldest: MutableMap.MutableEntry<java.util.UUID, String>?) = size > MAX_ENTRIES
+	}
+
+	suspend fun get(api: ApiClient, id: java.util.UUID): String? {
+		synchronized(cache) { cache[id] }?.let { return it }
+		val overview = runCatching {
+			kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+				api.userLibraryApi.getItem(itemId = id).content.overview
+			}
+		}.getOrNull() ?: return null
+		synchronized(cache) { cache[id] = overview }
+		return overview
 	}
 }
 

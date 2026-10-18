@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.23.2 – 2026-10-18
+
+- Startseite: Der Infobereich zeigt auch in den unteren Reihen eine Beschreibung. Liefert eine Reihe sie nicht mit (z. B. Web-Abschnitte), lädt die App sie beim Fokus nach und merkt sie sich.
+
 ## 1.23.1 – 2026-10-18
 
 - Programmführer: Im Popup höchstens vier Darsteller, damit „Wechsle zu Kanal“ und das Herz sichtbar bleiben. Wörtliche „\n“ aus dem EPG werden zu Zeilenumbrüchen.
