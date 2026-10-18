@@ -37,6 +37,7 @@ import java.util.UUID
 object Worlds {
 	const val MIN_ITEMS = 5
 	private const val DEFAULT_COLOR = 0xFF8A8A8A
+	private const val LATEST_CANDIDATES = 120
 	private const val CACHE_MS = 10 * 60 * 1000L
 	private const val ROW_LIMIT = 40
 	private const val TIMEOUT_MS = 8_000
@@ -55,6 +56,8 @@ object Worlds {
 		val collections: List<String>,
 		/** Weitere Namen bzw. Ids der Welt beim Plugin (z. B. nach einer Umbenennung). */
 		val aliases: List<String> = emptyList(),
+		/** Id der Welt beim Plugin, wenn die Liste von dort kommt. */
+		val pluginId: String? = null,
 	)
 
 	val definitions = listOf(
@@ -243,10 +246,34 @@ object Worlds {
 					)
 				}
 			}
+			val pluginId = world.definition.pluginId
 			val hasStudios = world.studioIds.isNotEmpty()
-			val latest = async { if (hasStudios) query(byStudio(types, ItemSortBy.DATE_CREATED, SortOrder.DESCENDING)) else emptyList() }
-			val movies = async { if (hasStudios) query(byStudio(setOf(BaseItemKind.MOVIE), ItemSortBy.PREMIERE_DATE, SortOrder.DESCENDING)) else emptyList() }
-			val series = async { if (hasStudios) query(byStudio(setOf(BaseItemKind.SERIES), ItemSortBy.PREMIERE_DATE, SortOrder.DESCENDING)) else emptyList() }
+			// Mit Plugin: alle Titel der Welt genau wie dort zugeordnet (auch über TMDB-Ids, mit Ausschlüssen)
+			val movies = async {
+				pluginId?.let { pluginItems(api, it, "movies") }
+					?: if (hasStudios) query(byStudio(setOf(BaseItemKind.MOVIE), ItemSortBy.PREMIERE_DATE, SortOrder.DESCENDING)) else emptyList()
+			}
+			val series = async {
+				pluginId?.let { pluginItems(api, it, "series") }
+					?: if (hasStudios) query(byStudio(setOf(BaseItemKind.SERIES), ItemSortBy.PREMIERE_DATE, SortOrder.DESCENDING)) else emptyList()
+			}
+			val latest = async {
+				if (pluginId != null) {
+					// Zuletzt auf dem Server hinzugekommen: die Titel der Welt nach Hinzufügedatum
+					val ids = (movies.await() + series.await()).map { it.id }.take(LATEST_CANDIDATES)
+					if (ids.isEmpty()) emptyList() else query(
+						GetItemsRequest(
+							userId = userId,
+							ids = ids,
+							sortBy = setOf(ItemSortBy.DATE_CREATED),
+							sortOrder = setOf(SortOrder.DESCENDING),
+							limit = 20,
+							fields = ItemRepository.browseFields,
+							enableTotalRecordCount = false,
+						)
+					)
+				} else if (hasStudios) query(byStudio(types, ItemSortBy.DATE_CREATED, SortOrder.DESCENDING)) else emptyList()
+			}
 
 			listOf(
 				Section(labels.forYou, forYou.await()),
@@ -273,6 +300,20 @@ object Worlds {
 			api.itemsApi.getItems(GetItemsRequest(userId = userId, ids = ids, fields = ItemRepository.browseFields)).content.items
 		}.getOrDefault(emptyList()).associateBy { it.id }
 		return ids.mapNotNull { items[it] }
+	}
+
+	/** Titel einer Plugin-Welt (Filme oder Serien), neueste zuerst; null, wenn das Plugin den Endpunkt nicht hat. */
+	private fun pluginItems(api: ApiClient, pluginId: String, type: String): List<BaseItemDto>? {
+		val text = pluginGet(api, "/LocalRecs/Worlds/$pluginId/Items?type=$type&sort=year&limit=$ROW_LIMIT") ?: return null
+		return parseItems(text)
+	}
+
+	/** {"Items":[BaseItemDto …]} lesen; fehlerhafte Einträge werden übersprungen. */
+	fun parseItems(text: String): List<BaseItemDto> {
+		val items = (runCatching { json.parseToJsonElement(text) }.getOrNull() as? JsonObject)?.get("Items") as? JsonArray ?: return emptyList()
+		return items.mapNotNull { element ->
+			runCatching { json.decodeFromJsonElement(BaseItemDto.serializer(), element) }.getOrNull()
+		}
 	}
 
 	private fun pluginGet(api: ApiClient, path: String): String? {
@@ -318,6 +359,7 @@ object Worlds {
 				studios = obj.strings("Studios").ifEmpty { local?.studios.orEmpty() },
 				collections = obj.strings("Collections").ifEmpty { local?.collections.orEmpty() },
 				aliases = listOf(id) + local?.aliases.orEmpty(),
+				pluginId = id,
 			)
 			definition to (obj["ItemCount"] as? JsonPrimitive)?.content?.toIntOrNull()
 		}

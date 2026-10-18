@@ -70,6 +70,13 @@ class WorldsTests : FunSpec({
 		Worlds.pluginWorldId(text, worlds[1].first) shouldBe "bud-spencer-terence-hill"
 	}
 
+	test("Titel der Plugin-Welt lesen") {
+		val text = """{"Items":[{"Id":"2a34445fbe389aaa2a2761e2e0aa0160","Name":"Loki","Type":"Series"},{"kaputt":true}],"TotalRecordCount":2}"""
+		val items = Worlds.parseItems(text)
+		items.map { it.name } shouldContainExactly listOf("Loki")
+		Worlds.parseItems("{}") shouldContainExactly emptyList()
+	}
+
 	test("Jede Welt hat einen eigenen Schlüssel") {
 		Worlds.definitions.map { it.key }.distinct().size shouldBe Worlds.definitions.size
 	}
