@@ -62,6 +62,10 @@ class MyDetailsOverviewRowPresenter(
 			binding.fdSummaryText.text = summary?.let { markdownRenderer.toMarkdownSpanned(it) }
 		}
 
+		fun setInfoValue1(text: String?) {
+			binding.infoValue1.text = text
+		}
+
 		fun setInfoValue3(text: String?) {
 			binding.infoValue3.text = text
 		}

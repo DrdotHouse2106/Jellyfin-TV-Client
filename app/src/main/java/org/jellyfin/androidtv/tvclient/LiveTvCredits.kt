@@ -148,10 +148,19 @@ object LiveTvCredits {
 
 	/** Detailseite einer Sendung: Reihe „Besetzung“ (mit Regie im Titel) anhängen. */
 	@JvmStatic
-	fun addRow(lifecycle: Lifecycle, context: Context, rows: org.jellyfin.androidtv.ui.presentation.MutableObjectAdapter<Row>, item: BaseItemDto) {
+	@JvmOverloads
+	fun addRow(
+		lifecycle: Lifecycle,
+		context: Context,
+		rows: org.jellyfin.androidtv.ui.presentation.MutableObjectAdapter<Row>,
+		item: BaseItemDto,
+		/** Regie für die Angaben links („Regie: Unbekannt“ ersetzen). */
+		onDirectors: ((String) -> Unit)? = null,
+	) {
 		if (item.type != BaseItemKind.PROGRAM) return
 		lifecycle.coroutineScope.launch {
 			val credits = load(item.id) ?: return@launch
+			if (credits.directors.isNotEmpty()) onDirectors?.invoke(credits.directors.joinToString(", "))
 			if (credits.actors.isEmpty()) return@launch
 			val header = buildString {
 				append(context.getString(R.string.lbl_cast_crew))

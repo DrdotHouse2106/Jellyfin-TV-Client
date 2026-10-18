@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.23.4 – 2026-10-18
+
+- Programm-Detailseite: Links steht bei „Regie“ der Regisseur aus dem EPG statt „Unbekannt“.
+
 ## 1.23.3 – 2026-10-18
 
 - Live-TV-Besetzung: Darsteller mit Apostroph oder Akzent im Namen öffnen ihre Personenseite (EPG „M’Barek“ = TMDB „M'Barek“).

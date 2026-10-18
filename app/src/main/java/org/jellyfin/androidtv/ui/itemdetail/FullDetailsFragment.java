@@ -645,7 +645,10 @@ public class FullDetailsFragment extends Fragment implements RecordingIndicatorV
 
             default:
                 // Jellyfin-TV-Client: Besetzung von Live-TV-Sendungen aus dem EPG (Plugin Local Recommendations)
-                org.jellyfin.androidtv.tvclient.LiveTvCredits.addRow(getLifecycle(), requireContext(), adapter, mBaseItem);
+                org.jellyfin.androidtv.tvclient.LiveTvCredits.addRow(getLifecycle(), requireContext(), adapter, mBaseItem, directors -> {
+                    if (mDorPresenter.getViewHolder() != null) mDorPresenter.getViewHolder().setInfoValue1(directors);
+                    return kotlin.Unit.INSTANCE;
+                });
                 addInfoRows(adapter);
         }
     }
