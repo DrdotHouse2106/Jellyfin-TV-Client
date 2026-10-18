@@ -4,6 +4,7 @@ import android.content.Context
 import org.jellyfin.androidtv.auth.repository.UserRepository
 import org.jellyfin.androidtv.preference.UserPreferences
 import org.jellyfin.preference.booleanPreference
+import org.jellyfin.preference.stringPreference
 import org.jellyfin.sdk.model.api.BaseItemDto
 import org.jellyfin.sdk.model.api.MediaSourceInfo
 import org.jellyfin.sdk.model.api.MediaStream
@@ -21,12 +22,27 @@ import java.util.Locale
 object TvClientSubtitles {
 	val smartPreference = booleanPreference("pref_tvclient_smart_subtitles", true)
 
+	/**
+	 * Untertitel beim Start (wie in der webOS-App): „smart“ (intelligent), „always“ (immer in der
+	 * eigenen Sprache), „off“ (nur erzwungene) oder „server“ (Vorschlag des Servers). Leer = aus der
+	 * früheren Einstellung „Intelligente Untertitel“ ableiten.
+	 */
+	val modePreference = stringPreference("pref_tvclient_subtitle_mode", "")
+
+	const val SMART = "smart"
+	const val ALWAYS = "always"
+	const val SERVER = "server"
+	const val NONE = "off"
+
+	/** Aktueller Modus (mit Übernahme der alten Ein/Aus-Einstellung). */
+	fun mode(): String = runCatching {
+		val prefs = KoinJavaComponent.get<UserPreferences>(UserPreferences::class.java)
+		prefs[modePreference].ifEmpty { if (prefs[smartPreference]) SMART else SERVER }
+	}.getOrDefault(SMART)
+
 	private const val OFF = "off"
 	private const val PREFS = "tvclient_subtitles"
 
-	private fun enabled(): Boolean = runCatching {
-		KoinJavaComponent.get<UserPreferences>(UserPreferences::class.java)[smartPreference]
-	}.getOrDefault(true)
 
 	private fun prefs() = KoinJavaComponent.get<Context>(Context::class.java)
 		.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -75,10 +91,15 @@ object TvClientSubtitles {
 	 */
 	@JvmStatic
 	fun chooseSubtitleIndex(item: BaseItemDto?, source: MediaSourceInfo?, serverDefault: Int?, audioIndex: Int?): Int? {
-		if (item == null || source == null || !enabled()) return serverDefault
+		val mode = mode()
+		if (item == null || source == null || mode == SERVER) return serverDefault
 		val streams = source.mediaStreams.orEmpty()
 		val subtitles = streams.filter { it.type == MediaStreamType.SUBTITLE }
 		val own = ownLanguages()
+
+		// Feste Modi: aus (nur erzwungene) bzw. immer in der eigenen Sprache
+		if (mode == NONE) return forcedIndex(subtitles, setOfNotNull(audioLanguage(streams, audioIndex)) + own) ?: -1
+		if (mode == ALWAYS) return alwaysOwn(subtitles, own) ?: serverDefault
 
 		// Für diese Serie gemerkte Wahl
 		val remembered = item.seriesId?.let { prefs().getString(it.toString(), null) }
@@ -118,6 +139,12 @@ object TvClientSubtitles {
 		} else {
 			serverDefault
 		}
+	}
+
+	/** Untertitel in der eigenen Sprache (nicht erzwungen zuerst), sonst null. */
+	fun alwaysOwn(subtitles: List<MediaStream>, ownLanguages: Set<String>): Int? {
+		val own = subtitles.filter { normalize(it.language) in ownLanguages }
+		return (own.firstOrNull { it.isForced != true } ?: own.firstOrNull())?.index
 	}
 
 	private fun forcedIndex(subtitles: List<MediaStream>, languages: Set<String>): Int? =

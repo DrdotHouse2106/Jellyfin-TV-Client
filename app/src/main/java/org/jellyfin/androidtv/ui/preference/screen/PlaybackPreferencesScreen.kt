@@ -4,7 +4,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import org.jellyfin.androidtv.R
 import org.jellyfin.androidtv.tvclient.TvClientSkip
-import org.jellyfin.androidtv.tvclient.TvClientSubtitles
 import org.jellyfin.androidtv.preference.UserPreferences
 import org.jellyfin.androidtv.preference.UserSettingPreferences
 import org.jellyfin.androidtv.preference.constant.AudioBehavior
@@ -40,13 +39,7 @@ class PlaybackPreferencesScreen : OptionsFragment() {
 		category {
 			setTitle(R.string.pref_customization)
 
-			// Jellyfin-TV-Client: Untertitel und Intro wie bei Netflix
-			checkbox {
-				setTitle(R.string.tvclient_smart_subtitles)
-				setContent(R.string.tvclient_smart_subtitles_description)
-				bind(userPreferences, TvClientSubtitles.smartPreference)
-			}
-
+			// Jellyfin-TV-Client: Intro wie bei Netflix (Untertitel/Ton beim Start: Schnelleinstellungen)
 			checkbox {
 				setTitle(R.string.tvclient_skip_countdown_pref)
 				setContent(R.string.tvclient_skip_countdown_pref_description)

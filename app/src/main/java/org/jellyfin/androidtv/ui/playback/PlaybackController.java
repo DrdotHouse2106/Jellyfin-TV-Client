@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 
 import org.jellyfin.androidtv.R;
 import org.jellyfin.androidtv.data.compat.PlaybackException;
+import org.jellyfin.androidtv.tvclient.TvClientAudio;
 import org.jellyfin.androidtv.tvclient.TvClientSubtitles;
 import org.jellyfin.androidtv.data.compat.StreamInfo;
 import org.jellyfin.androidtv.data.compat.VideoOptions;
@@ -635,11 +636,22 @@ public class PlaybackController implements PlaybackControllerNotifiable {
         setDefaultAudioIndex(response);
         Timber.i("default audio index set to %s remote default %s", mDefaultAudioIndex, response.getMediaSource().getDefaultAudioStreamIndex());
 
+        // Jellyfin-TV-Client: Ton beim Start (eigene Sprache bzw. Originalton), außer die Sprache wurde von Hand gewählt
+        Integer startAudioIndex = response.getMediaSource().getDefaultAudioStreamIndex() != null ? response.getMediaSource().getDefaultAudioStreamIndex() : mDefaultAudioIndex;
+        if (lastChosenLanguageAudioTrack(response.getMediaSource()) == null) {
+            Integer chosenAudio = TvClientAudio.chooseAudioIndex(response.getMediaSource(), startAudioIndex);
+            if (chosenAudio != null) {
+                mDefaultAudioIndex = chosenAudio;
+                mCurrentOptions.setAudioStreamIndex(chosenAudio);
+                startAudioIndex = chosenAudio;
+            }
+        }
+
         // Jellyfin-TV-Client: keine Untertitel bei Ton in der eigenen Sprache, gemerkte Wahl pro Serie
         Integer serverSubtitleIndex = mCurrentOptions.getSubtitleStreamIndex();
         Integer chosenSubtitleIndex = TvClientSubtitles.chooseSubtitleIndex(item, response.getMediaSource(), serverSubtitleIndex,
-            // dieselbe Tonspur wie beim Start der Wiedergabe (Server-Standard vor eigener Wahl)
-            response.getMediaSource().getDefaultAudioStreamIndex() != null ? response.getMediaSource().getDefaultAudioStreamIndex() : mDefaultAudioIndex);
+            // dieselbe Tonspur wie beim Start der Wiedergabe
+            startAudioIndex);
         if (chosenSubtitleIndex != null && !chosenSubtitleIndex.equals(serverSubtitleIndex)) {
             if (burningSubs && TvClientSubtitles.allowRestart(item)) {
                 // Eingebrannte Untertitel lassen sich nur durch Neustart des Streams ändern

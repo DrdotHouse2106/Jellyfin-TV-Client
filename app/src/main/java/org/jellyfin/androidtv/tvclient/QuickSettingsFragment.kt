@@ -123,11 +123,26 @@ private fun QuickSettings() {
 
 		Section(stringResource(R.string.tvclient_quick_subtitles))
 		Choices(
-			listOf(Choice(true, stringResource(R.string.tvclient_quick_subtitles_smart)), Choice(false, stringResource(R.string.tvclient_quick_subtitles_server))),
-			prefs[TvClientSubtitles.smartPreference],
+			listOf(
+				Choice(TvClientSubtitles.SMART, stringResource(R.string.tvclient_quick_subtitles_smart)),
+				Choice(TvClientSubtitles.ALWAYS, stringResource(R.string.tvclient_quick_subtitles_always)),
+				Choice(TvClientSubtitles.NONE, off),
+				Choice(TvClientSubtitles.SERVER, stringResource(R.string.tvclient_quick_subtitles_server)),
+			),
+			TvClientSubtitles.mode(),
 			firstFocus = first,
-		) { set(TvClientSubtitles.smartPreference, it) }
-		Hint(stringResource(R.string.tvclient_quick_subtitles_hint))
+		) { set(TvClientSubtitles.modePreference, it) }
+		if (TvClientSubtitles.mode() == TvClientSubtitles.SMART) Hint(stringResource(R.string.tvclient_quick_subtitles_hint))
+
+		Section(stringResource(R.string.tvclient_quick_audio))
+		Choices(
+			listOf(
+				Choice(TvClientAudio.OWN, stringResource(R.string.tvclient_quick_audio_own)),
+				Choice(TvClientAudio.ORIGINAL, stringResource(R.string.tvclient_quick_audio_original)),
+				Choice(TvClientAudio.SERVER, stringResource(R.string.tvclient_quick_subtitles_server)),
+			),
+			prefs[TvClientAudio.modePreference],
+		) { set(TvClientAudio.modePreference, it) }
 
 		Section(stringResource(R.string.tvclient_trailer_preview))
 		Choices(listOf(Choice(true, on), Choice(false, off)), prefs[TrailerPreview.enabledPreference]) { set(TrailerPreview.enabledPreference, it) }

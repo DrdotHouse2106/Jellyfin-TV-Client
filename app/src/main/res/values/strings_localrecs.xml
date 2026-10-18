@@ -140,4 +140,8 @@
     <string name="tvclient_quick_more">More</string>
     <string name="tvclient_quick_more_button">More settings …</string>
     <string name="tvclient_quick_tmdb">This product uses the TMDB API but is not endorsed or certified by TMDB.</string>
+    <string name="tvclient_quick_subtitles_always">Always in my language</string>
+    <string name="tvclient_quick_audio">Audio at start</string>
+    <string name="tvclient_quick_audio_own">Prefer my language</string>
+    <string name="tvclient_quick_audio_original">Original audio</string>
 </resources>

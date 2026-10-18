@@ -140,4 +140,8 @@
     <string name="tvclient_quick_more">Mehr</string>
     <string name="tvclient_quick_more_button">Weitere Einstellungen …</string>
     <string name="tvclient_quick_tmdb">Dieses Produkt nutzt die TMDB-API, ist aber nicht von TMDB unterstützt oder zertifiziert.</string>
+    <string name="tvclient_quick_subtitles_always">Immer deutsche</string>
+    <string name="tvclient_quick_audio">Ton beim Start</string>
+    <string name="tvclient_quick_audio_own">Deutsch bevorzugen</string>
+    <string name="tvclient_quick_audio_original">Originalton</string>
 </resources>

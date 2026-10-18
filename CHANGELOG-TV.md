@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.23.9 – 2026-10-18
+
+- **Untertitel beim Start** mit vier Möglichkeiten (wie in der webOS-App): Intelligent (Standard), Immer deutsche, Aus (nur erzwungene Untertitel) oder Wie vom Server.
+- Neue Einstellung **„Ton beim Start“**: Deutsch bevorzugen (Standard), Originalton oder Wie vom Server. Eine Tonspur, die du während der Wiedergabe selbst gewählt hast, hat weiterhin Vorrang.
+- Die alte Einzeloption „Intelligente Untertitel“ unter Wiedergabe entfällt – die Auswahl liegt jetzt in den Einstellungen auf der ersten Seite.
+
 ## 1.23.8 – 2026-10-18
 
 - **Schlanke Einstellungen (wie in der webOS-App):** Das Zahnrad in der Navigation öffnet eine übersichtliche Seite mit großen Auswahlknöpfen – Untertitel beim Start, Trailer-Vorschau und deren Ton, Bildschirmschoner (Zeit, Teaser, Ton der Teaser), Anfragen (Jellyseerr), Konto (Profil wechseln, Abmelden, Server und Konten) und Über. Alles andere liegt unter **„Weitere Einstellungen …“** im bisherigen Menü.
