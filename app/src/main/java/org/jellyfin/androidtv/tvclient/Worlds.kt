@@ -81,6 +81,14 @@ object Worlds {
 		),
 		Definition("starwars", "Star Wars", 0xFF2B2B2B, listOf("lucasfilm"), listOf("star wars")),
 		Definition("ghibli", "Studio Ghibli", 0xFF4E8F3A, listOf("ghibli"), emptyList()),
+		Definition(
+			"harrypotter", "Harry Potter", 0xFF6B4E16, listOf("heyday films"),
+			listOf("harry potter", "phantastische tierwesen", "fantastic beasts"),
+		),
+		Definition(
+			"mittelerde", "Mittelerde", 0xFF5A4A2A, listOf("wingnut"),
+			listOf("herr der ringe", "lord of the rings", "der hobbit", "the hobbit"),
+		),
 	)
 
 	data class World(
@@ -267,7 +275,7 @@ object Worlds {
 			val obj = element as? JsonObject ?: return@firstNotNullOfOrNull null
 			val name = (obj["Name"] as? JsonPrimitive)?.content?.lowercase() ?: return@firstNotNullOfOrNull null
 			val id = (obj["Id"] as? JsonPrimitive)?.content ?: return@firstNotNullOfOrNull null
-			id.takeIf { name in candidates || definition.studios.any { name.contains(it) } }
+			id.takeIf { name in candidates || candidates.any { name.contains(it) } || definition.studios.any { name.contains(it) } }
 		}
 	}
 

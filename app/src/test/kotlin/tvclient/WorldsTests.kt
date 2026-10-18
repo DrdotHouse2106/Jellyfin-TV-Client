@@ -41,6 +41,7 @@ class WorldsTests : FunSpec({
 		Worlds.pluginWorldId(text, marvel) shouldBe "w2"
 		Worlds.pluginWorldId(text, Worlds.definitions.first { it.key == "pixar" }) shouldBe "w1"
 		Worlds.pluginWorldId(text, illumination) shouldBe null
+		Worlds.pluginWorldId("""[{"Id":"harry-potter","Name":"Harry Potter / Wizarding World"}]""", Worlds.definitions.first { it.key == "harrypotter" }) shouldBe "harry-potter"
 	}
 
 	test("Jede Welt hat einen eigenen Schlüssel") {
