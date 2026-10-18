@@ -45,6 +45,7 @@ import org.jellyfin.androidtv.tvclient.HomeBillboard
 import org.jellyfin.androidtv.tvclient.HomeBillboardButtons
 import org.jellyfin.androidtv.tvclient.HomeHero
 import org.jellyfin.androidtv.tvclient.HomeHeroState
+import org.jellyfin.androidtv.tvclient.RecommendationReasons
 import org.jellyfin.androidtv.tvclient.HomeRow
 import org.jellyfin.androidtv.tvclient.SideRail
 import org.jellyfin.androidtv.tvclient.HomeHeroBackdrop
@@ -85,6 +86,8 @@ class HomeFragment : Fragment() {
 		var billboardFocused by remember { mutableStateOf(false) }
 		// Hat der Benutzer schon eine Taste gedrückt? Dann wird ihm der Fokus nicht mehr weggenommen.
 		var userInteracted by remember { mutableStateOf(false) }
+		// Jellyfin-TV-Client: Begründungen der Empfehlungen (Plugin Local Recommendations ab 12.9.0)
+		LaunchedEffect(Unit) { RecommendationReasons.refresh(api) }
 		if (showHero) LaunchedEffect(Unit) {
 			// Zurück von einer anderen Seite: Fokus und Titel bleiben, wo sie waren
 			val firstStart = !billboardStarted

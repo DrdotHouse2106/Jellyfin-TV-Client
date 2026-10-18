@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.21.0 – 2026-10-18
+
+- **Warum empfohlen?** Bei empfohlenen Titeln steht im Infobereich der Startseite und auf der Detailseite (vor den Genres) eine kurze Begründung, z. B. „Weil du „Minions & Monster“ geschaut hast“ oder „Nächster Teil nach „Leberkäsjunkie““. Benötigt Local Recommendations ab 12.9.0; ohne Begründung erscheint nichts.
+
 ## 1.20.0 – 2026-10-17
 
 - **Live-TV: Besetzung und Regie.** Die Detailseite einer Sendung zeigt die Reihe „Besetzung“ mit Name und Rolle, die Regie steht in der Überschrift. Im Programmführer stehen „Regie“ und „Mit“ unter der Beschreibung. Die Daten kommen aus dem EPG über das Plugin Local Recommendations (ab 12.7.1, XMLTV eingerichtet). Ohne Daten bleibt die Reihe weg.

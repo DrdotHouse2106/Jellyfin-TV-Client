@@ -22,7 +22,10 @@ class MyDetailsOverviewRowPresenter(
 			setTitle(row.item.name)
 
 			InfoLayoutHelper.addInfoRow(view.context, row.item, row.item.mediaSources?.getOrNull(row.selectedMediaSourceIndex), binding.fdMainInfoRow, false)
-			binding.fdGenreRow.text = row.item.genres?.joinToString(" / ")
+			// Jellyfin-TV-Client: Begründung der Empfehlung („Weil du … geschaut hast“) vor den Genres
+			binding.fdGenreRow.text = org.jellyfin.androidtv.tvclient.RecommendationReasons.withGenres(row.item.id, row.item.genres?.joinToString(" / "))
+			binding.fdGenreRow.maxLines = 1
+			binding.fdGenreRow.ellipsize = android.text.TextUtils.TruncateAt.END
 
 			binding.infoTitle1.text = row.infoItem1?.label
 			binding.infoValue1.text = row.infoItem1?.value

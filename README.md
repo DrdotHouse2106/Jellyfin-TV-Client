@@ -10,6 +10,7 @@ Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** 
 - **Trailer-Vorschau im Banner:** nach drei Sekunden läuft oben der Trailer vom Server (mit Ton bei 75 %, abschaltbar); das Banner wechselt erst nach dem Trailer weiter. Steht die Auswahl in einer Reihe, bleibt es beim Bild
 - „Trailer“ öffnet den Trailer in einem kleinen Fenster in der App (vom Server, sonst YouTube)
 - Zeilen **Empfohlene Filme / Serien für dich** und **Heute im TV für dich** *
+- **Warum empfohlen?** Kurze Begründung im Infobereich und auf der Detailseite, z. B. „Weil du „…“ geschaut hast“ oder „Nächster Teil nach „…““ (Plugin ab 12.9.0) *
 - **Top 10 bei euch:** die meistgesehenen Filme und Serien aller Benutzer der letzten 60 Tage, mit großen Zahlen *
 - Genre-Zeilen mit zufälligen Titeln, Abschnitte aus „Home Screen Sections“, feste Reihenfolge mit Ein/Aus-Schaltern
 - 24-Stunden-Uhr
@@ -37,7 +38,7 @@ Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** 
 - **Autostart** beim Einschalten des Geräts (bis Android 9, z. B. Fire TV Stick mit Fire OS 7; standardmäßig aus)
 - Steuerung komplett per Handy, z. B. mit [Jellyfin Remote](https://github.com/DrdotHouse2106/Jellyfin-Remote)
 
-\* benötigt das Server-Plugin „Local Recommendations“ (Top 10 über alle Benutzer und Daumen ab **12.6.0**, Live-TV-Besetzung ab **12.7.1**). Ohne Plugin funktioniert die App normal, nur ohne diese Zeilen.
+\* benötigt das Server-Plugin „Local Recommendations“ (Top 10 über alle Benutzer und Daumen ab **12.6.0**, Live-TV-Besetzung ab **12.7.1**, Begründungen ab **12.9.0**). Ohne Plugin funktioniert die App normal, nur ohne diese Zeilen.
 
 Alles andere ist wie in der offiziellen App: Player, Live-TV, Intro Skipper, Bedienung mit der Fernbedienung.
 
@@ -54,7 +55,7 @@ Immer die neueste Version:
 
 ## Voraussetzungen
 
-- Jellyfin-Server 12. Empfohlen: Plugin **Local Recommendations ab 12.7.1** (Empfehlungen, Top 10, Daumen, Live-TV-Besetzung; ab 12.6.0 alles außer der Besetzung). Optional: **Jellyfin Enhanced** mit Jellyseerr (Anfragen), **Home Screen Sections** (weitere Abschnitte).
+- Jellyfin-Server 12. Empfohlen: Plugin **Local Recommendations ab 12.9.0** (Empfehlungen mit Begründung, Filmreihen, Top 10, Daumen, Live-TV-Besetzung; ältere Versionen ab 12.6.0 gehen ohne Besetzung und Begründungen). Optional: **Jellyfin Enhanced** mit Jellyseerr (Anfragen), **Home Screen Sections** (weitere Abschnitte).
 - Android TV / Google TV oder **Fire TV mit Fire OS** (Android). Geräte mit *Vega OS* (z. B. einige Fire-TV-Modelle ab 2025) können keine APKs installieren.
 
 Ohne Plugins funktioniert die App ganz normal, nur ohne die jeweiligen Zusatzfunktionen.

@@ -217,6 +217,21 @@ private fun HeroContent(item: BaseItemDto) {
 			)
 		}
 
+		// Begründung der Empfehlung („Weil du „…“ geschaut hast“), einzeilig
+		val reasons by RecommendationReasons.reasons.collectAsState()
+		val reason = reasons[RecommendationReasons.key(item.id)]
+		reason?.let {
+			Text(
+				text = it,
+				fontSize = 15.sp,
+				fontWeight = FontWeight.SemiBold,
+				color = Color(RecommendationReasons.COLOR),
+				maxLines = 1,
+				overflow = TextOverflow.Ellipsis,
+				modifier = Modifier.widthIn(max = 760.dp),
+			)
+		}
+
 		val facts = heroFacts(item)
 		if (facts.isNotEmpty()) {
 			Text(
@@ -233,7 +248,7 @@ private fun HeroContent(item: BaseItemDto) {
 				fontSize = 15.sp,
 				lineHeight = 21.sp,
 				color = Color(0xFFDDE1E8),
-				maxLines = 3,
+				maxLines = if (reason != null) 2 else 3,
 				overflow = TextOverflow.Ellipsis,
 				modifier = Modifier.fillMaxWidth(),
 			)
