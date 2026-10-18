@@ -85,6 +85,7 @@ What makes it different:
 • Thumbs up/down on the detail page, in the player and before the next episode – improves your recommendations
 • Request movies and shows right from the TV (Jellyseerr, if set up on the server)
 • Smart subtitles (off for audio in your language), audio and subtitles in one window, automatic intro/credits skipping
+• Live TV with cast and director for each programme (when the server provides them from the EPG)
 • Screensaver with your recommendations, optionally with trailers
 
 Also included: continue watching, next up, live TV with guide and recordings, subtitles, multiple users, Quick Connect.

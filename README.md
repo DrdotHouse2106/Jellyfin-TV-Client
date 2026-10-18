@@ -6,22 +6,27 @@ Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** 
 
 **Startseite**
 - Navigation am linken Rand, großer Infobereich mit Logo, Eckdaten und Beschreibung
-- Banner mit wechselnden Vorschlägen und den Knöpfen Abspielen / Mehr Infos / Trailer; beim Start ist „Abspielen“ ausgewählt
-- **Trailer-Vorschau:** bleibt man ein paar Sekunden auf einem Titel, läuft oben stumm der Trailer (nur Trailer, die auf dem Server liegen)
+- Banner mit wechselnden Vorschlägen und den Knöpfen Abspielen / Mehr Infos / Trailer; nach dem Anmelden ist „Abspielen“ ausgewählt. Mit „Links“ und „Rechts“ am Rand der Knöpfe wechselt man zum vorherigen bzw. nächsten Vorschlag
+- **Trailer-Vorschau im Banner:** nach drei Sekunden läuft oben der Trailer vom Server (mit Ton bei 75 %, abschaltbar); das Banner wechselt erst nach dem Trailer weiter. Steht die Auswahl in einer Reihe, bleibt es beim Bild
+- „Trailer“ öffnet den Trailer in einem kleinen Fenster in der App (vom Server, sonst YouTube)
 - Zeilen **Empfohlene Filme / Serien für dich** und **Heute im TV für dich** *
 - **Top 10 bei euch:** die meistgesehenen Filme und Serien aller Benutzer der letzten 60 Tage, mit großen Zahlen *
 - Genre-Zeilen mit zufälligen Titeln, Abschnitte aus „Home Screen Sections“, feste Reihenfolge mit Ein/Aus-Schaltern
 - 24-Stunden-Uhr
 
+**Detailseite**
+- **Hintergrund-Trailer:** auf der Detailseite startet der Trailer automatisch im Hintergrund – vom Server groß mit Verlauf, sonst YouTube im Fenster. Deutsche Trailer zuerst, sonst mit Kennzeichnung (z. B. EN, OmU)
+- Knopfleiste seitlich scrollbar, damit alle Knöpfe Platz haben
+
 **Bewerten und Anfragen**
 - **Daumen hoch / runter** („Gefällt mir“ / „Nichts für mich“) auf der Detailseite, im Player (Knopf „Bewerten“) und auf dem Bildschirm „Nächste Folge“. Folgen bewerten ihre Serie. „Gefällt mir“ zählt für die Empfehlungen wie ein Favorit, „Nichts für mich“ wird nie empfohlen und macht ähnliche Titel seltener *
-- **Anfragen über Jellyseerr:** Ist auf dem Server das Plugin „Jellyfin Enhanced“ mit Jellyseerr eingerichtet, erscheint links ein „+“ zum Suchen; jeder Treffer hat eine Detailseite (Inhalt, Besetzung, Staffeln, Trailer) mit „Anfragen“ bzw. „Staffeln wählen“. Ohne Suchbegriff zeigt die Seite „Für dich“: passende Titel, die es noch nicht auf dem Server gibt, neuere zuerst – ohne Schlüssel am Fernseher, unter dem eigenen Benutzer. Ohne das Plugin erscheint nichts (optional: eigene Jellyseerr-Adresse und API-Schlüssel)
+- **Anfragen über Jellyseerr:** Ist auf dem Server das Plugin „Jellyfin Enhanced“ mit Jellyseerr eingerichtet, erscheint links ein „+“ zum Suchen; jeder Treffer hat eine Detailseite (Inhalt, Besetzung, Staffeln, Trailer, „Das könnte dir auch gefallen“) mit „Anfragen“ bzw. „Staffeln wählen“; OK auf einen Schauspieler öffnet seine Personenseite mit Filmen und Serien. Ohne Suchbegriff zeigt die Seite „Für dich“: passende Titel, die es noch nicht auf dem Server gibt, neuere zuerst – ohne Schlüssel am Fernseher, unter dem eigenen Benutzer. Ohne das Plugin erscheint nichts (optional: eigene Jellyseerr-Adresse und API-Schlüssel)
 
 **Player**
 - **Intro und Abspann überspringen:** der Knopf „Überspringen“ füllt sich in 5 Sekunden, dann wird übersprungen; „Zurück“ bricht ab
 - **Intelligente Untertitel:** bei Ton in der eigenen Sprache keine Untertitel (außer erzwungene); die Wahl gilt für die nächsten Folgen der Serie
 - **Ton & Untertitel in einem Fenster** (zwei Spalten)
-- schnellere Suche mit Ergebnissen schon beim Tippen
+- schnellere Suche mit Ergebnissen schon beim Tippen; „Runter“ führt aus dem Suchfeld direkt zu den Ergebnissen
 
 **Live-TV**
 - **Besetzung und Regie** auf der Detailseite einer Sendung (Reihe „Besetzung“) und im Programmführer – aus dem EPG über das Plugin „Local Recommendations“ (ab **12.7.1**, mit eingerichtetem XMLTV). OK auf einen Darsteller öffnet seine Personenseite (über Jellyseerr)
@@ -32,7 +37,7 @@ Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** 
 - **Autostart** beim Einschalten des Geräts (bis Android 9, z. B. Fire TV Stick mit Fire OS 7; standardmäßig aus)
 - Steuerung komplett per Handy, z. B. mit [Jellyfin Remote](https://github.com/DrdotHouse2106/Jellyfin-Remote)
 
-\* benötigt das Server-Plugin „Local Recommendations“ (Top 10 über alle Benutzer und Daumen ab **12.6.0**). Ohne Plugin funktioniert die App normal, nur ohne diese Zeilen.
+\* benötigt das Server-Plugin „Local Recommendations“ (Top 10 über alle Benutzer und Daumen ab **12.6.0**, Live-TV-Besetzung ab **12.7.1**). Ohne Plugin funktioniert die App normal, nur ohne diese Zeilen.
 
 Alles andere ist wie in der offiziellen App: Player, Live-TV, Intro Skipper, Bedienung mit der Fernbedienung.
 
@@ -49,7 +54,7 @@ Immer die neueste Version:
 
 ## Voraussetzungen
 
-- Jellyfin-Server 12. Empfohlen: Plugin **Local Recommendations ab 12.6.0** (Empfehlungen, Top 10, Daumen). Optional: **Jellyfin Enhanced** mit Jellyseerr (Anfragen), **Home Screen Sections** (weitere Abschnitte).
+- Jellyfin-Server 12. Empfohlen: Plugin **Local Recommendations ab 12.7.1** (Empfehlungen, Top 10, Daumen, Live-TV-Besetzung; ab 12.6.0 alles außer der Besetzung). Optional: **Jellyfin Enhanced** mit Jellyseerr (Anfragen), **Home Screen Sections** (weitere Abschnitte).
 - Android TV / Google TV oder **Fire TV mit Fire OS** (Android). Geräte mit *Vega OS* (z. B. einige Fire-TV-Modelle ab 2025) können keine APKs installieren.
 
 Ohne Plugins funktioniert die App ganz normal, nur ohne die jeweiligen Zusatzfunktionen.
@@ -64,7 +69,8 @@ Die App heißt auf dem Gerät **„Quallenkino“** (eigenes Symbol, eigenes Log
 
 1. Einstellungen → Mein Fire TV → Entwickleroptionen → **Apps unbekannter Herkunft** für die App „Downloader“ erlauben (Entwickleroptionen erscheinen nach 7× Klick auf Einstellungen → Mein Fire TV → Info → Gerätename).
 2. App **Downloader** aus dem Amazon-Appstore installieren.
-3. In Downloader die Adresse der APK aus den [Releases](https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases) eingeben (`quallenkino-v…-release.apk`) und installieren.
+3. In Downloader diese Adresse eingeben und installieren (zeigt immer auf die neueste Version):
+   `https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk`
 4. „Quallenkino“ öffnen und mit dem eigenen Jellyfin-Konto anmelden.
 
 ### Android TV / Google TV (z. B. waipu.tv 4K Stick, Chromecast, Nvidia Shield)
@@ -82,7 +88,7 @@ Es gibt keine automatischen Store-Updates. Für ein Update die neue APK genauso 
 
 ## Startseite
 
-Die Startseite ist im Kino-Stil aufgebaut: **Navigation am linken Rand** (Profil, Suche, Startseite, TV-Programm, Einstellungen – mit „Links“ erreichbar), oben ein **großer Infobereich** den ausgewählten Titel mit Logo, Eckdaten und Beschreibung (abschaltbar unter Einstellungen → Startseite → Darstellung).
+Die Startseite ist im Kino-Stil aufgebaut: **Navigation am linken Rand** (Profil, Suche, Startseite, Anfragen „+“, TV-Programm, Einstellungen – mit „Links“ vom ersten Titel einer Reihe erreichbar), oben ein **großer Infobereich** mit dem Banner bzw. dem ausgewählten Titel mit Logo, Eckdaten und Beschreibung (abschaltbar unter Einstellungen → Startseite → Darstellung).
 
 Die Zeilen der Startseite stehen in einer festen Reihenfolge und lassen sich unter **Einstellungen → Startseite** einzeln ein- und ausschalten (gespeichert auf dem Gerät):
 

@@ -8,18 +8,19 @@ German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md
 
 ## Features
 
-- **Home screen:** side navigation, large info area, rotating suggestions with Play / More info / Trailer, trailer preview after a few seconds (server-side trailers, muted), recommended movies/series and "on TV today for you" rows*, **Top 10** of all users (last 60 days)*, genre rows, fixed row order with toggles, 24-hour clock.
+- **Home screen:** side navigation, large info area, rotating suggestions with Play / More info / Trailer, trailer preview in the banner after three seconds (server-side trailers, sound at 75 %, can be turned off; only while the banner is selected), Left/Right switches suggestions, "Trailer" opens a small in-app window (server or YouTube), recommended movies/series and "on TV today for you" rows*, **Top 10** of all users (last 60 days)*, genre rows, fixed row order with toggles, 24-hour clock.
+- **Detail page:** background trailer starts automatically (server trailer large, otherwise YouTube in a window), German trailers first, otherwise labelled (e.g. EN, OmU).
 - **Ratings:** thumbs up / down on the detail page, in the player ("Rate") and on the "Next up" screen (episodes rate their series). Likes count like favorites for the recommendations, dislikes are never recommended*.
-- **Requests via Jellyseerr:** if the server plugin "Jellyfin Enhanced" has Jellyseerr set up, a "+" appears in the navigation to search and request titles under your own user, no API key on the TV. Without the plugin nothing appears (optional: own Jellyseerr address and API key).
-- **Player:** auto skip of intro/credits with a 5-second filling button (Back cancels), smart subtitles (off for audio in your language, remembered per series), audio & subtitles in one two-column window, faster search.
+- **Requests via Jellyseerr:** if the server plugin "Jellyfin Enhanced" has Jellyseerr set up, a "+" appears in the navigation to search and request titles under your own user, no API key on the TV. Each result has a detail page with cast (person pages), seasons, trailer and similar titles; without a search term it shows "For you", newer titles first. Without the plugin nothing appears (optional: own Jellyseerr address and API key).
+- **Player:** auto skip of intro/credits with a 5-second filling button (Back cancels), smart subtitles (off for audio in your language, remembered per series), audio & subtitles in one two-column window, faster search (Down leaves the search field).
 - **Live TV:** cast and director on a programme's detail page and in the guide, from the EPG via Local Recommendations 12.7.1 or newer (XMLTV set up). Select on an actor opens their person page (via Jellyseerr).
-- **Other:** "Who's watching?" profile picker, personal screensaver (optionally with muted trailers), autostart on power-on (up to Android 9, off by default), full remote control from a phone (e.g. Jellyfin Remote).
+- **Other:** "Who's watching?" profile picker, personal screensaver (optionally with teasers or trailers), autostart on power-on (up to Android 9, off by default), full remote control from a phone (e.g. Jellyfin Remote).
 
 \* needs the server plugin Local Recommendations (Top 10 of all users and thumbs since 12.6.0).
 
 ## Requirements
 
-- Jellyfin 12. Recommended: **Local Recommendations 12.6.0 or newer**. Optional: **Jellyfin Enhanced** with Jellyseerr, **Home Screen Sections**.
+- Jellyfin 12. Recommended: **Local Recommendations 12.7.1 or newer** (12.6.0 for everything except live TV cast). Optional: **Jellyfin Enhanced** with Jellyseerr, **Home Screen Sections**.
 - Android TV / Google TV or Fire TV running Fire OS (Vega OS devices cannot install APKs).
 
 ## Notes

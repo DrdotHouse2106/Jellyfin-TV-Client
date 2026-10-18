@@ -23,7 +23,7 @@ Dein Jellyfin im Kino-Stil – Empfehlungen, Top 10, Anfragen und Handy-Steuerun
 
 **Vollständige Beschreibung**
 
-Die deutschen Texte aus `../amazon/TEXTE.md` („Beschreibung“) verwenden – sie sind auf dem aktuellen Stand (Top 10, Daumen hoch/runter, Jellyseerr-Anfragen, Ton & Untertitel in einem Fenster, Trailer im Bildschirmschoner). Englisch als zusätzliche Sprache: Abschnitt „English“ dort.
+Die deutschen Texte aus `../amazon/TEXTE.md` („Beschreibung“) verwenden – sie sind auf dem aktuellen Stand (Top 10, Daumen hoch/runter, Jellyseerr-Anfragen, Ton & Untertitel in einem Fenster, Trailer im Bildschirmschoner, Live-TV-Besetzung). Englisch als zusätzliche Sprache: Abschnitt „English“ dort.
 
 **Kurzbeschreibung Englisch (max. 80 Zeichen)**
 

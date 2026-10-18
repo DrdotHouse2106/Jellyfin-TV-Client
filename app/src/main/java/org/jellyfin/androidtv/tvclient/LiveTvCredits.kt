@@ -213,7 +213,8 @@ object LiveTvCredits {
 		override fun onBindViewHolder(viewHolder: ViewHolder, item: Any?) {
 			val actor = item as? Actor ?: return
 			@Suppress("UNCHECKED_CAST")
-			val (circle, name, role) = viewHolder.view.tag as Triple<TextView, TextView, TextView>
+			val views = viewHolder.view.tag as Triple<TextView, TextView, TextView>
+			val (circle, name, role) = views
 			circle.text = initials(actor.name)
 			name.text = actor.name
 			role.text = actor.role.orEmpty()
