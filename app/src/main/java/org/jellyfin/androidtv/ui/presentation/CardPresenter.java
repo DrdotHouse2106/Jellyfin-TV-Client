@@ -18,6 +18,7 @@ import org.jellyfin.androidtv.constant.ImageType;
 import org.jellyfin.androidtv.preference.UserPreferences;
 import org.jellyfin.androidtv.preference.constant.RatingType;
 import org.jellyfin.androidtv.preference.constant.WatchedIndicatorBehavior;
+import org.jellyfin.androidtv.tvclient.PosterCards;
 import org.jellyfin.androidtv.ui.card.LegacyImageCardView;
 import org.jellyfin.androidtv.ui.itemhandling.AudioQueueBaseRowItem;
 import org.jellyfin.androidtv.ui.itemhandling.BaseItemDtoBaseRowItem;
@@ -193,6 +194,12 @@ public class CardPresenter extends Presenter {
                             if (imageType.equals(ImageType.POSTER))
                                 aspect = ImageHelper.ASPECT_RATIO_2_3;
                             break;
+                    }
+                    // Jellyfin-TV-Client: Serien, Staffeln und Folgen einheitlich als Poster
+                    if (PosterCards.applies(m)) {
+                        aspect = ImageHelper.ASPECT_RATIO_2_3;
+                        mDefaultCardImage = ContextCompat.getDrawable(mCardView.getContext(), R.drawable.tile_port_tv);
+                        mCardView.setCardType(BaseCardView.CARD_TYPE_INFO_UNDER);
                     }
                     cardHeight = !m.getStaticHeight() ? (aspect > 1 ? lHeight : pHeight) : sHeight;
                     cardWidth = (int) (aspect * cardHeight);
@@ -372,7 +379,9 @@ public class CardPresenter extends Presenter {
         }
 
         JellyfinImage image = null;
-        if (rowItem.getBaseItem() != null) {
+        if (PosterCards.applies(rowItem)) {
+            image = PosterCards.image(rowItem.getBaseItem());
+        } else if (rowItem.getBaseItem() != null) {
             if (aspect == ImageHelper.ASPECT_RATIO_BANNER) {
                 image = JellyfinImageKt.getItemImages(rowItem.getBaseItem()).get(org.jellyfin.sdk.model.api.ImageType.BANNER);
             } else if (aspect == ImageHelper.ASPECT_RATIO_2_3 && rowItem.getBaseItem().getType() == BaseItemKind.EPISODE && rowItem instanceof BaseItemDtoBaseRowItem && ((BaseItemDtoBaseRowItem) rowItem).getPreferSeriesPoster()) {

@@ -171,7 +171,9 @@ fun ItemRowAdapter.retrieveLatestMedia(api: ApiClient, query: GetLatestMediaRequ
 						preferParentThumb,
 						isStaticHeight,
 						BaseRowItemSelectAction.ShowDetails,
-						preferParentThumb,
+						preferSeriesPoster = false,
+						// Jellyfin-TV-Client: Serien, Staffeln und einzelne Folgen einheitlich als Poster
+						uniformPoster = true,
 					)
 				}
 			)

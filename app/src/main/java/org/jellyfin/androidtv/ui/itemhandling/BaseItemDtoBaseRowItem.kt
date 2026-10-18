@@ -22,6 +22,8 @@ open class BaseItemDtoBaseRowItem @JvmOverloads constructor(
 	staticHeight: Boolean = false,
 	selectAction: BaseRowItemSelectAction = BaseRowItemSelectAction.ShowDetails,
 	val preferSeriesPoster: Boolean = false,
+	/** Jellyfin-TV-Client: Serien, Staffeln und Folgen einheitlich als Poster der Serie (z. B. „Kürzlich hinzugefügt“). */
+	val uniformPoster: Boolean = false,
 ) : BaseRowItem(
 	baseRowType = when (item.type) {
 		BaseItemKind.TV_CHANNEL,
@@ -80,6 +82,8 @@ open class BaseItemDtoBaseRowItem @JvmOverloads constructor(
 		}
 
 	override fun getCardName(context: Context) = when {
+		// Jellyfin-TV-Client: einheitliche Poster – oben immer der Serienname
+		uniformPoster && (baseItem?.type == BaseItemKind.EPISODE || baseItem?.type == BaseItemKind.SEASON) && baseItem.seriesName != null -> baseItem.seriesName
 		baseItem?.type == BaseItemKind.AUDIO && baseItem.artists != null -> baseItem.artists?.joinToString(", ")
 		baseItem?.type == BaseItemKind.AUDIO && baseItem.albumArtists != null -> baseItem.albumArtists?.joinToString(", ")
 		baseItem?.type == BaseItemKind.AUDIO && baseItem.albumArtist != null -> baseItem.albumArtist
@@ -95,7 +99,24 @@ open class BaseItemDtoBaseRowItem @JvmOverloads constructor(
 
 	override fun getSummary(context: Context) = baseItem?.overview
 
-	override fun getSubText(context: Context) = when (baseItem?.type) {
+	override fun getSubText(context: Context) = if (uniformPoster) uniformSubText(context) else defaultSubText(context)
+
+	/** „S3:F5 · Folgentitel“, „Staffel 3“ oder „3 neue Folgen“. */
+	private fun uniformSubText(context: Context): String? = when (baseItem?.type) {
+		BaseItemKind.EPISODE -> listOfNotNull(
+			if (baseItem.parentIndexNumber != null && baseItem.indexNumber != null) "S${baseItem.parentIndexNumber}:F${baseItem.indexNumber}" else null,
+			baseItem.name,
+		).joinToString(" · ")
+
+		BaseItemKind.SEASON -> baseItem.name
+		BaseItemKind.SERIES -> baseItem.childCount?.takeIf { it > 1 }
+			?.let { context.getString(org.jellyfin.androidtv.R.string.tvclient_new_episodes, it) }
+			?: baseItem.getSubName(context)
+
+		else -> defaultSubText(context)
+	}
+
+	private fun defaultSubText(context: Context) = when (baseItem?.type) {
 		BaseItemKind.TV_CHANNEL -> baseItem.number
 		BaseItemKind.TV_PROGRAM,
 		BaseItemKind.PROGRAM -> baseItem.episodeTitle ?: baseItem.channelName

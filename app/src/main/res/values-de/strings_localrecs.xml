@@ -155,4 +155,5 @@
     <string name="tvclient_local_using_internet">Verbindung: Internet (%1$s)</string>
     <string name="tvclient_local_using_unknown">Verbindung: wird geprüft …</string>
     <string name="tvclient_person_not_found">Keine Personenseite gefunden</string>
+    <string name="tvclient_new_episodes">%1$d neue Folgen</string>
 </resources>

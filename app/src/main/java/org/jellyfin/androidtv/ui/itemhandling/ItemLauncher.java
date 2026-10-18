@@ -118,7 +118,14 @@ public class ItemLauncher {
 
                         return;
                     case SEASON:
-                        navigationRepository.getValue().navigate(Destinations.INSTANCE.folderBrowser(baseItem));
+                        // Jellyfin-TV-Client: Staffelkarten außerhalb der Serienseite (z. B. „Kürzlich hinzugefügt“)
+                        // öffnen die Serie – von dort führt die Staffel zu den Folgen und BACK zurück zur Serie
+                        boolean fromSeriesPage = adapter instanceof ItemRowAdapter && ((ItemRowAdapter) adapter).getQueryType() == QueryType.Season;
+                        if (!fromSeriesPage && baseItem.getSeriesId() != null) {
+                            navigationRepository.getValue().navigate(Destinations.INSTANCE.itemDetails(baseItem.getSeriesId()));
+                        } else {
+                            navigationRepository.getValue().navigate(Destinations.INSTANCE.folderBrowser(baseItem));
+                        }
                         return;
 
                     case BOX_SET:

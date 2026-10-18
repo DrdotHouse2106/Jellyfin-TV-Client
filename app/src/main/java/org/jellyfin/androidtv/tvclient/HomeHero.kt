@@ -304,7 +304,10 @@ object OverviewCache {
 		synchronized(cache) { cache[id] }?.let { return it }
 		val overview = runCatching {
 			kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-				api.userLibraryApi.getItem(itemId = id).content.overview
+				val item = api.userLibraryApi.getItem(itemId = id).content
+				// Staffeln/Folgen ohne Text (z. B. Folgestaffeln aus AniDB): Beschreibung der Serie
+				item.overview?.takeIf { it.isNotBlank() }
+					?: item.seriesId?.let { api.userLibraryApi.getItem(itemId = it).content.overview }
 			}
 		}.getOrNull() ?: return null
 		synchronized(cache) { cache[id] = overview }
@@ -323,7 +326,7 @@ fun cleanOverview(text: String): String = text
 
 /** Haupttitel: bei Folgen der Serienname. */
 fun heroTitle(item: BaseItemDto): String = when (item.type) {
-	BaseItemKind.EPISODE -> item.seriesName ?: item.name.orEmpty()
+	BaseItemKind.EPISODE, BaseItemKind.SEASON -> item.seriesName ?: item.name.orEmpty()
 	else -> item.name.orEmpty()
 }
 
@@ -338,6 +341,8 @@ fun heroSubtitle(item: BaseItemDto): String? = when (item.type) {
 	).joinToString(" · ").ifBlank { null }
 
 	BaseItemKind.PROGRAM -> item.episodeTitle
+	// „Staffel 3“ unter dem Seriennamen, damit klar ist, welche Serie gemeint ist
+	BaseItemKind.SEASON -> item.name.takeIf { item.seriesName != null }
 	else -> null
 }
 
