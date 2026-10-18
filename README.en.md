@@ -36,3 +36,13 @@ German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md
 - Remote control via Jellyfin commands (e.g. Jellyfin Remote): D-pad, select, back, home, search, settings. Extra commands via `SendString`: `tvclient:app:{package}`, `tvclient:settings:{key}`, `tvclient:open:{area}`.
 - Builds run in GitHub Actions (`.github/workflows/tv-client-build.yaml`): push to `main` → artifact; "Run workflow" with "release" → GitHub release `v{tv-client-version.txt}`. Signed release builds need the secrets `KEYSTORE` (base64), `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`.
 - Upstream updates: `git fetch upstream --tags && git merge v0.19.x`.
+
+## Data sources
+
+Data and images: [TMDB](https://www.themoviedb.org). This product uses the TMDB API but is not endorsed or certified by TMDB.
+
+## Support the project
+
+Development costs time and money (servers, test devices, AI tools). If you like the project, a small donation is very welcome:
+
+[![Donate via PayPal](https://img.shields.io/badge/Donate-PayPal-0070ba?logo=paypal&logoColor=white)](https://paypal.me/DrdotHouse)

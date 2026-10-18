@@ -221,6 +221,16 @@ Damit Jellyfin Remote dieselben Apps als Knöpfe zeigen kann, legt die App die L
 
 Siehe [Datenschutzerklärung](PRIVACY.md) ([English](PRIVACY.en.md)). Kurz: keine Werbung, kein Tracking, keine Daten an den Entwickler – die App spricht nur mit dem eigenen Jellyfin-Server.
 
+## Datenquellen
+
+Daten und Bilder: [TMDB](https://www.themoviedb.org). Dieses Produkt nutzt die TMDB-API, ist aber nicht von TMDB unterstützt oder zertifiziert.
+
+## Unterstützen
+
+Die Entwicklung kostet Zeit und Geld (Server, Testgeräte, KI-Werkzeuge). Wenn dir das Projekt gefällt, freue ich mich über eine kleine Spende:
+
+[![Spenden via PayPal](https://img.shields.io/badge/Spenden-PayPal-0070ba?logo=paypal&logoColor=white)](https://paypal.me/DrdotHouse)
+
 ## Lizenz
 
 GPL v2, wie die offizielle App (siehe [LICENSE](LICENSE)).
