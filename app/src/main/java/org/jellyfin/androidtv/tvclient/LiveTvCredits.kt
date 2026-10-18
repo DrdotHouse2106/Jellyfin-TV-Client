@@ -47,6 +47,16 @@ import java.util.UUID
  */
 object LiveTvCredits {
 	private const val TIMEOUT_MS = 8_000
+	// Im Popup höchstens so viele Darsteller, damit die Knöpfe darunter sichtbar bleiben
+	private const val MAX_POPUP_ACTORS = 4
+
+	/** EPG-Texte enthalten teils wörtlich „\n“ – in echte Zeilenumbrüche umwandeln. */
+	@JvmStatic
+	fun cleanText(text: String?): String = text.orEmpty()
+		.replace("\\n", "\n")
+		.replace(Regex("\n{3,}"), "\n\n")
+		.trim()
+
 	private val json = Json { ignoreUnknownKeys = true }
 
 	data class Actor(val name: String, val role: String?)
@@ -110,7 +120,7 @@ object LiveTvCredits {
 	/** „Regie: …“ und „Mit: A (Rolle), B …“ als Text, z. B. für das Popup im Programmführer. */
 	fun summaryLines(context: Context, credits: Credits): String = buildList {
 		if (credits.directors.isNotEmpty()) add(context.getString(R.string.tvclient_livetv_director, credits.directors.joinToString(", ")))
-		if (credits.actors.isNotEmpty()) add(context.getString(R.string.tvclient_livetv_with, credits.actors.take(6).joinToString(", ") { actor ->
+		if (credits.actors.isNotEmpty()) add(context.getString(R.string.tvclient_livetv_with, credits.actors.take(MAX_POPUP_ACTORS).joinToString(", ") { actor ->
 			if (actor.role != null) "${actor.name} (${actor.role})" else actor.name
 		}))
 	}.joinToString("\n")
@@ -127,11 +137,10 @@ object LiveTvCredits {
 				Log.i(LOG_TAG, "Besetzung: Popup zeigt schon eine andere Sendung")
 				return@launch
 			}
-			val overview = program.overview.orEmpty()
+			val overview = cleanText(program.overview)
 			val lines = summaryLines(summary.context, credits)
 			// Vor die Beschreibung, sonst schneidet maxLines die Besetzung bei langen Texten ab
 			summary.text = if (overview.isBlank()) lines else "$lines\n\n$overview"
-			summary.maxLines = 12
 			Log.i(LOG_TAG, "Besetzung: im Popup angezeigt")
 			summary.gravity = Gravity.START or Gravity.CENTER_VERTICAL
 		}

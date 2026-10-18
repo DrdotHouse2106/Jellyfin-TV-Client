@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.23.1 – 2026-10-18
+
+- Programmführer: Im Popup höchstens vier Darsteller, damit „Wechsle zu Kanal“ und das Herz sichtbar bleiben. Wörtliche „\n“ aus dem EPG werden zu Zeilenumbrüchen.
+- Trailer-Vorschau (Banner, Welt, Detailseite): Das Video läuft jetzt in einer TextureView. Dadurch liegen die schwarzen Verläufe auch über dem Video, und Logo und Text bleiben lesbar.
+- Welt-Seite: Beim Scrollen laufen die Reihen nicht mehr unter den Kopf.
+
 ## 1.23.0 – 2026-10-18
 
 - **Schnellerer Start der Startseite:** Alle Zeilen werden gleichzeitig vorbereitet, also Top 10, Welten, Web-Abschnitte und Genres. Bisher lief das nacheinander, und bis dahin war nur das Banner zu sehen.

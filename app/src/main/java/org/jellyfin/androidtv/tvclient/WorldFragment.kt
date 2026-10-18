@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -168,7 +169,8 @@ private fun WorldScreen(key: String) {
 			// Farbe der Welt nur als schmaler Akzent unter dem Namen
 			Box(Modifier.padding(top = 8.dp).width(64.dp).height(3.dp).clip(RoundedCornerShape(2.dp)).background(accent))
 			Spacer(Modifier.height(16.dp))
-			Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+			// Beschnitten, damit die Reihen nicht unter den Kopf laufen
+			Column(Modifier.weight(1f).clipToBounds().verticalScroll(rememberScrollState())) {
 				when {
 					sections == null -> Text(stringResource(R.string.loading), color = Color(0xFFB3B3B3))
 					sections!!.isEmpty() -> Text(stringResource(R.string.tvclient_world_empty), color = Color(0xFFB3B3B3))

@@ -164,7 +164,8 @@ fun TrailerVideo(
 	AndroidView(
 		modifier = modifier.alpha(alpha),
 		factory = { viewContext ->
-			PlayerView(viewContext).apply {
+			// TextureView (aus dem Layout), damit Verläufe und Texte über dem Video liegen können
+			(android.view.LayoutInflater.from(viewContext).inflate(org.jellyfin.androidtv.R.layout.tvclient_trailer_player, null) as PlayerView).apply {
 				useController = false
 				resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
 				this.player = player

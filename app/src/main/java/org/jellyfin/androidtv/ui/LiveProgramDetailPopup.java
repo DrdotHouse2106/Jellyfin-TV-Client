@@ -86,7 +86,7 @@ public class LiveProgramDetailPopup {
         mDTitle.setText(mProgram.getName());
         mDButtonRow.removeAllViews();
 
-        mDSummary.setText(mProgram.getOverview());
+        mDSummary.setText(org.jellyfin.androidtv.tvclient.LiveTvCredits.cleanText(mProgram.getOverview()));
         if (mDSummary.getLineCount() < 2) {
             mDSummary.setGravity(Gravity.CENTER);
         } else {
