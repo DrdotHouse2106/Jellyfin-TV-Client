@@ -3,11 +3,13 @@ package org.jellyfin.androidtv.tvclient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -204,12 +206,21 @@ object Jellyseerr {
 	suspend fun findPerson(name: String): Int? {
 		val encoded = URLEncoder.encode(name.take(256), "UTF-8").replace("+", "%20")
 		val results = json.parseToJsonElement(call(current(), "/search?query=$encoded&page=1&language=de")).jsonObject["results"]?.jsonArray.orEmpty()
-		val matches = results.mapNotNull { it as? JsonObject }
-			.filter { it.string("mediaType") == "person" && personKey(it.string("name").orEmpty()) == personKey(name) }
-			.mapNotNull { (it["id"] as? JsonPrimitive)?.intOrNull }
-			.distinct()
-		return matches.singleOrNull()
+		return pickPerson(name, results.mapNotNull { it as? JsonObject })
 	}
+
+	/**
+	 * Unter den Suchergebnissen die Person mit genau diesem Namen wählen. Gibt es mehrere (z. B. zwei
+	 * „Mark Wahlberg“ bei TMDB), die bekannteste nehmen: höchste Popularität, dann mit „bekannt für“.
+	 */
+	fun pickPerson(name: String, results: List<JsonObject>): Int? = results
+		.filter { it.string("mediaType") == "person" && personKey(it.string("name").orEmpty()) == personKey(name) }
+		.filter { (it["id"] as? JsonPrimitive)?.intOrNull != null }
+		.maxWithOrNull(
+			compareBy<JsonObject> { (it["popularity"] as? JsonPrimitive)?.doubleOrNull ?: 0.0 }
+				.thenBy { (it["knownFor"] as? JsonArray)?.size ?: 0 },
+		)
+		?.let { (it["id"] as JsonPrimitive).intOrNull }
 
 	/** Trennt eine vierstellige Jahreszahl (1900–2099) am Ende des Suchbegriffs ab. */
 	fun splitYear(query: String): Pair<String, String?> {

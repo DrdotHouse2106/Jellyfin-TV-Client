@@ -54,7 +54,7 @@ import java.util.UUID
  * als Administrator über alle Benutzer, sonst nur das eigene Konto.
  */
 object Top10 {
-	private const val DAYS = 60L
+	private const val DAYS = 180L
 	private const val PER_USER = 300
 	private const val MAX_USERS = 25
 	private const val SIZE = 10

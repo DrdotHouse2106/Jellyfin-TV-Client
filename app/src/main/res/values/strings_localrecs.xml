@@ -58,7 +58,7 @@
     <string name="tvclient_autostart_description">Opens Quallenkino when the device starts or wakes from standby</string>
     <string name="tvclient_autostart_unsupported">Not available on Android 10 and newer (the system blocks automatic starts)</string>
     <string name="tvclient_home_top10">Top 10 here</string>
-    <string name="tvclient_home_top10_description">Most watched movies and shows of all users in the last 60 days (needs the plugin "Local Recommendations" 12.6.0 or newer; without it only administrators see all users)</string>
+    <string name="tvclient_home_top10_description">Most watched movies and shows of all users in the last 180 days (needs the plugin "Local Recommendations" 12.6.0 or newer; without it only administrators see all users)</string>
     <string name="tvclient_jellyseerr_title">Requests</string>
     <string name="tvclient_jellyseerr_enable">Show requests button (Jellyseerr)</string>
     <string name="tvclient_jellyseerr_enable_description">Appears automatically if the server plugin „Jellyfin Enhanced“ has Jellyseerr set up and your account is linked</string>
@@ -154,4 +154,5 @@
     <string name="tvclient_local_using_home">Connection: home network (%1$s)</string>
     <string name="tvclient_local_using_internet">Connection: internet (%1$s)</string>
     <string name="tvclient_local_using_unknown">Connection: checking …</string>
+    <string name="tvclient_person_not_found">No person page found</string>
 </resources>

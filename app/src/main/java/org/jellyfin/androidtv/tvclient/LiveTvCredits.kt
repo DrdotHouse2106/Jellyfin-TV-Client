@@ -172,17 +172,48 @@ object LiveTvCredits {
 		}
 	}
 
-	/** OK auf einen Darsteller: bei Jellyseerr nach genau diesem Namen suchen und die Personenseite öffnen. */
+	/**
+	 * OK auf einen Darsteller: die Personenseite öffnen. Die TMDB-Id kommt bevorzugt von der gleichnamigen
+	 * Person in Jellyfin (eindeutig), sonst aus der Jellyseerr-Suche. Ohne Treffer ein kurzer Hinweis.
+	 */
 	@JvmStatic
 	fun open(lifecycle: Lifecycle, actor: Any?): Boolean {
 		if (actor !is Actor) return false
 		lifecycle.coroutineScope.launch {
 			val id = runCatching {
-				if (Jellyseerr.detect(api()) == null) null else Jellyseerr.findPerson(actor.name)
-			}.getOrNull() ?: return@launch
+				if (Jellyseerr.detect(api()) == null) null
+				else jellyfinTmdbId(actor.name) ?: Jellyseerr.findPerson(actor.name)
+			}.onFailure { Log.w(LOG_TAG, "Person ${actor.name} nicht gefunden", it) }.getOrNull()
+			if (id == null) {
+				val context = KoinJavaComponent.get<Context>(Context::class.java)
+				android.widget.Toast.makeText(context, R.string.tvclient_person_not_found, android.widget.Toast.LENGTH_SHORT).show()
+				return@launch
+			}
 			KoinJavaComponent.get<NavigationRepository>(NavigationRepository::class.java).navigate(Destinations.jellyseerrPerson(id))
 		}
 		return true
+	}
+
+	/** TMDB-Id der gleichnamigen Person in der Jellyfin-Bibliothek, falls vorhanden. */
+	private suspend fun jellyfinTmdbId(name: String): Int? = withContext(Dispatchers.IO) {
+		runCatching {
+			val encoded = java.net.URLEncoder.encode(name.take(256), "UTF-8").replace("+", "%20")
+			val text = call(api(), "/Persons?searchTerm=$encoded&limit=20&fields=ProviderIds&enableImages=false") ?: return@runCatching null
+			pickJellyfinTmdbId(name, text)
+		}.getOrNull()
+	}
+
+	/** Aus der Antwort von /Persons die TMDB-Id der Person mit genau diesem Namen lesen. */
+	fun pickJellyfinTmdbId(name: String, text: String): Int? {
+		val items = ((json.parseToJsonElement(text) as? JsonObject)?.get("Items") as? JsonArray).orEmpty()
+		return items.asSequence()
+			.mapNotNull { it as? JsonObject }
+			.filter { Jellyseerr.personKey(it.string("Name").orEmpty()) == Jellyseerr.personKey(name) }
+			.mapNotNull { person ->
+				val ids = person["ProviderIds"] as? JsonObject ?: return@mapNotNull null
+				ids.entries.firstOrNull { it.key.equals("Tmdb", ignoreCase = true) }?.value?.let { it as? JsonPrimitive }?.content?.toIntOrNull()
+			}
+			.firstOrNull()
 	}
 
 	/** Darsteller ohne Foto (das EPG hat keine): Initialen im Kreis, Name und Rolle darunter. */

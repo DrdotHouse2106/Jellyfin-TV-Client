@@ -6,6 +6,8 @@
 - Die Heimadresse wird nur genutzt, wenn sie innerhalb von 1,5 Sekunden antwortet und derselbe Server ist (gleiche Server-Id). Sonst bleibt alles wie bisher. Anmeldung und Konten bleiben unverändert.
 - Geprüft wird beim Start, beim Zurückkehren in die App und bei einem Netzwechsel – nie während einer laufenden Wiedergabe.
 - Die Einstellungen und „Über“ zeigen, welche Verbindung gerade genutzt wird („Heimnetz“ oder „Internet“).
+- Live-TV: OK auf einen Darsteller öffnet jetzt auch dann die Personenseite, wenn es bei TMDB mehrere Personen mit gleichem Namen gibt (z. B. Mark Wahlberg, Kate Mara). Bevorzugt wird die Person aus der eigenen Bibliothek, sonst die bekannteste. Ohne Treffer erscheint „Keine Personenseite gefunden“.
+- „Top 10 bei euch“ zählt jetzt die letzten 180 Tage statt 60.
 
 ## 1.23.11 – 2026-10-18
 
