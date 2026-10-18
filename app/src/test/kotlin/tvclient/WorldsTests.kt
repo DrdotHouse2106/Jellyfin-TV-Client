@@ -50,6 +50,7 @@ class WorldsTests : FunSpec({
 		Worlds.pluginWorldId(text, Worlds.definitions.first { it.key == "ghibli" }) shouldBe "studio-ghibli"
 		Worlds.pluginWorldId(text, Worlds.definitions.first { it.key == "jurassicpark" }) shouldBe "jurassic-park"
 		Worlds.normalize("Mittelerde – Die Rückkehr") shouldBe "mittelerdedierueckkehr"
+		Worlds.pluginWorldId("""[{"Id":"wizarding-world","Name":"Wizarding World"}]""", Worlds.definitions.first { it.key == "harrypotter" }) shouldBe "wizarding-world"
 	}
 
 	test("Logo-Adresse der Plugin-Welt") {

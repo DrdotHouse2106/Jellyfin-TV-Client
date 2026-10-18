@@ -52,6 +52,8 @@ object Worlds {
 		val color: Long,
 		val studios: List<String>,
 		val collections: List<String>,
+		/** Weitere Namen bzw. Ids der Welt beim Plugin (z. B. nach einer Umbenennung). */
+		val aliases: List<String> = emptyList(),
 	)
 
 	val definitions = listOf(
@@ -92,6 +94,7 @@ object Worlds {
 		Definition(
 			"harrypotter", "Harry Potter", 0xFF6B4E16, listOf("heyday films"),
 			listOf("harry potter", "phantastische tierwesen", "fantastic beasts"),
+			aliases = listOf("Wizarding World"),
 		),
 		Definition(
 			"mittelerde", "Mittelerde", 0xFF5A4A2A, listOf("wingnut"),
@@ -315,7 +318,7 @@ object Worlds {
 	/** Id der Plugin-Welt, die zu dieser Welt passt (über Id, Name oder Studio), sonst null. */
 	fun pluginWorldId(text: String, definition: Definition): String? {
 		val list = runCatching { json.parseToJsonElement(text) as? JsonArray }.getOrNull() ?: return null
-		val candidates = setOf(normalize(definition.name), normalize(definition.key))
+		val candidates = (listOf(definition.name, definition.key) + definition.aliases).map(::normalize).toSet()
 		return list.firstNotNullOfOrNull { element ->
 			val obj = element as? JsonObject ?: return@firstNotNullOfOrNull null
 			val id = (obj["Id"] as? JsonPrimitive)?.content ?: return@firstNotNullOfOrNull null
