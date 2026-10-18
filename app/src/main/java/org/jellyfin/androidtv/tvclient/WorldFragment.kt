@@ -134,12 +134,9 @@ private fun WorldScreen(key: String) {
 			}
 		}
 
-		Column(
-			Modifier
-				.fillMaxSize()
-				.verticalScroll(rememberScrollState())
-				.padding(horizontal = 48.dp, vertical = 27.dp),
-		) {
+		// Kopf (Logo/Name) bleibt fest oben, nur die Reihen darunter scrollen – sonst schiebt der Fokus auf
+		// die erste Reihe den Namen aus dem Bild
+		Column(Modifier.fillMaxSize().padding(horizontal = 48.dp, vertical = 27.dp)) {
 			// Kopf: Logo des Studios, sonst der Name
 			val current = world
 			var logoLoaded by remember(current?.imageUrl) { mutableStateOf(false) }
@@ -164,18 +161,19 @@ private fun WorldScreen(key: String) {
 				color = Color.White,
 				modifier = Modifier.padding(top = if (logoLoaded) 6.dp else 0.dp),
 			)
-			Spacer(Modifier.height(160.dp))
-
-			when {
-				sections == null -> Text(stringResource(R.string.loading), color = Color(0xFFB3B3B3))
-				sections!!.isEmpty() -> Text(stringResource(R.string.tvclient_world_empty), color = Color(0xFFB3B3B3))
-				else -> sections!!.forEachIndexed { index, section ->
-					WorldRow(section, if (index == 0) firstFocus else null) { item ->
-						navigationRepository.navigate(Destinations.itemDetails(item.id))
+			Spacer(Modifier.height(120.dp))
+			Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+				when {
+					sections == null -> Text(stringResource(R.string.loading), color = Color(0xFFB3B3B3))
+					sections!!.isEmpty() -> Text(stringResource(R.string.tvclient_world_empty), color = Color(0xFFB3B3B3))
+					else -> sections!!.forEachIndexed { index, section ->
+						WorldRow(section, if (index == 0) firstFocus else null) { item ->
+							navigationRepository.navigate(Destinations.itemDetails(item.id))
+						}
 					}
 				}
+				Spacer(Modifier.height(24.dp))
 			}
-			Spacer(Modifier.height(24.dp))
 		}
 	}
 }

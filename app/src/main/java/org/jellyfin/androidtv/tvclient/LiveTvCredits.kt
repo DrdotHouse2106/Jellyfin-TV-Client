@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.text.TextUtils
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.ViewGroup
@@ -55,16 +56,21 @@ object LiveTvCredits {
 
 	private fun api() = KoinJavaComponent.get<ApiClient>(ApiClient::class.java)
 
+	/** Protokoll-Tag für logcat (`adb logcat -s Quallenkino`), auch in Release-Builds. */
+	private const val LOG_TAG = "Quallenkino"
+
 	private fun call(api: ApiClient, path: String): String? {
-		val base = api.baseUrl?.trimEnd('/') ?: return null
-		val token = api.accessToken ?: return null
+		val base = api.baseUrl?.trimEnd('/') ?: return null.also { Log.i(LOG_TAG, "Besetzung: keine Server-Adresse") }
+		val token = api.accessToken ?: return null.also { Log.i(LOG_TAG, "Besetzung: nicht angemeldet") }
 		val connection = URL(base + path).openConnection() as HttpURLConnection
 		return try {
 			connection.connectTimeout = TIMEOUT_MS
 			connection.readTimeout = TIMEOUT_MS
 			connection.setRequestProperty("Authorization", "MediaBrowser Token=\"$token\"")
 			connection.setRequestProperty("Accept", "application/json")
-			if (connection.responseCode !in 200..299) null
+			val code = connection.responseCode
+			Log.i(LOG_TAG, "Besetzung: GET $path → HTTP $code")
+			if (code !in 200..299) null
 			else connection.inputStream.bufferedReader().use { it.readText() }
 		} finally {
 			connection.disconnect()
@@ -97,7 +103,8 @@ object LiveTvCredits {
 	suspend fun load(programId: UUID, api: ApiClient = api()): Credits? = withContext(Dispatchers.IO) {
 		runCatching {
 			call(api, "/LocalRecs/LiveTv/Program/${programId.toString().replace("-", "")}/Credits")?.let(::parse)
-		}.onFailure { Timber.i("Besetzung für Sendung nicht verfügbar: %s", it.message) }.getOrNull()
+				.also { Log.i(LOG_TAG, "Besetzung: ${it?.actors?.size ?: 0} Darsteller, ${it?.directors?.size ?: 0} Regie") }
+		}.onFailure { Log.w(LOG_TAG, "Besetzung für Sendung nicht verfügbar", it) }.getOrNull()
 	}
 
 	/** „Regie: …“ und „Mit: A (Rolle), B …“ als Text, z. B. für das Popup im Programmführer. */
@@ -113,9 +120,13 @@ object LiveTvCredits {
 	fun appendToSummary(lifecycle: Lifecycle, summary: TextView, program: BaseItemDto) {
 		val programId = program.id
 		summary.tag = programId
+		Log.i(LOG_TAG, "Besetzung: Programmführer-Popup für $programId (${lifecycle.currentState})")
 		lifecycle.coroutineScope.launch {
 			val credits = load(programId) ?: return@launch
-			if (summary.tag != programId) return@launch
+			if (summary.tag != programId) {
+				Log.i(LOG_TAG, "Besetzung: Popup zeigt schon eine andere Sendung")
+				return@launch
+			}
 			val overview = program.overview.orEmpty()
 			val lines = summaryLines(summary.context, credits)
 			summary.text = if (overview.isBlank()) lines else "$overview\n\n$lines"
