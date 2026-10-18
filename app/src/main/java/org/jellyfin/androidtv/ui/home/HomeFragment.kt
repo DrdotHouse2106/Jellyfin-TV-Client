@@ -89,7 +89,11 @@ class HomeFragment : Fragment() {
 		val railHomeFocusRequester = remember { FocusRequester() }
 		var billboardItems by remember { mutableStateOf<List<BaseItemDto>>(emptyList()) }
 		var billboardFocused by remember { mutableStateOf(false) }
-		val selectedWorld by HomeHeroState.world.collectAsState()
+		val buttonsAlpha by androidx.compose.animation.core.animateFloatAsState(
+			targetValue = if (billboardFocused) 1f else 0f,
+			animationSpec = androidx.compose.animation.core.tween(250),
+			label = "BillboardButtonsAlpha",
+		)
 		// Hat der Benutzer schon eine Taste gedrückt? Dann wird ihm der Fokus nicht mehr weggenommen.
 		var userInteracted by remember { mutableStateOf(false) }
 		// Jellyfin-TV-Client: Begründungen der Empfehlungen (Plugin Local Recommendations ab 12.9.0)
@@ -158,8 +162,9 @@ class HomeFragment : Fragment() {
 										// Zurück im Banner: wieder der Titel statt einer Welt
 										if (it.hasFocus) HomeHeroState.world.value = null
 									}
-									// Bei ausgewählter Welt-Kachel gehören die Knöpfe nicht zur Anzeige (Platz bleibt, nichts springt)
-									.alpha(if (selectedWorld != null) 0f else 1f),
+									// Knöpfe nur zeigen, solange der Fokus im Banner ist (Platz bleibt, nichts springt);
+									// „Hoch“ aus der ersten Reihe holt sie zurück
+									.alpha(buttonsAlpha),
 								focusRequester = billboardFocusRequester,
 								downFocusRequester = rowsFocusRequester,
 								leftFocusRequester = railHomeFocusRequester,
