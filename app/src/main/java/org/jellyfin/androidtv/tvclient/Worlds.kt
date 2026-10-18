@@ -259,7 +259,8 @@ object Worlds {
 			}
 			val latest = async {
 				if (pluginId != null) {
-					// Zuletzt auf dem Server hinzugekommen: die Titel der Welt nach Hinzufügedatum
+					// Zuletzt auf dem Server hinzugekommen: ab Plugin 12.15.1 direkt (sort=added), sonst über die Ids
+					pluginGet(api, "/LocalRecs/Worlds/$pluginId/Items?sort=added&limit=20")?.let(::parseItems)?.takeIf { it.isNotEmpty() }?.let { return@async it }
 					val ids = (movies.await() + series.await()).map { it.id }.take(LATEST_CANDIDATES)
 					if (ids.isEmpty()) emptyList() else query(
 						GetItemsRequest(
