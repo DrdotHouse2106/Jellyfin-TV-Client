@@ -145,4 +145,13 @@
     <string name="tvclient_quick_audio_own">Deutsch bevorzugen</string>
     <string name="tvclient_quick_audio_original">Originalton</string>
     <string name="tvclient_quick_minutes">%s Min.</string>
+    <string name="tvclient_local_title">Heimnetz</string>
+    <string name="tvclient_local_edit">Adresse im Heimnetz …</string>
+    <string name="tvclient_local_hint">Im Heimnetz spricht Quallenkino direkt mit dem Server (schneller als über das Internet). Ohne Eintrag wird die vom Server gemeldete Adresse versucht. Die Anmeldung bleibt unverändert.</string>
+    <string name="tvclient_local_dialog">Lokale Adresse des Servers, z. B. die IP im Heimnetz. Ohne Port wird 8096 genommen. Leer lassen oder „Entfernen“, um nur die normale Adresse zu nutzen.</string>
+    <string name="tvclient_local_example">z. B. 192.168.1.10:8096</string>
+    <string name="tvclient_local_remove">Entfernen</string>
+    <string name="tvclient_local_using_home">Verbindung: Heimnetz (%1$s)</string>
+    <string name="tvclient_local_using_internet">Verbindung: Internet (%1$s)</string>
+    <string name="tvclient_local_using_unknown">Verbindung: wird geprüft …</string>
 </resources>

@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -97,6 +98,13 @@ private fun QuickSettings() {
 	fun <T : Any> set(preference: Preference<T>, value: T) {
 		prefs[preference] = value
 		revision++
+	}
+
+	val connection by TvClientLocalAddress.status.collectAsState()
+	val connectionLabel = when (connection?.route) {
+		TvClientLocalAddress.Route.HOME -> stringResource(R.string.tvclient_local_using_home, connection?.address.orEmpty())
+		TvClientLocalAddress.Route.INTERNET -> stringResource(R.string.tvclient_local_using_internet, connection?.address.orEmpty())
+		null -> stringResource(R.string.tvclient_local_using_unknown)
 	}
 
 	val on = stringResource(R.string.tvclient_quick_on)
@@ -199,6 +207,15 @@ private fun QuickSettings() {
 			}
 		}
 
+		// Heimnetz: lokale Server-Adresse statt Umweg über das Internet
+		Section(stringResource(R.string.tvclient_local_title))
+		Text(connectionLabel, fontSize = 16.sp, color = Color(0xFFB3B3B3), modifier = Modifier.padding(bottom = 10.dp))
+		ActionChip(stringResource(R.string.tvclient_local_edit), R.drawable.ic_house) {
+			val serverId = sessionRepository.currentSession.value?.serverId ?: return@ActionChip
+			editLocalAddress(context, serverId)
+		}
+		Hint(stringResource(R.string.tvclient_local_hint))
+
 		Section(stringResource(R.string.tvclient_quick_more))
 		ActionChip(stringResource(R.string.tvclient_quick_more_button), R.drawable.ic_settings) {
 			context.startActivity(ActivityDestinations.userPreferences(context))
@@ -206,9 +223,29 @@ private fun QuickSettings() {
 
 		Section(stringResource(R.string.pref_about_title))
 		Text("Quallenkino ${BuildConfig.VERSION_NAME}", fontSize = 16.sp, color = Color(0xFFB3B3B3))
+		Text(connectionLabel, fontSize = 14.sp, color = Color(0xFF8A8F99), modifier = Modifier.padding(top = 4.dp))
 		Text(stringResource(R.string.tvclient_quick_tmdb), fontSize = 14.sp, color = Color(0xFF8A8F99), modifier = Modifier.padding(top = 4.dp))
 		Spacer(Modifier.height(48.dp))
 	}
+}
+
+/** Eingabe der Heimadresse (klassischer Dialog, damit die Bildschirmtastatur zuverlässig erscheint). */
+private fun editLocalAddress(context: android.content.Context, serverId: java.util.UUID) {
+	val input = android.widget.EditText(context).apply {
+		setText(TvClientLocalAddress.manual(serverId).orEmpty())
+		hint = context.getString(R.string.tvclient_local_example)
+		inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_URI
+		setSingleLine()
+		setSelection(text.length)
+	}
+	android.app.AlertDialog.Builder(context)
+		.setTitle(R.string.tvclient_local_edit)
+		.setMessage(R.string.tvclient_local_dialog)
+		.setView(input)
+		.setPositiveButton(R.string.lbl_save) { _, _ -> TvClientLocalAddress.setManual(serverId, input.text.toString()) }
+		.setNeutralButton(R.string.tvclient_local_remove) { _, _ -> TvClientLocalAddress.setManual(serverId, null) }
+		.setNegativeButton(R.string.lbl_cancel, null)
+		.show()
 }
 
 private fun activityOf(context: android.content.Context): android.app.Activity? {

@@ -16,6 +16,7 @@ import org.jellyfin.androidtv.preference.TelemetryPreferences
 import org.jellyfin.androidtv.preference.constant.UserSelectBehavior.DISABLED
 import org.jellyfin.androidtv.preference.constant.UserSelectBehavior.LAST_USER
 import org.jellyfin.androidtv.preference.constant.UserSelectBehavior.SPECIFIC_USER
+import org.jellyfin.androidtv.tvclient.TvClientLocalAddress
 import org.jellyfin.androidtv.util.sdk.forUser
 import org.jellyfin.sdk.api.client.ApiClient
 import org.jellyfin.sdk.api.client.exception.ApiClientException
@@ -185,7 +186,7 @@ class SessionRepositoryImpl(
 		)
 	}
 
-	private fun ApiClient.applySession(session: Session?, newDeviceInfo: DeviceInfo = defaultDeviceInfo): Boolean {
+	private suspend fun ApiClient.applySession(session: Session?, newDeviceInfo: DeviceInfo = defaultDeviceInfo): Boolean {
 		if (session == null) {
 			update(
 				baseUrl = null,
@@ -196,8 +197,10 @@ class SessionRepositoryImpl(
 			val server = authenticationStore.getServer(session.serverId)
 				?: return false
 
+			// Jellyfin-TV-Client: im Heimnetz direkt die lokale Adresse nutzen
+			val address = TvClientLocalAddress.choose(session.serverId, server.address)
 			update(
-				baseUrl = server.address,
+				baseUrl = address,
 				accessToken = session.accessToken,
 				deviceInfo = newDeviceInfo,
 			)

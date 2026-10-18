@@ -1,5 +1,12 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.24.0 – 2026-10-18
+
+- **Heimnetz:** Quallenkino spricht zu Hause direkt mit dem Server statt über die Internet-Adresse – schneller und ohne Umweg über den Internet-Upload. In den Einstellungen unter **„Heimnetz“** lässt sich die lokale Adresse eintragen (z. B. `192.168.1.10`, ohne Port wird 8096 genommen). Ohne Eintrag wird die vom Server gemeldete Adresse versucht, wenn sie im Heimnetz liegt.
+- Die Heimadresse wird nur genutzt, wenn sie innerhalb von 1,5 Sekunden antwortet und derselbe Server ist (gleiche Server-Id). Sonst bleibt alles wie bisher. Anmeldung und Konten bleiben unverändert.
+- Geprüft wird beim Start, beim Zurückkehren in die App und bei einem Netzwechsel – nie während einer laufenden Wiedergabe.
+- Die Einstellungen und „Über“ zeigen, welche Verbindung gerade genutzt wird („Heimnetz“ oder „Internet“).
+
 ## 1.23.11 – 2026-10-18
 
 - Intelligente Untertitel mit **Originalton**: Es starten die vollen deutschen Untertitel. Vorher kamen nur die erzwungenen, weil der Vorschlag des Servers für den deutschen Standardton berechnet war.

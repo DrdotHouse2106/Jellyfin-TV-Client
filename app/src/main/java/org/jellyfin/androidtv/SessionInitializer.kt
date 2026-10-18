@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jellyfin.androidtv.auth.repository.SessionRepository
 import org.jellyfin.androidtv.di.KoinInitializer
+import org.jellyfin.androidtv.tvclient.TvClientLocalAddress
 
 @Suppress("unused")
 class SessionInitializer : Initializer<Unit> {
@@ -16,6 +17,9 @@ class SessionInitializer : Initializer<Unit> {
 		val koin = AppInitializer.getInstance(context)
 			.initializeComponent(KoinInitializer::class.java)
 			.koin
+
+		// Jellyfin-TV-Client: Heimnetz-Adresse bei Rückkehr in die App und Netzwechsel neu prüfen
+		TvClientLocalAddress.start(context)
 
 		// Restore system session
 		ProcessLifecycleOwner.get().lifecycleScope.launch(Dispatchers.IO) {

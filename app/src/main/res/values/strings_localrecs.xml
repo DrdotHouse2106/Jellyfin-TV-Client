@@ -145,4 +145,13 @@
     <string name="tvclient_quick_audio_own">Prefer my language</string>
     <string name="tvclient_quick_audio_original">Original audio</string>
     <string name="tvclient_quick_minutes">%s min</string>
+    <string name="tvclient_local_title">Home network</string>
+    <string name="tvclient_local_edit">Home network address …</string>
+    <string name="tvclient_local_hint">At home, Quallenkino talks to the server directly (faster than over the internet). Without an entry, the address reported by the server is tried. Your sign-in stays the same.</string>
+    <string name="tvclient_local_dialog">Local address of the server, e.g. its IP in your home network. Without a port, 8096 is used. Leave empty or choose “Remove” to use only the normal address.</string>
+    <string name="tvclient_local_example">e.g. 192.168.1.10:8096</string>
+    <string name="tvclient_local_remove">Remove</string>
+    <string name="tvclient_local_using_home">Connection: home network (%1$s)</string>
+    <string name="tvclient_local_using_internet">Connection: internet (%1$s)</string>
+    <string name="tvclient_local_using_unknown">Connection: checking …</string>
 </resources>
