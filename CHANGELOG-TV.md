@@ -2,7 +2,7 @@
 
 ## 1.25.0 – 2026-10-19
 
-- **Updates ohne App-Store:** Quallenkino sucht beim Start (höchstens einmal am Tag) nach einer neuen Version in den GitHub-Releases und zeigt die Änderungen. „Jetzt installieren“ lädt die APK mit Fortschrittsanzeige, prüft Prüfsumme und Signatur und startet die Installation. In den Einstellungen unter **„Updates“**: „Nach Updates suchen“ und „Automatisch beim Start prüfen“ (An/Aus).
+- **Updates ohne App-Store:** Quallenkino sucht beim Öffnen nach einer neuen Version in den GitHub-Releases und fragt gleich, ob sie installiert werden soll (mit den Änderungen). Zusätzlich erscheint links in der Navigation unter den Einstellungen ein grüner Download-Knopf – ein Klick installiert das Update. „Jetzt installieren“ lädt die APK mit Fortschrittsanzeige, prüft Prüfsumme und Signatur und startet die Installation. In den Einstellungen unter **„Updates“**: „Nach Updates suchen“ und „Automatisch beim Start prüfen“ (An/Aus).
 - Beim ersten Update führt Quallenkino zur Einstellung **„Unbekannte Apps installieren“** (Fire TV: „Apps unbekannter Herkunft“), die einmalig für Quallenkino erlaubt werden muss.
 
 ## 1.24.1 – 2026-10-18

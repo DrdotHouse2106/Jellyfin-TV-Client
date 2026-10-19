@@ -20,6 +20,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -37,7 +39,6 @@ import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 import java.security.MessageDigest
-import kotlin.time.Duration.Companion.hours
 
 /**
  * Jellyfin-TV-Client: Selbst-Update ohne App-Store. Prüft die neueste Version in den GitHub-Releases,
@@ -53,7 +54,6 @@ object SelfUpdate {
 	private const val PREFS = "tvclient_update"
 	private const val LAST_CHECK = "last_check"
 	private const val TIMEOUT_MS = 15_000
-	private val CHECK_INTERVAL = 20.hours
 
 	/** Beim Start automatisch nach Updates suchen (höchstens einmal am Tag). */
 	val autoPreference = booleanPreference("pref_tvclient_update_auto", true)
@@ -61,6 +61,11 @@ object SelfUpdate {
 	data class Release(val version: String, val apkUrl: String, val size: Long?, val sha256: String?, val notes: String)
 
 	private val json = Json { ignoreUnknownKeys = true }
+
+	private val _available = MutableStateFlow<Release?>(null)
+
+	/** Gefundene neue Version (für den Download-Knopf in der Navigation). */
+	val available = _available.asStateFlow()
 
 	/** Versionen vergleichen: „1.24.10“ > „1.24.9“; „v“ vorne und Zusätze („-beta“) werden ignoriert. */
 	fun isNewer(remote: String, local: String): Boolean {
@@ -119,7 +124,7 @@ object SelfUpdate {
 		val digest = (asset["digest"] as? JsonPrimitive)?.content?.takeIf { it.startsWith("sha256:") }?.removePrefix("sha256:")
 		val notes = runCatching { changesSince(get(CHANGELOG_URL), BuildConfig.VERSION_NAME) }.getOrDefault("")
 		Release(tag.removePrefix("v"), url, (asset["size"] as? JsonPrimitive)?.longOrNull, digest, notes)
-	}
+	}.also { _available.value = it }
 
 	private fun prefs(context: Context) = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
@@ -128,18 +133,16 @@ object SelfUpdate {
 		controller != null && (controller.isPlaying || controller.isPaused)
 	}.getOrDefault(false)
 
-	/** Beim Start: höchstens einmal am Tag still prüfen und nur bei einer neuen Version fragen. */
+	/** Beim Öffnen der App still prüfen und bei einer neuen Version gleich fragen. */
 	fun autoCheck(activity: Activity) {
 		val owner = activity as? LifecycleOwner ?: return
 		val enabled = runCatching {
 			KoinJavaComponent.get<org.jellyfin.androidtv.preference.UserPreferences>(org.jellyfin.androidtv.preference.UserPreferences::class.java)[autoPreference]
 		}.getOrDefault(true)
 		if (!enabled) return
-		val now = System.currentTimeMillis()
-		if (now - prefs(activity).getLong(LAST_CHECK, 0) < CHECK_INTERVAL.inWholeMilliseconds) return
 		owner.lifecycleScope.launch {
 			// Erst die Startseite in Ruhe aufbauen lassen
-			delay(8_000)
+			delay(4_000)
 			if (isPlaying() || activity.isFinishing) return@launch
 			val release = runCatching { check() }.onFailure { Timber.w(it, "Update-Prüfung fehlgeschlagen") }.getOrNull()
 			prefs(activity).edit().putLong(LAST_CHECK, System.currentTimeMillis()).apply()
@@ -175,7 +178,7 @@ object SelfUpdate {
 	}
 
 	/** Herunterladen (mit Fortschritt), prüfen und installieren. */
-	private fun install(activity: Activity, release: Release) {
+	fun install(activity: Activity, release: Release) {
 		val owner = activity as? LifecycleOwner ?: return
 		if (!canInstall(activity)) return requestInstallPermission(activity)
 

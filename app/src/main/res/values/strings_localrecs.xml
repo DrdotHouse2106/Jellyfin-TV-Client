@@ -172,4 +172,5 @@
     <string name="tvclient_update_permission">To install updates, Quallenkino needs permission to install apps once. Please enable “Install unknown apps” (Fire TV: “Apps from unknown sources”) for Quallenkino, then choose “Install now” again.</string>
     <string name="tvclient_update_permission_open">Open settings</string>
     <string name="tvclient_update_hint">New versions come straight from the GitHub releases. Android asks for confirmation on every install.</string>
+    <string name="tvclient_update_rail">Install update</string>
 </resources>

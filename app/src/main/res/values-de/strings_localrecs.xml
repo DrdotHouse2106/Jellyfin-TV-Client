@@ -172,4 +172,5 @@
     <string name="tvclient_update_permission">Für Updates muss Quallenkino einmalig Apps installieren dürfen. Bitte in den Einstellungen „Unbekannte Apps installieren“ (Fire TV: „Apps unbekannter Herkunft“) für Quallenkino einschalten und danach erneut „Jetzt installieren“ wählen.</string>
     <string name="tvclient_update_permission_open">Einstellungen öffnen</string>
     <string name="tvclient_update_hint">Neue Versionen kommen direkt aus den GitHub-Releases. Android fragt bei jeder Installation nach einer Bestätigung.</string>
+    <string name="tvclient_update_rail">Update installieren</string>
 </resources>

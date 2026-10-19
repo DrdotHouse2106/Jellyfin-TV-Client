@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -63,11 +64,14 @@ fun SideRail(
 	val guide = remember { FocusRequester() }
 	val settings = remember { FocusRequester() }
 	val requests = remember { FocusRequester() }
+	val update = remember { FocusRequester() }
+	// Neue Version gefunden: Download-Knopf unter den Einstellungen
+	val availableUpdate by SelfUpdate.available.collectAsState()
 	// Anfragen-Knopf nur, wenn Jellyseerr (über Jellyfin Enhanced oder direkt) nutzbar ist
 	val api = koinInject<ApiClient>()
 	var showRequests by remember { mutableStateOf(false) }
 	LaunchedEffect(Unit) { showRequests = Jellyseerr.detect(api) != null }
-	val order = listOfNotNull(user, search, home, guide, requests.takeIf { showRequests }, settings)
+	val order = listOfNotNull(user, search, home, guide, requests.takeIf { showRequests }, settings, update.takeIf { availableUpdate != null })
 
 	fun Modifier.railFocus(self: FocusRequester): Modifier {
 		val index = order.indexOf(self)
@@ -114,6 +118,11 @@ fun SideRail(
 		RailButton(R.drawable.ic_settings, R.string.lbl_settings, Modifier.railFocus(settings)) {
 			navigationRepository.navigate(Destinations.quickSettings)
 		}
+		availableUpdate?.let { release ->
+			RailButton(R.drawable.ic_tvclient_download, R.string.tvclient_update_rail, Modifier.railFocus(update), highlight = true) {
+				activity?.let { SelfUpdate.install(it, release) }
+			}
+		}
 	}
 }
 
@@ -123,12 +132,16 @@ private fun RailButton(
 	@StringRes label: Int,
 	modifier: Modifier = Modifier,
 	active: Boolean = false,
+	highlight: Boolean = false,
 	onClick: () -> Unit,
 ) {
 	IconButton(
 		onClick = onClick,
 		modifier = modifier,
-		colors = if (active) {
+		colors = if (highlight) {
+			// Update verfügbar: grün hervorgehoben
+			ButtonDefaults.colors(containerColor = Color(0xFF2E7D32), contentColor = Color.White)
+		} else if (active) {
 			ButtonDefaults.colors(
 				containerColor = JellyfinTheme.colorScheme.buttonActive,
 				contentColor = JellyfinTheme.colorScheme.onButtonActive,
