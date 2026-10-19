@@ -221,6 +221,17 @@ private fun QuickSettings() {
 			context.startActivity(ActivityDestinations.userPreferences(context))
 		}
 
+		// Updates direkt aus den GitHub-Releases
+		Section(stringResource(R.string.tvclient_update_title))
+		Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+			ActionChip(stringResource(R.string.tvclient_update_check), R.drawable.ic_loop) {
+				activityOf(context)?.let { SelfUpdate.manualCheck(it) }
+			}
+		}
+		Section(stringResource(R.string.tvclient_update_auto))
+		Choices(listOf(Choice(true, on), Choice(false, off)), prefs[SelfUpdate.autoPreference]) { set(SelfUpdate.autoPreference, it) }
+		Hint(stringResource(R.string.tvclient_update_hint))
+
 		Section(stringResource(R.string.pref_about_title))
 		Text("Quallenkino ${BuildConfig.VERSION_NAME}", fontSize = 16.sp, color = Color(0xFFB3B3B3))
 		Text(connectionLabel, fontSize = 14.sp, color = Color(0xFF8A8F99), modifier = Modifier.padding(top = 4.dp))

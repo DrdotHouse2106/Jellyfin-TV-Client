@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.25.0 – 2026-10-19
+
+- **Updates ohne App-Store:** Quallenkino sucht beim Start (höchstens einmal am Tag) nach einer neuen Version in den GitHub-Releases und zeigt die Änderungen. „Jetzt installieren“ lädt die APK mit Fortschrittsanzeige, prüft Prüfsumme und Signatur und startet die Installation. In den Einstellungen unter **„Updates“**: „Nach Updates suchen“ und „Automatisch beim Start prüfen“ (An/Aus).
+- Beim ersten Update führt Quallenkino zur Einstellung **„Unbekannte Apps installieren“** (Fire TV: „Apps unbekannter Herkunft“), die einmalig für Quallenkino erlaubt werden muss.
+
 ## 1.24.1 – 2026-10-18
 
 - **„Kürzlich hinzugefügt“ einheitlich im Querformat:** Serien, Staffeln und einzelne neue Folgen zeigen das Vorschaubild der Serie (sonst ihren Hintergrund, zuletzt das Standbild der Folge) – passend zu den anderen Reihen der Startseite. Darunter steht „S3:F5 · Folgentitel“, „Staffel 3“ oder „3 neue Folgen“.

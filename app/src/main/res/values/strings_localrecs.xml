@@ -156,4 +156,20 @@
     <string name="tvclient_local_using_unknown">Connection: checking …</string>
     <string name="tvclient_person_not_found">No person page found</string>
     <string name="tvclient_new_episodes">%1$d new episodes</string>
+    <string name="tvclient_update_title">Updates</string>
+    <string name="tvclient_update_check">Check for updates</string>
+    <string name="tvclient_update_auto">Check automatically at start</string>
+    <string name="tvclient_update_checking">Checking for updates …</string>
+    <string name="tvclient_update_current">Quallenkino %1$s is up to date.</string>
+    <string name="tvclient_update_failed">Update failed. Please try again later.</string>
+    <string name="tvclient_update_available">Update available (%1$s)</string>
+    <string name="tvclient_update_no_notes">A new version of Quallenkino is available.</string>
+    <string name="tvclient_update_install">Install now</string>
+    <string name="tvclient_update_later">Later</string>
+    <string name="tvclient_update_downloading">Downloading Quallenkino %1$s …</string>
+    <string name="tvclient_update_signature">The update is not signed by the same source and was discarded.</string>
+    <string name="tvclient_update_permission_title">Allow installation</string>
+    <string name="tvclient_update_permission">To install updates, Quallenkino needs permission to install apps once. Please enable “Install unknown apps” (Fire TV: “Apps from unknown sources”) for Quallenkino, then choose “Install now” again.</string>
+    <string name="tvclient_update_permission_open">Open settings</string>
+    <string name="tvclient_update_hint">New versions come straight from the GitHub releases. Android asks for confirmation on every install.</string>
 </resources>

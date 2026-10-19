@@ -97,7 +97,11 @@ Alternativ per ADB: `adb install quallenkino.apk`.
 
 ### Updates
 
-Es gibt keine automatischen Store-Updates. Für ein Update die neue APK genauso installieren – die Einstellungen und die Anmeldung bleiben erhalten (solange die APK mit demselben Schlüssel signiert ist).
+Quallenkino aktualisiert sich selbst – ohne App-Store. Beim Start wird höchstens einmal am Tag nach einer neuen Version gesucht. Von Hand geht es unter **Einstellungen → Updates → „Nach Updates suchen“**. Bei einer neuen Version erscheinen die Änderungen; „Jetzt installieren“ lädt die APK aus den GitHub-Releases, prüft Prüfsumme und Signatur und startet die Installation. Einstellungen und Anmeldung bleiben erhalten.
+
+Einmalig nötig: Beim ersten Update fragt Quallenkino nach der Erlaubnis **„Unbekannte Apps installieren“** (Fire TV: **„Apps unbekannter Herkunft“**) und öffnet die passende Einstellung. Danach bestätigt man jede Installation mit einem Klick – das verlangt Android.
+
+Alternativ geht ein Update weiterhin von Hand: die neue APK genauso installieren wie beim ersten Mal (solange sie mit demselben Schlüssel signiert ist).
 
 ## Startseite
 
