@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.25.2 – 2026-10-19
+
+- QR-Code für „Erinnerungen aufs Handy“ lädt wieder: Links mit Anmeldung (QR-Code, Trailer-Vorschau, Teaser im Bildschirmschoner, Welten) verwenden jetzt „ApiKey=“ statt „api_key=“, wie es neuere Jellyfin-Versionen verlangen.
+
 ## 1.25.1 – 2026-10-19
 
 - **Live-TV-Sendungen merken:** In der Programm-Info und im Programmführer gibt es „Merken“ (bei Serien auch „Serie merken“). Gemerkte Sendungen zeigen „Gemerkt“. Braucht das Plugin Local Recommendations ab 12.20 – ohne erscheinen die Knöpfe nicht.

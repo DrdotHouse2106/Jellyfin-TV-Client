@@ -81,7 +81,7 @@ object TrailerPreview {
 			api.createUrl(
 				pathTemplate = "/Videos/{itemId}/stream",
 				pathParameters = mapOf("itemId" to trailer.id),
-				queryParameters = mapOf("static" to true, "api_key" to api.accessToken),
+				queryParameters = mapOf("static" to true, "ApiKey" to api.accessToken),
 			)
 		} catch (@Suppress("TooGenericExceptionCaught") err: Exception) {
 			Timber.w(err, "Trailer für %s nicht verfügbar", item.name)

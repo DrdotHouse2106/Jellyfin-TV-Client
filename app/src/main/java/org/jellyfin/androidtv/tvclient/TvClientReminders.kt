@@ -136,7 +136,7 @@ object TvClientReminders {
 	fun qrUrl(target: String): String? {
 		val api = api()
 		val base = api.baseUrl?.trimEnd('/') ?: return null
-		return "$base/LocalRecs/Calendar/Qr?target=$target&api_key=${api.accessToken}"
+		return "$base/LocalRecs/Calendar/Qr?target=$target&ApiKey=${api.accessToken}"
 	}
 
 	private fun message(context: Context, code: Int?) = when (code) {

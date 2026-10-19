@@ -399,7 +399,7 @@ object Worlds {
 		val base = api.baseUrl?.trimEnd('/') ?: return null
 		val path = if (url.startsWith("/")) url else "/$url"
 		val token = api.accessToken ?: return base + path
-		return base + path + (if ('?' in path) "&" else "?") + "api_key=" + token
+		return base + path + (if ('?' in path) "&" else "?") + "ApiKey=" + token
 	}
 
 	/** Id der Plugin-Welt, die zu dieser Welt passt (über Id, Name oder Studio), sonst null. */
