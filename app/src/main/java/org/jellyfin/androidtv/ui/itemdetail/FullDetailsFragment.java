@@ -969,6 +969,15 @@ public class FullDetailsFragment extends Fragment implements RecordingIndicatorV
             }
         }
 
+        // Jellyfin-TV-Client: Sendung bzw. Serie merken (Kalender aufs Handy, Plugin Local Recommendations)
+        if (mProgramInfo != null) {
+            TextUnderButton remindButton = TextUnderButton.create(requireContext(), R.drawable.ic_add, buttonSize, 2, getString(R.string.tvclient_reminder_save), v -> { });
+            TextUnderButton remindSeriesButton = TextUnderButton.create(requireContext(), R.drawable.ic_add, buttonSize, 2, getString(R.string.tvclient_reminder_series_save), v -> { });
+            mDetailsOverviewRow.addAction(remindButton);
+            mDetailsOverviewRow.addAction(remindSeriesButton);
+            org.jellyfin.androidtv.tvclient.TvClientReminders.bind(getLifecycle(), mProgramInfo, remindButton, remindSeriesButton);
+        }
+
         org.jellyfin.sdk.model.api.UserItemDataDto userData = mBaseItem.getUserData();
         if (userData != null && mProgramInfo == null) {
             if (mBaseItem.getType() != BaseItemKind.MUSIC_ARTIST && mBaseItem.getType() != BaseItemKind.PERSON) {

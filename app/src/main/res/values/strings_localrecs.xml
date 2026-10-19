@@ -173,4 +173,19 @@
     <string name="tvclient_update_permission_open">Open settings</string>
     <string name="tvclient_update_hint">New versions come straight from the GitHub releases. Android asks for confirmation on every install.</string>
     <string name="tvclient_update_rail">Install update</string>
+    <string name="tvclient_reminder_save">Remind me</string>
+    <string name="tvclient_reminder_saved">Reminder set</string>
+    <string name="tvclient_reminder_series_save">Remind series</string>
+    <string name="tvclient_reminder_series_saved">Series reminder set</string>
+    <string name="tvclient_reminder_over">This program has already ended.</string>
+    <string name="tvclient_reminder_forbidden">No access to live TV.</string>
+    <string name="tvclient_reminder_failed">Could not set reminder.</string>
+    <string name="tvclient_calendar_title">Reminders on your phone</string>
+    <string name="tvclient_calendar_hint">Scan the QR code with your phone and subscribe to the calendar – programs you saved show up there with a reminder.</string>
+    <string name="tvclient_calendar_iphone">iPhone</string>
+    <string name="tvclient_calendar_other">Android / other</string>
+    <string name="tvclient_calendar_renew">Create new link</string>
+    <string name="tvclient_calendar_renewed">New link created – the old one no longer works.</string>
+    <string name="tvclient_calendar_loading">Loading calendar …</string>
+    <string name="tvclient_calendar_failed">Calendar not available.</string>
 </resources>

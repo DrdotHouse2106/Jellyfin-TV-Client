@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -55,6 +57,7 @@ import org.jellyfin.androidtv.auth.repository.SessionRepository
 import org.jellyfin.androidtv.data.service.BackgroundService
 import org.jellyfin.androidtv.preference.UserPreferences
 import org.jellyfin.androidtv.ui.base.JellyfinTheme
+import org.jellyfin.androidtv.ui.composable.AsyncImage
 import org.jellyfin.androidtv.ui.base.Text
 import org.jellyfin.androidtv.ui.navigation.ActivityDestinations
 import org.jellyfin.preference.Preference
@@ -105,6 +108,15 @@ private fun QuickSettings() {
 		TvClientLocalAddress.Route.HOME -> stringResource(R.string.tvclient_local_using_home, connection?.address.orEmpty())
 		TvClientLocalAddress.Route.INTERNET -> stringResource(R.string.tvclient_local_using_internet, connection?.address.orEmpty())
 		null -> stringResource(R.string.tvclient_local_using_unknown)
+	}
+
+	// Live-TV-Erinnerungen: Kalender-Abo per QR-Code (nur wenn der Server es anbietet)
+	var calendar by remember { mutableStateOf<TvClientReminders.Calendar?>(null) }
+	var remindersAvailable by remember { mutableStateOf(false) }
+	var qrTarget by remember { mutableStateOf("webcal") }
+	LaunchedEffect(Unit) {
+		remindersAvailable = TvClientReminders.isAvailable()
+		if (remindersAvailable) calendar = TvClientReminders.calendar()
 	}
 
 	val on = stringResource(R.string.tvclient_quick_on)
@@ -204,6 +216,45 @@ private fun QuickSettings() {
 			}
 			ActionChip(stringResource(R.string.tvclient_quick_servers), R.drawable.ic_users) {
 				context.startActivity(ActivityDestinations.authPreferences(context))
+			}
+		}
+
+		if (remindersAvailable) {
+			Section(stringResource(R.string.tvclient_calendar_title))
+			Choices(
+				listOf(
+					Choice("webcal", stringResource(R.string.tvclient_calendar_iphone)),
+					Choice("https", stringResource(R.string.tvclient_calendar_other)),
+				),
+				qrTarget,
+			) { qrTarget = it }
+			val current = calendar
+			if (current == null) {
+				Hint(stringResource(R.string.tvclient_calendar_loading))
+			} else {
+				Row(horizontalArrangement = Arrangement.spacedBy(24.dp), verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 12.dp)) {
+					Box(Modifier.size(220.dp).background(Color.White, RoundedCornerShape(12.dp)).padding(12.dp)) {
+						// Neuer Link → neue Bildadresse, damit kein alter QR-Code aus dem Speicher kommt
+						AsyncImage(
+							modifier = Modifier.fillMaxSize(),
+							url = TvClientReminders.qrUrl(qrTarget)?.let { "$it&v=${current.url.hashCode()}" },
+							aspectRatio = 1f,
+						)
+					}
+					Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.widthIn(max = 520.dp)) {
+						Text(stringResource(R.string.tvclient_calendar_hint), fontSize = 15.sp, color = Color(0xFFDDE1E8))
+						Text(if (qrTarget == "webcal") current.webcalUrl else current.url, fontSize = 12.sp, color = Color(0xFF8A8F99), maxLines = 2, overflow = TextOverflow.Ellipsis)
+						val renewed = stringResource(R.string.tvclient_calendar_renewed)
+						ActionChip(stringResource(R.string.tvclient_calendar_renew), R.drawable.ic_loop) {
+							scope.launch {
+								TvClientReminders.calendar(renew = true)?.let {
+									calendar = it
+									android.widget.Toast.makeText(context, renewed, android.widget.Toast.LENGTH_SHORT).show()
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 

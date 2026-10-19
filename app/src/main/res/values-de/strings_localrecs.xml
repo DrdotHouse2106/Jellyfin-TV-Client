@@ -173,4 +173,19 @@
     <string name="tvclient_update_permission_open">Einstellungen öffnen</string>
     <string name="tvclient_update_hint">Neue Versionen kommen direkt aus den GitHub-Releases. Android fragt bei jeder Installation nach einer Bestätigung.</string>
     <string name="tvclient_update_rail">Update installieren</string>
+    <string name="tvclient_reminder_save">Merken</string>
+    <string name="tvclient_reminder_saved">Gemerkt</string>
+    <string name="tvclient_reminder_series_save">Serie merken</string>
+    <string name="tvclient_reminder_series_saved">Serie gemerkt</string>
+    <string name="tvclient_reminder_over">Die Sendung ist schon vorbei.</string>
+    <string name="tvclient_reminder_forbidden">Kein Zugriff auf Live-TV.</string>
+    <string name="tvclient_reminder_failed">Merken hat nicht geklappt.</string>
+    <string name="tvclient_calendar_title">Erinnerungen aufs Handy</string>
+    <string name="tvclient_calendar_hint">QR-Code mit dem Handy scannen und den Kalender abonnieren – gemerkte Sendungen erscheinen dort mit Erinnerung.</string>
+    <string name="tvclient_calendar_iphone">iPhone</string>
+    <string name="tvclient_calendar_other">Android / andere</string>
+    <string name="tvclient_calendar_renew">Neuen Link erzeugen</string>
+    <string name="tvclient_calendar_renewed">Neuer Link erzeugt – der alte gilt nicht mehr.</string>
+    <string name="tvclient_calendar_loading">Kalender wird geladen …</string>
+    <string name="tvclient_calendar_failed">Kalender nicht verfügbar.</string>
 </resources>

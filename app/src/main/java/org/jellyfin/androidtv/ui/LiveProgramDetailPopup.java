@@ -236,6 +236,11 @@ public class LiveProgramDetailPopup {
                 createTuneButton();
             }
 
+            // Jellyfin-TV-Client: Sendung bzw. Serie merken (Kalender aufs Handy)
+            Button remind = addButton(mDButtonRow, R.string.tvclient_reminder_save);
+            Button remindSeries = addButton(mDButtonRow, R.string.tvclient_reminder_series_save);
+            org.jellyfin.androidtv.tvclient.TvClientReminders.bind(lifecycle, mProgram, remind, remindSeries);
+
             createFavoriteButton();
         } else {
             // program has already ended

@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.25.1 – 2026-10-19
+
+- **Live-TV-Sendungen merken:** In der Programm-Info und im Programmführer gibt es „Merken“ (bei Serien auch „Serie merken“). Gemerkte Sendungen zeigen „Gemerkt“. Braucht das Plugin Local Recommendations ab 12.20 – ohne erscheinen die Knöpfe nicht.
+- **Erinnerungen aufs Handy:** In den Einstellungen zeigt „Erinnerungen aufs Handy“ einen QR-Code (iPhone oder Android/andere). Damit abonniert man den Kalender mit allen gemerkten Sendungen. „Neuen Link erzeugen“ macht den alten Link ungültig.
+
 ## 1.25.0 – 2026-10-19
 
 - **Updates ohne App-Store:** Quallenkino sucht beim Öffnen nach einer neuen Version in den GitHub-Releases und fragt gleich, ob sie installiert werden soll (mit den Änderungen). Zusätzlich erscheint links in der Navigation unter den Einstellungen ein grüner Download-Knopf – ein Klick installiert das Update. „Jetzt installieren“ lädt die APK mit Fortschrittsanzeige, prüft Prüfsumme und Signatur und startet die Installation. In den Einstellungen unter **„Updates“**: „Nach Updates suchen“ und „Automatisch beim Start prüfen“ (An/Aus).
