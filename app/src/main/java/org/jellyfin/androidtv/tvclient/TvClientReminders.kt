@@ -34,7 +34,8 @@ import java.util.UUID
 object TvClientReminders {
 	private const val TIMEOUT_MS = 8_000
 
-	data class Calendar(val url: String, val webcalUrl: String)
+	/** Abo-Links; [pageUrl] ist die Abo-Seite (ab LocalRecs 12.23), auf die der QR-Code dann führt. */
+	data class Calendar(val url: String, val webcalUrl: String, val pageUrl: String? = null)
 
 	/** Gemerkte Sendungen (Id ohne Bindestriche) → aus einer gemerkten Serie? */
 	private val _remembered = MutableStateFlow<Map<String, Boolean>>(emptyMap())
@@ -128,11 +129,12 @@ object TvClientReminders {
 			Calendar(
 				url = (obj["Url"] as JsonPrimitive).content,
 				webcalUrl = (obj["WebcalUrl"] as? JsonPrimitive)?.content ?: (obj["Url"] as JsonPrimitive).content.replaceFirst(Regex("^https?://"), "webcal://"),
+				pageUrl = (obj["PageUrl"] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() },
 			)
 		}.onFailure { Timber.w(it, "Kalender nicht verfügbar") }.getOrNull()
 	}
 
-	/** QR-Code als SVG vom Server (target: „webcal“ fürs iPhone, „https“ für andere). */
+	/** QR-Code als SVG vom Server (target: „page“ Abo-Seite, „webcal“ fürs iPhone, „https“ für andere). */
 	fun qrUrl(target: String): String? {
 		val api = api()
 		val base = api.baseUrl?.trimEnd('/') ?: return null

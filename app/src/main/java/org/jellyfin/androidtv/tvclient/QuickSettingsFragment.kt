@@ -246,14 +246,18 @@ private fun QuickSettings(onChooseAvatar: () -> Unit) {
 
 		if (remindersAvailable) {
 			Section(stringResource(R.string.tvclient_calendar_title))
-			Choices(
-				listOf(
-					Choice("webcal", stringResource(R.string.tvclient_calendar_iphone)),
-					Choice("https", stringResource(R.string.tvclient_calendar_other)),
-				),
-				qrTarget,
-			) { qrTarget = it }
 			val current = calendar
+			// Mit Abo-Seite (LocalRecs ab 12.23) ein QR-Code für alle Handys, sonst Auswahl iPhone/andere
+			if (current != null && current.pageUrl == null) {
+				Choices(
+					listOf(
+						Choice("webcal", stringResource(R.string.tvclient_calendar_iphone)),
+						Choice("https", stringResource(R.string.tvclient_calendar_other)),
+					),
+					qrTarget,
+				) { qrTarget = it }
+			}
+			val target = if (current?.pageUrl != null) "page" else qrTarget
 			if (current == null) {
 				Hint(stringResource(R.string.tvclient_calendar_loading))
 			} else {
@@ -262,13 +266,13 @@ private fun QuickSettings(onChooseAvatar: () -> Unit) {
 						// Neuer Link → neue Bildadresse, damit kein alter QR-Code aus dem Speicher kommt
 						AsyncImage(
 							modifier = Modifier.fillMaxSize(),
-							url = TvClientReminders.qrUrl(qrTarget)?.let { "$it&v=${current.url.hashCode()}" },
+							url = TvClientReminders.qrUrl(target)?.let { "$it&v=${current.url.hashCode()}" },
 							aspectRatio = 1f,
 						)
 					}
 					Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.widthIn(max = 520.dp)) {
 						Text(stringResource(R.string.tvclient_calendar_hint), fontSize = 15.sp, color = Color(0xFFDDE1E8))
-						Text(if (qrTarget == "webcal") current.webcalUrl else current.url, fontSize = 12.sp, color = Color(0xFF8A8F99), maxLines = 2, overflow = TextOverflow.Ellipsis)
+						Text(current.pageUrl ?: if (qrTarget == "webcal") current.webcalUrl else current.url, fontSize = 12.sp, color = Color(0xFF8A8F99), maxLines = 2, overflow = TextOverflow.Ellipsis)
 						val renewed = stringResource(R.string.tvclient_calendar_renewed)
 						ActionChip(stringResource(R.string.tvclient_calendar_renew), R.drawable.ic_loop) {
 							scope.launch {
