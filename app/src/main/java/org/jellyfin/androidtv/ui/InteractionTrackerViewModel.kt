@@ -16,6 +16,7 @@ import org.jellyfin.sdk.model.api.BaseItemDto
 import org.jellyfin.sdk.model.api.BaseItemKind
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 
 class InteractionTrackerViewModel(
 	private val userPreferences: UserPreferences,
@@ -25,6 +26,10 @@ class InteractionTrackerViewModel(
 
 	private var timer: Job? = null
 	private var locks = 0
+
+	// Jellyfin-TV-Client: lange keine Eingabe → Gerät darf schlafen (siehe notifyInteraction)
+	private var idleTimer: Job? = null
+	private var idleExpired = false
 
 	// Still Watching
 
@@ -92,6 +97,22 @@ class InteractionTrackerViewModel(
 		// Cancel pending screensaver timer (if any)
 		timer?.cancel()
 
+		// Jellyfin-TV-Client: Bildschirm nicht endlos wachhalten. Nach IDLE_LIMIT ohne Eingabe gibt die
+		// App den Wakelock frei (außer während einer laufenden Wiedergabe) und beendet eine pausierte
+		// Wiedergabe, damit Stick und Jellyfin-Sitzung schlafen können.
+		if (userInitiated) idleExpired = false
+		if (userInitiated || idleTimer?.isActive != true) {
+			idleTimer?.cancel()
+			idleTimer = viewModelScope.launch {
+				delay(IDLE_LIMIT)
+				onIdleLimit()
+			}
+		}
+		if (idleExpired) {
+			_keepScreenOn.value = isVideoPlaying()
+			return
+		}
+
 		// If watching episodes, reset episode count and watch time
 		if (isWatchingEpisodes && userInitiated) {
 			resetSession()
@@ -153,8 +174,30 @@ class InteractionTrackerViewModel(
 		}
 	}
 
+	private fun isVideoPlaying() = playbackControllerContainer.playbackController?.isPlaying == true
+
+	private fun onIdleLimit() {
+		if (isVideoPlaying()) {
+			// Film läuft: weiter wachhalten und später erneut prüfen
+			idleTimer = viewModelScope.launch {
+				delay(IDLE_LIMIT)
+				onIdleLimit()
+			}
+			return
+		}
+		idleExpired = true
+		// Pausierte Wiedergabe beenden und beim Server abmelden
+		playbackControllerContainer.playbackController?.takeIf { it.isPaused }?.endPlayback(true)
+		_keepScreenOn.value = false
+	}
+
 	private fun resetSession() {
 		watchTime = 0L
 		episodeCount = 0
+	}
+
+	companion object {
+		/** So lange ohne Eingabe (und ohne laufende Wiedergabe) bleibt der Bildschirm höchstens an. */
+		val IDLE_LIMIT = 30.minutes
 	}
 }

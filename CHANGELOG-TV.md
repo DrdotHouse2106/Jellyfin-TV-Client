@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.26.1 – 2026-10-20
+
+- **Stick darf wieder schlafen:** Nach 30 Minuten ohne Tastendruck hält Quallenkino den Bildschirm nicht mehr wach (außer während eine Wiedergabe läuft). Eine pausierte Wiedergabe wird dann beendet und beim Server abgemeldet. Vorher blieb der Stick z. B. mit pausiertem Film die ganze Nacht wach und die Jellyfin-Sitzung offen, wenn nur der Fernseher ausgeschaltet wurde.
+
 ## 1.26.0 – 2026-10-20
 
 - **„Wer schaut?“ wie bei Netflix:** Beim Start von Quallenkino erscheint immer die Profilauswahl – keine automatische Anmeldung des letzten Profils mehr. Auch nach mehr als 10 Minuten im Hintergrund wird wieder gefragt (nicht während einer Wiedergabe). Die Anmeldung jedes Profils bleibt gespeichert: ein Klick auf das Profilbild genügt, keine PIN. So bleiben die Empfehlungen jeder Person sauber.
