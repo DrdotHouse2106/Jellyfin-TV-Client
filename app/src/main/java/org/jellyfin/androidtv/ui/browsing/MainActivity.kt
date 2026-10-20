@@ -30,6 +30,7 @@ import org.jellyfin.androidtv.ui.navigation.NavigationAction
 import org.jellyfin.androidtv.ui.navigation.NavigationRepository
 import org.jellyfin.androidtv.ui.screensaver.InAppScreensaver
 import org.jellyfin.androidtv.tvclient.SelfUpdate
+import org.jellyfin.androidtv.tvclient.WhoIsWatching
 import org.jellyfin.androidtv.ui.startup.StartupActivity
 import org.jellyfin.androidtv.util.applyTheme
 import org.jellyfin.androidtv.util.isMediaSessionKeyEvent
@@ -87,6 +88,9 @@ class MainActivity : FragmentActivity() {
 
 	override fun onResume() {
 		super.onResume()
+
+		// Jellyfin-TV-Client: nach längerer Pause wieder „Wer schaut?“
+		if (WhoIsWatching.shouldAskAgain()) sessionRepository.destroyCurrentSession()
 
 		if (!validateAuthentication()) return
 

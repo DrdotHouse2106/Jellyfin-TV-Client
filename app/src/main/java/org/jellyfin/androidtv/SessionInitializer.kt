@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import org.jellyfin.androidtv.auth.repository.SessionRepository
 import org.jellyfin.androidtv.di.KoinInitializer
 import org.jellyfin.androidtv.tvclient.TvClientLocalAddress
+import org.jellyfin.androidtv.tvclient.WhoIsWatching
 
 @Suppress("unused")
 class SessionInitializer : Initializer<Unit> {
@@ -21,9 +22,12 @@ class SessionInitializer : Initializer<Unit> {
 		// Jellyfin-TV-Client: Heimnetz-Adresse bei Rückkehr in die App und Netzwechsel neu prüfen
 		TvClientLocalAddress.start(context)
 
-		// Restore system session
+		// Jellyfin-TV-Client: „Wer schaut?“ – beim Start nie automatisch das letzte Profil anmelden
+		WhoIsWatching.start()
+
+		// Restore system session (nur aufräumen, die Profilauswahl fragt)
 		ProcessLifecycleOwner.get().lifecycleScope.launch(Dispatchers.IO) {
-			koin.get<SessionRepository>().restoreSession(destroyOnly = false)
+			koin.get<SessionRepository>().restoreSession(destroyOnly = true)
 		}
 	}
 

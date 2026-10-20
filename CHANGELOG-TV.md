@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.26.0 – 2026-10-20
+
+- **„Wer schaut?“ wie bei Netflix:** Beim Start von Quallenkino erscheint immer die Profilauswahl – keine automatische Anmeldung des letzten Profils mehr. Auch nach mehr als 10 Minuten im Hintergrund wird wieder gefragt (nicht während einer Wiedergabe). Die Anmeldung jedes Profils bleibt gespeichert: ein Klick auf das Profilbild genügt, keine PIN. So bleiben die Empfehlungen jeder Person sauber.
+- Die Einstellungen „Automatisch anmelden“ und „Immer anmelden“ entfallen.
+
 ## 1.25.2 – 2026-10-19
 
 - QR-Code für „Erinnerungen aufs Handy“ lädt wieder: Links mit Anmeldung (QR-Code, Trailer-Vorschau, Teaser im Bildschirmschoner, Welten) verwenden jetzt „ApiKey=“ statt „api_key=“, wie es neuere Jellyfin-Versionen verlangen.

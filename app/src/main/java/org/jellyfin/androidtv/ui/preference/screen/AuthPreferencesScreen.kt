@@ -18,11 +18,9 @@ import org.jellyfin.androidtv.ui.preference.category.aboutCategory
 import org.jellyfin.androidtv.ui.preference.dsl.OptionsBinder
 import org.jellyfin.androidtv.ui.preference.dsl.OptionsFragment
 import org.jellyfin.androidtv.ui.preference.dsl.OptionsItemUserPicker
-import org.jellyfin.androidtv.ui.preference.dsl.checkbox
 import org.jellyfin.androidtv.ui.preference.dsl.enum
 import org.jellyfin.androidtv.ui.preference.dsl.link
 import org.jellyfin.androidtv.ui.preference.dsl.optionsScreen
-import org.jellyfin.androidtv.ui.preference.dsl.userPicker
 import org.jellyfin.androidtv.ui.startup.preference.EditServerScreen
 import org.jellyfin.preference.Preference
 import org.jellyfin.sdk.model.serializer.toUUIDOrNull
@@ -53,24 +51,8 @@ class AuthPreferencesScreen : OptionsFragment() {
 	override val screen by optionsScreen {
 		setTitle(R.string.pref_authentication_cat)
 
+		// Jellyfin-TV-Client: keine automatische Anmeldung – beim Start fragt immer „Wer schaut?“
 		category {
-			userPicker(serverRepository, serverUserRepository) {
-				setTitle(R.string.auto_sign_in)
-
-				bind {
-					from(
-						authenticationPreferences,
-						AuthenticationPreferences.autoLoginUserBehavior,
-						AuthenticationPreferences.autoLoginServerId,
-						AuthenticationPreferences.autoLoginUserId,
-					)
-				}
-
-				depends {
-					!authenticationPreferences[AuthenticationPreferences.alwaysAuthenticate]
-				}
-			}
-
 			enum<AuthenticationSortBy> {
 				setTitle(R.string.sort_accounts_by)
 				bind(authenticationPreferences, AuthenticationPreferences.sortBy)
@@ -91,20 +73,6 @@ class AuthPreferencesScreen : OptionsFragment() {
 							EditServerScreen.ARG_SERVER_UUID to server.id
 						))
 					}
-				}
-			}
-		}
-
-		// Disallow changing the "always authenticate" option from the login screen
-		// because that would allow a kid to disable the function to access a parent's account
-		if (sessionRepository.currentSession.value != null) {
-			category {
-				setTitle(R.string.advanced_settings)
-
-				checkbox {
-					setTitle(R.string.always_authenticate)
-					setContent(R.string.always_authenticate_description)
-					bind(authenticationPreferences, AuthenticationPreferences.alwaysAuthenticate)
 				}
 			}
 		}
