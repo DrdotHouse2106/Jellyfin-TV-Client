@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.27.0 – 2026-10-20
+
+- **Profilbild selbst wählen:** Eine Figur und eine Hintergrundfarbe aussuchen – daraus erzeugt der Server ein rundes Profilbild und setzt es als Jellyfin-Profilbild. Erreichbar in „Wer schaut?“ über „Profile verwalten“ (für auf diesem Gerät gespeicherte Profile) und in den Einstellungen unter Konto. Braucht das Plugin Local Recommendations ab 12.22; die Figuren kommen aus dessen Katalog.
+
 ## 1.26.1 – 2026-10-20
 
 - **Stick darf wieder schlafen:** Nach 30 Minuten ohne Tastendruck hält Quallenkino den Bildschirm nicht mehr wach (außer während eine Wiedergabe läuft). Eine pausierte Wiedergabe wird dann beendet und beim Server abgemeldet. Vorher blieb der Stick z. B. mit pausiertem Film die ganze Nacht wach und die Jellyfin-Sitzung offen, wenn nur der Fernseher ausgeschaltet wurde.

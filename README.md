@@ -46,6 +46,7 @@ Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** 
 
 **Sonstiges**
 - Profilauswahl „Wer schaut gerade?“ mit farbigen Kacheln und „Profile verwalten“ – erscheint bei jedem Start und nach mehr als 10 Minuten im Hintergrund (nicht während einer Wiedergabe). Es wird nie automatisch das letzte Profil angemeldet; die Anmeldung jedes Profils bleibt gespeichert, ein Klick aufs Profilbild genügt (keine PIN). So schaut niemand aus Versehen im Konto eines anderen und die Empfehlungen bleiben persönlich
+- Profilbild selbst wählen: Figur und Hintergrundfarbe (Katalog und Bild vom Plugin Local Recommendations ab 12.22) – über „Profile verwalten“ oder Einstellungen → Konto
 - **Bildschirmschoner** mit persönlichen Empfehlungen statt Zufall, auf Wunsch mit **Teasern** (sonst Trailern) vom Server
 - **Autostart** beim Einschalten des Geräts (bis Android 9, z. B. Fire TV Stick mit Fire OS 7; standardmäßig aus)
 - Steuerung komplett per Handy, z. B. mit [Jellyfin Remote](https://github.com/DrdotHouse2106/Jellyfin-Remote)

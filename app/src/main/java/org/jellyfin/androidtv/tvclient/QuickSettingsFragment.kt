@@ -46,6 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.compose.content
+import org.jellyfin.sdk.api.client.extensions.userApi
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jellyfin.androidtv.BuildConfig
@@ -71,15 +73,32 @@ import kotlin.time.Duration.Companion.minutes
 class QuickSettingsFragment : Fragment() {
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) = content {
 		JellyfinTheme {
-			QuickSettings()
+			QuickSettings(onChooseAvatar = ::chooseAvatar)
 		}
+	}
+
+	/** Profilbild wählen; danach den Benutzer neu laden, damit überall das neue Bild erscheint. */
+	private fun chooseAvatar() {
+		val api = org.koin.java.KoinJavaComponent.get<org.jellyfin.sdk.api.client.ApiClient>(org.jellyfin.sdk.api.client.ApiClient::class.java)
+		val userRepository = org.koin.java.KoinJavaComponent.get<org.jellyfin.androidtv.auth.repository.UserRepository>(org.jellyfin.androidtv.auth.repository.UserRepository::class.java)
+		val baseUrl = api.baseUrl ?: return
+		val token = api.accessToken ?: return
+		childFragmentManager.setFragmentResultListener(TvClientAvatars.RESULT_KEY, viewLifecycleOwner) { _, _ ->
+			viewLifecycleOwner.lifecycleScope.launch {
+				runCatching {
+					val user = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { api.userApi.getCurrentUser().content }
+					userRepository.setCurrentUser(user)
+				}
+			}
+		}
+		TvClientAvatars.show(childFragmentManager, baseUrl, token, userRepository.currentUser.value?.name.orEmpty())
 	}
 }
 
 private class Choice<T>(val value: T, val label: String)
 
 @Composable
-private fun QuickSettings() {
+private fun QuickSettings(onChooseAvatar: () -> Unit) {
 	val context = LocalContext.current
 	val prefs = koinInject<UserPreferences>()
 	val sessionRepository = koinInject<SessionRepository>()
@@ -114,7 +133,10 @@ private fun QuickSettings() {
 	var calendar by remember { mutableStateOf<TvClientReminders.Calendar?>(null) }
 	var remindersAvailable by remember { mutableStateOf(false) }
 	var qrTarget by remember { mutableStateOf("webcal") }
+	var avatarsAvailable by remember { mutableStateOf(false) }
 	LaunchedEffect(Unit) {
+		val api = koinApi()
+		avatarsAvailable = api.baseUrl != null && api.accessToken != null && TvClientAvatars.isAvailable(api.baseUrl!!, api.accessToken!!)
 		remindersAvailable = TvClientReminders.isAvailable()
 		if (remindersAvailable) calendar = TvClientReminders.calendar()
 	}
@@ -200,6 +222,9 @@ private fun QuickSettings() {
 
 		Section(stringResource(R.string.tvclient_settings_account))
 		Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+			if (avatarsAvailable) {
+				ActionChip(stringResource(R.string.tvclient_avatar_choose), R.drawable.ic_user) { onChooseAvatar() }
+			}
 			ActionChip(stringResource(R.string.lbl_switch_user), R.drawable.ic_user) {
 				sessionRepository.destroyCurrentSession()
 				restart()
@@ -309,6 +334,8 @@ private fun editLocalAddress(context: android.content.Context, serverId: java.ut
 		.setNegativeButton(R.string.lbl_cancel, null)
 		.show()
 }
+
+private fun koinApi() = org.koin.java.KoinJavaComponent.get<org.jellyfin.sdk.api.client.ApiClient>(org.jellyfin.sdk.api.client.ApiClient::class.java)
 
 private fun activityOf(context: android.content.Context): android.app.Activity? {
 	var current: android.content.Context? = context

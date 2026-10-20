@@ -188,4 +188,10 @@
     <string name="tvclient_calendar_renewed">Neuer Link erzeugt – der alte gilt nicht mehr.</string>
     <string name="tvclient_calendar_loading">Kalender wird geladen …</string>
     <string name="tvclient_calendar_failed">Kalender nicht verfügbar.</string>
+    <string name="tvclient_avatar_choose">Profilbild wählen</string>
+    <string name="tvclient_avatar_choose_for">Profilbild von %1$s wählen</string>
+    <string name="tvclient_avatar_title">Profilbild für %1$s</string>
+    <string name="tvclient_avatar_color">Hintergrundfarbe</string>
+    <string name="tvclient_avatar_saved">Profilbild gespeichert</string>
+    <string name="tvclient_avatar_failed">Profilbilder sind gerade nicht verfügbar.</string>
 </resources>

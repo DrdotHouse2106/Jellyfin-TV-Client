@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.jellyfin.androidtv.R
+import org.jellyfin.androidtv.tvclient.TvClientAvatars
 import org.jellyfin.androidtv.auth.model.ApiClientErrorLoginState
 import org.jellyfin.androidtv.auth.model.AuthenticatedState
 import org.jellyfin.androidtv.auth.model.AuthenticatingState
@@ -133,6 +134,11 @@ class ServerFragment : Fragment() {
 
 		startupViewModel.loadUsers(server)
 
+		// Jellyfin-TV-Client: nach neuem Profilbild die Profile neu laden
+		childFragmentManager.setFragmentResultListener(TvClientAvatars.RESULT_KEY, viewLifecycleOwner) { _, _ ->
+			startupViewModel.loadUsers(server)
+		}
+
 		onServerChange(server)
 
 		lifecycleScope.launch {
@@ -145,11 +151,21 @@ class ServerFragment : Fragment() {
 		return binding.root
 	}
 
-	/** Jellyfin-TV-Client: „Profile verwalten“ – abmelden, entfernen, Server wechseln. */
-	private fun showManageMenu(server: Server) {
+	private var avatarsAvailable: Boolean? = null
+
+	/** Jellyfin-TV-Client: „Profile verwalten“ – Profilbild wählen, abmelden, entfernen, Server wechseln. */
+	private fun showManageMenu(server: Server) = viewLifecycleOwner.lifecycleScope.launch {
 		val users = startupViewModel.users.value
+		// Profilbilder nur anbieten, wenn der Server sie kennt (Plugin Local Recommendations)
+		val token = users.filterIsInstance<PrivateUser>().firstNotNullOfOrNull { it.accessToken }
+		val avatars = avatarsAvailable ?: (token != null && TvClientAvatars.isAvailable(server.address, token)).also { avatarsAvailable = it }
+		if (_binding == null) return@launch
 		popupMenu(requireContext(), binding.manageProfilesButton) {
 			users.filterIsInstance<PrivateUser>().forEach { user ->
+				val userToken = user.accessToken
+				if (avatars && userToken != null) item(getString(R.string.tvclient_avatar_choose_for, user.name)) {
+					TvClientAvatars.show(childFragmentManager, server.address, userToken, user.name)
+				}
 				if (user.accessToken != null) item(getString(R.string.tvclient_profile_sign_out, user.name)) {
 					authenticationRepository.logout(user)
 				}
