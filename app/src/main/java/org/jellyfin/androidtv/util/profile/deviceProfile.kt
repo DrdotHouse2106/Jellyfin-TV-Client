@@ -63,6 +63,7 @@ fun createDeviceProfile(
 	mediaTest = MediaCodecCapabilitiesTest(context),
 	maxBitrate = userPreferences.getMaxBitrate(),
 	isAC3Enabled = userPreferences[UserPreferences.ac3Enabled],
+	directHdAudio = org.jellyfin.androidtv.tvclient.TvClientAudioOutput.directHdAudio(context, userPreferences[UserPreferences.dtsMode]),
 	downMixAudio = userPreferences[UserPreferences.audioBehaviour] == AudioBehavior.DOWNMIX_TO_STEREO,
 	assDirectPlay = false,
 	pgsDirectPlay = userPreferences[UserPreferences.pgsDirectPlay],
@@ -77,12 +78,16 @@ fun createDeviceProfile(
 	assDirectPlay: Boolean,
 	pgsDirectPlay: Boolean,
 	jellyfinTenEleven: Boolean,
+	/** Jellyfin-TV-Client: erlaubte DTS-/TrueHD-Codecs (null = alle), siehe [org.jellyfin.androidtv.tvclient.TvClientAudioOutput]. */
+	directHdAudio: Set<String>? = null,
 ) = buildDeviceProfile {
+	// Jellyfin-TV-Client: DTS/TrueHD nur, wenn der Ausgang sie annimmt (sonst wandelt der Server den Ton um)
+	val hdAudioCodecs = org.jellyfin.androidtv.tvclient.TvClientAudioOutput.HD_AUDIO_CODECS
 	val allowedAudioCodecs = when {
 		downMixAudio -> downmixSupportedAudioCodecs
 		!isAC3Enabled -> supportedAudioCodecs.filterNot { it == Codec.Audio.EAC3 || it == Codec.Audio.AC3 }.toTypedArray()
 		else -> supportedAudioCodecs
-	}
+	}.filter { it !in hdAudioCodecs || directHdAudio == null || it in directHdAudio }.toTypedArray()
 
 	val supportsHevc = mediaTest.supportsHevc()
 	val supportsHevcMain10 = mediaTest.supportsHevcMain10()
@@ -132,7 +137,9 @@ fun createDeviceProfile(
 		if (supportsHevc) videoCodec(Codec.Video.HEVC)
 		videoCodec(Codec.Video.H264)
 
-		audioCodec(*allowedAudioCodecs)
+		// Jellyfin-TV-Client: Muss der Ton umgewandelt werden, zuerst Dolby Digital (Plus) – behält 5.1 und
+		// läuft über jeden Ausgang (auch durchgereicht zum AV-Receiver)
+		audioCodec(*allowedAudioCodecs.sortedBy { if (it == Codec.Audio.EAC3 || it == Codec.Audio.AC3) 0 else 1 }.toTypedArray())
 
 		copyTimestamps = false
 		enableSubtitlesInManifest = true

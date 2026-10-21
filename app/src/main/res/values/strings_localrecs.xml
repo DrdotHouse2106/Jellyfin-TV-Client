@@ -200,4 +200,7 @@
     <string name="tvclient_behavior_delete">Delete stored searches and views</string>
     <string name="tvclient_behavior_deleted">Stored searches and views deleted</string>
     <string name="tvclient_behavior_failed">That didn\'t work right now.</string>
+    <string name="tvclient_bitstream_dts">Pass through DTS and TrueHD</string>
+    <string name="tvclient_bitstream_dts_desc">Automatic: DTS only goes out directly if the current output (TV or AV receiver) accepts it – checked at every playback start. Otherwise the server converts just the audio to Dolby Digital 5.1, the picture stays untouched. Off helps if a film still has no sound.</string>
+    <string name="tvclient_bitstream_dts_auto">Automatic</string>
 </resources>

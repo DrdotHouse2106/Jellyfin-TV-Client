@@ -125,6 +125,13 @@ class UserPreferences(context: Context) : SharedPreferenceStore(
 		 */
 		var ac3Enabled = booleanPreference("pref_bitstream_ac3", true)
 
+		/**
+		 * Jellyfin-TV-Client: DTS, DTS-HD und TrueHD direkt abspielen. Automatisch: nur, wenn der aktuelle
+		 * Audio-Ausgang (HDMI zu Fernseher bzw. AV-Receiver) DTS annimmt – bei jedem Wiedergabestart neu
+		 * geprüft. Sonst wandelt der Server nur den Ton in Dolby Digital um (Kanäle bleiben, Bild direkt).
+		 */
+		var dtsMode = enumPreference("pref_tvclient_dts_mode", org.jellyfin.androidtv.tvclient.TvClientAudioOutput.DtsMode.AUTO)
+
 		/* Live TV */
 		/**
 		 * Use direct play

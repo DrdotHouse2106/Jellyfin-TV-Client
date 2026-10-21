@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.29.5 – 2026-10-21
+
+- **Kein Ton bei DTS behoben:** Die App prüft bei jedem Wiedergabestart, ob der aktuelle Audio-Ausgang (Fernseher oder AV-Receiver über HDMI) DTS bzw. TrueHD annimmt. Nur dann geht der Ton direkt raus. Sonst wandelt der Server nur den Ton in Dolby Digital um – 5.1 bleibt erhalten, das Bild läuft weiter direkt. Neu in den Einstellungen unter Ton: „DTS und TrueHD durchreichen“ (Automatisch / An / Aus).
+
 ## 1.29.4 – 2026-10-21
 
 - **Banner wechselt täglich:** Statt immer der obersten Empfehlungen zieht die App jeden Tag eine neue Auswahl aus den ersten 30 Empfehlungen je Typ. Vordere Empfehlungen kommen öfter dran, aber nicht immer. Am selben Tag bleibt die Auswahl gleich.

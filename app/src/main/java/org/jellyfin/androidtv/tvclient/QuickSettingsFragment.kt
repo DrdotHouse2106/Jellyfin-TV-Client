@@ -189,6 +189,16 @@ private fun QuickSettings(onChooseAvatar: () -> Unit) {
 			),
 			prefs[TvClientAudio.modePreference],
 		) { set(TvClientAudio.modePreference, it) }
+		Section(stringResource(R.string.tvclient_bitstream_dts))
+		Choices(
+			listOf(
+				Choice(TvClientAudioOutput.DtsMode.AUTO, stringResource(R.string.tvclient_bitstream_dts_auto)),
+				Choice(TvClientAudioOutput.DtsMode.ON, on),
+				Choice(TvClientAudioOutput.DtsMode.OFF, off),
+			),
+			prefs[UserPreferences.dtsMode],
+		) { set(UserPreferences.dtsMode, it) }
+		Hint(stringResource(R.string.tvclient_bitstream_dts_desc))
 
 		Section(stringResource(R.string.tvclient_trailer_preview))
 		Choices(listOf(Choice(true, on), Choice(false, off)), prefs[TrailerPreview.enabledPreference]) { set(TrailerPreview.enabledPreference, it) }
