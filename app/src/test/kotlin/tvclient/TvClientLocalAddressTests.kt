@@ -39,4 +39,20 @@ class TvClientLocalAddressTests : FunSpec({
 		TvClientLocalAddress.networkKey(listOf("192.168.72.1"), listOf("192.168.72.1"), "fritz.box") shouldBe home
 		TvClientLocalAddress.networkKey(emptyList(), listOf("1.1.1.1"), null) shouldBe null
 	}
+
+	test("Identitätsnachweis: Testvektor des Plugins") {
+		val nonce = "ab".repeat(32)
+		val proof = TvClientLocalAddress.proof("token-123", nonce, "c2b157ea3dc84584a30bcb96492eda16", "192.168.1.10:8096")
+		proof shouldBe "baadad25df095f9c875dbbf4fab4b8c6741d39c30d189a8c6ee490b7c57024dc"
+		TvClientLocalAddress.verifyProof("token-123", nonce, "c2b157ea3dc84584a30bcb96492eda16", "192.168.1.10:8096", listOf("00", proof.uppercase())) shouldBe true
+		TvClientLocalAddress.verifyProof("falsch", nonce, "c2b157ea3dc84584a30bcb96492eda16", "192.168.1.10:8096", listOf(proof)) shouldBe false
+		// Anderer Host (Weiterreichen über die öffentliche Adresse) passt nicht
+		TvClientLocalAddress.verifyProof("token-123", nonce, "c2b157ea3dc84584a30bcb96492eda16", "jellyfin.example.org", listOf(proof)) shouldBe false
+	}
+
+	test("Host wie im Host-Header") {
+		TvClientLocalAddress.hostHeader("http://192.168.1.10:8096") shouldBe "192.168.1.10:8096"
+		TvClientLocalAddress.hostHeader("http://Server.LAN:80/jf") shouldBe "server.lan"
+		TvClientLocalAddress.hostHeader("https://srv.lan") shouldBe "srv.lan"
+	}
 })

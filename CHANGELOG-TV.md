@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.28.1 – 2026-10-21
+
+- **Identitätsnachweis im Heimnetz:** Bevor Quallenkino den Token an die lokale Adresse schickt, beweist der Server mit einer Zufallszahl, dass er den Token dieses Geräts kennt (Plugin Local Recommendations ab 12.35). Ein fremdes Gerät mit derselben Adresse und Server-Id fällt so durch; auch ein Weiterreichen an den echten Server hilft nicht, weil die angesprochene Adresse Teil des Nachweises ist. Bei Fehlern (z. B. 403, 429) bleibt es bei der normalen Adresse. Mit älteren Plugin-Versionen gilt wie bisher: eingetragene Adresse + bestätigtes Netz + Server-Id.
+
 ## 1.28.0 – 2026-10-21
 
 Sicherheit und Tempo (aus dem Sicherheits- und Performance-Bericht):

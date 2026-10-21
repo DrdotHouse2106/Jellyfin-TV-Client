@@ -30,7 +30,7 @@ Die App speichert auf dem Fernseher die Serveradresse, die Anmeldung (ein Zugang
 
 - **Internet / Netzwerkstatus**: für die Verbindung zu deinem Jellyfin-Server.
 - **Server-Suche im Heimnetz**: Beim Einrichten sucht die App im lokalen Netz nach Jellyfin-Servern (Broadcast im eigenen Netzwerk).
-- **Heimnetz-Adresse** (optional): Trägst du eine lokale Server-Adresse ein, merkt sich die App eine Kennung des Netzes (Prüfsumme aus Gateway, DNS-Servern und Domain) und benutzt die Adresse nur in diesem Netz. Die Kennung bleibt auf dem Gerät.
+- **Heimnetz-Adresse** (optional): Trägst du eine lokale Server-Adresse ein, merkt sich die App eine Kennung des Netzes (Prüfsumme aus Gateway, DNS-Servern und Domain) und benutzt die Adresse nur in diesem Netz. Die Kennung bleibt auf dem Gerät. Mit dem Plugin Local Recommendations ab 12.35 muss der Server zusätzlich nachweisen, dass er den Token dieses Geräts kennt, bevor der Token an die lokale Adresse geht.
 - **Updates**: Höchstens einmal am Tag fragt die App bei GitHub nach einer neueren Version (öffentliche Release-Liste, ohne persönliche Daten). Abschaltbar unter Einstellungen → Updates.
 - **Mikrofon** (optional): nur für die Sprachsuche, wenn du sie nutzt. Die Spracherkennung übernimmt der Sprachdienst deines Geräts (z. B. von Amazon oder Google); dafür gelten dessen Datenschutzbestimmungen.
 - **Andere Apps starten / Einstellungen öffnen**: Die App kann installierte Apps und die Geräte-Einstellungen öffnen. Sie liest dafür nur die Liste der startbaren Apps, keine Inhalte anderer Apps.

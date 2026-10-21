@@ -135,15 +135,70 @@ object TvClientLocalAddress {
 	 * Adresse für den Server wählen: die eingetragene Heimadresse, wenn das Gerät in einem dafür bestätigten
 	 * Netz ist, sie schnell antwortet und dieselbe Server-Id meldet – sonst die gespeicherte Adresse.
 	 */
-	suspend fun choose(serverId: UUID, remote: String): String = withContext(Dispatchers.IO) {
+	suspend fun choose(serverId: UUID, remote: String, token: String, deviceId: String): String = withContext(Dispatchers.IO) {
 		val manual = manual(serverId)
 		val network = currentNetwork()
 		if (manual == null || network == null || network !in confirmedNetworks(serverId) || manual.trimEnd('/') == remote.trimEnd('/')) {
 			return@withContext use(Route.INTERNET, remote)
 		}
-		val ok = sameId(probe(manual)?.optString("Id"), serverId.toString())
+		val ok = sameId(probe(manual)?.optString("Id"), serverId.toString()) && identityConfirmed(manual, serverId, token, deviceId)
 		rememberProbe(cacheKey(serverId, network), ok)
 		if (ok) use(Route.HOME, manual) else use(Route.INTERNET, remote)
+	}
+
+	/**
+	 * Identitätsnachweis (Plugin Local Recommendations ab 12.35): Nur der echte Server kennt den Token des
+	 * Geräts und kann zur Zufallszahl den passenden Nachweis berechnen – erst dann geht der Token über diese
+	 * Adresse. Der Host ist Teil des Nachweises (Schutz gegen Weiterreichen an den echten Server).
+	 * Ältere Plugins (404): wie bisher nur Adresse + Netzkennung + Server-Id. Jeder andere Fehler: nein.
+	 */
+	private fun identityConfirmed(address: String, serverId: UUID, token: String, deviceId: String): Boolean = runCatching {
+		val nonce = ByteArray(32).also { java.security.SecureRandom().nextBytes(it) }.joinToString("") { "%02x".format(it) }
+		val connection = URL(address.trimEnd('/') + "/LocalRecs/Identity/Challenge?nonce=$nonce").openConnection() as HttpURLConnection
+		connection.connectTimeout = TIMEOUT_MS
+		connection.readTimeout = TIMEOUT_MS
+		connection.setRequestProperty("Accept", "application/json")
+		connection.setRequestProperty("X-Device-Id", deviceId)
+		try {
+			when (connection.responseCode) {
+				HttpURLConnection.HTTP_NOT_FOUND -> true.also { Timber.i("Identitätsnachweis: Plugin zu alt, nur Server-Id geprüft") }
+				HttpURLConnection.HTTP_OK -> {
+					val body = JSONObject(connection.inputStream.bufferedReader().use { it.readText() })
+					val proofs = body.optJSONArray("Proofs")?.let { list -> (0 until list.length()).map { list.optString(it) } }.orEmpty()
+					val host = hostHeader(address) ?: return@runCatching false
+					sameId(body.optString("ServerId"), serverId.toString()) &&
+						verifyProof(token, nonce, serverId.toString().replace("-", "").lowercase(), host, proofs)
+				}
+				else -> false.also { Timber.i("Identitätsnachweis abgelehnt: HTTP %d", connection.responseCode) }
+			}
+		} finally {
+			connection.disconnect()
+		}
+	}.onFailure { Timber.d("Identitätsnachweis nicht möglich: %s", it.message) }.getOrDefault(false)
+
+	/** Host wie im Host-Header: klein, mit Port, Standardport (80/443) ohne Angabe. */
+	fun hostHeader(address: String): String? {
+		val uri = runCatching { URI(address) }.getOrNull() ?: return null
+		val host = uri.host?.lowercase() ?: return null
+		val default = if (uri.scheme == "https") 443 else 80
+		return if (uri.port == -1 || uri.port == default) host else "$host:${uri.port}"
+	}
+
+	/** Eigenen Nachweis berechnen und in konstanter Zeit mit den Nachweisen des Servers vergleichen. */
+	fun verifyProof(token: String, nonce: String, serverId: String, host: String, proofs: List<String>): Boolean {
+		val expected = proof(token, nonce, serverId, host).toByteArray()
+		var found = false
+		for (candidate in proofs) {
+			if (java.security.MessageDigest.isEqual(expected, candidate.lowercase().toByteArray())) found = true
+		}
+		return found
+	}
+
+	/** hex(HMAC-SHA256(key = SHA-256(Token), msg = nonce|ServerId|host)) */
+	fun proof(token: String, nonce: String, serverId: String, host: String): String {
+		val key = java.security.MessageDigest.getInstance("SHA-256").digest(token.toByteArray(Charsets.UTF_8))
+		val mac = javax.crypto.Mac.getInstance("HmacSHA256").apply { init(javax.crypto.spec.SecretKeySpec(key, "HmacSHA256")) }
+		return mac.doFinal("$nonce|$serverId|$host".toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) }
 	}
 
 	/**
@@ -234,8 +289,8 @@ object TvClientLocalAddress {
 				if (isPlaying()) return@withLock Timber.i("Server-Adresse: Wiedergabe läuft, später prüfen")
 				val session = KoinJavaComponent.get<SessionRepository>(SessionRepository::class.java).currentSession.value ?: return@withLock
 				val server = KoinJavaComponent.get<AuthenticationStore>(AuthenticationStore::class.java).getServer(session.serverId) ?: return@withLock
-				val address = choose(session.serverId, server.address)
 				val api = KoinJavaComponent.get<ApiClient>(ApiClient::class.java)
+				val address = choose(session.serverId, server.address, session.accessToken, api.deviceInfo.id)
 				if (api.baseUrl != address && !isPlaying() && api.accessToken == session.accessToken) {
 					api.update(baseUrl = address)
 				}
