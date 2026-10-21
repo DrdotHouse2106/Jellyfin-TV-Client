@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.30.1 – 2026-10-21
+
+- **Personenseite mit ganzer Filmografie:** Ein Schauspieler auf einer Detailseite öffnet jetzt – wenn Jellyseerr eingerichtet ist – alle seine Filme und Serien: oben „In deiner Bibliothek“ (direkt zum Abspielen), darunter „Weitere Filme“ und „Weitere Serien“ mit Plakat und Stand, zum Anfragen. Ohne Jellyseerr bleibt es bei den Titeln auf dem Server.
+
 ## 1.30.0 – 2026-10-21
 
 - **Banner vom Server** (Plugin Local Recommendations ab 12.41): Täglich neue Auswahl, gemischt mit gerade Passendem – angefangene Serien und Filme, neue Folgen. Ein Hinweis wie „Weiterschauen“ oder „Neue Folgen“ steht über dem Titel. Ohne neues Plugin wechselt das Banner wie bisher täglich aus den Empfehlungen.

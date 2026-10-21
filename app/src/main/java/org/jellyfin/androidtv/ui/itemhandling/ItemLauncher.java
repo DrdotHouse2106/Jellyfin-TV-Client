@@ -175,7 +175,8 @@ public class ItemLauncher {
                 }
                 break;
             case Person:
-                navigationRepository.getValue().navigate(Destinations.INSTANCE.itemDetails(rowItem.getItemId()));
+                // Jellyfin-TV-Client: mit Jellyseerr die ganze Filmografie, sonst die Personenseite des Servers
+                org.jellyfin.androidtv.tvclient.TvClientPersonLink.open(rowItem.getItemId());
 
                 break;
             case Chapter:

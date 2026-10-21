@@ -208,4 +208,7 @@
     <string name="tvclient_billboard_later_failed">Titel konnte nicht weggelegt werden</string>
     <string name="tvclient_billboard_later_title">Aus dem Banner weggelegt</string>
     <string name="tvclient_billboard_show_again">Wieder zeigen</string>
+    <string name="tvclient_person_in_library">In deiner Bibliothek</string>
+    <string name="tvclient_person_more_movies">Weitere Filme</string>
+    <string name="tvclient_person_more_series">Weitere Serien</string>
 </resources>

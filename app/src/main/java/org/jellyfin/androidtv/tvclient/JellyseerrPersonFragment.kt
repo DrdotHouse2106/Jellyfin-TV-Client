@@ -152,15 +152,31 @@ private fun JellyseerrPersonScreen(personId: Int) {
 				}
 			}
 
-			CreditRow(R.string.tvclient_jellyseerr_movies, info.movies, if (info.biography == null) firstFocus else null) { media ->
-				navigationRepository.navigate(Destinations.jellyseerrDetails(media.type, media.id))
+			// Zuerst, was schon in der Bibliothek ist, darunter die weiteren Filme und Serien (zum Anfragen)
+			val split = splitByLibrary(info.movies, info.series)
+			// Titel aus der Bibliothek direkt auf ihre Detailseite, die anderen auf die Anfrage-Seite
+			val open = { media: Jellyseerr.Media ->
+				navigationRepository.navigate(media.jellyfinId?.let { Destinations.itemDetails(it) } ?: Destinations.jellyseerrDetails(media.type, media.id))
 			}
-			CreditRow(R.string.tvclient_jellyseerr_series, info.series, if (info.biography == null && info.movies.isEmpty()) firstFocus else null) { media ->
-				navigationRepository.navigate(Destinations.jellyseerrDetails(media.type, media.id))
-			}
+			val focusFirst = info.biography == null
+			CreditRow(R.string.tvclient_person_in_library, split.library, if (focusFirst) firstFocus else null, open)
+			CreditRow(R.string.tvclient_person_more_movies, split.movies, if (focusFirst && split.library.isEmpty()) firstFocus else null, open)
+			CreditRow(R.string.tvclient_person_more_series, split.series, if (focusFirst && split.library.isEmpty() && split.movies.isEmpty()) firstFocus else null, open)
 			Spacer(Modifier.height(24.dp))
 		}
 	}
+}
+
+/** Filmografie aufteilen: in der Bibliothek (ganz oder teilweise) und weitere Filme bzw. Serien. */
+data class PersonCredits(val library: List<Jellyseerr.Media>, val movies: List<Jellyseerr.Media>, val series: List<Jellyseerr.Media>)
+
+fun splitByLibrary(movies: List<Jellyseerr.Media>, series: List<Jellyseerr.Media>): PersonCredits {
+	val inLibrary = { media: Jellyseerr.Media -> media.status == Jellyseerr.Status.AVAILABLE || media.status == Jellyseerr.Status.PARTIAL }
+	return PersonCredits(
+		library = (movies + series).filter(inLibrary),
+		movies = movies.filterNot(inLibrary),
+		series = series.filterNot(inLibrary),
+	)
 }
 
 @Composable

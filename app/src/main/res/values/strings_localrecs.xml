@@ -208,4 +208,7 @@
     <string name="tvclient_billboard_later_failed">Could not hide the title</string>
     <string name="tvclient_billboard_later_title">Hidden from the banner</string>
     <string name="tvclient_billboard_show_again">Show again</string>
+    <string name="tvclient_person_in_library">In your library</string>
+    <string name="tvclient_person_more_movies">More movies</string>
+    <string name="tvclient_person_more_series">More series</string>
 </resources>
