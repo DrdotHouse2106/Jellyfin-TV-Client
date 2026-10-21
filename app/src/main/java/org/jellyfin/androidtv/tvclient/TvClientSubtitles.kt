@@ -106,7 +106,7 @@ object TvClientSubtitles {
 		if (remembered == OFF) return forcedIndex(subtitles, setOfNotNull(audioLanguage(streams, audioIndex)) + own) ?: -1
 		// Gemerkte Untertitel in der Sprache des Tons ignorieren (deutscher Ton + deutsche Untertitel)
 		if (remembered != null && normalize(remembered) != audioLanguage(streams, audioIndex)) {
-			subtitles.firstOrNull { normalize(it.language) == normalize(remembered) && it.isForced != true }
+			subtitles.firstOrNull { normalize(it.language) == normalize(remembered) && !isForced(it) }
 				?.let { return it.index }
 		}
 
@@ -137,23 +137,33 @@ object TvClientSubtitles {
 
 		val defaultSubtitle = subtitles.firstOrNull { it.index == serverDefault }
 		// Vorschlag des Servers behalten, wenn er schon volle Untertitel in der eigenen Sprache sind
-		if (defaultSubtitle != null && defaultSubtitle.isForced != true && normalize(defaultSubtitle.language) in ownLanguages) {
+		if (defaultSubtitle != null && !isForced(defaultSubtitle) && normalize(defaultSubtitle.language) in ownLanguages) {
 			return serverDefault
 		}
-		alwaysOwn(subtitles.filter { it.isForced != true }, ownLanguages)?.let { return it }
+		alwaysOwn(subtitles.filter { !isForced(it) }, ownLanguages)?.let { return it }
 
-		if (defaultSubtitle == null || defaultSubtitle.isForced == true) return serverDefault
+		if (defaultSubtitle == null || isForced(defaultSubtitle)) return serverDefault
 		return if (normalize(defaultSubtitle.language) == audioLanguage) forcedIndex(subtitles, setOf(audioLanguage)) ?: -1 else serverDefault
 	}
 
 	/** Untertitel in der eigenen Sprache (nicht erzwungen zuerst), sonst null. */
 	fun alwaysOwn(subtitles: List<MediaStream>, ownLanguages: Set<String>): Int? {
 		val own = subtitles.filter { normalize(it.language) in ownLanguages }
-		return (own.firstOrNull { it.isForced != true } ?: own.firstOrNull())?.index
+		return (own.firstOrNull { !isForced(it) } ?: own.firstOrNull())?.index
 	}
 
+	private val FORCED_TITLE = Regex("forced|erzwungen|nur fremdsprachig", RegexOption.IGNORE_CASE)
+
+	/**
+	 * Erzwungene Untertitel (nur fremdsprachige Stellen): Flag in der Datei ODER „Forced“/„erzwungen“/„nur
+	 * fremdsprachige“ im Titel – viele Dateien setzen das Flag nicht, nennen die Spur aber so.
+	 */
+	@JvmStatic
+	fun isForced(stream: MediaStream): Boolean =
+		stream.isForced == true || listOfNotNull(stream.title, stream.displayTitle).any { FORCED_TITLE.containsMatchIn(it) }
+
 	private fun forcedIndex(subtitles: List<MediaStream>, languages: Set<String>): Int? =
-		subtitles.firstOrNull { it.isForced == true && normalize(it.language) in languages }?.index
+		subtitles.firstOrNull { isForced(it) && normalize(it.language) in languages }?.index
 
 	private var lastRestartedItem: java.util.UUID? = null
 

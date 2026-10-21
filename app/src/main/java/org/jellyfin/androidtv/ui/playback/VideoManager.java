@@ -342,7 +342,7 @@ public class VideoManager {
     private int getSubtitleSelectionFlags(MediaStream mediaStream) {
         int flags = 0;
         if (mediaStream.isDefault()) flags &= C.SELECTION_FLAG_DEFAULT;
-        if (mediaStream.isForced()) flags &= C.SELECTION_FLAG_FORCED;
+        if (org.jellyfin.androidtv.tvclient.TvClientSubtitles.isForced(mediaStream)) flags &= C.SELECTION_FLAG_FORCED;
         return flags;
     }
 

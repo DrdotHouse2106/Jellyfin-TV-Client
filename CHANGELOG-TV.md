@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.30.3 – 2026-10-22
+
+- **Erzwungene Untertitel auch ohne Markierung:** Eine Untertitelspur gilt jetzt auch dann als erzwungen (nur fremdsprachige Stellen), wenn sie in der Datei nicht so markiert ist, aber „Forced“, „erzwungen“ oder „nur fremdsprachige“ im Namen trägt. „Intelligent“ wählt sie bei deutschem Ton automatisch, bei Originalton die vollen Untertitel.
+
 ## 1.30.2 – 2026-10-21
 
 - **DTS und TrueHD dekodiert die App jetzt selbst:** Nimmt der Ausgang DTS nicht an, dekodiert Quallenkino den Ton mit dem eingebauten FFmpeg – 5.1 bleibt erhalten, bei reinem Stereo-Ausgang wird auf dem Gerät heruntergemischt. Der Server muss den Ton nicht mehr umrechnen. Mit AV-Receiver, der DTS kann, wird weiter durchgereicht.
