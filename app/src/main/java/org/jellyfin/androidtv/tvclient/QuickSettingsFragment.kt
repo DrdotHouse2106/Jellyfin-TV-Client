@@ -295,6 +295,10 @@ private fun QuickSettings(onChooseAvatar: () -> Unit) {
 			editLocalAddress(context, serverId)
 		}
 		Hint(stringResource(R.string.tvclient_local_hint))
+		val serverId = sessionRepository.currentSession.value?.serverId
+		if (serverId != null && TvClientLocalAddress.manual(serverId) != null && !TvClientLocalAddress.isConfirmedHere(serverId)) {
+			Hint(stringResource(R.string.tvclient_local_unconfirmed))
+		}
 
 		Section(stringResource(R.string.tvclient_quick_more))
 		ActionChip(stringResource(R.string.tvclient_quick_more_button), R.drawable.ic_settings) {

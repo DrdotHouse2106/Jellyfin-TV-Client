@@ -46,6 +46,7 @@ Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** 
 
 **Sonstiges**
 - Profilauswahl „Wer schaut gerade?“ mit farbigen Kacheln und „Profile verwalten“ – erscheint bei jedem Start und nach mehr als 10 Minuten im Hintergrund (nicht während einer Wiedergabe). Es wird nie automatisch das letzte Profil angemeldet; die Anmeldung jedes Profils bleibt gespeichert, ein Klick aufs Profilbild genügt (keine PIN). So schaut niemand aus Versehen im Konto eines anderen und die Empfehlungen bleiben persönlich
+- Heimnetz: Mit eingetragener lokaler Server-Adresse (Einstellungen → Heimnetz) spricht die App zu Hause direkt mit dem Server. Die Adresse gilt nur in dem Netz, in dem sie gespeichert wurde – in fremden Netzen bleibt es bei der normalen Adresse
 - Profilbild selbst wählen: Figur und Hintergrundfarbe (Katalog und Bild vom Plugin Local Recommendations ab 12.22) – über „Profile verwalten“ oder Einstellungen → Konto
 - **Bildschirmschoner** mit persönlichen Empfehlungen statt Zufall, auf Wunsch mit **Teasern** (sonst Trailern) vom Server
 - **Autostart** beim Einschalten des Geräts (bis Android 9, z. B. Fire TV Stick mit Fire OS 7; standardmäßig aus)
@@ -98,7 +99,7 @@ Alternativ per ADB: `adb install quallenkino.apk`.
 
 ### Updates
 
-Quallenkino aktualisiert sich selbst – ohne App-Store. Beim Öffnen sucht die App nach einer neuen Version und fragt gleich, ob sie installiert werden soll; außerdem erscheint links in der Navigation unter den Einstellungen ein grüner Download-Knopf. Von Hand geht es unter **Einstellungen → Updates → „Nach Updates suchen“**. Bei einer neuen Version erscheinen die Änderungen; „Jetzt installieren“ lädt die APK aus den GitHub-Releases, prüft Prüfsumme und Signatur und startet die Installation. Einstellungen und Anmeldung bleiben erhalten.
+Quallenkino aktualisiert sich selbst – ohne App-Store. Höchstens einmal am Tag sucht die App nach einer neuen Version; ist eine da, fragt sie beim Öffnen gleich, ob sie installiert werden soll; außerdem erscheint links in der Navigation unter den Einstellungen ein grüner Download-Knopf. Von Hand geht es unter **Einstellungen → Updates → „Nach Updates suchen“**. Bei einer neuen Version erscheinen die Änderungen; „Jetzt installieren“ lädt die APK aus den GitHub-Releases, prüft Prüfsumme und Signatur und startet die Installation. Einstellungen und Anmeldung bleiben erhalten.
 
 Einmalig nötig: Beim ersten Update fragt Quallenkino nach der Erlaubnis **„Unbekannte Apps installieren“** (Fire TV: **„Apps unbekannter Herkunft“**) und öffnet die passende Einstellung. Danach bestätigt man jede Installation mit einem Klick – das verlangt Android.
 

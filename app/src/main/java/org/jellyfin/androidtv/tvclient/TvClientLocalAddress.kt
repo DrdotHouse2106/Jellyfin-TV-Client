@@ -35,11 +35,13 @@ import java.util.UUID
  * Jellyfin-TV-Client: Im Heimnetz direkt mit dem Server sprechen statt über die Internet-Adresse.
  *
  * Pro Server kann eine „Adresse im Heimnetz“ hinterlegt werden (z. B. http://192.168.1.10:8096).
- * Ohne Eintrag wird die vom Server gemeldete LocalAddress genutzt, falls sie eine private IP ist.
- * Die Adresse wird nur genommen, wenn sie schnell antwortet und dieselbe Server-Id meldet – sonst
- * bleibt die gespeicherte Adresse. Anmeldung und Token bleiben gleich (es ist derselbe Server).
- * Geprüft wird beim Start, beim Zurückkehren in die App und bei einem Netzwechsel, aber nie
- * während einer laufenden Wiedergabe.
+ * Sicherheit: Sie gilt nur in dem Netz, in dem sie eingetragen bzw. bestätigt wurde (Kennung aus
+ * Gateway, DNS und Domain) – in einem fremden Netz mit derselben privaten IP geht der Token nie an ein
+ * fremdes Gerät. Automatisch erkannte Adressen gibt es nicht mehr. Zusätzlich muss die Adresse schnell
+ * (700 ms) antworten und dieselbe Server-Id melden. Anmeldung und Token bleiben gleich.
+ * Die Sitzung startet ohne Wartezeit (mit dem letzten Ergebnis für dieses Netz); geprüft wird im
+ * Hintergrund beim Start, beim Zurückkehren in die App und bei einem Netzwechsel, nie während einer
+ * laufenden Wiedergabe.
  */
 object TvClientLocalAddress {
 	enum class Route { HOME, INTERNET }
@@ -49,7 +51,9 @@ object TvClientLocalAddress {
 	private const val PREFS = "tvclient_local_address"
 	private const val MANUAL = "manual_"
 	private const val DETECTED = "detected_"
-	private const val TIMEOUT_MS = 1500
+	private const val NETWORKS = "networks_"
+	private const val PROBE = "probe_"
+	private const val TIMEOUT_MS = 700
 	private const val DEFAULT_PORT = 8096
 
 	private val _status = MutableStateFlow<Status?>(null)
@@ -65,37 +69,102 @@ object TvClientLocalAddress {
 	/** Vom Benutzer eingetragene Heimadresse für diesen Server. */
 	fun manual(serverId: UUID): String? = runCatching { prefs().getString(MANUAL + serverId, null) }.getOrNull()
 
-	/** Heimadresse speichern (leer = entfernen) und sofort neu prüfen. */
+	/** Netze (Kennung), in denen der Benutzer die Heimadresse bestätigt hat. */
+	private fun confirmedNetworks(serverId: UUID): Set<String> = runCatching {
+		val prefs = prefs()
+		// Übernahme aus Versionen vor 1.28: eine schon eingetragene Adresse gilt im aktuellen Netz als bestätigt
+		if (!prefs.contains(NETWORKS + serverId) && prefs.contains(MANUAL + serverId)) {
+			currentNetwork()?.let { prefs.edit().putStringSet(NETWORKS + serverId, setOf(it)).apply() }
+		}
+		prefs.getStringSet(NETWORKS + serverId, null)
+	}.getOrNull().orEmpty()
+
+	/**
+	 * Heimadresse speichern (leer = entfernen) und für das aktuelle Netz bestätigen. Nur in bestätigten
+	 * Netzen wird sie benutzt – so geht der Token nie an ein fremdes Gerät mit derselben privaten IP.
+	 */
 	fun setManual(serverId: UUID, input: String?) {
 		val address = normalizeAddress(input)
+		val network = currentNetwork()
 		prefs().edit().apply {
-			if (address == null) remove(MANUAL + serverId) else putString(MANUAL + serverId, address)
+			remove(DETECTED + serverId)
+			if (address == null) {
+				remove(MANUAL + serverId)
+				remove(NETWORKS + serverId)
+			} else {
+				// Neue Adresse: nur das aktuelle Netz gilt; gleiche Adresse: dieses Netz zusätzlich bestätigen
+				val known = if (address == manual(serverId)) confirmedNetworks(serverId) else emptySet()
+				putString(MANUAL + serverId, address)
+				putStringSet(NETWORKS + serverId, known + listOfNotNull(network))
+			}
 		}.apply()
+		clearProbes()
 		recheck()
 	}
 
+	/** Ist die Heimadresse in dem Netz bestätigt, in dem das Gerät gerade ist? */
+	fun isConfirmedHere(serverId: UUID): Boolean {
+		val network = currentNetwork() ?: return false
+		return network in confirmedNetworks(serverId)
+	}
+
+	/** Ergebnis der letzten Prüfung pro (Server, Netz), gespeichert: spart beim Start das Warten. */
+	private fun lastProbeOk(key: String) = runCatching { prefs().getBoolean(PROBE + key, false) }.getOrDefault(false)
+
+	private fun rememberProbe(key: String, ok: Boolean) = runCatching { prefs().edit().putBoolean(PROBE + key, ok).apply() }
+
+	private fun clearProbes() = runCatching {
+		val prefs = prefs()
+		prefs.edit().apply { prefs.all.keys.filter { it.startsWith(PROBE) }.forEach(::remove) }.apply()
+	}
+
 	/**
-	 * Adresse für den Server wählen: Heimadresse, wenn sie antwortet und dieselbe Id meldet,
-	 * sonst die gespeicherte (Internet-)Adresse.
+	 * Adresse für den Sitzungsstart – ohne Netzwerkzugriff: die Heimadresse nur, wenn sie in diesem Netz
+	 * bestätigt ist und die letzte Prüfung hier erfolgreich war. Geprüft wird danach im Hintergrund ([recheck]).
+	 */
+	fun initialAddress(serverId: UUID, remote: String): String {
+		val manual = manual(serverId) ?: return use(Route.INTERNET, remote)
+		val network = currentNetwork()
+		if (network == null || network !in confirmedNetworks(serverId)) return use(Route.INTERNET, remote)
+		return if (lastProbeOk(cacheKey(serverId, network))) use(Route.HOME, manual) else use(Route.INTERNET, remote)
+	}
+
+	private fun cacheKey(serverId: UUID, network: String) = "$serverId|$network"
+
+	/**
+	 * Adresse für den Server wählen: die eingetragene Heimadresse, wenn das Gerät in einem dafür bestätigten
+	 * Netz ist, sie schnell antwortet und dieselbe Server-Id meldet – sonst die gespeicherte Adresse.
 	 */
 	suspend fun choose(serverId: UUID, remote: String): String = withContext(Dispatchers.IO) {
 		val manual = manual(serverId)
-		val detected = runCatching { prefs().getString(DETECTED + serverId, null) }.getOrNull()
-		for (candidate in listOfNotNull(manual, detected).distinct()) {
-			if (candidate.trimEnd('/') == remote.trimEnd('/')) continue
-			if (sameId(probe(candidate)?.optString("Id"), serverId.toString())) return@withContext use(Route.HOME, candidate)
+		val network = currentNetwork()
+		if (manual == null || network == null || network !in confirmedNetworks(serverId) || manual.trimEnd('/') == remote.trimEnd('/')) {
+			return@withContext use(Route.INTERNET, remote)
 		}
+		val ok = sameId(probe(manual)?.optString("Id"), serverId.toString())
+		rememberProbe(cacheKey(serverId, network), ok)
+		if (ok) use(Route.HOME, manual) else use(Route.INTERNET, remote)
+	}
 
-		// Ohne eigenen Eintrag: LocalAddress des Servers versuchen, wenn sie eine private IP ist
-		if (manual == null) {
-			val local = probe(remote)?.optString("LocalAddress")?.let { normalizeAddress(it) }
-			if (local != null && local != detected && isPrivateAddress(local) && sameId(probe(local)?.optString("Id"), serverId.toString())) {
-				prefs().edit().putString(DETECTED + serverId, local).apply()
-				return@withContext use(Route.HOME, local)
-			}
-		}
+	/**
+	 * Kennung des aktuellen Netzes aus Gateway, DNS-Servern und Domain (als Prüfsumme). Ein anderes Netz
+	 * mit derselben privaten Adresse hat fast immer eine andere Kennung.
+	 */
+	private fun currentNetwork(): String? = runCatching {
+		val context = KoinJavaComponent.get<Context>(Context::class.java)
+		val connectivity = context.getSystemService(ConnectivityManager::class.java)
+		val properties = connectivity.getLinkProperties(connectivity.activeNetwork) ?: return null
+		val gateway = properties.routes.filter { it.isDefaultRoute }.mapNotNull { it.gateway?.hostAddress }.sorted()
+		val dns = properties.dnsServers.mapNotNull { it.hostAddress }.sorted()
+		networkKey(gateway, dns, properties.domains)
+	}.getOrNull()
 
-		use(Route.INTERNET, remote)
+	/** Kennung aus Gateway, DNS und Domain (testbar). Ohne Gateway keine Kennung. */
+	fun networkKey(gateways: List<String>, dns: List<String>, domains: String?): String? {
+		if (gateways.isEmpty()) return null
+		val raw = gateways.joinToString(",") + "|" + dns.joinToString(",") + "|" + domains.orEmpty()
+		return java.security.MessageDigest.getInstance("SHA-256").digest(raw.toByteArray())
+			.joinToString("") { "%02x".format(it) }.take(32)
 	}
 
 	private fun use(route: Route, address: String): String {
@@ -116,7 +185,7 @@ object TvClientLocalAddress {
 		} finally {
 			connection.disconnect()
 		}
-	}.onFailure { Timber.d("Heimadresse %s nicht erreichbar: %s", address, it.message) }.getOrNull()
+	}.onFailure { Timber.d("Heimadresse nicht erreichbar: %s", it.message) }.getOrNull()
 
 	/** Ids vergleichen, egal ob mit oder ohne Bindestriche. */
 	fun sameId(a: String?, b: String?): Boolean {

@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
@@ -121,11 +120,17 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			// Check for coroutine cancellation
 			if (!isActive) return@launch
 
-			// Actually add the sections
+			// App-Liste nur an den eigenen Jellyfin-Server melden, wenn die Zeile „Apps“ eingeschaltet ist
+			if (HomeRow.APPS in homeRows) {
+				val appContext = requireContext().applicationContext
+				lifecycleScope.launch(Dispatchers.IO) { DeviceAppsPublisher.publish(appContext, api) }
+			}
+
 			// Jellyfin-TV-Client: alle Zeilen gleichzeitig vorbereiten (Top 10, Welten, Web-Abschnitte und
-			// Genres brauchen eigene Abfragen – nacheinander dauerte das mehrere Sekunden), Reihenfolge bleibt
-			val rows = kotlinx.coroutines.coroutineScope {
-				homeRows.map { homeRow ->
+			// Genres brauchen eigene Abfragen) und in fester Reihenfolge einfügen, sobald sie fertig sind –
+			// die oberen Zeilen erscheinen so, ohne auf die langsamste zu warten
+			kotlinx.coroutines.coroutineScope {
+				val pending = homeRows.map { homeRow ->
 					async {
 						when (homeRow) {
 							HomeRow.RESUME -> listOf(helper.loadResumeVideo())
@@ -146,25 +151,26 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 							HomeRow.DEVICE -> listOf(HomeFragmentDeviceSettingsRow())
 						}
 					}
-				}.awaitAll().flatten()
+				}
+
+				// Netflix-Ansicht mit kleinen Querformat-Bildern ohne Titel darunter
+				val cardPresenter = withContext(Dispatchers.Main) {
+					val presenter = if (netflixStyle) CardPresenter(false, ImageType.THUMB, NETFLIX_CARD_HEIGHT) else CardPresenter()
+					notificationsRow.addToRowsAdapter(requireContext(), presenter, adapter as MutableObjectAdapter<Row>)
+					nowPlaying.addToRowsAdapter(requireContext(), presenter, adapter as MutableObjectAdapter<Row>)
+					presenter
+				}
+
+				for (job in pending) {
+					val rows = job.await()
+					if (!isActive) return@coroutineScope
+					withContext(Dispatchers.Main) {
+						for (row in rows) row.addToRowsAdapter(requireContext(), cardPresenter, adapter as MutableObjectAdapter<Row>)
+					}
+				}
 			}
 
-			// App-Liste nur an den eigenen Jellyfin-Server melden, wenn die Zeile „Apps“ eingeschaltet ist
-			if (HomeRow.APPS in homeRows) {
-				val appContext = requireContext().applicationContext
-				lifecycleScope.launch(Dispatchers.IO) { DeviceAppsPublisher.publish(appContext, api) }
-			}
-
-			// Add sections to layout
 			withContext(Dispatchers.Main) {
-				// Jellyfin-TV-Client: Netflix-Ansicht mit kleinen Querformat-Bildern ohne Titel darunter
-				val cardPresenter = if (netflixStyle) CardPresenter(false, ImageType.THUMB, NETFLIX_CARD_HEIGHT) else CardPresenter()
-
-				// Add rows in order
-				notificationsRow.addToRowsAdapter(requireContext(), cardPresenter, adapter as MutableObjectAdapter<Row>)
-				nowPlaying.addToRowsAdapter(requireContext(), cardPresenter, adapter as MutableObjectAdapter<Row>)
-				for (row in rows) row.addToRowsAdapter(requireContext(), cardPresenter, adapter as MutableObjectAdapter<Row>)
-
 				// Wire up Live TV sibling rows so the On Now row removes the buttons row when empty
 				@Suppress("UNCHECKED_CAST")
 				val rowsAdapter = adapter as MutableObjectAdapter<Row>

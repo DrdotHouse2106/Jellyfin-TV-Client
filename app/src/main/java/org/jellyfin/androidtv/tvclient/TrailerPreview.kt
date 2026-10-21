@@ -18,7 +18,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.Dispatchers
@@ -81,7 +80,8 @@ object TrailerPreview {
 			api.createUrl(
 				pathTemplate = "/Videos/{itemId}/stream",
 				pathParameters = mapOf("itemId" to trailer.id),
-				queryParameters = mapOf("static" to true, "ApiKey" to api.accessToken),
+				// Anmeldung per Header (ServerAuth), nicht in der Adresse
+				queryParameters = mapOf("static" to true),
 			)
 		} catch (@Suppress("TooGenericExceptionCaught") err: Exception) {
 			Timber.w(err, "Trailer für %s nicht verfügbar", item.name)
@@ -108,7 +108,7 @@ fun TrailerVideo(
 	var visible by remember(url) { mutableStateOf(false) }
 
 	val player = remember(url) {
-		ExoPlayer.Builder(context).build().apply {
+		ServerAuth.player(context, url).apply {
 			setMediaItem(MediaItem.fromUri(url))
 			TrailerPreview.resumePosition(url)?.let { seekTo(it) }
 			volume = volumeOverride ?: if (withSound) TrailerPreview.volume else 0f

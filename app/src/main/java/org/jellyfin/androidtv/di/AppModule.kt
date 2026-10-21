@@ -9,6 +9,7 @@ import coil3.gif.AnimatedImageDecoder
 import coil3.gif.GifDecoder
 import coil3.network.NetworkFetcher
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
+import org.jellyfin.androidtv.tvclient.ServerAuth
 import coil3.serviceLoaderEnabled
 import coil3.svg.SvgDecoder
 import coil3.util.Logger
@@ -107,7 +108,8 @@ val appModule = module {
 
 		@OptIn(ExperimentalCoilApi::class)
 		OkHttpNetworkFetcherFactory(
-			callFactory = { okHttpFactory.createClient(httpClientOptions) },
+			// Jellyfin-TV-Client: Anmeldung für Plugin-Bilder per Header statt ApiKey in der Adresse
+			callFactory = { okHttpFactory.createClient(httpClientOptions).newBuilder().addInterceptor(ServerAuth.interceptor).build() },
 			connectivityChecker = ::createCoilConnectivityChecker,
 		)
 	}

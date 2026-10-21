@@ -22,7 +22,6 @@ import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import org.jellyfin.androidtv.R
@@ -49,8 +48,11 @@ object TrailerWindow {
 			host == "youtu.be" -> uri.pathSegments.firstOrNull()
 			else -> null
 		}
-		return key?.takeIf { it.matches(Regex("[A-Za-z0-9_-]{11}")) }
+		return key?.takeIf { it.matches(YOUTUBE_KEY) }
 	}
+
+	/** Gültige YouTube-Video-Id (11 Zeichen). Alles andere kommt nie ins Player-HTML. */
+	val YOUTUBE_KEY = Regex("[A-Za-z0-9_-]{11}")
 
 	private fun withSound(): Boolean = runCatching {
 		KoinJavaComponent.get<UserPreferences>(UserPreferences::class.java)[TrailerPreview.soundPreference]
@@ -76,7 +78,7 @@ object TrailerWindow {
 	@OptIn(UnstableApi::class)
 	fun showLocal(context: Context, url: String) {
 		val (dialog, container) = dialog(context)
-		val player = ExoPlayer.Builder(context).build().apply {
+		val player = ServerAuth.player(context, url).apply {
 			setMediaItem(MediaItem.fromUri(url))
 			volume = if (withSound()) TrailerPreview.volume else 0f
 			playWhenReady = true
@@ -163,6 +165,7 @@ object TrailerWindow {
 	 * ready(), ended() und error(code). Der Player wird nicht verdeckt oder beschnitten.
 	 */
 	fun youtubeHtml(key: String, withSound: Boolean): String {
+		if (!key.matches(YOUTUBE_KEY)) return "<!DOCTYPE html><html><body style=\"background:#000\"></body></html>"
 		val volume = (TrailerPreview.volume * 100).toInt()
 		val mute = if (withSound) "false" else "true"
 		return """

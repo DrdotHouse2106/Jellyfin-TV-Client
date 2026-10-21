@@ -20,9 +20,25 @@ class LogInitializer : Initializer<Unit> {
 		}
 
 		// Initialize the logging library
-		Timber.plant(Timber.DebugTree())
-		Timber.i("Debug tree planted")
+		// Jellyfin-TV-Client: Tokens nie ins Protokoll; im Release-Build nur Hinweise ab „Info“
+		Timber.plant(if (BuildConfig.DEBUG) RedactingDebugTree() else RedactingReleaseTree())
+		Timber.i("Log tree planted")
 	}
 
 	override fun dependencies() = emptyList<Class<out Initializer<*>>>()
+}
+
+/** Zugangsdaten in Protokollzeilen schwärzen (api_key=, ApiKey=, Token="…", X-Emby-Token). */
+fun redactSecrets(message: String): String = message
+	.replace(Regex("(?i)(api_?key=)[^&\\s\"]+"), "$1***")
+	.replace(Regex("(?i)(token=\\\"?)[^\"\\s,]+"), "$1***")
+	.replace(Regex("(?i)(x-(emby|mediabrowser)-token[:=]\\s*)\\S+"), "$1***")
+
+private class RedactingDebugTree : Timber.DebugTree() {
+	override fun log(priority: Int, tag: String?, message: String, t: Throwable?) = super.log(priority, tag, redactSecrets(message), t)
+}
+
+private class RedactingReleaseTree : Timber.DebugTree() {
+	override fun isLoggable(tag: String?, priority: Int) = priority >= android.util.Log.INFO
+	override fun log(priority: Int, tag: String?, message: String, t: Throwable?) = super.log(priority, tag, redactSecrets(message), t)
 }

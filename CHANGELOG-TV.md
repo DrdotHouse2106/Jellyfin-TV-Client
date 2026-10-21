@@ -1,5 +1,16 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.28.0 – 2026-10-21
+
+Sicherheit und Tempo (aus dem Sicherheits- und Performance-Bericht):
+
+- **Heimnetz sicherer:** Die lokale Server-Adresse wird nur noch in dem Netz benutzt, in dem sie eingetragen bzw. bestätigt wurde (Kennung aus Gateway, DNS und Domain). In einem fremden Netz mit derselben privaten IP geht der Token so nie an ein fremdes Gerät. Automatisch erkannte Adressen gibt es nicht mehr. In einem neuen Netz zeigt „Heimnetz“ einen Hinweis; erneutes Speichern bestätigt es.
+- **Schnellerer Start:** Die Anmeldung wartet nicht mehr auf die Heimnetz-Prüfung (bis zu 6 s). Die Sitzung startet sofort mit dem letzten Ergebnis für dieses Netz, geprüft wird im Hintergrund mit 700 ms Zeitlimit.
+- **Startseite baut sich Zeile für Zeile auf**, statt auf die langsamste Zeile zu warten. Top 10 (15 Min.), Welten und die Jellyseerr-Erkennung (10 Min.) werden zwischengespeichert.
+- **Token-Hygiene:** Zugangstokens und der Jellyseerr-Schlüssel sind von der Android-Datensicherung ausgenommen (die Backup-Regeln verwiesen außerdem auf falsche Dateinamen). Bilder des Plugins (Welten, QR-Code) und Trailer bekommen die Anmeldung per Header statt „ApiKey=“ in der Adresse; der QR-Code wird nicht im Bildspeicher abgelegt. Protokolle schwärzen Tokens, ausführliche Protokolle nur noch im Debug-Build.
+- YouTube-Ids aus Jellyseerr werden geprüft, bevor sie in den Player kommen.
+- Die Update-Prüfung fragt GitHub höchstens einmal am Tag; eine gefundene neue Version wird gemerkt und beim Öffnen weiter angeboten.
+
 ## 1.27.1 – 2026-10-20
 
 - „Erinnerungen aufs Handy“: Mit LocalRecs ab 12.23 führt ein einziger QR-Code auf eine Abo-Seite, die auf iPhone und Android funktioniert (die iPhone-Kamera öffnet webcal-Links direkt nicht). Die Auswahl iPhone/andere entfällt dann.

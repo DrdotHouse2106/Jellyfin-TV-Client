@@ -24,12 +24,14 @@ Diese Daten gehen ausschließlich an den von dir eingetragenen Server, nicht an 
 
 ## Daten auf dem Gerät
 
-Die App speichert auf dem Fernseher die Serveradresse, die Anmeldung (ein Zugangstoken, nicht dein Passwort) und deine Einstellungen. Beim Deinstallieren der App werden sie gelöscht.
+Die App speichert auf dem Fernseher die Serveradresse, die Anmeldung (ein Zugangstoken, nicht dein Passwort) und deine Einstellungen. Beim Deinstallieren der App werden sie gelöscht. Zugangstokens und der Jellyseerr-API-Schlüssel sind von der Android-Datensicherung (Cloud-Backup, Gerätewechsel) ausgenommen und verlassen das Gerät nicht. Der Token wird an deinen Server im Anfrage-Header geschickt, nicht in Adressen; in Protokollen wird er geschwärzt.
 
 ## Netzwerk und Berechtigungen
 
 - **Internet / Netzwerkstatus**: für die Verbindung zu deinem Jellyfin-Server.
 - **Server-Suche im Heimnetz**: Beim Einrichten sucht die App im lokalen Netz nach Jellyfin-Servern (Broadcast im eigenen Netzwerk).
+- **Heimnetz-Adresse** (optional): Trägst du eine lokale Server-Adresse ein, merkt sich die App eine Kennung des Netzes (Prüfsumme aus Gateway, DNS-Servern und Domain) und benutzt die Adresse nur in diesem Netz. Die Kennung bleibt auf dem Gerät.
+- **Updates**: Höchstens einmal am Tag fragt die App bei GitHub nach einer neueren Version (öffentliche Release-Liste, ohne persönliche Daten). Abschaltbar unter Einstellungen → Updates.
 - **Mikrofon** (optional): nur für die Sprachsuche, wenn du sie nutzt. Die Spracherkennung übernimmt der Sprachdienst deines Geräts (z. B. von Amazon oder Google); dafür gelten dessen Datenschutzbestimmungen.
 - **Andere Apps starten / Einstellungen öffnen**: Die App kann installierte Apps und die Geräte-Einstellungen öffnen. Sie liest dafür nur die Liste der startbaren Apps, keine Inhalte anderer Apps.
 

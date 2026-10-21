@@ -1,23 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
-    <!-- Stored servers & users (without access tokens) -->
-    <include
-        domain="file"
-        path="authentication_store.json" />
-
-    <!-- UserPreferences -->
+    <!-- Jellyfin-TV-Client: keine Anmeldedaten sichern. authentication_store.json enthält die Tokens
+         der Profile, die Benutzereinstellungen u. a. den Jellyseerr-API-Schlüssel – beides bleibt auf
+         dem Gerät. Gesichert werden nur unkritische Einstellungen (Dateiname mit .xml). -->
     <include
         domain="sharedpref"
-        path="org.jellyfin.androidtv_preferences" />
+        path="systemprefs.xml" />
     <include
         domain="sharedpref"
-        path="org.jellyfin.androidtv.debug_preferences" />
-    <!-- SystemPreferences -->
-    <include
-        domain="sharedpref"
-        path="systemprefs" />
-    <!-- AuthenticationPreferences -->
-    <include
-        domain="sharedpref"
-        path="AuthenticationPreferences" />
+        path="authentication.xml" />
 </full-backup-content>

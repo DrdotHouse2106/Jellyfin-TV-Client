@@ -77,7 +77,17 @@ object Top10 {
 		).content.items.map { it.id }
 	}.onFailure { Timber.i("Top 10 vom Plugin nicht verfügbar: %s", it.message) }.getOrNull()
 
-	suspend fun load(api: ApiClient, currentUser: UserDto): List<BaseItemDto> = withContext(Dispatchers.IO) {
+	/** Zwischenspeicher pro (Server, Benutzer) – die Rangfolge ändert sich nur langsam. */
+	private var cache: Triple<String, Long, List<BaseItemDto>>? = null
+	private const val CACHE_MS = 15 * 60 * 1000L
+
+	suspend fun load(api: ApiClient, currentUser: UserDto): List<BaseItemDto> {
+		val key = "${api.baseUrl}|${currentUser.id}"
+		cache?.takeIf { it.first == key && System.currentTimeMillis() - it.second < CACHE_MS }?.let { return it.third }
+		return loadUncached(api, currentUser).also { if (it.isNotEmpty()) cache = Triple(key, System.currentTimeMillis(), it) }
+	}
+
+	private suspend fun loadUncached(api: ApiClient, currentUser: UserDto): List<BaseItemDto> = withContext(Dispatchers.IO) {
 		try {
 			loadFromPlugin(api)?.takeIf { it.isNotEmpty() }?.let { ids -> return@withContext itemsInOrder(api, currentUser, ids) }
 

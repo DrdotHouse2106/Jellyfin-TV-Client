@@ -32,7 +32,8 @@ object TelemetryService {
 	 * Call in the attachBaseContext function of the application.
 	 */
 	fun init(context: Application) {
-		ACRA.DEV_LOGGING = true
+		// Jellyfin-TV-Client: ausführliche ACRA-Protokolle nur im Debug-Build
+		ACRA.DEV_LOGGING = BuildConfig.DEBUG
 		context.initAcra {
 			buildConfigClass = BuildConfig::class.java
 			sharedPreferencesName = TelemetryPreferences.SHARED_PREFERENCES_NAME

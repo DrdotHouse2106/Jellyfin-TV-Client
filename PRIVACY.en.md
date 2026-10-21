@@ -22,12 +22,14 @@ This data is sent only to the server you entered – never to the developer or t
 
 ## Data on the device
 
-Server address, sign-in token (not your password) and settings are stored on the TV and removed when the app is uninstalled.
+Server address, sign-in token (not your password) and settings are stored on the TV and removed when the app is uninstalled. Sign-in tokens and the Jellyseerr API key are excluded from Android backups (cloud backup, device transfer). The token is sent to your server in a request header, not in URLs, and is redacted in logs.
 
 ## Network and permissions
 
 - **Internet / network state**: connection to your Jellyfin server.
 - **Local server discovery**: during setup the app looks for Jellyfin servers on your local network.
+- **Home network address** (optional): if you enter a local server address, the app stores a network fingerprint (hash of gateway, DNS servers and domain) and uses the address only in that network. The fingerprint stays on the device.
+- **Updates**: at most once a day the app asks GitHub for a newer version (public release list, no personal data). Can be turned off under Settings → Updates.
 - **Microphone** (optional): voice search only; speech recognition is handled by your device's speech service (e.g. Amazon or Google) under their privacy policies.
 - **Launching other apps / opening settings**: the app reads only the list of launchable apps, never their content.
 

@@ -393,13 +393,12 @@ object Worlds {
 			?.takeIf { it.isString }?.content?.takeIf { it.isNotBlank() }
 	}
 
-	/** Adresse auf dem eigenen Server („/LocalRecs/…“) vollständig machen, mit Token für geschützte Endpunkte. */
+	/** Adresse auf dem eigenen Server („/LocalRecs/…“) vollständig machen; die Anmeldung kommt per Header (ServerAuth). */
 	fun serverUrl(api: ApiClient, url: String): String? {
 		if (url.startsWith("http://") || url.startsWith("https://")) return url
 		val base = api.baseUrl?.trimEnd('/') ?: return null
 		val path = if (url.startsWith("/")) url else "/$url"
-		val token = api.accessToken ?: return base + path
-		return base + path + (if ('?' in path) "&" else "?") + "ApiKey=" + token
+		return base + path
 	}
 
 	/** Id der Plugin-Welt, die zu dieser Welt passt (über Id, Name oder Studio), sonst null. */

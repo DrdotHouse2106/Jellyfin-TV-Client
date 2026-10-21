@@ -163,6 +163,7 @@ class SessionRepositoryImpl(
 		}
 		preferencesRepository.onSessionChanged()
 		_currentSession.value = session
+		if (session != null) TvClientLocalAddress.recheck()
 
 		return true
 	}
@@ -197,8 +198,9 @@ class SessionRepositoryImpl(
 			val server = authenticationStore.getServer(session.serverId)
 				?: return false
 
-			// Jellyfin-TV-Client: im Heimnetz direkt die lokale Adresse nutzen
-			val address = TvClientLocalAddress.choose(session.serverId, server.address)
+			// Jellyfin-TV-Client: im Heimnetz direkt die lokale Adresse nutzen – ohne Wartezeit beim Start,
+			// geprüft wird danach im Hintergrund (TvClientLocalAddress.recheck)
+			val address = TvClientLocalAddress.initialAddress(session.serverId, server.address)
 			update(
 				baseUrl = address,
 				accessToken = session.accessToken,

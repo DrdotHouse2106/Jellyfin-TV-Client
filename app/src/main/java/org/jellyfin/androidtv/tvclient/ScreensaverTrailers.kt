@@ -44,7 +44,8 @@ object ScreensaverTrailers {
 			val url = api.createUrl(
 				pathTemplate = "/Videos/{itemId}/stream",
 				pathParameters = mapOf("itemId" to video.id),
-				queryParameters = mapOf("static" to true, "ApiKey" to api.accessToken),
+				// Anmeldung per Header (ServerAuth), nicht in der Adresse
+				queryParameters = mapOf("static" to true),
 			)
 			Trailer(url, video.runTimeTicks?.ticks)
 		}.getOrNull()

@@ -91,11 +91,26 @@ object Jellyseerr {
 	 * Prüft, ob Anfragen möglich sind (Plugin eingerichtet und Benutzer verknüpft, sonst eigene
 	 * Adresse und Schlüssel). Gibt null zurück, wenn der Knopf nicht erscheinen soll.
 	 */
+	/** Ergebnis von [detect] pro (Server, Token, Einstellungen) für 10 Minuten. */
+	private var detectedKey: String? = null
+	private var detectedAt = 0L
+	private const val DETECT_TTL_MS = 10 * 60 * 1000L
+
 	suspend fun detect(api: ApiClient): Backend? {
 		if (!prefs()[enabledPreference]) return null.also { backend = null }
 
 		val baseUrl = api.baseUrl?.trimEnd('/')
 		val token = api.accessToken
+		val cacheKey = "$baseUrl|${token?.hashCode()}|${prefs()[urlPreference]}|${prefs()[apiKeyPreference].hashCode()}"
+		if (cacheKey == detectedKey && System.currentTimeMillis() - detectedAt < DETECT_TTL_MS) return backend
+		return detectUncached(baseUrl, token).also {
+			detectedKey = cacheKey
+			// Kein Jellyseerr gefunden (evtl. nur kurz nicht erreichbar): schon nach einer Minute neu prüfen
+			detectedAt = System.currentTimeMillis() - if (it == null) DETECT_TTL_MS - 60_000L else 0L
+		}
+	}
+
+	private suspend fun detectUncached(baseUrl: String?, token: String?): Backend? {
 		if (baseUrl != null && token != null) {
 			val plugin = Backend.Plugin("$baseUrl$PLUGIN_PATH", token)
 			val usable = runCatching {
@@ -393,7 +408,9 @@ object Jellyseerr {
 		val trailerVideo = pickVideo((obj["relatedVideos"] as? kotlinx.serialization.json.JsonArray).orEmpty().mapNotNull { video ->
 			val o = video as? JsonObject ?: return@mapNotNull null
 			if (!o.string("site").equals("YouTube", true)) return@mapNotNull null
-			Video(o.string("key") ?: return@mapNotNull null, o.string("type").orEmpty(), o.string("name").orEmpty(), o.string("iso_639_1") ?: o.string("language"))
+			// Nur echte YouTube-Ids (11 Zeichen) – der Schlüssel landet im Player-HTML
+			val key = o.string("key")?.takeIf { it.matches(TrailerWindow.YOUTUBE_KEY) } ?: return@mapNotNull null
+			Video(key, o.string("type").orEmpty(), o.string("name").orEmpty(), o.string("iso_639_1") ?: o.string("language"))
 		})
 		val trailer = trailerVideo?.key
 

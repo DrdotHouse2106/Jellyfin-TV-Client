@@ -31,4 +31,12 @@ class TvClientLocalAddressTests : FunSpec({
 		TvClientLocalAddress.sameId("ec3992c9d9df4e28b80d3fdb68593284", "00000000-d9df-4e28-b80d-3fdb68593284") shouldBe false
 		TvClientLocalAddress.sameId(null, "ec3992c9") shouldBe false
 	}
+
+	test("Netzkennung aus Gateway, DNS und Domain") {
+		val home = TvClientLocalAddress.networkKey(listOf("192.168.72.1"), listOf("192.168.72.1"), "fritz.box")
+		val other = TvClientLocalAddress.networkKey(listOf("192.168.72.1"), listOf("8.8.8.8"), null)
+		(home == other) shouldBe false
+		TvClientLocalAddress.networkKey(listOf("192.168.72.1"), listOf("192.168.72.1"), "fritz.box") shouldBe home
+		TvClientLocalAddress.networkKey(emptyList(), listOf("1.1.1.1"), null) shouldBe null
+	}
 })

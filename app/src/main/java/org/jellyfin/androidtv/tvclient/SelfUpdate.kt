@@ -144,10 +144,42 @@ object SelfUpdate {
 			// Erst die Startseite in Ruhe aufbauen lassen
 			delay(4_000)
 			if (isPlaying() || activity.isFinishing) return@launch
-			val release = runCatching { check() }.onFailure { Timber.w(it, "Update-Prüfung fehlgeschlagen") }.getOrNull()
-			prefs(activity).edit().putLong(LAST_CHECK, System.currentTimeMillis()).apply()
+			val prefs = prefs(activity)
+			// GitHub höchstens einmal am Tag fragen; dazwischen gilt die gemerkte neue Version
+			val fresh = System.currentTimeMillis() - prefs.getLong(LAST_CHECK, 0) < CHECK_INTERVAL_MS
+			val release = if (fresh) {
+				cachedRelease(activity)?.takeIf { isNewer(it.version, BuildConfig.VERSION_NAME) }?.also { _available.value = it }
+			} else {
+				runCatching { check() }.onFailure { Timber.w(it, "Update-Prüfung fehlgeschlagen") }.getOrNull().also {
+					prefs.edit().putLong(LAST_CHECK, System.currentTimeMillis()).apply()
+					rememberRelease(activity, it)
+				}
+			}
 			if (release != null && !isPlaying() && !activity.isFinishing) offer(activity, release)
 		}
+	}
+
+	private const val CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000L
+
+	private fun rememberRelease(context: Context, release: Release?) {
+		prefs(context).edit().apply {
+			if (release == null) {
+				remove("release_version")
+			} else {
+				putString("release_version", release.version)
+				putString("release_url", release.apkUrl)
+				putLong("release_size", release.size ?: -1)
+				putString("release_sha256", release.sha256)
+				putString("release_notes", release.notes)
+			}
+		}.apply()
+	}
+
+	private fun cachedRelease(context: Context): Release? {
+		val prefs = prefs(context)
+		val version = prefs.getString("release_version", null) ?: return null
+		val url = prefs.getString("release_url", null) ?: return null
+		return Release(version, url, prefs.getLong("release_size", -1).takeIf { it > 0 }, prefs.getString("release_sha256", null), prefs.getString("release_notes", null).orEmpty())
 	}
 
 	/** „Nach Updates suchen“ in den Einstellungen. */
@@ -157,6 +189,7 @@ object SelfUpdate {
 		owner.lifecycleScope.launch {
 			val result = runCatching { check() }
 			prefs(activity).edit().putLong(LAST_CHECK, System.currentTimeMillis()).apply()
+			rememberRelease(activity, result.getOrNull())
 			result.onSuccess { release ->
 				if (release == null) Toast.makeText(activity, activity.getString(R.string.tvclient_update_current, BuildConfig.VERSION_NAME), Toast.LENGTH_LONG).show()
 				else offer(activity, release)
