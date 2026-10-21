@@ -50,6 +50,19 @@ class TvClientLocalAddressTests : FunSpec({
 		TvClientLocalAddress.verifyProof("token-123", nonce, "c2b157ea3dc84584a30bcb96492eda16", "jellyfin.example.org", listOf(proof)) shouldBe false
 	}
 
+	test("Identitätsnachweis: aufgefüllte Liste (Plugin ab 12.39)") {
+		val nonce = "ab".repeat(32)
+		val proof = TvClientLocalAddress.proof("token-123", nonce, "c2b157ea3dc84584a30bcb96492eda16", "192.168.1.10:8096")
+		val padding = List(5) { i -> "%064x".format(i + 1) }
+		// Position und Anzahl spielen keine Rolle, nur ob der eigene Nachweis enthalten ist
+		for (position in 0..padding.size) {
+			val proofs = padding.toMutableList().apply { add(position, proof) }
+			TvClientLocalAddress.verifyProof("token-123", nonce, "c2b157ea3dc84584a30bcb96492eda16", "192.168.1.10:8096", proofs) shouldBe true
+		}
+		TvClientLocalAddress.verifyProof("token-123", nonce, "c2b157ea3dc84584a30bcb96492eda16", "192.168.1.10:8096", padding) shouldBe false
+		TvClientLocalAddress.verifyProof("token-123", nonce, "c2b157ea3dc84584a30bcb96492eda16", "192.168.1.10:8096", emptyList()) shouldBe false
+	}
+
 	test("Host wie im Host-Header") {
 		TvClientLocalAddress.hostHeader("http://192.168.1.10:8096") shouldBe "192.168.1.10:8096"
 		TvClientLocalAddress.hostHeader("http://Server.LAN:80/jf") shouldBe "server.lan"

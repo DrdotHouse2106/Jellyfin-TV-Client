@@ -151,7 +151,9 @@ object TvClientLocalAddress {
 	 * Identitätsnachweis (Plugin Local Recommendations ab 12.35): Nur der echte Server kennt den Token des
 	 * Geräts und kann zur Zufallszahl den passenden Nachweis berechnen – erst dann geht der Token über diese
 	 * Adresse. Der Host ist Teil des Nachweises (Schutz gegen Weiterreichen an den echten Server).
-	 * Ältere Plugins (404): wie bisher nur Adresse + Netzkennung + Server-Id. Jeder andere Fehler: nein.
+	 * „Proofs“ ist ab 12.39 mit Zufallswerten aufgefüllt – geprüft wird nur, ob der eigene Nachweis enthalten ist.
+	 * Ältere Plugins (404): nur Adresse + Netzkennung + Server-Id, aber nur solange der Server den Nachweis noch nie
+	 * erbracht hat. Alles andere (403, Netzwerkfehler, kein passender Nachweis): nein → Token nur über die Internetadresse.
 	 */
 	private fun identityConfirmed(address: String, serverId: UUID, token: String, deviceId: String): Boolean = runCatching {
 		val nonce = ByteArray(32).also { java.security.SecureRandom().nextBytes(it) }.joinToString("") { "%02x".format(it) }
