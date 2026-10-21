@@ -1,5 +1,12 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.29.2 – 2026-10-21
+
+Zweite Nachprüfung des Sicherheitsberichts:
+
+- **Heimnetz:** Die Adresse erneut zu speichern setzt den Schutz gegen „unbekannt“ (404) zurück – etwa wenn das Plugin auf dem Server neu installiert wurde und die Heimadresse sonst gesperrt bliebe. Der Dialog sagt das jetzt auch.
+- **Updates strenger geprüft:** Ohne Prüfsumme (SHA-256) von GitHub wird kein Update installiert, und lässt sich die Signatur des Updates nicht prüfen, wird es abgelehnt.
+
 ## 1.29.1 – 2026-10-21
 
 Nachprüfung des Sicherheitsberichts:

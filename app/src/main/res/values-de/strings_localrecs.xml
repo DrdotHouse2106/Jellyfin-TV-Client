@@ -148,7 +148,7 @@
     <string name="tvclient_local_title">Heimnetz</string>
     <string name="tvclient_local_edit">Adresse im Heimnetz …</string>
     <string name="tvclient_local_hint">Im Heimnetz spricht Quallenkino direkt mit dem Server (schneller als über das Internet). Die Adresse gilt nur in dem Netz, in dem sie gespeichert wurde – in fremden Netzen bleibt es bei der normalen Adresse. Die Anmeldung bleibt unverändert. Empfehlung: Wenn möglich https verwenden – über http kann der Zugangstoken im Heimnetz mitgelesen werden.</string>
-    <string name="tvclient_local_dialog">Lokale Adresse des Servers, z. B. die IP im Heimnetz. Ohne Port wird 8096 genommen. „Speichern“ bestätigt die Adresse für das Netz, in dem das Gerät gerade ist. Leer lassen oder „Entfernen“, um nur die normale Adresse zu nutzen.</string>
+    <string name="tvclient_local_dialog">Lokale Adresse des Servers, z. B. die IP im Heimnetz. Ohne Port wird 8096 genommen. „Speichern“ bestätigt die Adresse für das Netz, in dem das Gerät gerade ist. Leer lassen oder „Entfernen“, um nur die normale Adresse zu nutzen. Klappt die Heimadresse nicht mehr (z. B. nach Neuinstallation des Plugins auf dem Server), hilft erneutes Speichern.</string>
     <string name="tvclient_local_example">z. B. 192.168.1.10:8096</string>
     <string name="tvclient_local_remove">Entfernen</string>
     <string name="tvclient_local_using_home">Verbindung: Heimnetz (%1$s)</string>

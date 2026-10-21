@@ -89,6 +89,8 @@ object TvClientLocalAddress {
 		val network = currentNetwork()
 		prefs().edit().apply {
 			remove(DETECTED + serverId)
+			// Erneutes Speichern setzt den 404-Schutz zurück (z. B. nach Deinstallation des Plugins)
+			remove(IDENTITY_SEEN + serverId)
 			if (address == null) {
 				remove(MANUAL + serverId)
 				remove(NETWORKS + serverId)

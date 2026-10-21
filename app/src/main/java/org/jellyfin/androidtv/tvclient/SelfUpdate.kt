@@ -284,7 +284,8 @@ object SelfUpdate {
 			}
 			if (release.size != null && loaded != release.size) error("Größe stimmt nicht ($loaded statt ${release.size})")
 			val actual = digest.digest().joinToString("") { "%02x".format(it) }
-			if (release.sha256 != null && !actual.equals(release.sha256, ignoreCase = true)) {
+			// Ohne Prüfsumme von GitHub wird nicht installiert
+			if (release.sha256 == null || !actual.equals(release.sha256, ignoreCase = true)) {
 				target.delete()
 				error("Prüfsumme stimmt nicht")
 			}
@@ -314,9 +315,11 @@ object SelfUpdate {
 		val installed = context.packageManager.getPackageInfo(context.packageName, flags)
 		val expected = signatures(installed)
 		val actual = signatures(archive)
-		// Manche Geräte liefern für Archive keine Signaturen; dann entscheidet der Installer selbst
+		if (expected.isEmpty()) return false
+		// Manche ältere Geräte liefern für Archive keine Signaturen; dann prüft Android beim Installieren selbst,
+		// dass die Signatur zur installierten App passt (ein Update mit fremder Signatur lehnt Android immer ab)
 		actual.isEmpty() || actual == expected
-	}.getOrDefault(true)
+	}.onFailure { Timber.w(it, "Signatur des Updates nicht prüfbar") }.getOrDefault(false)
 
 	private fun canInstall(context: Context): Boolean =
 		Build.VERSION.SDK_INT < Build.VERSION_CODES.O || context.packageManager.canRequestPackageInstalls()
