@@ -83,17 +83,22 @@ import kotlin.time.Duration.Companion.seconds
  */
 object HomeBillboard {
 	private const val MAX_ITEMS = 8
+	private const val POOL = 30
+	// Etwas mehr als 4 je Typ, weil Titel ohne Hintergrundbild noch herausfallen
+	private const val PICK_PER_TYPE = 6
 	val rotationInterval = 9.seconds
 
 	private val fields = ItemRepository.browseFields + setOf(ItemFields.REMOTE_TRAILERS, ItemFields.TAGLINES)
 
 	/** Vorschläge: zuerst aus „Local Recommendations“, sonst die neuesten Filme und Serien. */
 	suspend fun load(api: ApiClient): List<BaseItemDto> = withContext(Dispatchers.IO) {
+		// Täglich wechselnde Auswahl aus den ersten POOL Empfehlungen je Typ (nicht immer die obersten)
+		val seed = dailySeed()
 		val recommendedIds = listOf(LocalRecommendationsType.MOVIES, LocalRecommendationsType.SERIES).flatMap { type ->
 			runCatching {
-				val request = GetLocalRecommendationsRequest(type, limit = MAX_ITEMS / 2)
+				val request = GetLocalRecommendationsRequest(type, limit = POOL)
 				api.get<BaseItemDtoQueryResult>(request.path, queryParameters = request.queryParameters).content.items
-			}.getOrDefault(emptyList()).map { it.id }
+			}.getOrDefault(emptyList()).map { it.id }.let { dailyPick(it, PICK_PER_TYPE, "$seed|${type.serializedName}") }
 		}
 
 		val items = runCatching {
@@ -141,6 +146,27 @@ object HomeBillboard {
 			val text = cacheJson.encodeToString(kotlinx.serialization.builtins.ListSerializer(BaseItemDto.serializer()), items)
 			context.getSharedPreferences(CACHE_PREFS, Context.MODE_PRIVATE).edit().putString(cacheKey(api), text).apply()
 		}.onFailure { Timber.w(it, "Banner konnte nicht gespeichert werden") }
+	}
+
+	/** Seed für die Banner-Auswahl: lokales Datum und Profil – gleicher Tag, gleiche Auswahl. */
+	private fun dailySeed(): String {
+		val userId = runCatching {
+			KoinJavaComponent.get<org.jellyfin.androidtv.auth.repository.UserRepository>(org.jellyfin.androidtv.auth.repository.UserRepository::class.java).currentUser.value?.id
+		}.getOrNull()
+		return "${java.time.LocalDate.now()}|$userId"
+	}
+
+	/**
+	 * [count] Einträge gewichtet ziehen, ohne Zurücklegen: Rang r hat Gewicht 1/(r+2), vordere Empfehlungen
+	 * kommen also öfter, aber nicht immer dran. Gleicher [seed] ergibt dieselbe Auswahl.
+	 */
+	fun <T> dailyPick(list: List<T>, count: Int, seed: String): List<T> {
+		val random = java.util.Random(seed.hashCode().toLong())
+		// Efraimidis-Spirakis: Schlüssel u^(1/w) = u^(r+2), die größten gewinnen
+		return list.mapIndexed { rank, value -> value to Math.pow(random.nextDouble(), (rank + 2).toDouble()) }
+			.sortedByDescending { it.second }
+			.take(count)
+			.map { it.first }
 	}
 
 	/** Filme und Serien abwechselnd. */

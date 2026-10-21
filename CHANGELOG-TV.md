@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.29.4 – 2026-10-21
+
+- **Banner wechselt täglich:** Statt immer der obersten Empfehlungen zieht die App jeden Tag eine neue Auswahl aus den ersten 30 Empfehlungen je Typ. Vordere Empfehlungen kommen öfter dran, aber nicht immer. Am selben Tag bleibt die Auswahl gleich.
+
 ## 1.29.3 – 2026-10-21
 
 - **„Trailer abspielen“ mit voller Lautstärke:** Selbst gestartete Trailer (vom Server oder YouTube) laufen jetzt laut wie normal und mit Ton, auch wenn der Ton der Vorschau ausgeschaltet ist. Automatisch laufende Vorschauen (Banner, Detailseite, Bildschirmschoner) bleiben leiser.
