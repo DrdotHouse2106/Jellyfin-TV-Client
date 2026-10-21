@@ -195,4 +195,9 @@
     <string name="tvclient_avatar_saved">Profilbild gespeichert</string>
     <string name="tvclient_avatar_failed">Profilbilder sind gerade nicht verfügbar.</string>
     <string name="tvclient_local_unconfirmed">Dieses Netz ist für die Heimadresse noch nicht bestätigt – zum Benutzen die Adresse hier erneut speichern.</string>
+    <string name="tvclient_behavior_title">Suchen und angesehene Titel für Empfehlungen nutzen</string>
+    <string name="tvclient_behavior_hint">Deine Suchbegriffe und geöffneten Detailseiten werden auf deinem Jellyfin-Server gespeichert (höchstens %1$d Tage bzw. %2$d Einträge) und verbessern deine Vorschläge, z. B. „Weil du nach … gesucht hast“. Die Empfehlungen richten sich außerdem nach der Tageszeit. Nichts davon verlässt deinen Server.</string>
+    <string name="tvclient_behavior_delete">Gespeicherte Suchen und Ansichten löschen</string>
+    <string name="tvclient_behavior_deleted">Gespeicherte Suchen und Ansichten gelöscht</string>
+    <string name="tvclient_behavior_failed">Das hat gerade nicht geklappt.</string>
 </resources>

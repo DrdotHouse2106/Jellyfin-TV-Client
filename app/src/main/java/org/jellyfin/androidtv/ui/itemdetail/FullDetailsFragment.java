@@ -487,8 +487,16 @@ public class FullDetailsFragment extends Fragment implements RecordingIndicatorV
         }
     }
 
+    // Jellyfin-TV-Client: geöffnete Detailseite einmal für die Empfehlungen melden (Plugin ab 12.36)
+    private java.util.UUID reportedView = null;
+
     public void setBaseItem(BaseItemDto item) {
         if (!getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) return;
+
+        if (item != null && (item.getType() == BaseItemKind.MOVIE || item.getType() == BaseItemKind.SERIES) && !item.getId().equals(reportedView)) {
+            reportedView = item.getId();
+            org.jellyfin.androidtv.tvclient.TvClientBehavior.view(item.getId());
+        }
 
         mBaseItem = item;
         backgroundService.getValue().setBackground(item);

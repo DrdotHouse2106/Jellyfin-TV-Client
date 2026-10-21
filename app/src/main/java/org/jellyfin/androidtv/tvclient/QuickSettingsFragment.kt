@@ -134,6 +134,9 @@ private fun QuickSettings(onChooseAvatar: () -> Unit) {
 	var remindersAvailable by remember { mutableStateOf(false) }
 	var qrTarget by remember { mutableStateOf("webcal") }
 	var avatarsAvailable by remember { mutableStateOf(false) }
+	// Verhaltenssignale für Empfehlungen (Plugin ab 12.36): eigener Stand
+	var behavior by remember { mutableStateOf<TvClientBehavior.Me?>(null) }
+	LaunchedEffect(Unit) { behavior = TvClientBehavior.me() }
 	LaunchedEffect(Unit) {
 		val api = koinApi()
 		avatarsAvailable = api.baseUrl != null && api.accessToken != null && TvClientAvatars.isAvailable(api.baseUrl!!, api.accessToken!!)
@@ -215,6 +218,26 @@ private fun QuickSettings(onChooseAvatar: () -> Unit) {
 				),
 				prefs[ScreensaverTrailers.volumePreference],
 			) { set(ScreensaverTrailers.volumePreference, it) }
+		}
+
+		behavior?.let { me ->
+			Section(stringResource(R.string.tvclient_behavior_title))
+			Choices(listOf(Choice(true, on), Choice(false, off)), me.enabled) { value ->
+				scope.launch {
+					if (TvClientBehavior.setEnabled(value)) behavior = me.copy(enabled = value)
+				}
+			}
+			Hint(stringResource(R.string.tvclient_behavior_hint, me.retentionDays, me.maxEntries))
+			val deleted = stringResource(R.string.tvclient_behavior_deleted)
+			val failed = stringResource(R.string.tvclient_behavior_failed)
+			Row(modifier = Modifier.padding(top = 10.dp)) {
+				ActionChip(stringResource(R.string.tvclient_behavior_delete), R.drawable.ic_delete) {
+					scope.launch {
+						val ok = TvClientBehavior.delete()
+						android.widget.Toast.makeText(context, if (ok) deleted else failed, android.widget.Toast.LENGTH_SHORT).show()
+					}
+				}
+			}
 		}
 
 		Section(stringResource(R.string.tvclient_jellyseerr_title))

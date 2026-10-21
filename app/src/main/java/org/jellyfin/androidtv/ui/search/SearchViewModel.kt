@@ -55,6 +55,9 @@ class SearchViewModel(
 
 		searchJob?.cancel()
 
+		// Jellyfin-TV-Client: Suchbegriff nach einer Tipp-Pause für die Empfehlungen melden (Plugin ab 12.36)
+		org.jellyfin.androidtv.tvclient.TvClientBehavior.search(trimmed)
+
 		if (trimmed.isBlank()) {
 			_searchResultsFlow.value = emptyList()
 			return true

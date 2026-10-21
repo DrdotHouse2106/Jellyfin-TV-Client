@@ -21,7 +21,12 @@ data class GetLocalRecommendationsRequest(
 	val limit: Int? = null,
 ) : ExternalItemsRequest {
 	override val path get() = "/LocalRecs/Recommendations"
-	override val queryParameters get() = mapOf("type" to type.serializedName, "limit" to limit)
+	// Jellyfin-TV-Client: Tageszeit des Benutzers (Plugin ab 12.36 sortiert danach, ältere ignorieren es)
+	override val queryParameters get() = mapOf(
+		"type" to type.serializedName,
+		"limit" to limit,
+		"utcOffsetMinutes" to org.jellyfin.androidtv.tvclient.TvClientBehavior.utcOffsetMinutes(),
+	)
 	override val isLiveTv get() = type == LocalRecommendationsType.LIVE_TV
 }
 

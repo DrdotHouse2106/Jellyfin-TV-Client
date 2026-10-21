@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import org.jellyfin.androidtv.auth.repository.UserRepository
 import org.jellyfin.androidtv.constant.CustomMessage
 import org.jellyfin.androidtv.constant.ImageType
@@ -114,7 +115,19 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			}
 
 			// Jellyfin-TV-Client: feste Reihenfolge, jede Zeile einzeln abschaltbar (Einstellungen → Startseite)
-			val homeRows = HomeRow.enabled(userPreferences)
+			// Jellyfin-TV-Client: Empfehlungszeilen in der Reihenfolge der Tageszeit (Plugin ab 12.36)
+			val homeRows = org.jellyfin.androidtv.tvclient.TvClientBehavior.reorder(
+				HomeRow.enabled(userPreferences),
+				{ row ->
+					when (row) {
+						HomeRow.RECOMMENDED_MOVIES -> "movies"
+						HomeRow.RECOMMENDED_SERIES -> "series"
+						HomeRow.RECOMMENDED_LIVE_TV -> "livetv"
+						else -> null
+					}
+				},
+				withTimeoutOrNull(1_500) { org.jellyfin.androidtv.tvclient.TvClientBehavior.daypartOrder() },
+			)
 			val liveTvAccess = currentUser.policy?.enableLiveTvAccess == true
 
 			// Check for coroutine cancellation

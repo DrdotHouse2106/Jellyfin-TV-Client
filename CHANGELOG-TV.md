@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.29.0 – 2026-10-21
+
+- **Empfehlungen nach Tageszeit** (Plugin Local Recommendations ab 12.36): Die Vorschläge berücksichtigen die Uhrzeit, und die Zeilen „Empfohlene Filme/Serien/Live-TV“ ordnen sich je nach Tageszeit um.
+- **Suchen und angesehene Titel** fließen in die Empfehlungen ein („Weil du nach … gesucht hast“): Suchbegriffe werden nach 2,5 s Tipp-Pause gemeldet, Detailseiten von Filmen und Serien beim Öffnen. Gespeichert wird nur auf dem eigenen Server.
+- In den Einstellungen: **„Suchen und angesehene Titel für Empfehlungen nutzen“** (An/Aus) mit der Speicherdauer vom Server und „Gespeicherte Suchen und Ansichten löschen“.
+
 ## 1.28.1 – 2026-10-21
 
 - **Identitätsnachweis im Heimnetz:** Bevor Quallenkino den Token an die lokale Adresse schickt, beweist der Server mit einer Zufallszahl, dass er den Token dieses Geräts kennt (Plugin Local Recommendations ab 12.35). Ein fremdes Gerät mit derselben Adresse und Server-Id fällt so durch; auch ein Weiterreichen an den echten Server hilft nicht, weil die angesprochene Adresse Teil des Nachweises ist. Bei Fehlern (z. B. 403, 429) bleibt es bei der normalen Adresse. Mit älteren Plugin-Versionen gilt wie bisher: eingetragene Adresse + bestätigtes Netz + Server-Id.
