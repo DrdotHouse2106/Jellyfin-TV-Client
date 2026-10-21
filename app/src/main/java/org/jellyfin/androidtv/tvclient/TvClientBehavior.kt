@@ -48,7 +48,7 @@ object TvClientBehavior {
 	/** Abweichung der Ortszeit von UTC in Minuten (z. B. 120 im Sommer). */
 	fun utcOffsetMinutes(): Int = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / 60_000
 
-	private fun call(method: String, path: String, body: String? = null): Pair<Int, String> {
+	internal fun call(method: String, path: String, body: String? = null): Pair<Int, String> {
 		val api = api()
 		val base = api.baseUrl?.trimEnd('/') ?: error("keine Server-Adresse")
 		val token = api.accessToken ?: error("nicht angemeldet")

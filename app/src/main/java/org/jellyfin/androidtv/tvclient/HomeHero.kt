@@ -247,7 +247,9 @@ private fun HeroContent(item: BaseItemDto) {
 
 		// Begründung der Empfehlung („Weil du „…“ geschaut hast“), einzeilig
 		val reasons by RecommendationReasons.reasons.collectAsState()
-		val reason = reasons[RecommendationReasons.key(item.id)]
+		// Badge der Banner-Auswahl („Weiterschauen“, „Neue Folgen“) geht vor
+		val billboardReasons by TvClientBillboard.reasons.collectAsState()
+		val reason = billboardReasons[RecommendationReasons.key(item.id)] ?: reasons[RecommendationReasons.key(item.id)]
 		reason?.let {
 			Text(
 				text = it,

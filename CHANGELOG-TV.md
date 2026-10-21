@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.30.0 – 2026-10-21
+
+- **Banner vom Server** (Plugin Local Recommendations ab 12.41): Täglich neue Auswahl, gemischt mit gerade Passendem – angefangene Serien und Filme, neue Folgen. Ein Hinweis wie „Weiterschauen“ oder „Neue Folgen“ steht über dem Titel. Ohne neues Plugin wechselt das Banner wie bisher täglich aus den Empfehlungen.
+- **„Später“ im Banner:** Der Titel verschwindet für drei Wochen aus dem Banner, ohne als Ablehnung zu zählen. In den Einstellungen unter „Aus dem Banner weggelegt“ lässt er sich wieder zeigen.
+
 ## 1.29.5 – 2026-10-21
 
 - **Kein Ton bei DTS behoben:** Die App prüft bei jedem Wiedergabestart, ob der aktuelle Audio-Ausgang (Fernseher oder AV-Receiver über HDMI) DTS bzw. TrueHD annimmt. Nur dann geht der Ton direkt raus. Sonst wandelt der Server nur den Ton in Dolby Digital um – 5.1 bleibt erhalten, das Bild läuft weiter direkt. Neu in den Einstellungen unter Ton: „DTS und TrueHD durchreichen“ (Automatisch / An / Aus).

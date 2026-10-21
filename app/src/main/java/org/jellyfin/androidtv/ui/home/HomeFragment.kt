@@ -99,6 +99,7 @@ class HomeFragment : Fragment() {
 		)
 		// Hat der Benutzer schon eine Taste gedrückt? Dann wird ihm der Fokus nicht mehr weggenommen.
 		var userInteracted by remember { mutableStateOf(false) }
+		val billboardScope = androidx.compose.runtime.rememberCoroutineScope()
 		// Jellyfin-TV-Client: Begründungen der Empfehlungen (Plugin Local Recommendations ab 12.9.0)
 		LaunchedEffect(Unit) { RecommendationReasons.refresh(api) }
 		if (showHero) LaunchedEffect(Unit) {
@@ -167,6 +168,10 @@ class HomeFragment : Fragment() {
 							HomeHero(Modifier.fillMaxWidth().height(200.dp))
 							HomeBillboardButtons(
 								items = billboardItems,
+								onLater = { later ->
+									billboardItems = billboardItems.filter { it.id != later.id }
+									billboardScope.launch { HomeBillboard.load(api).takeIf { it.isNotEmpty() }?.let { billboardItems = it } }
+								},
 								modifier = Modifier
 									.padding(start = 28.dp, top = 4.dp, bottom = 12.dp)
 									.onFocusChanged {

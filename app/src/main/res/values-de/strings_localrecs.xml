@@ -203,4 +203,9 @@
     <string name="tvclient_bitstream_dts">DTS und TrueHD durchreichen</string>
     <string name="tvclient_bitstream_dts_desc">Automatisch: DTS geht nur direkt raus, wenn der aktuelle Ausgang (Fernseher oder AV-Receiver) es annimmt – geprüft bei jedem Wiedergabestart. Sonst wandelt der Server nur den Ton in Dolby Digital 5.1 um, das Bild bleibt unverändert. „Aus“ hilft, wenn ein Film trotzdem keinen Ton hat.</string>
     <string name="tvclient_bitstream_dts_auto">Automatisch</string>
+    <string name="tvclient_billboard_later">Später</string>
+    <string name="tvclient_billboard_later_done">Kommt 3 Wochen nicht mehr im Banner</string>
+    <string name="tvclient_billboard_later_failed">Titel konnte nicht weggelegt werden</string>
+    <string name="tvclient_billboard_later_title">Aus dem Banner weggelegt</string>
+    <string name="tvclient_billboard_show_again">Wieder zeigen</string>
 </resources>

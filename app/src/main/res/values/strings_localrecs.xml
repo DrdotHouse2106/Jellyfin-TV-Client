@@ -203,4 +203,9 @@
     <string name="tvclient_bitstream_dts">Pass through DTS and TrueHD</string>
     <string name="tvclient_bitstream_dts_desc">Automatic: DTS only goes out directly if the current output (TV or AV receiver) accepts it – checked at every playback start. Otherwise the server converts just the audio to Dolby Digital 5.1, the picture stays untouched. Off helps if a film still has no sound.</string>
     <string name="tvclient_bitstream_dts_auto">Automatic</string>
+    <string name="tvclient_billboard_later">Later</string>
+    <string name="tvclient_billboard_later_done">Hidden from the banner for 3 weeks</string>
+    <string name="tvclient_billboard_later_failed">Could not hide the title</string>
+    <string name="tvclient_billboard_later_title">Hidden from the banner</string>
+    <string name="tvclient_billboard_show_again">Show again</string>
 </resources>

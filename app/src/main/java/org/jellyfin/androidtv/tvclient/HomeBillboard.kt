@@ -92,7 +92,16 @@ object HomeBillboard {
 
 	/** Vorschläge: zuerst aus „Local Recommendations“, sonst die neuesten Filme und Serien. */
 	suspend fun load(api: ApiClient): List<BaseItemDto> = withContext(Dispatchers.IO) {
-		// Täglich wechselnde Auswahl aus den ersten POOL Empfehlungen je Typ (nicht immer die obersten)
+		// Auswahl vom Server (Plugin ab 12.41), sonst täglich wechselnd aus den ersten POOL Empfehlungen je Typ
+		val serverIds = TvClientBillboard.load(MAX_ITEMS)?.ids?.takeIf { it.isNotEmpty() }
+		if (serverIds != null) {
+			val items = runCatching {
+				val byId = api.itemsApi.getItems(GetItemsRequest(ids = serverIds, fields = fields, enableUserData = true)).content.items.associateBy { it.id }
+				serverIds.mapNotNull { byId[it] }.filter { heroBackdropImage(it) != null }
+			}.onFailure { Timber.w(it, "Banner vom Server konnte nicht geladen werden") }.getOrDefault(emptyList())
+			// Reihenfolge kommt vom Server (nicht abwechselnd umsortieren)
+			if (items.isNotEmpty()) return@withContext items.take(MAX_ITEMS).also { saveCache(api, it) }
+		}
 		val seed = dailySeed()
 		val recommendedIds = listOf(LocalRecommendationsType.MOVIES, LocalRecommendationsType.SERIES).flatMap { type ->
 			runCatching {
@@ -221,6 +230,8 @@ fun HomeBillboardButtons(
 	focusRequester: FocusRequester,
 	downFocusRequester: FocusRequester,
 	leftFocusRequester: FocusRequester,
+	/** „Später“ gedrückt: Titel aus dem Banner nehmen und neu laden. */
+	onLater: (BaseItemDto) -> Unit = {},
 ) {
 	val context = LocalContext.current
 	val api = koinInject<ApiClient>()
@@ -269,6 +280,9 @@ fun HomeBillboardButtons(
 		event.type == KeyEventType.KeyDown && event.key == key && enabled() && step(delta)
 	}
 
+	var laterAvailable by remember { mutableStateOf(false) }
+	LaunchedEffect(Unit) { laterAvailable = TvClientBillboard.isAvailable() }
+
 	val item = current ?: return
 	val hasTrailer = (item.localTrailerCount ?: 0) > 0 || !item.remoteTrailers.isNullOrEmpty()
 
@@ -305,11 +319,31 @@ fun HomeBillboardButtons(
 			icon = R.drawable.ic_trailer,
 			text = stringResource(R.string.lbl_trailers),
 			modifier = buttonFocus
-				.stepOnKey(Key.DirectionRight, 1)
+				.let { if (laterAvailable) it else it.stepOnKey(Key.DirectionRight, 1) }
 				.alpha(if (hasTrailer) 1f else 0.4f),
 		) {
 			if (hasTrailer) scope.launch { HomeBillboard.playTrailer(context, api, playbackLauncher, item) }
 			else Toast.makeText(context, R.string.tvclient_no_trailer, Toast.LENGTH_SHORT).show()
+		}
+
+		// „Später“: Titel für drei Wochen aus dem Banner nehmen (keine Ablehnung, Plugin ab 12.41)
+		if (laterAvailable) {
+			val laterDone = stringResource(R.string.tvclient_billboard_later_done)
+			val laterFailed = stringResource(R.string.tvclient_billboard_later_failed)
+			BillboardButton(
+				icon = R.drawable.ic_time,
+				text = stringResource(R.string.tvclient_billboard_later),
+				modifier = buttonFocus.stepOnKey(Key.DirectionRight, 1),
+			) {
+				scope.launch {
+					val ok = TvClientBillboard.later(item.id)
+					Toast.makeText(context, if (ok) laterDone else laterFailed, Toast.LENGTH_SHORT).show()
+					if (ok) {
+						if (items.size > 1) step(1)
+						onLater(item)
+					}
+				}
+			}
 		}
 
 		// Punkte: welcher Vorschlag gerade gezeigt wird

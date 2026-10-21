@@ -137,6 +137,8 @@ private fun QuickSettings(onChooseAvatar: () -> Unit) {
 	// Verhaltenssignale für Empfehlungen (Plugin ab 12.36): eigener Stand
 	var behavior by remember { mutableStateOf<TvClientBehavior.Me?>(null) }
 	LaunchedEffect(Unit) { behavior = TvClientBehavior.me() }
+	var laterList by remember { mutableStateOf<List<TvClientBillboard.Later>?>(null) }
+	LaunchedEffect(Unit) { laterList = TvClientBillboard.laterList() }
 	LaunchedEffect(Unit) {
 		val api = koinApi()
 		avatarsAvailable = api.baseUrl != null && api.accessToken != null && TvClientAvatars.isAvailable(api.baseUrl!!, api.accessToken!!)
@@ -245,6 +247,20 @@ private fun QuickSettings(onChooseAvatar: () -> Unit) {
 					scope.launch {
 						val ok = TvClientBehavior.delete()
 						android.widget.Toast.makeText(context, if (ok) deleted else failed, android.widget.Toast.LENGTH_SHORT).show()
+					}
+				}
+			}
+		}
+
+		// Aus dem Banner weggelegte Titel („Später“) wieder zeigen
+		laterList?.takeIf { it.isNotEmpty() }?.let { list ->
+			Section(stringResource(R.string.tvclient_billboard_later_title))
+			list.forEach { entry ->
+				Row(modifier = Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+					ActionChip("${stringResource(R.string.tvclient_billboard_show_again)}: ${entry.name}", R.drawable.ic_time) {
+						scope.launch {
+							if (TvClientBillboard.showAgain(entry.id)) laterList = laterList?.filter { it.id != entry.id }
+						}
 					}
 				}
 			}
