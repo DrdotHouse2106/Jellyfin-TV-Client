@@ -201,12 +201,15 @@ public class VideoManager {
         ExoPlayer.Builder exoPlayerBuilder = new ExoPlayer.Builder(context);
         DefaultRenderersFactory defaultRendererFactory = new DefaultRenderersFactory(context);
         defaultRendererFactory.setEnableDecoderFallback(true);
+        // Jellyfin-TV-Client: DTS/TrueHD durchreichen oder per FFmpeg dekodieren, nie über Hersteller-Decoder
+        defaultRendererFactory.setMediaCodecSelector(org.jellyfin.playback.media3.exoplayer.HdAudioDecoders.getSelector());
         defaultRendererFactory.setExtensionRendererMode(determineExoPlayerExtensionRendererMode());
 
         DefaultTrackSelector trackSelector = new DefaultTrackSelector(context);
         trackSelector.setParameters(trackSelector.buildUponParameters()
                 .setAudioOffloadPreferences(new TrackSelectionParameters.AudioOffloadPreferences.Builder()
-                        .setAudioOffloadMode(TrackSelectionParameters.AudioOffloadPreferences.AUDIO_OFFLOAD_MODE_ENABLED)
+                        // Jellyfin-TV-Client: kein Offload – manche Sticks nehmen DTS dort an und bleiben stumm
+                        .setAudioOffloadMode(TrackSelectionParameters.AudioOffloadPreferences.AUDIO_OFFLOAD_MODE_DISABLED)
                         .build()
                 )
                 .setAllowInvalidateSelectionsOnRendererCapabilitiesChange(true)

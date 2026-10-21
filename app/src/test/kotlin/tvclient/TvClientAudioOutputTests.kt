@@ -17,4 +17,9 @@ class TvClientAudioOutputTests : FunSpec({
 	test("AV-Receiver mit DTS-HD und TrueHD: alles direkt") {
 		TvClientAudioOutput.fromEncodings(setOf(C.ENCODING_DTS_HD, C.ENCODING_DOLBY_TRUEHD)) shouldBe TvClientAudioOutput.HD_AUDIO_CODECS
 	}
+
+	test("Ohne DTS am Ausgang, aber mit FFmpeg: selbst dekodieren statt Server") {
+		TvClientAudioOutput.fromDecoder { it == androidx.media3.common.MimeTypes.AUDIO_DTS } shouldBe setOf(Codec.Audio.DCA, Codec.Audio.DTS)
+		TvClientAudioOutput.fromDecoder { false } shouldBe emptySet()
+	}
 })

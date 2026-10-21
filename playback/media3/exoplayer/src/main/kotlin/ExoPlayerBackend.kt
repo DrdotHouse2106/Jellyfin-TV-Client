@@ -74,6 +74,8 @@ class ExoPlayerBackend(
 		val mediaSourceFactory = DefaultMediaSourceFactory(dataSourceFactory, extractorsFactory)
 		val renderersFactory = DefaultRenderersFactory(context).apply {
 			setEnableDecoderFallback(true)
+			// Jellyfin-TV-Client: DTS/TrueHD durchreichen oder per FFmpeg dekodieren, nie über Hersteller-Decoder
+			setMediaCodecSelector(HdAudioDecoders.selector)
 			setExtensionRendererMode(
 				when (exoPlayerOptions.preferFfmpeg) {
 					true -> DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
@@ -88,7 +90,8 @@ class ExoPlayerBackend(
 				setParameters(buildUponParameters().apply {
 					setAudioOffloadPreferences(
 						TrackSelectionParameters.AudioOffloadPreferences.DEFAULT.buildUpon().apply {
-							setAudioOffloadMode(TrackSelectionParameters.AudioOffloadPreferences.AUDIO_OFFLOAD_MODE_ENABLED)
+							// Jellyfin-TV-Client: kein Offload – manche Sticks nehmen DTS dort an und bleiben stumm
+							setAudioOffloadMode(TrackSelectionParameters.AudioOffloadPreferences.AUDIO_OFFLOAD_MODE_DISABLED)
 						}.build()
 					)
 					setAllowInvalidateSelectionsOnRendererCapabilitiesChange(true)

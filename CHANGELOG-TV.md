@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.30.2 – 2026-10-21
+
+- **DTS und TrueHD dekodiert die App jetzt selbst:** Nimmt der Ausgang DTS nicht an, dekodiert Quallenkino den Ton mit dem eingebauten FFmpeg – 5.1 bleibt erhalten, bei reinem Stereo-Ausgang wird auf dem Gerät heruntergemischt. Der Server muss den Ton nicht mehr umrechnen. Mit AV-Receiver, der DTS kann, wird weiter durchgereicht.
+- DTS-Decoder des Geräteherstellers und die Audio-Auslagerung („Offload“) werden nicht mehr genutzt – auf manchen Sticks blieb damit der Ton stumm.
+- „Aus“ in „DTS und TrueHD durchreichen“ lässt weiterhin den Server in Dolby Digital 5.1 umwandeln.
+
 ## 1.30.1 – 2026-10-21
 
 - **Personenseite mit ganzer Filmografie:** Ein Schauspieler auf einer Detailseite öffnet jetzt – wenn Jellyseerr eingerichtet ist – alle seine Filme und Serien: oben „In deiner Bibliothek“ (direkt zum Abspielen), darunter „Weitere Filme“ und „Weitere Serien“ mit Plakat und Stand, zum Anfragen. Ohne Jellyseerr bleibt es bei den Titeln auf dem Server.

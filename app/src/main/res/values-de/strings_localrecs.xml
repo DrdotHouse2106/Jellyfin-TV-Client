@@ -201,7 +201,7 @@
     <string name="tvclient_behavior_deleted">Gespeicherte Suchen und Ansichten gelöscht</string>
     <string name="tvclient_behavior_failed">Das hat gerade nicht geklappt.</string>
     <string name="tvclient_bitstream_dts">DTS und TrueHD durchreichen</string>
-    <string name="tvclient_bitstream_dts_desc">Automatisch: DTS geht nur direkt raus, wenn der aktuelle Ausgang (Fernseher oder AV-Receiver) es annimmt – geprüft bei jedem Wiedergabestart. Sonst wandelt der Server nur den Ton in Dolby Digital 5.1 um, das Bild bleibt unverändert. „Aus“ hilft, wenn ein Film trotzdem keinen Ton hat.</string>
+    <string name="tvclient_bitstream_dts_desc">Automatisch: Nimmt Fernseher oder AV-Receiver DTS/TrueHD an, wird durchgereicht; sonst dekodiert Quallenkino selbst (5.1, bei reinem Stereo-Ausgang Stereo) – ohne den Server zu belasten. Geprüft bei jedem Wiedergabestart. Aus: Der Server wandelt den Ton in Dolby Digital 5.1 um.</string>
     <string name="tvclient_bitstream_dts_auto">Automatisch</string>
     <string name="tvclient_billboard_later">Später</string>
     <string name="tvclient_billboard_later_done">Kommt 3 Wochen nicht mehr im Banner</string>

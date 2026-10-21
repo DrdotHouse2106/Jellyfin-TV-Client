@@ -201,7 +201,7 @@
     <string name="tvclient_behavior_deleted">Stored searches and views deleted</string>
     <string name="tvclient_behavior_failed">That didn\'t work right now.</string>
     <string name="tvclient_bitstream_dts">Pass through DTS and TrueHD</string>
-    <string name="tvclient_bitstream_dts_desc">Automatic: DTS only goes out directly if the current output (TV or AV receiver) accepts it – checked at every playback start. Otherwise the server converts just the audio to Dolby Digital 5.1, the picture stays untouched. Off helps if a film still has no sound.</string>
+    <string name="tvclient_bitstream_dts_desc">Automatic: if the TV or AV receiver accepts DTS/TrueHD, the audio is passed through; otherwise Quallenkino decodes it itself (5.1, or stereo if the output only has stereo) – the server is not involved. Checked at every playback start. Off: the server converts the audio to Dolby Digital 5.1.</string>
     <string name="tvclient_bitstream_dts_auto">Automatic</string>
     <string name="tvclient_billboard_later">Later</string>
     <string name="tvclient_billboard_later_done">Hidden from the banner for 3 weeks</string>
