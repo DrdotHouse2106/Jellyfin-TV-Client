@@ -11,9 +11,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- Jellyfin-TV-Client: Selbst-Update aus den GitHub-Releases -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-    <uses-permission
-        android:name="android.permission.ACCESS_WIFI_STATE"
-        tools:ignore="LeanbackUsesWifi" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <!-- Jellyfin-TV-Client: Autostart beim Einschalten -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />

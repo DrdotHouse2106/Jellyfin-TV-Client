@@ -1,5 +1,14 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.29.1 – 2026-10-21
+
+Nachprüfung des Sicherheitsberichts:
+
+- **Heimnetz:** Hat der Server den Identitätsnachweis einmal erbracht, gilt eine spätere Antwort „unbekannt“ (404) als Ablehnung – ein gefälschter Server kann die Prüfung so nicht mehr umgehen. Die Einstellung „Heimnetz“ empfiehlt https, weil der Zugangstoken über http im Heimnetz mitgelesen werden kann.
+- **Updates nur mit System-Zertifikaten:** Verbindungen zu GitHub (Update-Prüfung und APK-Download), TMDB und YouTube sind nur verschlüsselt und nur mit den Zertifikaten des Systems erlaubt – eine eingeschleuste Zertifizierungsstelle kann keine falsche APK unterschieben. Für frei eingetragene Jellyfin-Server bleiben http (Heimnetz mit IP) und eigene Zertifikate erlaubt.
+- **Weniger Last:** Hintergrundbilder werden höchstens 1920 Pixel breit geladen statt in voller Auflösung. „Für dich“ unter Entdecken lädt nicht mehr die ganze Bibliothek (Jellyseerr meldet selbst, was schon da ist). Genre-Zeilen merken sich ihre Auswahl 30 Minuten, die Welten laden Sammlungen ohne Bilder und fragen die Welten-Liste des Plugins nicht doppelt ab.
+- Die ungenutzte Berechtigung „WLAN-Status lesen“ ist entfernt. Die Build-Werkzeuge (GitHub Actions) sind auf feste Versionen gepinnt.
+
 ## 1.29.0 – 2026-10-21
 
 - **Empfehlungen nach Tageszeit** (Plugin Local Recommendations ab 12.36): Die Vorschläge berücksichtigen die Uhrzeit, und die Zeilen „Empfohlene Filme/Serien/Live-TV“ ordnen sich je nach Tageszeit um.

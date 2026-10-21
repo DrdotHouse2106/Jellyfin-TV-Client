@@ -23,17 +23,34 @@ object GenreRows {
 	private const val ITEMS_PER_ROW = 30
 	private val types = setOf(BaseItemKind.MOVIE, BaseItemKind.SERIES)
 
+	/** Genre-Auswahl pro Benutzer für 30 Minuten – so wechseln die Zeilen nicht bei jedem Neuladen der Startseite. */
+	private var cache: Triple<String, Long, List<String>>? = null
+	private const val CACHE_MS = 30 * 60 * 1000L
+
 	suspend fun loadRows(api: ApiClient, userId: UUID): List<HomeFragmentRow> {
+		val key = "${api.baseUrl}|$userId"
+		val picked = cache?.takeIf { it.first == key && System.currentTimeMillis() - it.second < CACHE_MS }?.third
+			?: pickGenres(api, userId)?.also { cache = Triple(key, System.currentTimeMillis(), it) }
+			?: return emptyList()
+		return rowsFor(picked, userId)
+	}
+
+	private suspend fun pickGenres(api: ApiClient, userId: UUID): List<String>? {
 		val genres = try {
 			withContext(Dispatchers.IO) {
 				api.genresApi.getGenres(userId = userId, includeItemTypes = types, enableTotalRecordCount = false).content.items
 			}
 		} catch (@Suppress("TooGenericExceptionCaught") err: Exception) {
 			Timber.w(err, "Genres konnten nicht geladen werden")
-			return emptyList()
+			return null
 		}
+		return pick(genres.mapNotNull { it.name?.takeIf(String::isNotBlank) })
+	}
 
-		return pick(genres.mapNotNull { it.name?.takeIf(String::isNotBlank) }).map { genre ->
+	// Zufällige Reihenfolge der Titel bleibt (wie Netflix), die Abfragen laufen aber erst, wenn eine Zeile
+	// angezeigt wird; die Genre-Liste selbst wird gemerkt
+	private fun rowsFor(picked: List<String>, userId: UUID): List<HomeFragmentRow> {
+		return picked.map { genre ->
 			val query = GetItemsRequest(
 				userId = userId,
 				genres = setOf(genre),

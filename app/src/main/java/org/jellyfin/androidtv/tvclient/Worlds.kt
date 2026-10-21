@@ -163,6 +163,9 @@ object Worlds {
 					includeItemTypes = setOf(BaseItemKind.BOX_SET),
 					recursive = true,
 					fields = setOf(ItemFields.CHILD_COUNT),
+					// Nur Name und Anzahl werden gebraucht – ohne Bilder und Benutzerdaten antwortet der Server schneller
+					enableImages = false,
+					enableUserData = false,
 					enableTotalRecordCount = false,
 				)
 			).content.items
@@ -331,9 +334,18 @@ object Worlds {
 		}
 	}
 
+	/** Kurz gemerkte Antworten des Plugins (Startseite und „Für dich“ fragen dieselbe Welten-Liste ab). */
+	private val pluginCache = java.util.concurrent.ConcurrentHashMap<String, Pair<Long, String>>()
+
 	private fun pluginGet(api: ApiClient, path: String): String? {
 		val base = api.baseUrl?.trimEnd('/') ?: return null
 		val token = api.accessToken ?: return null
+		val key = "$base|${token.hashCode()}|$path"
+		pluginCache[key]?.takeIf { System.currentTimeMillis() - it.first < CACHE_MS }?.let { return it.second }
+		return pluginGetUncached(base, token, path)?.also { pluginCache[key] = System.currentTimeMillis() to it }
+	}
+
+	private fun pluginGetUncached(base: String, token: String, path: String): String? {
 		return runCatching {
 			val connection = URL(base + path).openConnection() as HttpURLConnection
 			try {

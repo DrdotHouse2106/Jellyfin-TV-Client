@@ -50,12 +50,13 @@ object JellyseerrDiscover {
 		val seeds = seeds(api, userId)
 		if (seeds.isEmpty()) return@coroutineScope emptyList()
 
-		val library = async { libraryKeys(api, userId) }
 		val candidates = seeds.map { seed ->
 			async { runCatching { Jellyseerr.recommendations(seed.type, seed.tmdbId) }.getOrDefault(emptyList()) }
 		}.awaitAll().flatten()
 
-		rank(candidates, library.await() + seeds.map { "${it.type}-${it.tmdbId}" })
+		// Was schon in der Bibliothek ist, meldet Jellyseerr selbst (mediaInfo → Status) – die ganze
+		// Bibliothek muss dafür nicht mehr geladen werden
+		rank(candidates, seeds.map { "${it.type}-${it.tmdbId}" }.toSet())
 	}
 
 	private fun BaseItemDto.tmdbId(): Int? =
@@ -98,24 +99,5 @@ object JellyseerrDiscover {
 		val recent = movies.zip(series).flatMap { listOf(it.first, it.second) } +
 			movies.drop(series.size) + series.drop(movies.size)
 		(loved + recent).mapNotNull { it.seed() }.distinct().take(MAX_SEEDS)
-	}
-
-	private var libraryCache: Set<String>? = null
-
-	/** TMDB-IDs aller Filme und Serien auf dem Server (einmal pro App-Start geladen). */
-	private suspend fun libraryKeys(api: ApiClient, userId: UUID?): Set<String> = libraryCache ?: withContext(Dispatchers.IO) {
-		runCatching {
-			api.itemsApi.getItems(
-				GetItemsRequest(
-					userId = userId,
-					recursive = true,
-					includeItemTypes = setOf(BaseItemKind.MOVIE, BaseItemKind.SERIES),
-					fields = setOf(ItemFields.PROVIDER_IDS),
-					enableImages = false,
-					enableUserData = false,
-					enableTotalRecordCount = false,
-				)
-			).content.items.mapNotNull { item -> item.seed()?.let { "${it.type}-${it.tmdbId}" } }.toSet()
-		}.onFailure { Timber.w(it, "Bibliothek für „Für dich“ nicht geladen") }.getOrNull()?.also { libraryCache = it } ?: emptySet()
 	}
 }

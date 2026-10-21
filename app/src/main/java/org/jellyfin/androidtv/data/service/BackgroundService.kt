@@ -67,8 +67,9 @@ class BackgroundService(
 		_blurBackground.value = true
 
 		// Get all backdrop urls
+		// Jellyfin-TV-Client: nicht in voller Auflösung (oft 4K) laden – 1920 Pixel Breite reichen
 		val backdropUrls = (baseItem.itemBackdropImages + baseItem.parentBackdropImages)
-			.map { it.getUrl(api) }
+			.map { it.getUrl(api, maxWidth = 1920) }
 			.toSet()
 
 		loadBackgrounds(backdropUrls)

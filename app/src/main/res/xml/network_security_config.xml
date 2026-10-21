@@ -1,9 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config xmlns:tools="http://schemas.android.com/tools" >
+    <!-- Jellyfin-Server werden vom Benutzer frei eingetragen (oft http mit IP im Heimnetz oder eigenes
+         Zertifikat einer eigenen Zertifizierungsstelle). Das lässt sich in dieser festen Datei nicht auf
+         einzelne Server beschränken; deshalb bleiben http und Nutzer-Zertifikate allgemein erlaubt.
+         Die Einstellung „Heimnetz“ empfiehlt https. -->
     <base-config cleartextTrafficPermitted="true" tools:ignore="InsecureBaseConfiguration" >
         <trust-anchors>
             <certificates src="system" />
             <certificates src="user" tools:ignore="AcceptsUserCertificates" />
         </trust-anchors>
     </base-config>
+
+    <!-- Jellyfin-TV-Client: Updates (GitHub) und feste Dienste nur verschlüsselt und nur mit System-
+         Zertifikaten – eine eingeschleuste Nutzer-Zertifizierungsstelle kann so keine falsche APK unterschieben. -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">github.com</domain>
+        <domain includeSubdomains="true">githubusercontent.com</domain>
+        <domain includeSubdomains="true">image.tmdb.org</domain>
+        <domain includeSubdomains="true">youtube.com</domain>
+        <domain includeSubdomains="true">ytimg.com</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
 </network-security-config>

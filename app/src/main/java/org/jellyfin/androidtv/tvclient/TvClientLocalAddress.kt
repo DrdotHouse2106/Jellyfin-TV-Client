@@ -53,6 +53,7 @@ object TvClientLocalAddress {
 	private const val DETECTED = "detected_"
 	private const val NETWORKS = "networks_"
 	private const val PROBE = "probe_"
+	private const val IDENTITY_SEEN = "identity_seen_"
 	private const val TIMEOUT_MS = 700
 	private const val DEFAULT_PORT = 8096
 
@@ -161,13 +162,18 @@ object TvClientLocalAddress {
 		connection.setRequestProperty("X-Device-Id", deviceId)
 		try {
 			when (connection.responseCode) {
-				HttpURLConnection.HTTP_NOT_FOUND -> true.also { Timber.i("Identitätsnachweis: Plugin zu alt, nur Server-Id geprüft") }
+				// 404 nur akzeptieren, solange dieser Server den Nachweis noch nie erbracht hat – sonst könnte ein
+				// gefälschter Server einfach „404“ antworten und so die Prüfung umgehen
+				HttpURLConnection.HTTP_NOT_FOUND -> !identitySeen(serverId).also {
+					Timber.i(if (it) "Identitätsnachweis: 404, obwohl der Server ihn kennt – abgelehnt" else "Identitätsnachweis: Plugin zu alt, nur Server-Id geprüft")
+				}
 				HttpURLConnection.HTTP_OK -> {
 					val body = JSONObject(connection.inputStream.bufferedReader().use { it.readText() })
 					val proofs = body.optJSONArray("Proofs")?.let { list -> (0 until list.length()).map { list.optString(it) } }.orEmpty()
 					val host = hostHeader(address) ?: return@runCatching false
-					sameId(body.optString("ServerId"), serverId.toString()) &&
-						verifyProof(token, nonce, serverId.toString().replace("-", "").lowercase(), host, proofs)
+					(sameId(body.optString("ServerId"), serverId.toString()) &&
+						verifyProof(token, nonce, serverId.toString().replace("-", "").lowercase(), host, proofs))
+						.also { if (it) rememberIdentitySeen(serverId) }
 				}
 				else -> false.also { Timber.i("Identitätsnachweis abgelehnt: HTTP %d", connection.responseCode) }
 			}
@@ -175,6 +181,11 @@ object TvClientLocalAddress {
 			connection.disconnect()
 		}
 	}.onFailure { Timber.d("Identitätsnachweis nicht möglich: %s", it.message) }.getOrDefault(false)
+
+	/** Hat dieser Server den Identitätsnachweis schon einmal erbracht? Dann gilt 404 als Ablehnung. */
+	private fun identitySeen(serverId: UUID) = runCatching { prefs().getBoolean(IDENTITY_SEEN + serverId, false) }.getOrDefault(false)
+
+	private fun rememberIdentitySeen(serverId: UUID) = runCatching { prefs().edit().putBoolean(IDENTITY_SEEN + serverId, true).apply() }
 
 	/** Host wie im Host-Header: klein, mit Port, Standardport (80/443) ohne Angabe. */
 	fun hostHeader(address: String): String? {

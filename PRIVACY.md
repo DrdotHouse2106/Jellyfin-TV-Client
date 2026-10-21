@@ -28,7 +28,7 @@ Die App speichert auf dem Fernseher die Serveradresse, die Anmeldung (ein Zugang
 
 ## Netzwerk und Berechtigungen
 
-- **Internet / Netzwerkstatus**: für die Verbindung zu deinem Jellyfin-Server.
+- **Internet / Netzwerkstatus**: für die Verbindung zu deinem Jellyfin-Server. Die Berechtigung „WLAN-Status lesen“ braucht die App nicht mehr.
 - **Server-Suche im Heimnetz**: Beim Einrichten sucht die App im lokalen Netz nach Jellyfin-Servern (Broadcast im eigenen Netzwerk).
 - **Heimnetz-Adresse** (optional): Trägst du eine lokale Server-Adresse ein, merkt sich die App eine Kennung des Netzes (Prüfsumme aus Gateway, DNS-Servern und Domain) und benutzt die Adresse nur in diesem Netz. Die Kennung bleibt auf dem Gerät. Mit dem Plugin Local Recommendations ab 12.35 muss der Server zusätzlich nachweisen, dass er den Token dieses Geräts kennt, bevor der Token an die lokale Adresse geht.
 - **Suchen und angesehene Titel** (mit dem Plugin Local Recommendations ab 12.36): Deine Suchbegriffe (nach einer kurzen Tipp-Pause) und die Detailseiten von Filmen und Serien, die du öffnest, gehen an deinen Jellyfin-Server und verbessern dort deine Empfehlungen; dazu die Abweichung deiner Uhrzeit von UTC für Vorschläge nach Tageszeit. Der Server speichert das nur, wenn der Admin es eingeschaltet hat und du es nicht abgeschaltet hast – unter Einstellungen → „Suchen und angesehene Titel für Empfehlungen nutzen“ lässt es sich abschalten und das Gespeicherte löschen. Die Speicherdauer (Standard 365 Tage) zeigt die App dort an.
