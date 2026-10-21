@@ -25,8 +25,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import org.jellyfin.androidtv.R
-import org.jellyfin.androidtv.preference.UserPreferences
-import org.koin.java.KoinJavaComponent
 import timber.log.Timber
 
 /**
@@ -54,10 +52,6 @@ object TrailerWindow {
 	/** Gültige YouTube-Video-Id (11 Zeichen). Alles andere kommt nie ins Player-HTML. */
 	val YOUTUBE_KEY = Regex("[A-Za-z0-9_-]{11}")
 
-	private fun withSound(): Boolean = runCatching {
-		KoinJavaComponent.get<UserPreferences>(UserPreferences::class.java)[TrailerPreview.soundPreference]
-	}.getOrDefault(true)
-
 	private fun dialog(context: Context): Pair<Dialog, FrameLayout> {
 		val dialog = Dialog(context)
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -80,7 +74,8 @@ object TrailerWindow {
 		val (dialog, container) = dialog(context)
 		val player = ServerAuth.player(context, url).apply {
 			setMediaItem(MediaItem.fromUri(url))
-			volume = if (withSound()) TrailerPreview.volume else 0f
+			// Selbst gestartet: volle Lautstärke, unabhängig von Ton und Absenkung der Vorschau
+			volume = 1f
 			playWhenReady = true
 			prepare()
 			addListener(object : Player.Listener {
@@ -144,7 +139,7 @@ object TrailerWindow {
 		}
 		container.addView(webView, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 
-		val html = youtubeHtml(key, withSound())
+		val html = youtubeHtml(key, withSound = true, volume = 1f)
 		webView.loadDataWithBaseURL("$ORIGIN/", html, "text/html", "UTF-8", null)
 
 		// Kommt der Player nicht in Gang (z. B. ohne Internet), die YouTube-App versuchen
@@ -164,9 +159,9 @@ object TrailerWindow {
 	 * Seite mit dem offiziellen YouTube-IFrame-Player. Meldet über das JavaScript-Objekt „Quallenkino“
 	 * ready(), ended() und error(code). Der Player wird nicht verdeckt oder beschnitten.
 	 */
-	fun youtubeHtml(key: String, withSound: Boolean): String {
+	fun youtubeHtml(key: String, withSound: Boolean, volume: Float = TrailerPreview.volume): String {
 		if (!key.matches(YOUTUBE_KEY)) return "<!DOCTYPE html><html><body style=\"background:#000\"></body></html>"
-		val volume = (TrailerPreview.volume * 100).toInt()
+		val percent = (volume.coerceIn(0f, 1f) * 100).toInt()
 		val mute = if (withSound) "false" else "true"
 		return """
 			<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -179,7 +174,7 @@ object TrailerWindow {
 					width: '100%', height: '100%', videoId: '$key',
 					playerVars: { autoplay: 1, controls: 0, rel: 0, playsinline: 1, iv_load_policy: 3, origin: '$ORIGIN' },
 					events: {
-						onReady: function (e) { Quallenkino.ready(); e.target.setVolume($volume); if ($mute) e.target.mute(); e.target.playVideo(); },
+						onReady: function (e) { Quallenkino.ready(); e.target.setVolume($percent); if ($mute) e.target.mute(); else e.target.unMute(); e.target.playVideo(); },
 						onStateChange: function (e) { if (e.data === 0) Quallenkino.ended(); },
 						onError: function (e) { Quallenkino.error(e.data); }
 					}

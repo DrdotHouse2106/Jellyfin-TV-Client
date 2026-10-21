@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.29.3 – 2026-10-21
+
+- **„Trailer abspielen“ mit voller Lautstärke:** Selbst gestartete Trailer (vom Server oder YouTube) laufen jetzt laut wie normal und mit Ton, auch wenn der Ton der Vorschau ausgeschaltet ist. Automatisch laufende Vorschauen (Banner, Detailseite, Bildschirmschoner) bleiben leiser.
+
 ## 1.29.2 – 2026-10-21
 
 Zweite Nachprüfung des Sicherheitsberichts:
