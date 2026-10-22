@@ -566,7 +566,8 @@ public class PlaybackController implements PlaybackControllerNotifiable {
                 @Override
                 public void onResponse(StreamInfo internalResponse) {
                     if (!isActive()) return;
-                    Timber.i("Internal player would %s", internalResponse.getPlayMethod().equals(PlayMethod.TRANSCODE) ? "transcode" : "direct stream");
+                    Timber.i("Internal player would %s (Gründe: %s)", internalResponse.getPlayMethod().equals(PlayMethod.TRANSCODE) ? "transcode" : "direct stream",
+                            org.jellyfin.androidtv.tvclient.TvClientSubtitles.transcodeReasons(internalResponse.getMediaSource()));
                     if (mVideoManager == null)
                         return;
                     mCurrentOptions = internalOptions;

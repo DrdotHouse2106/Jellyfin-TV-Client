@@ -191,6 +191,20 @@ private fun QuickSettings(onChooseAvatar: () -> Unit) {
 			),
 			prefs[TvClientAudio.modePreference],
 		) { set(TvClientAudio.modePreference, it) }
+		// Audioausgabe und Dolby Digital sichtbar machen: „Stereo“ bzw. Dolby Digital aus lassen den Server den Ton
+		// umrechnen – bei Bild-Untertiteln (PGS) muss er dann auch das Bild neu kodieren
+		Section(stringResource(R.string.lbl_audio_output))
+		Choices(
+			listOf(
+				Choice(org.jellyfin.androidtv.preference.constant.AudioBehavior.DIRECT_STREAM, stringResource(R.string.pref_audio_direct)),
+				Choice(org.jellyfin.androidtv.preference.constant.AudioBehavior.DOWNMIX_TO_STEREO, stringResource(R.string.pref_audio_compat)),
+			),
+			prefs[UserPreferences.audioBehaviour],
+		) { set(UserPreferences.audioBehaviour, it) }
+		Section(stringResource(R.string.lbl_bitstream_ac3))
+		Choices(listOf(Choice(true, on), Choice(false, off)), prefs[UserPreferences.ac3Enabled]) { set(UserPreferences.ac3Enabled, it) }
+		Hint(stringResource(R.string.tvclient_audio_output_hint))
+
 		Section(stringResource(R.string.tvclient_bitstream_dts))
 		Choices(
 			listOf(

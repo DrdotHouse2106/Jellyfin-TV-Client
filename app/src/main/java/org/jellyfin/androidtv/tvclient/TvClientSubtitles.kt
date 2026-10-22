@@ -165,6 +165,12 @@ object TvClientSubtitles {
 	private fun forcedIndex(subtitles: List<MediaStream>, languages: Set<String>): Int? =
 		subtitles.firstOrNull { isForced(it) && normalize(it.language) in languages }?.index
 
+	/** Gründe des Servers fürs Umrechnen (aus der Transcoding-Adresse, z. B. „AudioCodecNotSupported“) – fürs Log. */
+	@JvmStatic
+	fun transcodeReasons(source: MediaSourceInfo?): String =
+		source?.transcodingUrl?.let { Regex("[?&]TranscodeReasons=([^&]*)", RegexOption.IGNORE_CASE).find(it)?.groupValues?.get(1) }
+			?.let { java.net.URLDecoder.decode(it, "UTF-8") } ?: "-"
+
 	private var lastRestartedItem: java.util.UUID? = null
 
 	/** Stream höchstens einmal pro Titel neu starten (verhindert Endlosschleifen). */

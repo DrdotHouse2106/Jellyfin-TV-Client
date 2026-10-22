@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.30.4 – 2026-10-22
+
+- **Audioausgabe in den Einstellungen sichtbar:** Unter Ton stehen jetzt „Audioausgabe“ (Direkt / Zu Stereo heruntermischen) und „Dolby Digital durchreichen“. Ist Stereo gewählt oder Dolby Digital aus, rechnet der Server den Ton um – bei Bild-Untertiteln (PGS, z. B. erzwungene) muss er dann auch das Bild neu kodieren. Mit „Direkt“ bleibt 5.1 erhalten und die App zeigt PGS selbst an.
+- Das Protokoll nennt jetzt die Gründe des Servers, wenn er umrechnet.
+
 ## 1.30.3 – 2026-10-22
 
 - **Erzwungene Untertitel auch ohne Markierung:** Eine Untertitelspur gilt jetzt auch dann als erzwungen (nur fremdsprachige Stellen), wenn sie in der Datei nicht so markiert ist, aber „Forced“, „erzwungen“ oder „nur fremdsprachige“ im Namen trägt. „Intelligent“ wählt sie bei deutschem Ton automatisch, bei Originalton die vollen Untertitel.
