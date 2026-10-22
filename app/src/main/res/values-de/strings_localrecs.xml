@@ -213,4 +213,9 @@
     <string name="tvclient_person_more_series">Weitere Serien</string>
     <string name="tvclient_audio_output_hint">„Direkt“ behält 5.1 und lässt Untertitel wie PGS von der App anzeigen. „Zu Stereo heruntermischen“ oder Dolby Digital aus lassen den Server den Ton umrechnen – bei Bild-Untertiteln (PGS) muss er dann auch das Bild neu kodieren.</string>
     <string name="tvclient_update_store">Aus einem App-Store installiert – Updates kommen von dort.</string>
+    <string name="tvclient_home_movie_series">Filmreihen für dich</string>
+    <string name="tvclient_home_movie_series_description">Filmreihen mit dem nächsten Teil zum Weiterschauen (Local Recommendations ab 12.45)</string>
+    <string name="tvclient_home_seasonal">Saison (z. B. Weihnachtsfilme)</string>
+    <string name="tvclient_home_seasonal_description">Nur zur passenden Zeit, z. B. Weihnachten oder Halloween (Local Recommendations ab 12.45)</string>
+    <string name="tvclient_series_more_parts">Weitere Teile der Reihe</string>
 </resources>

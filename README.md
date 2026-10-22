@@ -22,6 +22,8 @@ Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** 
 - „Trailer“ öffnet den Trailer in einem kleinen Fenster in der App (vom Server, sonst YouTube)
 - Zeilen **Empfohlene Filme / Serien für dich** und **Heute im TV für dich** *
 - **Warum empfohlen?** Kurze Begründung im Infobereich und auf der Detailseite, z. B. „Weil du „…“ geschaut hast“ oder „Nächster Teil nach „…““ (Plugin ab 12.9.0) *
+- **Filmreihen für dich:** angefangene oder passende Filmreihen mit dem nächsten Teil („Weiter mit Teil 3“); auf der Detailseite eines Films „Weitere Teile der Reihe“ in Erscheinungsreihenfolge * (ab Plugin 12.45)
+- **Saison-Zeile:** zur passenden Zeit z. B. „Weihnachtsfilme“, „Halloween“ oder „Ostern“, direkt nach „Als Nächstes“ * (ab Plugin 12.45)
 - **Top 10 bei euch:** die meistgesehenen Filme und Serien aller Benutzer der letzten 60 Tage, mit großen Zahlen *
 - **Welten:** große Kacheln mit Logo für Marvel, Disney, Pixar, Minions & Co., DreamWorks, DC, Star Wars, Wizarding World, Mittelerde, James Bond, Jurassic Park und Studio Ghibli (Logos und Liste vom Plugin Local Recommendations); jede Welt hat eine eigene Seite mit Filmreihen (z. B. Avengers, Iron Man), Filmen, Serien und Neuem. Zusammengestellt über Studios und Sammlungen, nur Welten mit mindestens 5 Titeln
 - Genre-Zeilen mit zufälligen Titeln, Abschnitte aus „Home Screen Sections“, feste Reihenfolge mit Ein/Aus-Schaltern

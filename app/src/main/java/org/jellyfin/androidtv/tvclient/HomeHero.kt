@@ -249,7 +249,8 @@ private fun HeroContent(item: BaseItemDto) {
 		val reasons by RecommendationReasons.reasons.collectAsState()
 		// Badge der Banner-Auswahl („Weiterschauen“, „Neue Folgen“) geht vor
 		val billboardReasons by TvClientBillboard.reasons.collectAsState()
-		val reason = billboardReasons[RecommendationReasons.key(item.id)] ?: reasons[RecommendationReasons.key(item.id)]
+		val sectionReasons by TvClientSections.reasons.collectAsState()
+		val reason = billboardReasons[RecommendationReasons.key(item.id)] ?: sectionReasons[RecommendationReasons.key(item.id)] ?: reasons[RecommendationReasons.key(item.id)]
 		reason?.let {
 			Text(
 				text = it,

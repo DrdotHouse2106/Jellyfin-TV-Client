@@ -1,5 +1,13 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.31.0 – 2026-10-22
+
+Neue Abschnitte aus dem Plugin Local Recommendations (ab 12.45):
+
+- **Filmreihen für dich:** Zeile mit dem jeweils nächsten Teil einer Filmreihe; im Infobereich steht „Weiter mit Teil 3“ bzw. „4 Teile“. Auf der Detailseite eines Films zeigt „Weitere Teile der Reihe“ alle Teile in Erscheinungsreihenfolge.
+- **Saison-Zeile:** Zur passenden Zeit erscheint direkt nach „Als Nächstes“ z. B. „Weihnachtsfilme“, „Halloween“ oder „Ostern“ – sonst nicht.
+- Beide Zeilen lassen sich in den Einstellungen unter Startseite abschalten.
+
 ## 1.30.8 – 2026-10-22
 
 - **Keine Trailer mehr im Hintergrund:** Nach HOME oder unter dem System-Bildschirmschoner lief das Banner weiter, und der Trailer des nächsten Titels startete mit Ton – auch auf der Startseite des Launchers zu hören. Trailer spielen jetzt nur, solange Quallenkino sichtbar ist (Seite und ganze App werden geprüft), und laufen beim Zurückkehren weiter.

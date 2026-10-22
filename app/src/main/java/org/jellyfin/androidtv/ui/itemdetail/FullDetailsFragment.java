@@ -563,6 +563,13 @@ public class FullDetailsFragment extends Fragment implements RecordingIndicatorV
                     addItemRow(adapter, chapterAdapter, 2, getString(R.string.lbl_chapters));
                 }
 
+                // Jellyfin-TV-Client: weitere Teile der Filmreihe (Plugin Local Recommendations ab 12.45)
+                org.jellyfin.androidtv.tvclient.TvClientSections.loadParts(getLifecycle(), mBaseItem.getId(), parts -> {
+                    if (!isAdded()) return kotlin.Unit.INSTANCE;
+                    addItemRow(adapter, new ItemRowAdapter(requireContext(), parts, new CardPresenter(), adapter, QueryType.StaticItems), 2, getString(R.string.tvclient_series_more_parts));
+                    return kotlin.Unit.INSTANCE;
+                });
+
                 //Similar
                 ItemRowAdapter similarMoviesAdapter = new ItemRowAdapter(requireContext(), BrowsingUtils.createSimilarItemsRequest(mBaseItem.getId()), QueryType.SimilarMovies, new CardPresenter(), adapter);
                 addItemRow(adapter, similarMoviesAdapter, 5, getString(R.string.lbl_more_like_this));

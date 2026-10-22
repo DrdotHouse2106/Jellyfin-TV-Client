@@ -27,6 +27,8 @@ German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md
 
 \* needs the server plugin Local Recommendations (Top 10 of all users and thumbs since 12.6.0).
 
+- New in 1.31.0 (Local Recommendations 12.45+): "Movie series for you" with the next part to watch, "More parts of the series" on a movie's detail page, and a seasonal row (e.g. Christmas movies) when active.
+
 ## Requirements
 
 - Jellyfin 12. Recommended: **Local Recommendations 12.9.0 or newer** (12.6.0 works without live TV cast and recommendation reasons). Optional: **Jellyfin Enhanced** with Jellyseerr, **Home Screen Sections**.
