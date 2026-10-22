@@ -27,6 +27,7 @@ German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md
 
 \* needs the server plugin Local Recommendations (Top 10 of all users and thumbs since 12.6.0).
 
+- New in 1.33.0: web-style movie series cards (series image, progress, "x of y watched · continue with part n") opening a series page with all parts and a "Continue with part n" button.
 - New in 1.32.0 (Local Recommendations 12.46+): time-based "moments" rows from the server (on TV today – here without ads, new this week, before the cinema release, years ago today …).
 - New in 1.31.0 (Local Recommendations 12.45+): "Movie series for you" with the next part to watch, "More parts of the series" on a movie's detail page, and a seasonal row (e.g. Christmas movies) when active.
 

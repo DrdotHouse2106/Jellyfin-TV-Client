@@ -22,7 +22,7 @@ Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** 
 - „Trailer“ öffnet den Trailer in einem kleinen Fenster in der App (vom Server, sonst YouTube)
 - Zeilen **Empfohlene Filme / Serien für dich** und **Heute im TV für dich** *
 - **Warum empfohlen?** Kurze Begründung im Infobereich und auf der Detailseite, z. B. „Weil du „…“ geschaut hast“ oder „Nächster Teil nach „…““ (Plugin ab 12.9.0) *
-- **Filmreihen für dich:** angefangene oder passende Filmreihen mit dem nächsten Teil („Weiter mit Teil 3“); auf der Detailseite eines Films „Weitere Teile der Reihe“ in Erscheinungsreihenfolge * (ab Plugin 12.45)
+- **Filmreihen für dich:** Karten wie im Web mit Bild und Name der Reihe, Fortschrittsbalken und „1 von 3 gesehen · Weiter mit Teil 2“; ein Klick öffnet die Reihen-Seite mit allen Teilen (gesehene mit Haken) und dem Knopf „Weiter mit Teil n“; auf der Detailseite eines Films „Weitere Teile der Reihe“ in Erscheinungsreihenfolge * (ab Plugin 12.45)
 - **Momente:** zeitabhängige Zeilen vom Server, z. B. „Läuft heute im TV – hier ohne Werbung“ (Sendungen, die es auch als Datei auf dem Server gibt), „Neu diese Woche“, „Vor dem Kinostart: Hol die Reihe nach“, „Heute vor X Jahren“ – Auswahl und Reihenfolge bestimmt der Server, Begründung im Infobereich * (ab Plugin 12.46)
 - **Saison-Zeile:** zur passenden Zeit z. B. „Weihnachtsfilme“, „Halloween“ oder „Ostern“, direkt nach „Als Nächstes“ * (ab Plugin 12.45)
 - **Top 10 bei euch:** die meistgesehenen Filme und Serien aller Benutzer der letzten 60 Tage, mit großen Zahlen *

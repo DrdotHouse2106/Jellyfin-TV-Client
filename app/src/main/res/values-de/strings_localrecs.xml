@@ -220,4 +220,7 @@
     <string name="tvclient_series_more_parts">Weitere Teile der Reihe</string>
     <string name="tvclient_home_moments">Momente (Neu diese Woche, heute im TV …)</string>
     <string name="tvclient_home_moments_description">Zeitabhängige Zeilen vom Server, z. B. „Läuft heute im TV – hier ohne Werbung“, „Neu diese Woche“, „Vor dem Kinostart“ (Local Recommendations ab 12.46)</string>
+    <string name="tvclient_series_continue">Weiter mit Teil %1$d</string>
+    <string name="tvclient_series_from_start">Von vorn (Teil 1)</string>
+    <string name="tvclient_series_all_parts">Alle %1$d Teile</string>
 </resources>

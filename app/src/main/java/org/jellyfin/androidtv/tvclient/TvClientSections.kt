@@ -41,7 +41,32 @@ object TvClientSections {
 	/** Begründung je Titel („Weiter mit Teil 3“, „4 Teile“): Id ohne Bindestriche → Text, für den Infobereich. */
 	val reasons = MutableStateFlow<Map<String, String>>(emptyMap())
 
-	data class MovieSeries(val name: String, val reason: String?, val next: BaseItemDto?)
+	data class MovieSeries(
+		val id: String = "",
+		val name: String,
+		val reason: String?,
+		val next: BaseItemDto?,
+		val total: Int = 0,
+		val watched: Int = 0,
+		val nextIndex: Int = 0,
+		val hasBackdrop: Boolean = false,
+	) {
+		/** „1 von 3 gesehen · Weiter mit Teil 2“ bzw. „4 Teile“ (wie im Web). */
+		val caption: String
+			get() = when {
+				watched in 1 until total -> "$watched von $total gesehen · Weiter mit Teil ${nextIndex + 1}"
+				total in 1..watched -> "Alle $total Teile gesehen"
+				else -> reason ?: "$total Teile"
+			}
+
+		/** Bild der Reihe (ohne Anmeldung), null wenn der Server keins hat. */
+		fun imageUrl(baseUrl: String?): String? =
+			if (hasBackdrop && baseUrl != null) "${baseUrl.trimEnd('/')}/LocalRecs/MovieSeries/${java.net.URLEncoder.encode(id, "UTF-8")}/Images/Backdrop" else null
+	}
+
+	data class SeriesDetail(val series: MovieSeries, val parts: List<BaseItemDto>)
+
+	private fun JsonObject.int(key: String) = (this[key] as? JsonPrimitive)?.content?.toIntOrNull() ?: 0
 
 	private fun baseUrl() = org.koin.java.KoinJavaComponent.get<org.jellyfin.sdk.api.client.ApiClient>(org.jellyfin.sdk.api.client.ApiClient::class.java).baseUrl
 
@@ -65,12 +90,32 @@ object TvClientSections {
 	fun parseMovieSeries(text: String): List<MovieSeries> =
 		((json.parseToJsonElement(text) as? JsonObject)?.get("Items") as? JsonArray).orEmpty().mapNotNull { entry ->
 			val obj = entry as? JsonObject ?: return@mapNotNull null
-			MovieSeries(
-				name = (obj["Name"] as? JsonPrimitive)?.content.orEmpty(),
-				reason = (obj["Reason"] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() },
-				next = (obj["Next"] as? JsonObject)?.let { runCatching { json.decodeFromJsonElement(BaseItemDto.serializer(), it) }.getOrNull() },
-			)
+			seriesOf(obj)
 		}
+
+	private fun seriesOf(obj: JsonObject) = MovieSeries(
+		id = (obj["Id"] as? JsonPrimitive)?.content.orEmpty(),
+		name = (obj["Name"] as? JsonPrimitive)?.content.orEmpty(),
+		reason = (obj["Reason"] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() },
+		next = (obj["Next"] as? JsonObject)?.let { runCatching { json.decodeFromJsonElement(BaseItemDto.serializer(), it) }.getOrNull() },
+		total = obj.int("Total"),
+		watched = obj.int("Watched"),
+		nextIndex = obj.int("NextIndex"),
+		hasBackdrop = (obj["HasBackdrop"] as? JsonPrimitive)?.booleanOrNull == true,
+	)
+
+	/** Reihen-Seite: GET /LocalRecs/MovieSeries/{Id} (testbar über [parseDetail]). */
+	suspend fun seriesDetail(id: String): SeriesDetail? = withContext(Dispatchers.IO) {
+		runCatching {
+			val (code, body) = TvClientBehavior.call("GET", "/LocalRecs/MovieSeries/${java.net.URLEncoder.encode(id, "UTF-8")}")
+			if (code == 200) parseDetail(body) else null
+		}.onFailure { Timber.w(it, "Filmreihe nicht verfügbar") }.getOrNull()
+	}
+
+	fun parseDetail(text: String): SeriesDetail {
+		val obj = json.parseToJsonElement(text) as JsonObject
+		return SeriesDetail(seriesOf(obj), parseParts(text).second)
+	}
 
 	/** Teile einer Reihe aus GET /LocalRecs/MovieSeries/ByItem/{id} bzw. /{id} (testbar). */
 	fun parseParts(text: String): Pair<String, List<BaseItemDto>> {
@@ -87,10 +132,10 @@ object TvClientSections {
 		if (!cfg.movieSeries) return@withContext null
 		val series = runCatching { parseMovieSeries(TvClientBehavior.call("GET", "/LocalRecs/MovieSeries?limit=12").second) }
 			.onFailure { Timber.w(it, "Filmreihen nicht verfügbar") }.getOrDefault(emptyList())
-		val items = series.mapNotNull { it.next }
-		if (items.isEmpty()) return@withContext null
-		reasons.value = reasons.value + series.mapNotNull { s -> s.next?.id?.let { key(it) to (s.reason ?: s.name) } }
-		StaticRow(cfg.movieSeriesTitle ?: defaultTitle, items)
+		val cards = series.filter { it.next != null }
+		if (cards.isEmpty()) return@withContext null
+		reasons.value = reasons.value + cards.mapNotNull { s -> s.next?.id?.let { key(it) to s.caption } }
+		HomeFragmentMovieSeriesRow(cfg.movieSeriesTitle ?: defaultTitle, cards)
 	}
 
 	data class Moment(val key: String, val title: String, val items: List<BaseItemDto>, val reasons: Map<String, String>)

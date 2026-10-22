@@ -220,4 +220,7 @@
     <string name="tvclient_series_more_parts">More parts of the series</string>
     <string name="tvclient_home_moments">Moments (new this week, on TV today …)</string>
     <string name="tvclient_home_moments_description">Time-based rows from the server, e.g. “On TV today – here without ads”, “New this week”, “Before the cinema release” (Local Recommendations 12.46 or newer)</string>
+    <string name="tvclient_series_continue">Continue with part %1$d</string>
+    <string name="tvclient_series_from_start">From the start (part 1)</string>
+    <string name="tvclient_series_all_parts">All %1$d parts</string>
 </resources>

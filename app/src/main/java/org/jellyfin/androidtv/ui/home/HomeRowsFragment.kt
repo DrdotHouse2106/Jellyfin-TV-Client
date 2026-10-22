@@ -205,6 +205,7 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			registerListener(ItemViewClickedListener())
 			registerListener { _, item, _, _ -> onDeviceCardClicked(requireContext(), item) }
 			registerListener { _, item, _, _ -> onWorldClicked(item) }
+			registerListener { _, item, _, _ -> org.jellyfin.androidtv.tvclient.onMovieSeriesClicked(item) }
 			registerListener(liveTVRow::onItemClicked)
 			registerListener(notificationsRow::onItemClicked)
 		}
@@ -374,6 +375,15 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			// das Banner nicht überschreiben. Welt-Kacheln haben keinen eigenen Titel.
 			// Nie auf leer setzen (Leanback meldet beim Neuaufbau der Zeilen auch „nichts ausgewählt“)
 			(item as? BaseRowItem)?.baseItem?.let { selectedHeroItem = it }
+			// Filmreihe: Infobereich zeigt den nächsten Teil (mit „1 von 3 gesehen · Weiter mit Teil 2“)
+			(item as? org.jellyfin.androidtv.tvclient.TvClientSections.MovieSeries)?.next?.let { next ->
+				selectedHeroItem = next
+				selectedWorld = null
+				if (verticalGridView?.hasFocus() == true) {
+					HomeHeroState.world.value = null
+					HomeHeroState.item.value = next
+				}
+			}
 			// Welt-Kachel: Infobereich zeigt die Welt; sonst die ausgewählte Karte
 			if (item is Worlds.World || item is BaseRowItem) selectedWorld = item as? Worlds.World
 			if (verticalGridView?.hasFocus() == true) {

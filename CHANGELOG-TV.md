@@ -1,5 +1,12 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.33.0 – 2026-10-22
+
+Filmreihen wie in Jellyfin Web:
+
+- **Filmreihen-Karte:** Bild der Reihe (sonst des nächsten Teils), Name, Fortschrittsbalken und darunter „1 von 3 gesehen · Weiter mit Teil 2“ bzw. „4 Teile“. Beim Auswählen zeigt der Infobereich den nächsten Teil.
+- **Reihen-Seite:** Ein Klick zeigt alle Teile in Erscheinungsreihenfolge (gesehene mit Haken) und oben den Knopf „Weiter mit Teil n“, der direkt abspielt bzw. fortsetzt; sind alle gesehen, „Von vorn (Teil 1)“.
+
 ## 1.32.0 – 2026-10-22
 
 - **Momente** (Plugin Local Recommendations ab 12.46): zeitabhängige Zeilen vom Server – „Läuft heute im TV – hier ohne Werbung“ (Sendungen von heute bis 2 Uhr, die es auch als Datei auf dem Server gibt; nur mit Live-TV-Recht), „Neu diese Woche“, „Vor dem Kinostart: Hol die Reihe nach“, „Heute vor X Jahren“ und „Vor einem Jahr hast du …“. Welche Zeilen erscheinen und in welcher Reihenfolge, bestimmt der Server; die Begründung (z. B. „Heute 20:15 auf ZDF – hier ohne Werbung“) steht im Infobereich. Abschaltbar unter Einstellungen → Startseite.
