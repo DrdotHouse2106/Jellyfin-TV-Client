@@ -10,8 +10,10 @@ class HomeRowTests : FunSpec({
 		HomeRow.entries.filter { it.preference.defaultValue } shouldContainExactly listOf(
 			HomeRow.RESUME,
 			HomeRow.NEXT_UP,
+			HomeRow.SEASONAL,
 			HomeRow.RECOMMENDED_MOVIES,
 			HomeRow.RECOMMENDED_SERIES,
+			HomeRow.MOVIE_SERIES,
 			HomeRow.RECOMMENDED_LIVE_TV,
 			HomeRow.TOP10,
 			HomeRow.WORLDS,
