@@ -100,7 +100,7 @@ Alternativ per ADB: `adb install quallenkino.apk`.
 
 ### Updates
 
-Quallenkino aktualisiert sich selbst – ohne App-Store. Höchstens einmal am Tag sucht die App nach einer neuen Version; ist eine da, fragt sie beim Öffnen gleich, ob sie installiert werden soll; außerdem erscheint links in der Navigation unter den Einstellungen ein grüner Download-Knopf. Von Hand geht es unter **Einstellungen → Updates → „Nach Updates suchen“**. Bei einer neuen Version erscheinen die Änderungen; „Jetzt installieren“ lädt die APK aus den GitHub-Releases, prüft Prüfsumme und Signatur und startet die Installation. Einstellungen und Anmeldung bleiben erhalten.
+Quallenkino aktualisiert sich selbst – ohne App-Store. Höchstens einmal am Tag sucht die App nach einer neuen Version; ist eine da, fragt sie beim Öffnen bzw. bei der Rückkehr in die App, ob sie installiert werden soll (dieselbe Version höchstens alle 12 Stunden); Android verlangt dabei immer eine Bestätigung – ganz ohne Tastendruck geht ein Update nicht; außerdem erscheint links in der Navigation unter den Einstellungen ein grüner Download-Knopf. Von Hand geht es unter **Einstellungen → Updates → „Nach Updates suchen“**. Bei einer neuen Version erscheinen die Änderungen; „Jetzt installieren“ lädt die APK aus den GitHub-Releases, prüft Prüfsumme und Signatur und startet die Installation. Einstellungen und Anmeldung bleiben erhalten.
 
 Einmalig nötig: Beim ersten Update fragt Quallenkino nach der Erlaubnis **„Unbekannte Apps installieren“** (Fire TV: **„Apps unbekannter Herkunft“**) und öffnet die passende Einstellung. Danach bestätigt man jede Installation mit einem Klick – das verlangt Android.
 
@@ -182,6 +182,10 @@ Hürden, auf die wir selbst gestoßen sind – jeweils mit Symptom, Ursache und 
 **Wechsel zwischen Amazon-Appstore-Version und direkt installierter APK**
 - *Ursache:* Die Fassung aus dem Amazon Appstore ist von Amazon signiert, die APK von GitHub mit dem eigenen Schlüssel. Android behandelt das als verschiedene Herkunft und lehnt die Installation über die jeweils andere ab. Die Store-Fassung bekommt ihre Updates nur über den Store (dort ist das Selbst-Update der App ausgeschaltet) und kann einige Tage hinter den GitHub-Releases liegen.
 - *Lösung:* Für einen Wechsel erst deinstallieren, dann die andere Fassung installieren. **Dabei gehen die Einstellungen der App verloren** (Server, Anmeldung, Heimnetz-Adresse, Ton- und Untertitel-Einstellungen) – danach einmal neu anmelden und einstellen.
+
+**Gerät bleibt auf einer alten Version stehen**
+- *Ursache:* Bis 1.30.6 suchte die App nur beim Kaltstart nach Updates – Fernseher-Apps bleiben aber oft tagelang im Speicher. Außerdem braucht jedes Update eine Bestätigung („Jetzt installieren“ und der Android-Installationsdialog). Aus dem Amazon Appstore installierte Fassungen aktualisieren sich nur über den Store.
+- *Lösung:* Einmal Einstellungen → Updates → „Nach Updates suchen“ und bestätigen (oder die APK neu installieren). Ab 1.30.7 prüft die App auch bei jeder Rückkehr in die App.
 
 **Update lässt sich nicht installieren**
 - *Ursache:* Android fragt einmalig nach der Erlaubnis „Unbekannte Apps installieren“ (Fire TV: „Apps unbekannter Herkunft“) für Quallenkino.

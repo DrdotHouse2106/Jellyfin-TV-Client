@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.30.7 – 2026-10-22
+
+- **Updates kommen zuverlässiger an:** Die App sucht jetzt bei jedem Öffnen und bei jeder Rückkehr in die App nach einer neuen Version (GitHub weiterhin höchstens einmal am Tag), nicht nur beim Kaltstart – Fernseher-Apps bleiben oft tagelang im Speicher. Dieselbe Version wird höchstens alle 12 Stunden angeboten.
+- Das Selbst-Update bleibt bei allen per APK installierten Fassungen an (Paketinstaller, adb). Ausgeschaltet ist es nur bei Installation aus dem Amazon Appstore.
+
 ## 1.30.6 – 2026-10-22
 
 - **Store-Fassung ohne Selbst-Update:** Wurde Quallenkino aus dem Amazon Appstore (oder Google Play) installiert, sucht die App nicht mehr selbst bei GitHub nach Updates – die kommen dann über den Store. In den Einstellungen steht ein entsprechender Hinweis. Direkt installierte Fassungen aktualisieren sich wie bisher selbst.

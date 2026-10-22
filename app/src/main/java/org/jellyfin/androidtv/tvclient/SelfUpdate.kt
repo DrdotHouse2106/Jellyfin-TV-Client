@@ -133,8 +133,12 @@ object SelfUpdate {
 		controller != null && (controller.isPlaying || controller.isPaused)
 	}.getOrDefault(false)
 
-	/** App-Stores, deren Installationen nur über den Store aktualisiert werden dürfen. */
-	private val STORES = setOf("com.amazon.venezia", "com.amazon.appmanager", "com.android.vending")
+	/**
+	 * App-Stores, deren Installationen nur über den Store aktualisiert werden dürfen (Amazon Appstore).
+	 * Nicht dabei: Paketinstaller, adb/Shell und „unbekannt“ – das sind APK-Installationen, die das Selbst-Update brauchen.
+	 * Google Play bewusst nicht, solange Quallenkino dort nicht angeboten wird.
+	 */
+	private val STORES = setOf("com.amazon.venezia", "com.amazon.appmanager")
 
 	/**
 	 * Aus einem Store installiert (Amazon Appstore, Google Play)? Dann gibt es kein Selbst-Update – die Stores
@@ -150,14 +154,21 @@ object SelfUpdate {
 		installer in STORES
 	}.getOrDefault(false)
 
-	/** Beim Öffnen der App still prüfen und bei einer neuen Version gleich fragen. */
+	@Volatile private var checking = false
+
+	/**
+	 * Beim Öffnen und bei jeder Rückkehr in die App still prüfen (GitHub höchstens einmal am Tag) und bei einer
+	 * neuen Version fragen – dieselbe Version höchstens alle 12 Stunden. Fernseher-Apps bleiben oft tagelang im
+	 * Speicher; nur beim Start zu prüfen, ließ manche Geräte auf alten Versionen stehen.
+	 */
 	fun autoCheck(activity: Activity) {
-		if (isStoreInstall(activity)) return
+		if (checking || isStoreInstall(activity)) return
 		val owner = activity as? LifecycleOwner ?: return
 		val enabled = runCatching {
 			KoinJavaComponent.get<org.jellyfin.androidtv.preference.UserPreferences>(org.jellyfin.androidtv.preference.UserPreferences::class.java)[autoPreference]
 		}.getOrDefault(true)
 		if (!enabled) return
+		checking = true
 		owner.lifecycleScope.launch {
 			// Erst die Startseite in Ruhe aufbauen lassen
 			delay(4_000)
@@ -173,9 +184,23 @@ object SelfUpdate {
 					rememberRelease(activity, it)
 				}
 			}
-			if (release != null && !isPlaying() && !activity.isFinishing) offer(activity, release)
-		}
+			if (release != null && !isPlaying() && !activity.isFinishing && shouldOffer(prefs, release.version)) {
+				prefs.edit().putString(LAST_OFFER, "${release.version}|${System.currentTimeMillis()}").apply()
+				offer(activity, release)
+			}
+		}.invokeOnCompletion { checking = false }
 	}
+
+	private const val LAST_OFFER = "last_offer"
+	private const val OFFER_INTERVAL_MS = 12 * 60 * 60 * 1000L
+
+	/** Dieselbe Version nicht bei jeder Rückkehr in die App erneut anbieten (testbar). */
+	fun shouldOffer(lastOffer: String?, version: String, now: Long = System.currentTimeMillis()): Boolean {
+		val (offered, at) = lastOffer?.split('|')?.takeIf { it.size == 2 } ?: return true
+		return offered != version || now - (at.toLongOrNull() ?: 0) >= OFFER_INTERVAL_MS
+	}
+
+	private fun shouldOffer(prefs: android.content.SharedPreferences, version: String) = shouldOffer(prefs.getString(LAST_OFFER, null), version)
 
 	private const val CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000L
 

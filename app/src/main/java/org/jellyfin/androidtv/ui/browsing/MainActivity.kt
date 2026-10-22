@@ -60,8 +60,6 @@ class MainActivity : FragmentActivity() {
 
 		if (!validateAuthentication()) return
 
-		// Jellyfin-TV-Client: höchstens einmal am Tag nach einer neuen Version suchen
-		if (savedInstanceState == null) SelfUpdate.autoCheck(this)
 
 		interactionTrackerViewModel.keepScreenOn.flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
 			.onEach { keepScreenOn ->
@@ -97,6 +95,9 @@ class MainActivity : FragmentActivity() {
 		applyTheme()
 
 		interactionTrackerViewModel.activityPaused = false
+
+		// Jellyfin-TV-Client: bei jedem Öffnen bzw. Zurückkehren nach Updates sehen (GitHub höchstens einmal am Tag)
+		SelfUpdate.autoCheck(this)
 	}
 
 	private fun validateAuthentication(): Boolean {

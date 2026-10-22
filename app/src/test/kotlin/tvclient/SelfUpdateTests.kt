@@ -37,4 +37,12 @@ class SelfUpdateTests : FunSpec({
 		notes shouldContain "Querformat"
 		notes shouldNotContain "Heimnetz"
 	}
+
+	test("Dieselbe Version höchstens alle 12 Stunden anbieten") {
+		val now = 100L * 60 * 60 * 1000
+		SelfUpdate.shouldOffer(null, "1.30.7", now) shouldBe true
+		SelfUpdate.shouldOffer("1.30.7|${now - 60_000}", "1.30.7", now) shouldBe false
+		SelfUpdate.shouldOffer("1.30.7|${now - 13L * 60 * 60 * 1000}", "1.30.7", now) shouldBe true
+		SelfUpdate.shouldOffer("1.30.6|${now - 60_000}", "1.30.7", now) shouldBe true
+	}
 })
