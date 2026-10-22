@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.30.6 – 2026-10-22
+
+- **Store-Fassung ohne Selbst-Update:** Wurde Quallenkino aus dem Amazon Appstore (oder Google Play) installiert, sucht die App nicht mehr selbst bei GitHub nach Updates – die kommen dann über den Store. In den Einstellungen steht ein entsprechender Hinweis. Direkt installierte Fassungen aktualisieren sich wie bisher selbst.
+
 ## 1.30.5 – 2026-10-22
 
 - **Ton-Einstellungen einmalig zurückgesetzt:** „Audioausgabe“ steht nach dem Update auf „Direkt“ und „Dolby Digital durchreichen“ auf „An“. „Zu Stereo heruntermischen“ war nur eine Notlösung gegen DTS ohne Ton, das seit 1.30.2 behoben ist. Das passiert genau einmal; spätere Änderungen in den Einstellungen bleiben erhalten.

@@ -212,4 +212,5 @@
     <string name="tvclient_person_more_movies">More movies</string>
     <string name="tvclient_person_more_series">More series</string>
     <string name="tvclient_audio_output_hint">“Direct” keeps 5.1 and lets subtitles such as PGS be shown by the app. “Downmix to stereo” or Dolby Digital off make the server convert the audio – with picture subtitles (PGS) it then has to re-encode the video too.</string>
+    <string name="tvclient_update_store">Installed from an app store – updates come from there.</string>
 </resources>

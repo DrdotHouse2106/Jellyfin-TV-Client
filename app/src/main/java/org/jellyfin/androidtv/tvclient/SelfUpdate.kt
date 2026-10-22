@@ -133,8 +133,26 @@ object SelfUpdate {
 		controller != null && (controller.isPlaying || controller.isPaused)
 	}.getOrDefault(false)
 
+	/** App-Stores, deren Installationen nur über den Store aktualisiert werden dürfen. */
+	private val STORES = setOf("com.amazon.venezia", "com.amazon.appmanager", "com.android.vending")
+
+	/**
+	 * Aus einem Store installiert (Amazon Appstore, Google Play)? Dann gibt es kein Selbst-Update – die Stores
+	 * erlauben keine Updates an ihnen vorbei, und ihre Fassung ist ohnehin mit einem anderen Schlüssel signiert.
+	 */
+	fun isStoreInstall(context: Context): Boolean = runCatching {
+		val installer = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+			context.packageManager.getInstallSourceInfo(context.packageName).installingPackageName
+		} else {
+			@Suppress("DEPRECATION")
+			context.packageManager.getInstallerPackageName(context.packageName)
+		}
+		installer in STORES
+	}.getOrDefault(false)
+
 	/** Beim Öffnen der App still prüfen und bei einer neuen Version gleich fragen. */
 	fun autoCheck(activity: Activity) {
+		if (isStoreInstall(activity)) return
 		val owner = activity as? LifecycleOwner ?: return
 		val enabled = runCatching {
 			KoinJavaComponent.get<org.jellyfin.androidtv.preference.UserPreferences>(org.jellyfin.androidtv.preference.UserPreferences::class.java)[autoPreference]

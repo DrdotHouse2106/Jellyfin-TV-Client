@@ -212,4 +212,5 @@
     <string name="tvclient_person_more_movies">Weitere Filme</string>
     <string name="tvclient_person_more_series">Weitere Serien</string>
     <string name="tvclient_audio_output_hint">„Direkt“ behält 5.1 und lässt Untertitel wie PGS von der App anzeigen. „Zu Stereo heruntermischen“ oder Dolby Digital aus lassen den Server den Ton umrechnen – bei Bild-Untertiteln (PGS) muss er dann auch das Bild neu kodieren.</string>
+    <string name="tvclient_update_store">Aus einem App-Store installiert – Updates kommen von dort.</string>
 </resources>

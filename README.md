@@ -179,6 +179,10 @@ Hürden, auf die wir selbst gestoßen sind – jeweils mit Symptom, Ursache und 
 - *Ursache:* Hat der Server den Identitätsnachweis einmal erbracht, wird ein späteres „unbekannt“ (z. B. nach Neuinstallation des Plugins) aus Sicherheitsgründen abgelehnt.
 - *Lösung:* Einstellungen → Heimnetz → Adresse erneut speichern.
 
+**Wechsel zwischen Amazon-Appstore-Version und direkt installierter APK**
+- *Ursache:* Die Fassung aus dem Amazon Appstore ist von Amazon signiert, die APK von GitHub mit dem eigenen Schlüssel. Android behandelt das als verschiedene Herkunft und lehnt die Installation über die jeweils andere ab. Die Store-Fassung bekommt ihre Updates nur über den Store (dort ist das Selbst-Update der App ausgeschaltet) und kann einige Tage hinter den GitHub-Releases liegen.
+- *Lösung:* Für einen Wechsel erst deinstallieren, dann die andere Fassung installieren. **Dabei gehen die Einstellungen der App verloren** (Server, Anmeldung, Heimnetz-Adresse, Ton- und Untertitel-Einstellungen) – danach einmal neu anmelden und einstellen.
+
 **Update lässt sich nicht installieren**
 - *Ursache:* Android fragt einmalig nach der Erlaubnis „Unbekannte Apps installieren“ (Fire TV: „Apps unbekannter Herkunft“) für Quallenkino.
 - *Lösung:* Erlaubnis im angezeigten Dialog erteilen. Ist eine Version mit anderem Schlüssel installiert (z. B. selbst gebaut), lehnt Android das Update ab – dann einmal deinstallieren.
