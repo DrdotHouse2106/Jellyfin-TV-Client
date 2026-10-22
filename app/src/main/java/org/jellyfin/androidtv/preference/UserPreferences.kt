@@ -282,6 +282,13 @@ class UserPreferences(context: Context) : SharedPreferenceStore(
 				val subtitleStrokeSize = it.getInt("subtitles_stroke_size", 0)
 				putLong("subtitles_text_stroke_color", if (subtitleStrokeSize > 0) 0XFF000000L else 0X00FFFFFFL)
 			}
+
+			// Jellyfin-TV-Client 1.30.5: „Zu Stereo heruntermischen“ und Dolby Digital aus waren nur Notlösungen
+			// gegen DTS ohne Ton (seit 1.30.2 behoben). Einmalig zurücksetzen; spätere Änderungen bleiben unangetastet.
+			migration(toVersion = 9) {
+				putString("audio_behavior", AudioBehavior.DIRECT_STREAM.name)
+				putBoolean("pref_bitstream_ac3", true)
+			}
 		}
 	}
 }

@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.30.5 – 2026-10-22
+
+- **Ton-Einstellungen einmalig zurückgesetzt:** „Audioausgabe“ steht nach dem Update auf „Direkt“ und „Dolby Digital durchreichen“ auf „An“. „Zu Stereo heruntermischen“ war nur eine Notlösung gegen DTS ohne Ton, das seit 1.30.2 behoben ist. Das passiert genau einmal; spätere Änderungen in den Einstellungen bleiben erhalten.
+
 ## 1.30.4 – 2026-10-22
 
 - **Audioausgabe in den Einstellungen sichtbar:** Unter Ton stehen jetzt „Audioausgabe“ (Direkt / Zu Stereo heruntermischen) und „Dolby Digital durchreichen“. Ist Stereo gewählt oder Dolby Digital aus, rechnet der Server den Ton um – bei Bild-Untertiteln (PGS, z. B. erzwungene) muss er dann auch das Bild neu kodieren. Mit „Direkt“ bleibt 5.1 erhalten und die App zeigt PGS selbst an.
