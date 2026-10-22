@@ -36,7 +36,7 @@ object TvClientSections {
 	private var configFor: String? = null
 	private var config: Config = Config()
 
-	data class Config(val movieSeries: Boolean = false, val movieSeriesTitle: String? = null, val seasonal: Boolean = false)
+	data class Config(val movieSeries: Boolean = false, val movieSeriesTitle: String? = null, val seasonal: Boolean = false, val moments: Boolean = false)
 
 	/** Begründung je Titel („Weiter mit Teil 3“, „4 Teile“): Id ohne Bindestriche → Text, für den Infobereich. */
 	val reasons = MutableStateFlow<Map<String, String>>(emptyMap())
@@ -54,6 +54,7 @@ object TvClientSections {
 				movieSeries = (obj["MovieSeries"] as? JsonPrimitive)?.booleanOrNull == true,
 				movieSeriesTitle = (obj["MovieSeriesTitle"] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() },
 				seasonal = (obj["Seasonal"] as? JsonPrimitive)?.booleanOrNull == true,
+				moments = (obj["Moments"] as? JsonPrimitive)?.booleanOrNull == true,
 			)
 		}.getOrDefault(Config())
 		configFor = base
@@ -90,6 +91,36 @@ object TvClientSections {
 		if (items.isEmpty()) return@withContext null
 		reasons.value = reasons.value + series.mapNotNull { s -> s.next?.id?.let { key(it) to (s.reason ?: s.name) } }
 		StaticRow(cfg.movieSeriesTitle ?: defaultTitle, items)
+	}
+
+	data class Moment(val key: String, val title: String, val items: List<BaseItemDto>, val reasons: Map<String, String>)
+
+	/** Antwort von GET /LocalRecs/Moments (testbar): Zeilen in Anzeigereihenfolge. */
+	fun parseMoments(text: String): List<Moment> =
+		((json.parseToJsonElement(text) as? JsonObject)?.get("Rows") as? JsonArray).orEmpty().mapNotNull { entry ->
+			val obj = entry as? JsonObject ?: return@mapNotNull null
+			val items = (obj["Items"] as? JsonArray).orEmpty().mapNotNull { item ->
+				(item as? JsonObject)?.let { runCatching { json.decodeFromJsonElement(BaseItemDto.serializer(), it) }.getOrNull() }
+			}
+			val title = (obj["Title"] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+			if (items.isEmpty()) return@mapNotNull null
+			val reasons = (obj["Reasons"] as? JsonObject).orEmpty().mapNotNull { (id, value) ->
+				(value as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() }?.let { id.replace("-", "").lowercase() to it }
+			}.toMap()
+			Moment((obj["Key"] as? JsonPrimitive)?.content.orEmpty(), title, items, reasons)
+		}
+
+	/**
+	 * Zeitabhängige Zeilen (Plugin ab 12.46): „Läuft heute im TV – hier ohne Werbung“, „Neu diese Woche“,
+	 * „Vor dem Kinostart“, „Heute vor X Jahren“, „Vor einem Jahr …“ – Auswahl und Reihenfolge vom Server.
+	 */
+	suspend fun momentRows(): List<HomeFragmentRow> = withContext(Dispatchers.IO) {
+		if (!config().moments) return@withContext emptyList()
+		val moments = runCatching {
+			parseMoments(TvClientBehavior.call("GET", "/LocalRecs/Moments?utcOffsetMinutes=${TvClientBehavior.utcOffsetMinutes()}").second)
+		}.onFailure { Timber.w(it, "Momente nicht verfügbar") }.getOrDefault(emptyList())
+		reasons.value = reasons.value + moments.flatMap { it.reasons.entries }.associate { it.key to it.value }
+		moments.map { StaticRow(it.title, it.items) }
 	}
 
 	/** Saison-Zeile („Weihnachtsfilme“) – nur wenn der Server sie gerade aktiv meldet. */

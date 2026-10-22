@@ -218,4 +218,6 @@
     <string name="tvclient_home_seasonal">Seasonal (e.g. Christmas movies)</string>
     <string name="tvclient_home_seasonal_description">Only at the right time of year, e.g. Christmas or Halloween (Local Recommendations 12.45 or newer)</string>
     <string name="tvclient_series_more_parts">More parts of the series</string>
+    <string name="tvclient_home_moments">Moments (new this week, on TV today …)</string>
+    <string name="tvclient_home_moments_description">Time-based rows from the server, e.g. “On TV today – here without ads”, “New this week”, “Before the cinema release” (Local Recommendations 12.46 or newer)</string>
 </resources>

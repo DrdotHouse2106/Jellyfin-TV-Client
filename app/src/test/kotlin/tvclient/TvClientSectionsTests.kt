@@ -22,4 +22,14 @@ class TvClientSectionsTests : FunSpec({
 		name shouldBe "Der Pate – Filmreihe"
 		parts.map { it.name } shouldBe listOf("Der Pate", "Der Pate 2")
 	}
+
+	test("Momente: Zeilen mit Titel, Karten und Begründungen; leere Zeilen fallen weg") {
+		val moments = TvClientSections.parseMoments(
+			"""{"Rows":[{"Key":"ontv","Title":"Läuft heute im TV – hier ohne Werbung","Items":[{"Id":"c2b157ea3dc84584a30bcb96492eda16","Name":"Film","Type":"Movie"}],
+			"Reasons":{"c2b157ea3dc84584a30bcb96492eda16":"Heute 20:15 auf ZDF – hier ohne Werbung"}},{"Key":"leer","Title":"Leer","Items":[]}]}"""
+		)
+		moments.size shouldBe 1
+		moments[0].title shouldBe "Läuft heute im TV – hier ohne Werbung"
+		moments[0].reasons["c2b157ea3dc84584a30bcb96492eda16"] shouldBe "Heute 20:15 auf ZDF – hier ohne Werbung"
+	}
 })

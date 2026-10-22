@@ -149,6 +149,7 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 							HomeRow.RESUME -> listOf(helper.loadResumeVideo())
 							HomeRow.NEXT_UP -> listOf(helper.loadNextUp())
 							HomeRow.SEASONAL -> listOfNotNull(org.jellyfin.androidtv.tvclient.TvClientSections.seasonalRow())
+							HomeRow.MOMENTS -> org.jellyfin.androidtv.tvclient.TvClientSections.momentRows()
 							HomeRow.MOVIE_SERIES -> listOfNotNull(org.jellyfin.androidtv.tvclient.TvClientSections.movieSeriesRow(getString(org.jellyfin.androidtv.R.string.tvclient_home_movie_series)))
 							HomeRow.RECOMMENDED_MOVIES -> listOf(helper.loadLocalRecommendations(LocalRecommendationsType.MOVIES))
 							HomeRow.RECOMMENDED_SERIES -> listOf(helper.loadLocalRecommendations(LocalRecommendationsType.SERIES))

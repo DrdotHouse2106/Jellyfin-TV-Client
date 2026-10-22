@@ -21,6 +21,7 @@ enum class HomeRow(
 	SEASONAL("seasonal", R.string.tvclient_home_seasonal, true, R.string.tvclient_home_seasonal_description),
 	RECOMMENDED_MOVIES("localrecs_movies", R.string.lbl_localrecs_movies, true, R.string.tvclient_home_requires_plugin),
 	RECOMMENDED_SERIES("localrecs_series", R.string.lbl_localrecs_series, true, R.string.tvclient_home_requires_plugin),
+	MOMENTS("moments", R.string.tvclient_home_moments, true, R.string.tvclient_home_moments_description),
 	MOVIE_SERIES("movie_series", R.string.tvclient_home_movie_series, true, R.string.tvclient_home_movie_series_description),
 	RECOMMENDED_LIVE_TV("localrecs_livetv", R.string.lbl_localrecs_livetv, true, R.string.tvclient_home_requires_plugin),
 	TOP10("top10", R.string.tvclient_home_top10, true, R.string.tvclient_home_top10_description),

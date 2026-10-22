@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.32.0 – 2026-10-22
+
+- **Momente** (Plugin Local Recommendations ab 12.46): zeitabhängige Zeilen vom Server – „Läuft heute im TV – hier ohne Werbung“ (Sendungen von heute bis 2 Uhr, die es auch als Datei auf dem Server gibt; nur mit Live-TV-Recht), „Neu diese Woche“, „Vor dem Kinostart: Hol die Reihe nach“, „Heute vor X Jahren“ und „Vor einem Jahr hast du …“. Welche Zeilen erscheinen und in welcher Reihenfolge, bestimmt der Server; die Begründung (z. B. „Heute 20:15 auf ZDF – hier ohne Werbung“) steht im Infobereich. Abschaltbar unter Einstellungen → Startseite.
+
 ## 1.31.0 – 2026-10-22
 
 Neue Abschnitte aus dem Plugin Local Recommendations (ab 12.45):
