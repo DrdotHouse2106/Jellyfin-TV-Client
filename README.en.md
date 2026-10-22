@@ -39,6 +39,16 @@ German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md
 - Builds run in GitHub Actions (`.github/workflows/tv-client-build.yaml`): push to `main` → artifact; "Run workflow" with "release" → GitHub release `v{tv-client-version.txt}`. Signed release builds need the secrets `KEYSTORE` (base64), `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`.
 - Upstream updates: `git fetch upstream --tags && git merge v0.19.x`.
 
+## Troubleshooting
+
+- **Stuttering, stereo-only audio, burned-in subtitles:** "Audio output: Downmix to stereo" or "Bitstream Dolby Digital: off" forces the server to convert the audio; picture subtitles (PGS) are then burned in and the video re-encoded. Set Audio → "Direct" and Dolby Digital "On" (shown in the settings since 1.30.4).
+- **No sound with DTS/TrueHD:** since 1.30.2 the app passes DTS through if the output accepts it, otherwise decodes it itself (FFmpeg, keeps 5.1); the server converts only as a last resort. Still silent: Settings → Audio → "Pass through DTS and TrueHD: Off".
+- **Forced subtitles not detected:** many MKVs only name the track "Forced" without the flag. Since 1.30.3 the name is enough. To fix the file: `mkvpropedit file.mkv --edit track:sN --set flag-forced=1`, then refresh the item in Jellyfin (stagger bulk changes – they trigger rescans in Jellyfin and Sonarr/Radarr).
+- **Home address no longer used:** after a plugin reinstall the identity check is rejected for safety – save the address again under Settings → Home network.
+- **Update won't install:** allow "Install unknown apps" for Quallenkino once; an APK signed with a different key requires uninstalling first.
+
+More details (German): [README.md](README.md#häufige-probleme).
+
 ## Data sources
 
 Data and images: [TMDB](https://www.themoviedb.org). This product uses the TMDB API but is not endorsed or certified by TMDB.

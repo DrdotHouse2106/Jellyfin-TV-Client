@@ -154,6 +154,30 @@ Hinweise:
 - Jellyfin Remote zeigt für „Quallenkino“ zusätzlich Knöpfe für die Bereiche der App (Bibliotheken, Live-TV, TV-Programm, Aufnahmen, Suche, Einstellungen), die installierten Apps des Fernsehers und dessen Einstellungen (WLAN, Bluetooth, Bild, Ton).
 - Die Fire-TV-App bzw. Google-TV-App auf dem Handy funktioniert natürlich weiterhin.
 
+## Häufige Probleme
+
+Hürden, auf die wir selbst gestoßen sind – jeweils mit Symptom, Ursache und Lösung.
+
+**Film stockt, Ton nur Stereo, Untertitel ins Bild eingebrannt**
+- *Ursache:* „Audioausgabe: Zu Stereo heruntermischen“ oder „Dolby Digital durchreichen: Aus“. Dann darf der Ton nicht direkt laufen, der Server rechnet um. Bild-Untertitel (PGS) lassen sich in den umgerechneten Stream nicht einbetten und werden eingebrannt – dafür muss der Server auch das Video neu kodieren.
+- *Lösung:* In den Einstellungen unter Ton „Audioausgabe: Direkt“ und „Dolby Digital durchreichen: An“ (ab 1.30.4 direkt dort; 1.30.5 hat beides einmalig zurückgesetzt).
+
+**Film mit DTS- oder TrueHD-Ton bleibt stumm**
+- *Ursache:* Manche Sticks melden DTS-Decoder oder DTS-Durchreichen, geben aber keinen Ton aus (z. B. wenn ihr HDMI-Ausgang fest auf Dolby Digital steht).
+- *Lösung (ab 1.30.2 automatisch):* Nimmt der Ausgang DTS an (AV-Receiver), wird durchgereicht; sonst dekodiert die App selbst (eingebautes FFmpeg, 5.1 bleibt erhalten); erst als letzter Ausweg rechnet der Server in Dolby Digital um. Bleibt es trotzdem stumm: Einstellungen → Ton → „DTS und TrueHD durchreichen: Aus“ (dann rechnet immer der Server um).
+
+**Erzwungene Untertitel („Forced“) werden nicht erkannt oder nicht automatisch gewählt**
+- *Ursache:* Viele MKV-Dateien nennen die Spur „Forced“, setzen aber das Forced-Flag nicht.
+- *Lösung:* Ab 1.30.3 erkennt die App solche Spuren auch am Namen („Forced“, „erzwungen“, „nur fremdsprachige“). Wer es in der Datei korrigieren will: `mkvpropedit datei.mkv --edit track:sN --set flag-forced=1` (N = Nummer der Untertitelspur), danach in Jellyfin die Metadaten des Titels aktualisieren. *Achtung:* Viele Dateien auf einmal zu ändern, löst ein Neueinlesen in Jellyfin und in Sonarr/Radarr aus – besser gestaffelt.
+
+**Heimnetz-Adresse wird plötzlich nicht mehr genutzt**
+- *Ursache:* Hat der Server den Identitätsnachweis einmal erbracht, wird ein späteres „unbekannt“ (z. B. nach Neuinstallation des Plugins) aus Sicherheitsgründen abgelehnt.
+- *Lösung:* Einstellungen → Heimnetz → Adresse erneut speichern.
+
+**Update lässt sich nicht installieren**
+- *Ursache:* Android fragt einmalig nach der Erlaubnis „Unbekannte Apps installieren“ (Fire TV: „Apps unbekannter Herkunft“) für Quallenkino.
+- *Lösung:* Erlaubnis im angezeigten Dialog erteilen. Ist eine Version mit anderem Schlüssel installiert (z. B. selbst gebaut), lehnt Android das Update ab – dann einmal deinstallieren.
+
 ## Selbst bauen (GitHub Actions)
 
 Gebaut wird automatisch mit dem Workflow [`TV-Client / Build`](.github/workflows/tv-client-build.yaml):
