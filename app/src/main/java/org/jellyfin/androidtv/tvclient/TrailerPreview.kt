@@ -54,6 +54,11 @@ object TrailerPreview {
 	@Volatile private var resumePositionMs = 0L
 	@Volatile private var resumeAt = 0L
 
+	/** Ist die Seite sichtbar und die App im Vordergrund? Nur dann dürfen Trailer spielen. */
+	fun inForeground(owner: androidx.lifecycle.LifecycleOwner): Boolean =
+		owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) &&
+			androidx.lifecycle.ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+
 	fun savePosition(url: String, positionMs: Long) {
 		resumeUrl = url
 		resumePositionMs = positionMs
@@ -113,7 +118,9 @@ fun TrailerVideo(
 			TrailerPreview.resumePosition(url)?.let { seekTo(it) }
 			volume = volumeOverride ?: if (withSound) TrailerPreview.volume else 0f
 			repeatMode = Player.REPEAT_MODE_OFF
-			playWhenReady = true
+			// Nur im Vordergrund starten: Rotiert das Banner im Hintergrund weiter (HOME, Bildschirmschoner),
+			// darf der nächste Trailer nicht losspielen
+			playWhenReady = TrailerPreview.inForeground(lifecycleOwner)
 			prepare()
 		}
 	}
@@ -137,17 +144,28 @@ fun TrailerVideo(
 		val observer = LifecycleEventObserver { _, event ->
 			when (event) {
 				Lifecycle.Event.ON_PAUSE -> player.pause()
-				Lifecycle.Event.ON_RESUME -> if (player.playbackState != Player.STATE_ENDED) player.play()
+				Lifecycle.Event.ON_RESUME -> if (player.playbackState != Player.STATE_ENDED && TrailerPreview.inForeground(lifecycleOwner)) player.play()
 				else -> Unit
 			}
 		}
+		// Zusätzlich die ganze App: im Hintergrund (HOME, anderer Launcher, System-Bildschirmschoner) anhalten
+		val processObserver = LifecycleEventObserver { _, event ->
+			when (event) {
+				Lifecycle.Event.ON_STOP -> player.pause()
+				Lifecycle.Event.ON_START -> if (player.playbackState != Player.STATE_ENDED && TrailerPreview.inForeground(lifecycleOwner)) player.play()
+				else -> Unit
+			}
+		}
+		val processLifecycle = androidx.lifecycle.ProcessLifecycleOwner.get().lifecycle
 		player.addListener(listener)
 		lifecycleOwner.lifecycle.addObserver(observer)
+		processLifecycle.addObserver(processObserver)
 
 		onDispose {
 			if (player.playbackState != Player.STATE_ENDED && player.currentPosition > 0) TrailerPreview.savePosition(url, player.currentPosition)
 			onPlayingChange(false)
 			lifecycleOwner.lifecycle.removeObserver(observer)
+			processLifecycle.removeObserver(processObserver)
 			player.removeListener(listener)
 			player.release()
 		}

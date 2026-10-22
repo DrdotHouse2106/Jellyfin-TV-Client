@@ -183,6 +183,10 @@ Hürden, auf die wir selbst gestoßen sind – jeweils mit Symptom, Ursache und 
 - *Ursache:* Die Fassung aus dem Amazon Appstore ist von Amazon signiert, die APK von GitHub mit dem eigenen Schlüssel. Android behandelt das als verschiedene Herkunft und lehnt die Installation über die jeweils andere ab. Die Store-Fassung bekommt ihre Updates nur über den Store (dort ist das Selbst-Update der App ausgeschaltet) und kann einige Tage hinter den GitHub-Releases liegen.
 - *Lösung:* Für einen Wechsel erst deinstallieren, dann die andere Fassung installieren. **Dabei gehen die Einstellungen der App verloren** (Server, Anmeldung, Heimnetz-Adresse, Ton- und Untertitel-Einstellungen) – danach einmal neu anmelden und einstellen.
 
+**Trailer-Ton läuft weiter, obwohl Quallenkino im Hintergrund ist**
+- *Ursache (bis 1.30.7):* Das Banner wechselte auch im Hintergrund weiter (nach HOME oder unter dem System-Bildschirmschoner), und der Trailer des nächsten Titels startete, ohne zu prüfen, ob die App sichtbar ist.
+- *Lösung:* Ab 1.30.8 spielen Trailer nur, solange Quallenkino im Vordergrund ist, und setzen beim Zurückkehren fort. Bis zum Update: Quallenkino mit „Zurück“ beenden statt mit HOME verlassen.
+
 **Gerät bleibt auf einer alten Version stehen**
 - *Ursache:* Bis 1.30.6 suchte die App nur beim Kaltstart nach Updates – Fernseher-Apps bleiben aber oft tagelang im Speicher. Außerdem braucht jedes Update eine Bestätigung („Jetzt installieren“ und der Android-Installationsdialog). Aus dem Amazon Appstore installierte Fassungen aktualisieren sich nur über den Store.
 - *Lösung:* Einmal Einstellungen → Updates → „Nach Updates suchen“ und bestätigen (oder die APK neu installieren). Ab 1.30.7 prüft die App auch bei jeder Rückkehr in die App.

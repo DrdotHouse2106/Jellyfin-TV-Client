@@ -47,6 +47,7 @@ German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md
 - **Actor page shows only titles from your library:** the full filmography comes from Jellyseerr (TMDb). Requires Quallenkino 1.30.1 or newer, the [Jellyfin Enhanced](https://github.com/n00bcodr/Jellyfin-Enhanced) plugin with Jellyseerr configured, "Jellyseerr" enabled in the app settings, and a TMDb id on the person in Jellyfin (refresh the person's metadata if missing).
 - **Home address no longer used:** after a plugin reinstall the identity check is rejected for safety – save the address again under Settings → Home network.
 - **Switching between the Amazon Appstore version and the GitHub APK:** Amazon signs its version with its own key, so Android refuses to install one over the other. Uninstall first – the app's settings (server, sign-in, home address, audio/subtitle settings) are lost. The store version only updates through the store (self-update is off there).
+- **Trailer audio keeps playing in the background (up to 1.30.7):** the billboard kept rotating after HOME and the next trailer started anyway. Fixed in 1.30.8 – trailers only play while the app is in the foreground.
 - **Device stuck on an old version:** up to 1.30.6 the app only checked on a cold start, and every update needs a confirmation. Use Settings → Updates → "Check for updates" once; from 1.30.7 the app also checks whenever you return to it.
 - **Update won't install:** allow "Install unknown apps" for Quallenkino once; an APK signed with a different key requires uninstalling first.
 

@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.30.8 – 2026-10-22
+
+- **Keine Trailer mehr im Hintergrund:** Nach HOME oder unter dem System-Bildschirmschoner lief das Banner weiter, und der Trailer des nächsten Titels startete mit Ton – auch auf der Startseite des Launchers zu hören. Trailer spielen jetzt nur, solange Quallenkino sichtbar ist (Seite und ganze App werden geprüft), und laufen beim Zurückkehren weiter.
+
 ## 1.30.7 – 2026-10-22
 
 - **Updates kommen zuverlässiger an:** Die App sucht jetzt bei jedem Öffnen und bei jeder Rückkehr in die App nach einer neuen Version (GitHub weiterhin höchstens einmal am Tag), nicht nur beim Kaltstart – Fernseher-Apps bleiben oft tagelang im Speicher. Dieselbe Version wird höchstens alle 12 Stunden angeboten.
