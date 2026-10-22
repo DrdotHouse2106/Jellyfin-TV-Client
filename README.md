@@ -170,6 +170,11 @@ Hürden, auf die wir selbst gestoßen sind – jeweils mit Symptom, Ursache und 
 - *Ursache:* Viele MKV-Dateien nennen die Spur „Forced“, setzen aber das Forced-Flag nicht.
 - *Lösung:* Ab 1.30.3 erkennt die App solche Spuren auch am Namen („Forced“, „erzwungen“, „nur fremdsprachige“). Wer es in der Datei korrigieren will: `mkvpropedit datei.mkv --edit track:sN --set flag-forced=1` (N = Nummer der Untertitelspur), danach in Jellyfin die Metadaten des Titels aktualisieren. *Achtung:* Viele Dateien auf einmal zu ändern, löst ein Neueinlesen in Jellyfin und in Sonarr/Radarr aus – besser gestaffelt.
 
+**Schauspielerseite zeigt nur Titel aus der eigenen Bibliothek**
+- *Ursache:* Die weiteren Filme und Serien einer Person kommen aus Jellyseerr (Filmografie von TMDb). Fehlt eine Voraussetzung, zeigt die App nur, was auf dem Server liegt.
+- *Voraussetzungen:* Quallenkino ab 1.30.1; auf dem Server das Plugin [Jellyfin Enhanced](https://github.com/n00bcodr/Jellyfin-Enhanced) mit eingerichteter Jellyseerr-Anbindung; in der App „Jellyseerr“ eingeschaltet (Einstellungen); die Person hat in Jellyfin eine TMDb-Id (Metadaten aus TMDb – sonst bei der Person „Metadaten aktualisieren“).
+- *Ergebnis:* Oben „In deiner Bibliothek“, darunter „Weitere Filme“ und „Weitere Serien“ mit Stand und Anfrage-Knopf.
+
 **Heimnetz-Adresse wird plötzlich nicht mehr genutzt**
 - *Ursache:* Hat der Server den Identitätsnachweis einmal erbracht, wird ein späteres „unbekannt“ (z. B. nach Neuinstallation des Plugins) aus Sicherheitsgründen abgelehnt.
 - *Lösung:* Einstellungen → Heimnetz → Adresse erneut speichern.
