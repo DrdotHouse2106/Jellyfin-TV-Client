@@ -89,6 +89,19 @@ android {
 		}
 	}
 
+	// Jellyfin-TV-Client: zwei Ausgaben – „github“ mit Selbst-Update aus den GitHub-Releases (quallenkino.apk)
+	// und „amazon“ für den Amazon Appstore ohne Selbst-Update, ohne REQUEST_INSTALL_PACKAGES und ohne FileProvider
+	flavorDimensions += "store"
+	productFlavors {
+		create("github") {
+			dimension = "store"
+			isDefault = true
+		}
+		create("amazon") {
+			dimension = "store"
+		}
+	}
+
 	// Jellyfin-TV-Client: eigenes Symbol, Banner und Logo (überschreibt die Jellyfin-Grafiken)
 	sourceSets["release"].res.srcDir("src/tvclient/res")
 	sourceSets["debug"].res.srcDir("src/tvclient/res")

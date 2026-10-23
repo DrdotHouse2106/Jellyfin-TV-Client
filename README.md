@@ -71,6 +71,7 @@ Alles andere ist wie in der offiziellen App: Player, Live-TV, Intro Skipper, Bed
 Immer die neueste Version:
 
 - **Fire TV / Android TV:** https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk
+- **Amazon Appstore:** Für den Store gibt es ab 1.36.1 eine eigene Fassung `quallenkino-vX-amazon.apk` (im jeweiligen Release) – ohne Selbst-Update und ohne die Berechtigung „Apps installieren“; sie bekommt Updates nur über den Store.
 
 ## Voraussetzungen
 
@@ -185,7 +186,7 @@ Hürden, auf die wir selbst gestoßen sind – jeweils mit Symptom, Ursache und 
 - *Lösung:* Einstellungen → Heimnetz → Adresse erneut speichern.
 
 **Wechsel zwischen Amazon-Appstore-Version und direkt installierter APK**
-- *Ursache:* Die Fassung aus dem Amazon Appstore ist von Amazon signiert, die APK von GitHub mit dem eigenen Schlüssel. Android behandelt das als verschiedene Herkunft und lehnt die Installation über die jeweils andere ab. Die Store-Fassung bekommt ihre Updates nur über den Store (dort ist das Selbst-Update der App ausgeschaltet) und kann einige Tage hinter den GitHub-Releases liegen.
+- *Ursache:* Die Fassung aus dem Amazon Appstore ist von Amazon signiert, die APK von GitHub mit dem eigenen Schlüssel. Android behandelt das als verschiedene Herkunft und lehnt die Installation über die jeweils andere ab. Die Store-Fassung bekommt ihre Updates nur über den Store (die Store-Fassung enthält kein Selbst-Update) und kann einige Tage hinter den GitHub-Releases liegen.
 - *Lösung:* Für einen Wechsel erst deinstallieren, dann die andere Fassung installieren. **Dabei gehen die Einstellungen der App verloren** (Server, Anmeldung, Heimnetz-Adresse, Ton- und Untertitel-Einstellungen) – danach einmal neu anmelden und einstellen.
 
 **Trailer-Ton läuft weiter, obwohl Quallenkino im Hintergrund ist**

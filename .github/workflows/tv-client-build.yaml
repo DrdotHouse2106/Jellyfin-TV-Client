@@ -44,7 +44,7 @@ jobs:
           fi
 
       - name: Unit tests
-        run: ./gradlew :app:testDebugUnitTest
+        run: ./gradlew :app:testGithubDebugUnitTest :app:testAmazonDebugUnitTest
 
       - name: Decode keystore
         id: keystore
@@ -66,11 +66,11 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew :app:assembleRelease :app:bundleRelease
+        run: ./gradlew :app:assembleGithubRelease :app:assembleAmazonRelease :app:bundleGithubRelease
 
       - name: Assemble debug APK
         if: steps.keystore.outputs.signed != 'true'
-        run: ./gradlew :app:assembleDebug
+        run: ./gradlew :app:assembleGithubDebug :app:assembleAmazonDebug
 
       - name: Collect APKs
         run: |
@@ -79,7 +79,12 @@ jobs:
           find app/build/outputs/bundle -iname "*.aab" -exec cp "{}" build/tv-client/ \; 2>/dev/null || true
           # Fester Dateiname für einen gleichbleibenden Download-Link:
           # https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk
-          for f in build/tv-client/*-release.apk; do [ -e "$f" ] && cp "$f" build/tv-client/quallenkino.apk; done
+          # Nur die GitHub-Variante (mit Selbst-Update); die Amazon-Variante ist für den Appstore
+          for f in build/tv-client/*-github-release.apk; do if [ -e "$f" ]; then cp "$f" build/tv-client/quallenkino.apk; fi; done
+          # Kurze Namen wie bisher: quallenkino-vX-release.apk (GitHub) und quallenkino-vX-amazon.apk (Amazon Appstore)
+          for f in build/tv-client/*-github-release.apk; do if [ -e "$f" ]; then mv "$f" "${f%-github-release.apk}-release.apk"; fi; done
+          for f in build/tv-client/*-amazon-release.apk; do if [ -e "$f" ]; then mv "$f" "${f%-amazon-release.apk}-amazon.apk"; fi; done
+          for f in build/tv-client/*-github-release.aab; do if [ -e "$f" ]; then mv "$f" "${f%-github-release.aab}-release.aab"; fi; done
 
       - name: Upload artifacts
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
@@ -95,5 +100,5 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="v$JELLYFIN_VERSION"
-          gh release create "$TAG" build/tv-client/* --target "$GITHUB_SHA" --title "Quallenkino $TAG" --notes "Fire TV / Android TV: quallenkino.apk. Änderungen siehe CHANGELOG-TV.md." \
+          gh release create "$TAG" build/tv-client/* --target "$GITHUB_SHA" --title "Quallenkino $TAG" --notes "Fire TV / Android TV: quallenkino.apk (mit Selbst-Update). Für den Amazon Appstore: quallenkino-$TAG-amazon.apk (ohne Selbst-Update). Änderungen siehe CHANGELOG-TV.md." \
             || gh release upload "$TAG" build/tv-client/* --clobber

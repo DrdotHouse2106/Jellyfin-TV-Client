@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.36.1 – 2026-10-23
+
+- **Eigene Fassung für den Amazon Appstore** (`quallenkino-v1.36.1-amazon.apk`): ganz ohne Selbst-Update – ohne Update-Code, ohne die Berechtigung „Apps installieren“ (REQUEST_INSTALL_PACKAGES) und ohne den dafür nötigen FileProvider. Amazon verbietet Apps, die sich außerhalb des Stores selbst nachladen. Updates dieser Fassung kommen nur über den Appstore.
+- Die GitHub-Fassung (`quallenkino.apk`) bleibt unverändert und aktualisiert sich weiter selbst.
+
 ## 1.36.0 – 2026-10-23
 
 - **Kommende Folgen auf der Serienseite** wie im Web (Plugin Local Recommendations ab 12.52, mit Sonarr): unter der Beschreibung ein grüner Hinweis „Neu: S02E05“, wenn heute eine Folge erschienen ist, und ein blauer mit der nächsten Folge, z. B. „Staffelstart morgen · 19:00 Uhr · Paramount+ · S03E01 Der Anfang · +2 weitere bis 07.11.“.
