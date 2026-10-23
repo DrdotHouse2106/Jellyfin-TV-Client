@@ -286,9 +286,19 @@ suspend fun FullDetailsFragment.getNextUpEpisode(): BaseItemDto? {
 
 fun FullDetailsFragment.resumePlayback(v: View) {
 	if (mBaseItem.type != BaseItemKind.SERIES) {
-		val pos = (mBaseItem.userData?.playbackPositionTicks?.ticks
-			?: Duration.ZERO) - resumePreroll.milliseconds
-		play(mBaseItem, pos.inWholeMilliseconds.toInt(), false)
+		// Jellyfin-TV-Client: Position direkt vor dem Start frisch vom Server holen (wie im Web). Die Seite kann
+		// noch den Stand vom Öffnen haben – etwa wenn sie nach dem Stoppen nachgeladen wurde, bevor der Server
+		// die neue Position gespeichert hatte. Sonst ging es an der alten Stelle weiter.
+		val api by inject<ApiClient>()
+		lifecycleScope.launch {
+			val fresh = runCatching {
+				withContext(Dispatchers.IO) { api.userLibraryApi.getItem(mBaseItem.id).content }
+			}.onFailure { Timber.w(it, "Aktuelle Position nicht abrufbar, nehme die angezeigte") }.getOrNull()
+			fresh?.userData?.let { mBaseItem = mBaseItem.copyWithUserData(it) }
+			val pos = (mBaseItem.userData?.playbackPositionTicks?.ticks
+				?: Duration.ZERO) - resumePreroll.milliseconds
+			play(mBaseItem, pos.inWholeMilliseconds.coerceAtLeast(0).toInt(), false)
+		}
 		return
 	}
 

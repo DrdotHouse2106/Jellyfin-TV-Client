@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.36.2 – 2026-10-23
+
+- **Bildschirmschoner ohne Angefangenes:** Wie im Web zeigt er nur Titel, die noch nicht begonnen oder gesehen sind. Bisher kamen absichtlich auch angefangene Filme dazu – so stand etwa der eben gestoppte Film im Schoner.
+- **Fortsetzen an der richtigen Stelle:** „Fortsetzen“ auf der Detailseite holt die Position jetzt direkt vor dem Start frisch vom Server. Die Seite konnte noch den Stand vom Öffnen haben (z. B. wenn sie nach dem Stoppen nachgeladen wurde, bevor der Server die neue Position gespeichert hatte) – dann ging es an der alten Stelle weiter.
+
 ## 1.36.1 – 2026-10-23
 
 - **Eigene Fassung für den Amazon Appstore** (`quallenkino-v1.36.1-amazon.apk`): ganz ohne Selbst-Update – ohne Update-Code, ohne die Berechtigung „Apps installieren“ (REQUEST_INSTALL_PACKAGES) und ohne den dafür nötigen FileProvider. Amazon verbietet Apps, die sich außerhalb des Stores selbst nachladen. Updates dieser Fassung kommen nur über den Appstore.

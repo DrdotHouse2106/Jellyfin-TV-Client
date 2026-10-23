@@ -10,21 +10,24 @@ import org.jellyfin.sdk.api.client.extensions.get
 import org.jellyfin.sdk.api.client.extensions.itemsApi
 import org.jellyfin.sdk.model.api.BaseItemDto
 import org.jellyfin.sdk.model.api.BaseItemDtoQueryResult
-import org.jellyfin.sdk.model.api.BaseItemKind
-import org.jellyfin.sdk.model.api.MediaType
 import org.jellyfin.sdk.model.api.request.GetItemsRequest
-import org.jellyfin.sdk.model.api.request.GetResumeItemsRequest
 import timber.log.Timber
 
 /**
  * Jellyfin-TV-Client: Bildschirmschoner mit Titeln, die zum Benutzer passen – persönliche
- * Empfehlungen (Plugin „Local Recommendations“) und angefangene Filme statt Zufall.
+ * Empfehlungen (Plugin „Local Recommendations“) statt Zufall. Wie im Web nur Titel, die noch nicht
+ * begonnen oder gesehen sind (sonst stand z. B. der eben gestoppte Film im Schoner).
  */
 object PersonalScreensaver {
 	val enabledPreference = booleanPreference("pref_tvclient_personal_screensaver", true)
 
 	private const val RECOMMENDATIONS_PER_TYPE = 30
-	private const val RESUME_LIMIT = 10
+
+	/** Gesehen oder angefangen (testbar) – solche Titel zeigt der Bildschirmschoner nicht. */
+	fun isStartedOrPlayed(item: BaseItemDto): Boolean {
+		val data = item.userData ?: return false
+		return data.played || data.playbackPositionTicks > 0
+	}
 
 	/** Persönliche Titel in zufälliger Reihenfolge; leer, wenn es keine gibt. */
 	suspend fun items(api: ApiClient): List<BaseItemDto> = withContext(Dispatchers.IO) {
@@ -36,22 +39,11 @@ object PersonalScreensaver {
 		}
 
 		val recommended = if (recommendedIds.isEmpty()) emptyList() else runCatching {
-			api.itemsApi.getItems(GetItemsRequest(ids = recommendedIds)).content.items
+			api.itemsApi.getItems(GetItemsRequest(ids = recommendedIds, enableUserData = true)).content.items
 		}.onFailure { Timber.w(it, "Empfehlungen für den Bildschirmschoner nicht verfügbar") }.getOrDefault(emptyList())
 
-		// Angefangene Filme (Folgen haben kein eigenes Hintergrundbild)
-		val resume = runCatching {
-			api.itemsApi.getResumeItems(
-				GetResumeItemsRequest(
-					limit = RESUME_LIMIT,
-					mediaTypes = setOf(MediaType.VIDEO),
-					includeItemTypes = setOf(BaseItemKind.MOVIE),
-				)
-			).content.items
-		}.getOrDefault(emptyList())
-
-		(recommended + resume)
-			.filter { !it.backdropImageTags.isNullOrEmpty() }
+		recommended
+			.filter { !it.backdropImageTags.isNullOrEmpty() && !isStartedOrPlayed(it) }
 			.distinctBy { it.id }
 			.shuffled()
 	}

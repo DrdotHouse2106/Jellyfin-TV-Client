@@ -99,7 +99,7 @@ class DreamViewModel(
 		errorDelay: Duration,
 	): Flow<DreamContent.LibraryShowcase?> = flow {
 		while (true) {
-			// Jellyfin-TV-Client: zuerst persönliche Titel (Empfehlungen, angefangene Filme), sonst Zufall
+			// Jellyfin-TV-Client: zuerst persönliche Empfehlungen (ungesehen), sonst Zufall
 			val personal = if (userPreferences[PersonalScreensaver.enabledPreference]) PersonalScreensaver.items(api) else emptyList()
 
 			val items = if (personal.isNotEmpty()) personal else try {
@@ -112,8 +112,11 @@ class DreamViewModel(
 						imageTypes = listOf(ImageType.BACKDROP),
 						maxOfficialRating = if (maxParentalRating == -1) null else maxParentalRating.toString(),
 						hasParentalRating = if (requireParentalRating) true else null,
+						// Jellyfin-TV-Client: wie im Web nur Ungesehenes, nichts Angefangenes
+						isPlayed = false,
+						enableUserData = true,
 					)
-					response.items
+					response.items.filterNot(PersonalScreensaver::isStartedOrPlayed)
 				}
 			} catch (err: ApiClientException) {
 				Timber.e(err)

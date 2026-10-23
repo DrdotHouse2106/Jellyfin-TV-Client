@@ -25,10 +25,11 @@ German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md
 - **Requests via Jellyseerr:** if the server plugin "Jellyfin Enhanced" has Jellyseerr set up, a "+" appears in the navigation to search and request titles under your own user, no API key on the TV. Each result has a detail page with cast (person pages), seasons, trailer and similar titles; without a search term it shows "For you", newer titles first. Without the plugin nothing appears (optional: own Jellyseerr address and API key).
 - **Player:** auto skip of intro/credits with a 5-second filling button (Back cancels), smart subtitles (off for audio in your language, remembered per series), audio & subtitles in one two-column window, faster search (Down leaves the search field).
 - **Live TV:** cast and director on a programme's detail page and in the guide, from the EPG via Local Recommendations 12.7.1 or newer (XMLTV set up). Select on an actor opens their person page (via Jellyseerr).
-- **Other:** "Who's watching?" profile picker (shown at every start and after more than 10 minutes in the background, never signs in the last profile automatically; saved sign-ins work with one click, no PIN), personal screensaver (optionally with teasers or trailers), autostart on power-on (up to Android 9, off by default), full remote control from a phone (e.g. Jellyfin Remote).
+- **Other:** "Who's watching?" profile picker (shown at every start and after more than 10 minutes in the background, never signs in the last profile automatically; saved sign-ins work with one click, no PIN), personal screensaver (only unwatched, nothing in progress – like Jellyfin Web; optionally with teasers or trailers), autostart on power-on (up to Android 9, off by default), full remote control from a phone (e.g. Jellyfin Remote).
 
 \* needs the server plugin Local Recommendations (Top 10 of all users and thumbs since 12.6.0).
 
+- 1.36.2: screensaver shows only unwatched titles; "Resume" on the details page fetches the current position right before starting.
 - 1.36.1: separate Amazon Appstore build without self-update.
 - New in 1.36.0 (Local Recommendations 12.52+): series page shows episodes released today ("New: S02E05", marked "NEW" on their card) and the next episode with date, network and title, like Jellyfin Web.
 - 1.35.2: the seasonal row (e.g. "Halloween") works on Android again, same title and position as in Jellyfin Web.
