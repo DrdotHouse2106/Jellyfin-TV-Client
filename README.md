@@ -135,7 +135,7 @@ Die Zeilen der Startseite stehen in einer festen Reihenfolge und lassen sich unt
 16. Aktive Aufnahmen (anfangs aus)
 17. Apps (anfangs aus)
 18. Gerät (anfangs aus)
-19. Meine Medien (Bibliotheken)
+19. Meine Medien (Bibliotheken; ab 1.36.3 anfangs aus wie im Web – die Bibliotheken sind über die Seitenleiste erreichbar)
 
 \* benötigt das Server-Plugin „Local Recommendations“ (Top 10 über alle Benutzer ab 12.6.0); ohne Plugin bleiben die Zeilen unsichtbar bzw. Top 10 zählt nur, was die App selbst sehen darf. Gesehene Titel verschwinden nach dem Anschauen.
 

@@ -39,3 +39,38 @@ fun androidx.compose.ui.Modifier.firstItemScroll(
 		state.scrollToItem(0, 0)
 	}
 })
+
+/**
+ * Zuletzt gewählte Karte je Seite (Personen-, Welt-, Filmreihen-Seite). Die Seiten werden nach „Zurück“
+ * neu aufgebaut und laden ihre Reihen nach – ohne Merker landete der Fokus wieder am Seitenanfang
+ * (z. B. auf der Biografie) statt auf dem eben geöffneten Titel.
+ */
+object PageFocus {
+	private val keys = mutableMapOf<String, String>()
+
+	fun set(page: String, key: String) {
+		keys[page] = key
+	}
+
+	/** Einmalig abholen – ein späteres neues Öffnen der Seite beginnt wieder oben. */
+	fun take(page: String): String? = keys.remove(page)
+}
+
+/** Reihe zur wiederherzustellenden Karte scrollen, damit sie zusammengesetzt ist und den Fokus bekommen kann. */
+@Composable
+fun RestoreRowScroll(state: androidx.compose.foundation.lazy.LazyListState, keys: List<String>, restoreKey: String?) {
+	androidx.compose.runtime.LaunchedEffect(restoreKey, keys.size) {
+		val index = if (restoreKey == null) -1 else keys.indexOf(restoreKey)
+		if (index > 0) state.scrollToItem(index)
+	}
+}
+
+/** Fokus auf die gemerkte Karte, sofern sie noch auf der Seite ist ([present]); sonst auf das übliche erste Element. */
+suspend fun restoreFocus(restore: androidx.compose.ui.focus.FocusRequester, fallback: androidx.compose.ui.focus.FocusRequester?, present: Boolean) {
+	if (present) {
+		// Erst nach dem Scrollen der Reihe ist die Karte da
+		kotlinx.coroutines.delay(150)
+		if (runCatching { restore.requestFocus() }.isSuccess) return
+	}
+	if (fallback != null) runCatching { fallback.requestFocus() }
+}

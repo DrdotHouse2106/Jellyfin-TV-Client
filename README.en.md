@@ -29,6 +29,7 @@ German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md
 
 \* needs the server plugin Local Recommendations (Top 10 of all users and thumbs since 12.6.0).
 
+- 1.36.3: Back returns focus to the last chosen card on person, world and movie series pages; the "My media" row is off by default (like Jellyfin Web).
 - 1.36.2: screensaver shows only unwatched titles; "Resume" on the details page fetches the current position right before starting.
 - 1.36.1: separate Amazon Appstore build without self-update.
 - New in 1.36.0 (Local Recommendations 12.52+): series page shows episodes released today ("New: S02E05", marked "NEW" on their card) and the next episode with date, network and title, like Jellyfin Web.

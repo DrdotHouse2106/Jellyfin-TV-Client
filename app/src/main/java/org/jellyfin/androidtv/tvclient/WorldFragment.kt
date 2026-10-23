@@ -93,6 +93,10 @@ private fun WorldScreen(key: String) {
 	var world by remember { mutableStateOf<Worlds.World?>(null) }
 	var sections by remember { mutableStateOf<List<Worlds.Section>?>(null) }
 	val firstFocus = remember { FocusRequester() }
+	// Zurück von einer Detailseite: wieder auf die zuletzt gewählte Karte
+	val page = "world-$key"
+	val restoreKey = remember { PageFocus.take(page) }
+	val restore = remember { FocusRequester() }
 
 	LaunchedEffect(key) {
 		val userId = userRepository.currentUser.value?.id ?: run { sections = emptyList(); return@LaunchedEffect }
@@ -109,7 +113,8 @@ private fun WorldScreen(key: String) {
 	LaunchedEffect(sections) {
 		if (!sections.isNullOrEmpty()) {
 			delay(100)
-			runCatching { firstFocus.requestFocus() }
+			val present = sections.orEmpty().withIndex().any { (row, section) -> section.items.any { "$row:${it.id}" == restoreKey } }
+			restoreFocus(restore, firstFocus, present)
 		}
 	}
 
@@ -175,7 +180,8 @@ private fun WorldScreen(key: String) {
 					sections == null -> Text(stringResource(R.string.loading), color = Color(0xFFB3B3B3))
 					sections!!.isEmpty() -> Text(stringResource(R.string.tvclient_world_empty), color = Color(0xFFB3B3B3))
 					else -> sections!!.forEachIndexed { index, section ->
-						WorldRow(section, if (index == 0) firstFocus else null) { item ->
+						WorldRow(index, section, if (index == 0) firstFocus else null, restoreKey, restore) { itemKey, item ->
+							PageFocus.set(page, itemKey)
 							navigationRepository.navigate(Destinations.itemDetails(item.id))
 						}
 					}
@@ -187,13 +193,23 @@ private fun WorldScreen(key: String) {
 }
 
 @Composable
-private fun WorldRow(section: Worlds.Section, focus: FocusRequester?, onClick: (BaseItemDto) -> Unit) {
+private fun WorldRow(
+	row: Int,
+	section: Worlds.Section,
+	focus: FocusRequester?,
+	restoreKey: String?,
+	restore: FocusRequester,
+	onClick: (String, BaseItemDto) -> Unit,
+) {
 	Spacer(Modifier.height(16.dp))
 	Text(section.title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
 	Spacer(Modifier.height(4.dp))
 	val first = remember { FocusRequester() }
 	val listState = rememberLazyListState()
 	val scope = rememberCoroutineScope()
+	// Schlüssel je Reihe, denn ein Titel kann in mehreren Reihen stehen
+	val keys = remember(section.items) { section.items.map { "$row:${it.id}" } }
+	RestoreRowScroll(listState, keys, restoreKey)
 	MinimalScroll {
 		LazyRow(
 			state = listState,
@@ -202,12 +218,14 @@ private fun WorldRow(section: Worlds.Section, focus: FocusRequester?, onClick: (
 			contentPadding = PaddingValues(12.dp),
 		) {
 			items(section.items, key = { it.id }) { item ->
+				val itemKey = "$row:${item.id}"
 				var modifier = Modifier.width(120.dp)
+				if (itemKey == restoreKey) modifier = modifier.focusRequester(restore)
 				if (item == section.items.first()) {
 					modifier = modifier.focusRequester(first).firstItemScroll(listState, scope)
 					if (focus != null) modifier = modifier.focusRequester(focus)
 				}
-				PosterCard(item, modifier) { onClick(item) }
+				PosterCard(item, modifier) { onClick(itemKey, item) }
 			}
 		}
 	}

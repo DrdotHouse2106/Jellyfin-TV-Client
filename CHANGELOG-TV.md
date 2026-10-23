@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.36.3 – 2026-10-23
+
+- **Fokus nach „Zurück“:** Auf der Personenseite, einer Welt und der Seite einer Filmreihe steht der Fokus nach der Rückkehr von einer Detailseite wieder auf der zuletzt gewählten Karte (samt Position in der Reihe). Bisher sprang er auf den Seitenanfang – auf der Personenseite auf die Biografie. Sammlungen, Studios und Genres (Seiten der Jellyfin-App) behielten den Fokus schon.
+- **„Meine Medien“ anfangs aus:** Die Zeile mit den Bibliotheks-Kacheln ist wie im Web standardmäßig ausgeblendet – auch bei bestehenden Installationen, sofern sie nicht ausdrücklich eingeschaltet wurde. Einschalten unter Einstellungen → Startseite.
+
 ## 1.36.2 – 2026-10-23
 
 - **Bildschirmschoner ohne Angefangenes:** Wie im Web zeigt er nur Titel, die noch nicht begonnen oder gesehen sind. Bisher kamen absichtlich auch angefangene Filme dazu – so stand etwa der eben gestoppte Film im Schoner.

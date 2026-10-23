@@ -21,17 +21,17 @@ class HomeRowTests : FunSpec({
 			HomeRow.WORLDS,
 			HomeRow.LATEST_MEDIA,
 			HomeRow.GENRES,
-			HomeRow.LIBRARIES,
 		)
 	}
 
-	test("Weiterhören, Live-TV-Knöpfe, Aufnahmen, Apps und Gerät sind anfangs aus") {
+	test("Weiterhören, Live-TV-Knöpfe, Aufnahmen, Apps, Gerät und Meine Medien sind anfangs aus") {
 		val enabled = HomeRow.entries.filter { it.preference.defaultValue }
 		enabled shouldNotContain HomeRow.RESUME_AUDIO
 		enabled shouldNotContain HomeRow.LIVE_TV
 		enabled shouldNotContain HomeRow.ACTIVE_RECORDINGS
 		enabled shouldNotContain HomeRow.APPS
 		enabled shouldNotContain HomeRow.DEVICE
+		enabled shouldNotContain HomeRow.LIBRARIES
 	}
 
 	test("Jede Zeile hat einen eigenen Schlüssel") {

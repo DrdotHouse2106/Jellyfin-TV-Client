@@ -98,6 +98,10 @@ private fun MovieSeriesScreen(id: String) {
 	var detail by remember { mutableStateOf<TvClientSections.SeriesDetail?>(null) }
 	var failed by remember { mutableStateOf(false) }
 	val continueFocus = remember { FocusRequester() }
+	// Zurück von der Detailseite eines Teils: wieder auf diesen Teil statt auf „Weiter mit …“
+	val page = "movieseries-$id"
+	val restoreKey = remember { PageFocus.take(page) }
+	val restore = remember { FocusRequester() }
 
 	LaunchedEffect(id) {
 		detail = TvClientSections.seriesDetail(id)
@@ -106,7 +110,7 @@ private fun MovieSeriesScreen(id: String) {
 	LaunchedEffect(detail) {
 		if (detail?.parts?.isNotEmpty() == true) {
 			delay(100)
-			runCatching { continueFocus.requestFocus() }
+			restoreFocus(restore, continueFocus, detail?.parts.orEmpty().any { it.id.toString() == restoreKey })
 		}
 	}
 
@@ -155,6 +159,7 @@ private fun MovieSeriesScreen(id: String) {
 					val first = remember { FocusRequester() }
 					val listState = rememberLazyListState()
 					val scope = rememberCoroutineScope()
+					RestoreRowScroll(listState, parts.map { it.id.toString() }, restoreKey)
 					MinimalScroll {
 						LazyRow(
 							state = listState,
@@ -165,7 +170,11 @@ private fun MovieSeriesScreen(id: String) {
 							items(parts, key = { it.id }) { part ->
 								var modifier = Modifier.width(120.dp)
 								if (part == parts.first()) modifier = modifier.focusRequester(first).firstItemScroll(listState, scope)
-								PartCard(part, modifier) { navigationRepository.navigate(Destinations.itemDetails(part.id)) }
+								if (part.id.toString() == restoreKey) modifier = modifier.focusRequester(restore)
+								PartCard(part, modifier) {
+									PageFocus.set(page, part.id.toString())
+									navigationRepository.navigate(Destinations.itemDetails(part.id))
+								}
 							}
 						}
 					}

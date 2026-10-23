@@ -78,6 +78,10 @@ private fun JellyseerrPersonScreen(personId: Int) {
 	var error by remember { mutableStateOf(false) }
 	var bioExpanded by remember { mutableStateOf(false) }
 	val firstFocus = remember { FocusRequester() }
+	// Zurück von einer Detailseite: wieder auf die zuletzt gewählte Karte statt auf die Biografie
+	val page = "person-$personId"
+	val restoreKey = remember { PageFocus.take(page) }
+	val restore = remember { FocusRequester() }
 
 	LaunchedEffect(personId) {
 		if (Jellyseerr.detect(api) == null) {
@@ -94,7 +98,10 @@ private fun JellyseerrPersonScreen(personId: Int) {
 	LaunchedEffect(person) {
 		if (person != null) {
 			delay(100)
-			runCatching { firstFocus.requestFocus() }
+			val split = splitByLibrary(person!!.movies, person!!.series)
+			val present = listOf(split.library, split.movies, split.series).withIndex()
+				.any { (row, items) -> items.any { "$row:${it.type}-${it.id}" == restoreKey } }
+			restoreFocus(restore, firstFocus, present)
 		}
 	}
 
@@ -155,13 +162,14 @@ private fun JellyseerrPersonScreen(personId: Int) {
 			// Zuerst, was schon in der Bibliothek ist, darunter die weiteren Filme und Serien (zum Anfragen)
 			val split = splitByLibrary(info.movies, info.series)
 			// Titel aus der Bibliothek direkt auf ihre Detailseite, die anderen auf die Anfrage-Seite
-			val open = { media: Jellyseerr.Media ->
+			val open = { key: String, media: Jellyseerr.Media ->
+				PageFocus.set(page, key)
 				navigationRepository.navigate(media.jellyfinId?.let { Destinations.itemDetails(it) } ?: Destinations.jellyseerrDetails(media.type, media.id))
 			}
 			val focusFirst = info.biography == null
-			CreditRow(R.string.tvclient_person_in_library, split.library, if (focusFirst) firstFocus else null, open)
-			CreditRow(R.string.tvclient_person_more_movies, split.movies, if (focusFirst && split.library.isEmpty()) firstFocus else null, open)
-			CreditRow(R.string.tvclient_person_more_series, split.series, if (focusFirst && split.library.isEmpty() && split.movies.isEmpty()) firstFocus else null, open)
+			CreditRow(0, R.string.tvclient_person_in_library, split.library, if (focusFirst) firstFocus else null, restoreKey, restore, open)
+			CreditRow(1, R.string.tvclient_person_more_movies, split.movies, if (focusFirst && split.library.isEmpty()) firstFocus else null, restoreKey, restore, open)
+			CreditRow(2, R.string.tvclient_person_more_series, split.series, if (focusFirst && split.library.isEmpty() && split.movies.isEmpty()) firstFocus else null, restoreKey, restore, open)
 			Spacer(Modifier.height(24.dp))
 		}
 	}
@@ -180,7 +188,15 @@ fun splitByLibrary(movies: List<Jellyseerr.Media>, series: List<Jellyseerr.Media
 }
 
 @Composable
-private fun CreditRow(title: Int, items: List<Jellyseerr.Media>, focus: FocusRequester?, onClick: (Jellyseerr.Media) -> Unit) {
+private fun CreditRow(
+	row: Int,
+	title: Int,
+	items: List<Jellyseerr.Media>,
+	focus: FocusRequester?,
+	restoreKey: String?,
+	restore: FocusRequester,
+	onClick: (String, Jellyseerr.Media) -> Unit,
+) {
 	if (items.isEmpty()) return
 	Spacer(Modifier.height(20.dp))
 	Text(stringResource(title), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
@@ -189,6 +205,9 @@ private fun CreditRow(title: Int, items: List<Jellyseerr.Media>, focus: FocusReq
 	val first = remember { FocusRequester() }
 	val listState = androidx.compose.foundation.lazy.rememberLazyListState()
 	val scope = androidx.compose.runtime.rememberCoroutineScope()
+	// Schlüssel je Reihe, denn ein Titel kann in mehreren Reihen stehen
+	val keys = remember(items) { items.map { "$row:${it.type}-${it.id}" } }
+	RestoreRowScroll(listState, keys, restoreKey)
 	MinimalScroll {
 		LazyRow(
 			state = listState,
@@ -197,13 +216,15 @@ private fun CreditRow(title: Int, items: List<Jellyseerr.Media>, focus: FocusReq
 			contentPadding = PaddingValues(12.dp),
 		) {
 			items(items, key = { "${it.type}-${it.id}" }) { media ->
+				val key = "$row:${media.type}-${media.id}"
 				var modifier = Modifier.width(120.dp)
+				if (key == restoreKey) modifier = modifier.focusRequester(restore)
 				if (media == items.first()) {
 					// Erster Titel: ganz an den Anfang scrollen (sonst wird der Innenabstand weggescrollt)
 					modifier = modifier.focusRequester(first).firstItemScroll(listState, scope)
 					if (focus != null) modifier = modifier.focusRequester(focus)
 				}
-				MediaCard(media, modifier) { onClick(media) }
+				MediaCard(media, modifier) { onClick(key, media) }
 			}
 		}
 	}

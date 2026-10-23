@@ -34,7 +34,8 @@ enum class HomeRow(
 	ACTIVE_RECORDINGS("recordings", R.string.home_section_active_recordings, false),
 	APPS("apps", R.string.tvclient_row_apps, false, R.string.tvclient_home_apps_description),
 	DEVICE("device", R.string.tvclient_row_device, false, R.string.tvclient_home_device_description),
-	LIBRARIES("libraries", R.string.home_section_library, true),
+	// Wie im Web standardmäßig aus – die Bibliotheken sind über die Seitenleiste erreichbar
+	LIBRARIES("libraries", R.string.home_section_library, false),
 	;
 
 	val preference = booleanPreference("pref_tvclient_home_$key", enabledByDefault)
