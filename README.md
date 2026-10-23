@@ -111,7 +111,7 @@ Alternativ geht ein Update weiterhin von Hand: die neue APK genauso installieren
 
 ## Startseite
 
-Die Startseite ist im Kino-Stil aufgebaut: **Navigation am linken Rand** (Profil, Suche, Startseite, Anfragen „+“, TV-Programm, Einstellungen – mit „Links“ vom ersten Titel einer Reihe erreichbar), oben ein **großer Infobereich** mit dem Banner bzw. dem ausgewählten Titel mit Logo, Eckdaten und Beschreibung (abschaltbar unter Einstellungen → Startseite → Darstellung).
+Die Startseite ist im Kino-Stil aufgebaut: **Navigation am linken Rand** (Profil, Suche, Startseite, Anfragen „+“, TV-Programm, Einstellungen – mit „Links“ vom ersten Titel einer Reihe erreichbar), oben ein **großer Infobereich** mit dem Banner bzw. dem ausgewählten Titel mit Logo, Eckdaten und Beschreibung (das Logo nur über einem Hintergrundbild; zeigt das Banner ein Thumb mit eingebautem Titel, entfällt es – wie im Web) (abschaltbar unter Einstellungen → Startseite → Darstellung).
 
 Die Zeilen der Startseite stehen in einer festen Reihenfolge und lassen sich unter **Einstellungen → Startseite** einzeln ein- und ausschalten (gespeichert auf dem Gerät):
 

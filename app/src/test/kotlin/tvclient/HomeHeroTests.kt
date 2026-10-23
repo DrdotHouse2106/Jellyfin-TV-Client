@@ -4,6 +4,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.jellyfin.sdk.model.api.BaseItemDto
 import org.jellyfin.sdk.model.api.BaseItemKind
+import org.jellyfin.sdk.model.api.ImageType
 import java.util.UUID
 
 class HomeHeroTests : FunSpec({
@@ -62,5 +63,19 @@ class HomeHeroTests : FunSpec({
 		)
 
 		HomeBillboard.interleave(items).map { it.name } shouldBe listOf("F1", "S1", "F2", "F3")
+	}
+
+	test("Banner: Logo/Titel nur über Hintergrundbild, nicht über Thumb (Titel steht dort schon im Bild)") {
+		fun movie(backdrop: Boolean) = BaseItemDto(
+			id = UUID.randomUUID(),
+			type = BaseItemKind.MOVIE,
+			name = "Film",
+			backdropImageTags = if (backdrop) listOf("b") else null,
+			imageTags = mapOf(ImageType.THUMB to "t", ImageType.LOGO to "l"),
+		)
+
+		heroShowsTitle(movie(backdrop = true)) shouldBe true
+		heroShowsTitle(movie(backdrop = false)) shouldBe false
+		heroShowsTitle(BaseItemDto(id = UUID.randomUUID(), type = BaseItemKind.MOVIE, name = "Ohne Bild")) shouldBe true
 	}
 })

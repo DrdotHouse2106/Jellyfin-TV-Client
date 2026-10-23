@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.35.1 – 2026-10-23
+
+- **Banner ohne doppelten Titel:** Hat ein Titel kein Hintergrundbild und zeigt das Banner stattdessen ein Thumb, auf dem der Titel meist schon steht, entfallen Logo und Titelzeile – wie in Jellyfin Web (Local Recommendations 12.50). Über echten Hintergrundbildern bleibt das Logo.
+
 ## 1.35.0 – 2026-10-23
 
 - **Demnächst wie im Web** (Plugin ab 12.49): Ein Klick auf eine neue Folge zeigt „S02E01 · Folgentitel“, Tag, Uhrzeit (in der Zeitzone des Geräts) und Sender, die Beschreibung der Folge, den Hinweis auf weitere neue Folgen und den Knopf „Zur Serie“. Ein Film zeigt Titel, Jahr, Termin und Beschreibung. Die Reihenfolge kommt vom Server.

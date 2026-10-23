@@ -182,6 +182,12 @@ fun heroBackdropImage(item: BaseItemDto): JellyfinImage? =
 		?: item.parentImages[ImageType.THUMB]
 		?: if (item.type == BaseItemKind.EPISODE || item.type == BaseItemKind.PROGRAM) item.itemImages[ImageType.PRIMARY] else null
 
+/**
+ * Logo bzw. Titel nur über einem echten Hintergrundbild (wie Jellyfin Web ab Local Recommendations 12.50):
+ * Thumbs tragen den Titel oft schon im Bild, sonst stünde er doppelt da.
+ */
+fun heroShowsTitle(item: BaseItemDto): Boolean = heroBackdropImage(item)?.type != ImageType.THUMB
+
 @Composable
 fun HomeHero(modifier: Modifier = Modifier) {
 	val selectedWorld by HomeHeroState.world.collectAsState()
@@ -205,7 +211,9 @@ fun HomeHero(modifier: Modifier = Modifier) {
 @Composable
 private fun HeroContent(item: BaseItemDto) {
 	val imageHelper = koinInject<ImageHelper>()
-	val logoUrl = imageHelper.getLogoImageUrl(item, maxWidth = 600)
+	// Thumb trägt den Titel meist schon im Bild: dann weder Logo noch Titel
+	val showTitle = heroShowsTitle(item)
+	val logoUrl = if (showTitle) imageHelper.getLogoImageUrl(item, maxWidth = 600) else null
 
 	Column(
 		modifier = Modifier
@@ -221,7 +229,7 @@ private fun HeroContent(item: BaseItemDto) {
 				url = logoUrl,
 				aspectRatio = 3f,
 			)
-		} else {
+		} else if (showTitle) {
 			Text(
 				text = heroTitle(item),
 				fontSize = 34.sp,
