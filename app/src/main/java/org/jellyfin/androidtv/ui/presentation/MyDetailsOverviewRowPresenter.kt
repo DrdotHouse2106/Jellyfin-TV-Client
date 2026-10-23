@@ -39,6 +39,7 @@ class MyDetailsOverviewRowPresenter(
 			binding.mainImage.load(row.imageDrawable, null, null, 1.0, 0)
 
 			setSummary(row.summary)
+			setSeriesNotes(row.newNote, row.nextNote)
 
 			if (row.item.type == BaseItemKind.PERSON) {
 				binding.fdSummaryText.maxLines = 9
@@ -52,6 +53,22 @@ class MyDetailsOverviewRowPresenter(
 
 				binding.fdButtonRow.addView(button)
 			}
+		}
+
+		/** Jellyfin-TV-Client: grüner Kasten „Neu: S02E05“, blauer mit der nächsten Folge – wie im Web. */
+		fun setSeriesNotes(newNote: String?, nextNote: String?) {
+			fun box(fill: Int, stroke: Int) = android.graphics.drawable.GradientDrawable().apply {
+				cornerRadius = 6 * view.resources.displayMetrics.density
+				setColor(fill)
+				setStroke((2 * view.resources.displayMetrics.density).toInt(), stroke)
+			}
+			binding.fdNewNote.text = newNote
+			binding.fdNewNote.isVisible = !newNote.isNullOrBlank()
+			binding.fdNewNote.background = box(0x2E46D369, 0xFF46D369.toInt())
+			binding.fdNextNote.text = nextNote
+			binding.fdNextNote.isVisible = !nextNote.isNullOrBlank()
+			binding.fdNextNote.background = box(0x2E2E96E0, 0xFF2E96E0.toInt())
+			binding.fdSeriesNotes.isVisible = binding.fdNewNote.isVisible || binding.fdNextNote.isVisible
 		}
 
 		fun setTitle(title: String?) {

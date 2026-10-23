@@ -15,6 +15,10 @@ class MyDetailsOverviewRow @JvmOverloads constructor(
 	var infoItem3: InfoItem? = null,
 	var selectedMediaSourceIndex: Int = 0,
 ) : Row() {
+	/** Jellyfin-TV-Client: „Neu: S02E05“ und die nächste Folge (Serienseite, Plugin ab 12.52). */
+	var newNote: String? = null
+	var nextNote: String? = null
+
 	private val _actions = mutableListOf<TextUnderButton>()
 	val actions get() = _actions.toList()
 	val visibleActions get() = _actions.count { it.isVisible }

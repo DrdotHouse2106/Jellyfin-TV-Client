@@ -36,6 +36,11 @@ open class MutableObjectAdapter<T : Any> : ObjectAdapter, Iterable<T> {
 		notifyItemRangeInserted(index, 1)
 	}
 
+	/** Jellyfin-TV-Client: alle Karten neu zeichnen (z. B. nachträglich „NEU“ markieren). */
+	fun refreshAll() {
+		if (data.isNotEmpty()) notifyItemRangeChanged(0, data.size)
+	}
+
 	fun set(index: Int, element: T) {
 		data.set(index, element)
 		notifyItemRangeChanged(index, 1)

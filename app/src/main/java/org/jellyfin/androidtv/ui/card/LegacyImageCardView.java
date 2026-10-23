@@ -32,6 +32,7 @@ import java.text.NumberFormat;
 public class LegacyImageCardView extends BaseCardView {
     private ViewCardLegacyImageBinding binding = ViewCardLegacyImageBinding.inflate(LayoutInflater.from(getContext()), this);
     private ImageView mBanner;
+    private android.widget.TextView mNewBadge;
     private int BANNER_SIZE = Utils.convertDpToPixel(getContext(), 50);
     private int noIconMargin = Utils.convertDpToPixel(getContext(), 5);
     private NumberFormat nf = NumberFormat.getInstance();
@@ -257,5 +258,40 @@ public class LegacyImageCardView extends BaseCardView {
 
     public void showFavIcon(boolean show) {
         binding.favIcon.setVisibility(show ? VISIBLE : GONE);
+    }
+
+    /** Jellyfin-TV-Client: heute erschienene Folge mit „NEU“ und grünem Rand markieren (wie im Web). */
+    public void setNewToday(boolean isNew) {
+        if (isNew && mNewBadge == null) {
+            int pad = Utils.convertDpToPixel(getContext(), 4);
+            mNewBadge = new android.widget.TextView(getContext());
+            mNewBadge.setText(R.string.tvclient_new_badge);
+            mNewBadge.setTextColor(0xFFFFFFFF);
+            mNewBadge.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 11);
+            mNewBadge.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+            mNewBadge.setPadding(pad * 2, pad / 2, pad * 2, pad / 2);
+            android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
+            bg.setColor(0xFF1B8A3A);
+            bg.setCornerRadius(pad);
+            mNewBadge.setBackground(bg);
+            // In den Bildbereich (RelativeLayout um das Hauptbild), oben links auf dem Bild
+            android.widget.RelativeLayout.LayoutParams lp = new android.widget.RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lp.addRule(android.widget.RelativeLayout.ALIGN_START, R.id.main_image);
+            lp.addRule(android.widget.RelativeLayout.ALIGN_TOP, R.id.main_image);
+            lp.leftMargin = pad * 2;
+            lp.topMargin = pad * 2;
+            mNewBadge.setLayoutParams(lp);
+            ((ViewGroup) binding.mainImage.getParent()).addView(mNewBadge);
+        }
+        if (mNewBadge != null) mNewBadge.setVisibility(isNew ? VISIBLE : GONE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            android.graphics.drawable.GradientDrawable border = null;
+            if (isNew) {
+                border = new android.graphics.drawable.GradientDrawable();
+                border.setColor(0x00000000);
+                border.setStroke(Utils.convertDpToPixel(getContext(), 3), 0xFF46D369);
+            }
+            binding.mainImage.setForeground(border);
+        }
     }
 }

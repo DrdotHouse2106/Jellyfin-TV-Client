@@ -225,6 +225,7 @@
     <string name="tvclient_series_all_parts">Alle %1$d Teile</string>
     <string name="tvclient_home_upcoming">Demnächst</string>
     <string name="tvclient_home_upcoming_description">Neue Folgen und Filme, die bald kommen (Sonarr/Radarr, Local Recommendations ab 12.48)</string>
+    <string name="tvclient_new_badge">NEU</string>
     <string name="tvclient_upcoming_to_series">Zur Serie</string>
     <string name="tvclient_upcoming_close">Schließen</string>
     <plurals name="tvclient_upcoming_more">

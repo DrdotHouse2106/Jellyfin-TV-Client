@@ -617,6 +617,24 @@ public class FullDetailsFragment extends Fragment implements RecordingIndicatorV
                     addItemRow(adapter, new ItemRowAdapter(requireContext(), new GetSpecialsRequest(mBaseItem.getId()), new CardPresenter(), adapter), 3, getString(R.string.lbl_specials));
                 }
 
+                // Jellyfin-TV-Client: Hinweis auf heute neue und kommende Folgen wie im Web (Plugin ab 12.52, Sonarr)
+                org.jellyfin.androidtv.tvclient.SeriesUpcoming.load(getLifecycle(), mBaseItem.getId(), info -> {
+                    if (!isAdded() || mDetailsOverviewRow == null) return kotlin.Unit.INSTANCE;
+                    mDetailsOverviewRow.setNewNote(info.getNewText());
+                    mDetailsOverviewRow.setNextNote(info.getNext());
+                    MyDetailsOverviewRowPresenter.ViewHolder holder = mDorPresenter.getViewHolder();
+                    if (holder != null) holder.setSeriesNotes(info.getNewText(), info.getNext());
+                    // Schon gezeigte Folgenkarten (z. B. „Als Nächstes“) nachträglich mit „NEU“ markieren
+                    if (!info.getNewIds().isEmpty()) {
+                        for (Row row : adapter) {
+                            if (row instanceof ListRow && ((ListRow) row).getAdapter() instanceof MutableObjectAdapter) {
+                                ((MutableObjectAdapter<?>) ((ListRow) row).getAdapter()).refreshAll();
+                            }
+                        }
+                    }
+                    return kotlin.Unit.INSTANCE;
+                });
+
                 ItemRowAdapter upcomingAdapter = new ItemRowAdapter(requireContext(), BrowsingUtils.createUpcomingEpisodesRequest(mBaseItem.getId()), new CardPresenter(), adapter);
                 addItemRow(adapter, upcomingAdapter, 2, getString(R.string.lbl_upcoming));
 

@@ -77,4 +77,16 @@ class TvClientSectionsTests : FunSpec({
 		TvClientSections.parseSeasonal("""{"Active":false,"Title":"Halloween","Items":[]}""") shouldBe null
 		TvClientSections.parseSeasonal("""{"Active":true,"Title":"Halloween","Items":[]}""") shouldBe null
 	}
+
+	test("Serienseite: nächste Folge mit MoreText, heute neue Folgen") {
+		val info = SeriesUpcoming.parse(
+			"""{"Next":{"SeasonNumber":3,"EpisodeNumber":1},"Text":"Staffelstart morgen · 19:00 Uhr · Paramount+ · S03E01 Der Anfang","MoreEpisodes":2,
+			"MoreText":"+2 weitere bis 07.11.","NewToday":[{"SeasonNumber":2,"EpisodeNumber":5,"ItemId":"C2B157EA3DC84584A30BCB96492EDA16"}],"NewText":"Neu: S02E05"}"""
+		)!!
+		info.next shouldBe "Staffelstart morgen · 19:00 Uhr · Paramount+ · S03E01 Der Anfang · +2 weitere bis 07.11."
+		info.newText shouldBe "Neu: S02E05"
+		info.newIds shouldBe setOf("c2b157ea3dc84584a30bcb96492eda16")
+		SeriesUpcoming.parse("") shouldBe null
+		SeriesUpcoming.parse("""{"Text":""}""") shouldBe null
+	}
 })

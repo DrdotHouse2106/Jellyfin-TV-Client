@@ -357,6 +357,8 @@ public class CardPresenter extends Presenter {
             holder.mCardView.setOverlayInfo(rowItem);
         }
         holder.mCardView.showFavIcon(rowItem.isFavorite());
+        // Jellyfin-TV-Client: heute erschienene Folge (Serienseite, Plugin ab 12.52)
+        holder.mCardView.setNewToday(org.jellyfin.androidtv.tvclient.SeriesUpcoming.isNew(rowItem.getBaseItem()));
         if (rowItem instanceof AudioQueueBaseRowItem && ((AudioQueueBaseRowItem) rowItem).getPlaying()) {
             holder.mCardView.setPlayingIndicator(true);
         } else {

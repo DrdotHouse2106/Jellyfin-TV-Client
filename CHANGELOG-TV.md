@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.36.0 – 2026-10-23
+
+- **Kommende Folgen auf der Serienseite** wie im Web (Plugin Local Recommendations ab 12.52, mit Sonarr): unter der Beschreibung ein grüner Hinweis „Neu: S02E05“, wenn heute eine Folge erschienen ist, und ein blauer mit der nächsten Folge, z. B. „Staffelstart morgen · 19:00 Uhr · Paramount+ · S03E01 Der Anfang · +2 weitere bis 07.11.“.
+- Heute erschienene Folgen tragen auf ihrer Karte („Als Nächstes“, Folgen einer Staffel) „NEU“ und einen grünen Rand.
+
 ## 1.35.2 – 2026-10-23
 
 - **Jahreszeit-Zeile repariert** (z. B. „Halloween“, Plugin ab 12.45): Sie blieb auf Android immer leer, weil die Antwort des Servers als Abfrage-Ergebnis gelesen wurde und das ohne Gesamtzahl still scheiterte. Jetzt kommen Titel und Karten direkt aus der Antwort – gleicher Titel und gleiche Position wie im Web (nach „Als Nächstes“).
