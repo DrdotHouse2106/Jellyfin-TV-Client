@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.35.0 – 2026-10-23
+
+- **Demnächst wie im Web** (Plugin ab 12.49): Ein Klick auf eine neue Folge zeigt „S02E01 · Folgentitel“, Tag, Uhrzeit (in der Zeitzone des Geräts) und Sender, die Beschreibung der Folge, den Hinweis auf weitere neue Folgen und den Knopf „Zur Serie“. Ein Film zeigt Titel, Jahr, Termin und Beschreibung. Die Reihenfolge kommt vom Server.
+
 ## 1.34.0 – 2026-10-23
 
 - **Demnächst** (Plugin Local Recommendations ab 12.48, mit Sonarr/Radarr): neue Folgen und Filme, die bald kommen – Bild, Titel und Untertitel wie im Web (z. B. Termin, Staffel/Folge). Eine Folge öffnet die Serie; ein Film zeigt Titel, Jahr und Beschreibung (es wird nichts angefragt).

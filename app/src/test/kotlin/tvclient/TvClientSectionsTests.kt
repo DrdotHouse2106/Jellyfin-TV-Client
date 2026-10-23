@@ -52,4 +52,19 @@ class TvClientSectionsTests : FunSpec({
 		entries[1].year shouldBe 2026
 		entries[2].imageUrl shouldBe null
 	}
+
+	test("Demnächst: Folgen-Ansicht mit Staffel/Folge, Termin in Ortszeit und Sender") {
+		val entries = TvClientSections.parseUpcoming(
+			null,
+			"""{"Items":[{"Kind":"Episode","ReleaseType":"SeasonPremiere","Title":"Serie","Subtitle":"Staffelstart morgen","Date":"2026-10-24T19:00:00Z",
+			"Network":"Paramount+","EpisodeOverview":"Es geht weiter.","SeasonNumber":2,"EpisodeNumber":1,"EpisodeTitle":"Neuanfang","MoreEpisodes":2,
+			"Series":{"Id":"c2b157ea3dc84584a30bcb96492eda16","Name":"Serie","Type":"Series"}}]}"""
+		)
+		val episode = entries.single().episode!!
+		episode.line shouldBe "S02E01 · Neuanfang"
+		episode.whenText(java.time.ZoneId.of("Europe/Berlin")) shouldBe "Samstag, 24.10.2026 · 21:00 Uhr · Paramount+"
+		episode.overview shouldBe "Es geht weiter."
+		episode.more shouldBe 2
+		TvClientSections.Episode(network = "ZDF").whenText() shouldBe "ZDF"
+	}
 })

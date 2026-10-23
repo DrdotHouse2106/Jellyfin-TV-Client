@@ -87,7 +87,36 @@ object TvClientSections {
 		val year: Int? = null,
 		val overview: String? = null,
 		val imageUrl: String? = null,
+		val episode: Episode? = null,
 	)
+
+	/** Kommende Folge (Plugin ab 12.49): Staffel/Folge, Termin (UTC, ISO 8601), Sender, Beschreibung, weitere neue Folgen. */
+	data class Episode(
+		val season: Int? = null,
+		val number: Int? = null,
+		val title: String? = null,
+		val date: String? = null,
+		val network: String? = null,
+		val overview: String? = null,
+		val more: Int = 0,
+	) {
+		/** „S02E05 · Folgentitel“. */
+		val line: String
+			get() = listOfNotNull(
+				if (season != null && number != null) "S%02dE%02d".format(season, number) else null,
+				title,
+			).joinToString(" · ")
+
+		/** „Samstag, 24.10.2026 · 21:00 Uhr · Paramount+“ in der Zeitzone des Geräts. */
+		fun whenText(zone: java.time.ZoneId = java.time.ZoneId.systemDefault()): String {
+			val local = date?.let { runCatching { java.time.OffsetDateTime.parse(it).atZoneSameInstant(zone) }.getOrNull() }
+			return listOfNotNull(
+				local?.format(java.time.format.DateTimeFormatter.ofPattern("EEEE, dd.MM.yyyy", java.util.Locale.GERMAN)),
+				local?.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm 'Uhr'")),
+				network,
+			).joinToString(" · ")
+		}
+	}
 
 	/** Antwort von GET /LocalRecs/Upcoming (testbar); Bildadressen sind relativ zum Server. */
 	fun parseUpcoming(baseUrl: String?, text: String): List<Upcoming> {
@@ -99,7 +128,20 @@ object TvClientSections {
 			when (obj.text("Kind")) {
 				"Episode" -> {
 					val series = (obj["Series"] as? JsonObject)?.let { runCatching { json.decodeFromJsonElement(BaseItemDto.serializer(), it) }.getOrNull() } ?: return@mapNotNull null
-					Upcoming(title, obj.text("Subtitle"), series)
+					Upcoming(
+						title = title,
+						subtitle = obj.text("Subtitle"),
+						series = series,
+						episode = Episode(
+							season = obj.text("SeasonNumber")?.toIntOrNull(),
+							number = obj.text("EpisodeNumber")?.toIntOrNull(),
+							title = obj.text("EpisodeTitle"),
+							date = obj.text("Date"),
+							network = obj.text("Network"),
+							overview = obj.text("EpisodeOverview"),
+							more = obj.text("MoreEpisodes")?.toIntOrNull() ?: 0,
+						),
+					)
 				}
 				"Movie" -> {
 					val movie = obj["Movie"] as? JsonObject

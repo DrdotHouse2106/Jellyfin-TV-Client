@@ -225,4 +225,10 @@
     <string name="tvclient_series_all_parts">Alle %1$d Teile</string>
     <string name="tvclient_home_upcoming">Demnächst</string>
     <string name="tvclient_home_upcoming_description">Neue Folgen und Filme, die bald kommen (Sonarr/Radarr, Local Recommendations ab 12.48)</string>
+    <string name="tvclient_upcoming_to_series">Zur Serie</string>
+    <string name="tvclient_upcoming_close">Schließen</string>
+    <plurals name="tvclient_upcoming_more">
+        <item quantity="one">Dazu %d weitere neue Folge</item>
+        <item quantity="other">Dazu %d weitere neue Folgen</item>
+    </plurals>
 </resources>

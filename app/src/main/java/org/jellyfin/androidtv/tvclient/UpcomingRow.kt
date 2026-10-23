@@ -16,6 +16,7 @@ import androidx.leanback.widget.HeaderItem
 import androidx.leanback.widget.ListRow
 import androidx.leanback.widget.Presenter
 import androidx.leanback.widget.Row
+import org.jellyfin.androidtv.R
 import org.jellyfin.androidtv.ui.AsyncImageView
 import org.jellyfin.androidtv.ui.home.HomeFragmentRow
 import org.jellyfin.androidtv.ui.navigation.Destinations
@@ -39,12 +40,26 @@ class HomeFragmentUpcomingRow(private val title: String, private val entries: Li
 	}
 }
 
-/** OK auf einen Eintrag: Serie öffnen bzw. Titel, Jahr und Beschreibung des Films zeigen. */
+/**
+ * OK auf einen Eintrag wie im Web: Folge zeigt „SxxEyy · Folgentitel“, Termin, Sender, Beschreibung und den Knopf
+ * „Zur Serie“; ein Film zeigt Titel, Jahr, Termin und Beschreibung (es wird nichts angefragt).
+ */
 fun onUpcomingClicked(context: Context, item: Any?): Boolean {
 	if (item !is TvClientSections.Upcoming) return false
 	val series = item.series
 	if (series != null) {
-		KoinJavaComponent.get<NavigationRepository>(NavigationRepository::class.java).navigate(Destinations.itemDetails(series.id))
+		val episode = item.episode ?: TvClientSections.Episode()
+		val more = episode.more.takeIf { it > 0 }?.let { context.resources.getQuantityString(R.plurals.tvclient_upcoming_more, it, it) }
+		val message = listOf(item.subtitle, episode.line, episode.whenText(), episode.overview, more)
+			.filterNot { it.isNullOrBlank() }.joinToString("\n\n")
+		AlertDialog.Builder(context)
+			.setTitle(item.title)
+			.setMessage(message)
+			.setPositiveButton(R.string.tvclient_upcoming_to_series) { _, _ ->
+				KoinJavaComponent.get<NavigationRepository>(NavigationRepository::class.java).navigate(Destinations.itemDetails(series.id))
+			}
+			.setNegativeButton(R.string.tvclient_upcoming_close, null)
+			.show()
 	} else {
 		AlertDialog.Builder(context)
 			.setTitle(listOfNotNull(item.title, item.year?.toString()).joinToString(" · "))
