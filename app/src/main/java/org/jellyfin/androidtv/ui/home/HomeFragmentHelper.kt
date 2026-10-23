@@ -78,8 +78,8 @@ class HomeFragmentHelper(
 		return HomeFragmentBrowseRowDefRow(BrowseRowDef(context.getString(R.string.lbl_on_now), query))
 	}
 
-	fun loadLocalRecommendations(type: LocalRecommendationsType): HomeFragmentRow {
-		val title = when (type) {
+	fun loadLocalRecommendations(type: LocalRecommendationsType, serverTitle: String? = null): HomeFragmentRow {
+		val title = serverTitle ?: when (type) {
 			LocalRecommendationsType.MOVIES -> context.getString(R.string.lbl_localrecs_movies)
 			LocalRecommendationsType.SERIES -> context.getString(R.string.lbl_localrecs_series)
 			LocalRecommendationsType.LIVE_TV -> context.getString(R.string.lbl_localrecs_livetv)

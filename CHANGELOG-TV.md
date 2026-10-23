@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.34.0 – 2026-10-23
+
+- **Demnächst** (Plugin Local Recommendations ab 12.48, mit Sonarr/Radarr): neue Folgen und Filme, die bald kommen – Bild, Titel und Untertitel wie im Web (z. B. Termin, Staffel/Folge). Eine Folge öffnet die Serie; ein Film zeigt Titel, Jahr und Beschreibung (es wird nichts angefragt).
+- **Zeilentitel wie im Web:** Die Titel von „Empfohlene Filme/Serien für dich“ und „Heute im TV für dich“ sowie ob die Live-TV-Zeile erscheint, stellt jetzt der Server ein.
+- Die Zeile „Weitere Abschnitte aus dem Web“ (Plugin Home Screen Sections) entfällt – ihre Abschnitte bringt Local Recommendations jetzt selbst mit.
+
 ## 1.33.0 – 2026-10-22
 
 Filmreihen wie in Jellyfin Web:

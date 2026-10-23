@@ -63,7 +63,6 @@ import org.jellyfin.androidtv.tvclient.Worlds
 import org.jellyfin.androidtv.tvclient.onWorldClicked
 import org.jellyfin.androidtv.tvclient.GenreRows
 import org.jellyfin.androidtv.tvclient.HomeRow
-import org.jellyfin.androidtv.tvclient.HomeScreenSections
 import org.jellyfin.androidtv.tvclient.onDeviceCardClicked
 import org.jellyfin.androidtv.util.KeyProcessor
 import org.jellyfin.playback.core.PlaybackManager
@@ -129,6 +128,7 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 				withTimeoutOrNull(1_500) { org.jellyfin.androidtv.tvclient.TvClientBehavior.daypartOrder() },
 			)
 			val liveTvAccess = currentUser.policy?.enableLiveTvAccess == true
+			val sections = withTimeoutOrNull(3_000) { org.jellyfin.androidtv.tvclient.TvClientSections.config() } ?: org.jellyfin.androidtv.tvclient.TvClientSections.Config()
 
 			// Check for coroutine cancellation
 			if (!isActive) return@launch
@@ -151,15 +151,16 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 							HomeRow.SEASONAL -> listOfNotNull(org.jellyfin.androidtv.tvclient.TvClientSections.seasonalRow())
 							HomeRow.MOMENTS -> org.jellyfin.androidtv.tvclient.TvClientSections.momentRows()
 							HomeRow.MOVIE_SERIES -> listOfNotNull(org.jellyfin.androidtv.tvclient.TvClientSections.movieSeriesRow(getString(org.jellyfin.androidtv.R.string.tvclient_home_movie_series)))
-							HomeRow.RECOMMENDED_MOVIES -> listOf(helper.loadLocalRecommendations(LocalRecommendationsType.MOVIES))
-							HomeRow.RECOMMENDED_SERIES -> listOf(helper.loadLocalRecommendations(LocalRecommendationsType.SERIES))
-							HomeRow.RECOMMENDED_LIVE_TV -> if (liveTvAccess) listOf(helper.loadLocalRecommendations(LocalRecommendationsType.LIVE_TV)) else emptyList()
+							// Titel und Live-TV-Schalter wie im Web (Plugin ab 12.48)
+							HomeRow.RECOMMENDED_MOVIES -> listOf(helper.loadLocalRecommendations(LocalRecommendationsType.MOVIES, sections.moviesTitle))
+							HomeRow.RECOMMENDED_SERIES -> listOf(helper.loadLocalRecommendations(LocalRecommendationsType.SERIES, sections.seriesTitle))
+							HomeRow.RECOMMENDED_LIVE_TV -> if (liveTvAccess && sections.liveTvRow) listOf(helper.loadLocalRecommendations(LocalRecommendationsType.LIVE_TV, sections.liveTvTitle)) else emptyList()
+							HomeRow.UPCOMING -> listOfNotNull(org.jellyfin.androidtv.tvclient.TvClientSections.upcomingRow(getString(org.jellyfin.androidtv.R.string.tvclient_home_upcoming)))
 							HomeRow.LIVE_TV -> if (liveTvAccess) listOf(liveTVRow, helper.loadOnNow()) else emptyList()
 							HomeRow.TOP10 -> listOf(HomeFragmentTop10Row(Top10.load(api, currentUser)))
 							HomeRow.WORLDS -> listOf(HomeFragmentWorldsRow(Worlds.available(api, currentUser.id)))
 							HomeRow.LATEST_MEDIA -> listOf(helper.loadRecentlyAdded(userViewsRepository.views.first()))
 							HomeRow.LIBRARIES -> listOf(HomeFragmentViewsRow(small = false))
-							HomeRow.WEB_SECTIONS -> HomeScreenSections.loadRows(api, currentUser.id)
 							HomeRow.GENRES -> GenreRows.loadRows(api, currentUser.id)
 							HomeRow.RESUME_AUDIO -> listOf(helper.loadResumeAudio())
 							HomeRow.ACTIVE_RECORDINGS -> if (liveTvAccess) listOf(helper.loadLatestLiveTvRecordings()) else emptyList()
@@ -206,6 +207,7 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			registerListener { _, item, _, _ -> onDeviceCardClicked(requireContext(), item) }
 			registerListener { _, item, _, _ -> onWorldClicked(item) }
 			registerListener { _, item, _, _ -> org.jellyfin.androidtv.tvclient.onMovieSeriesClicked(item) }
+			registerListener { _, item, _, _ -> org.jellyfin.androidtv.tvclient.onUpcomingClicked(requireContext(), item) }
 			registerListener(liveTVRow::onItemClicked)
 			registerListener(notificationsRow::onItemClicked)
 		}
@@ -375,6 +377,15 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			// das Banner nicht überschreiben. Welt-Kacheln haben keinen eigenen Titel.
 			// Nie auf leer setzen (Leanback meldet beim Neuaufbau der Zeilen auch „nichts ausgewählt“)
 			(item as? BaseRowItem)?.baseItem?.let { selectedHeroItem = it }
+			// Demnächst: Folge → Infobereich zeigt die Serie
+			(item as? org.jellyfin.androidtv.tvclient.TvClientSections.Upcoming)?.series?.let { series ->
+				selectedHeroItem = series
+				selectedWorld = null
+				if (verticalGridView?.hasFocus() == true) {
+					HomeHeroState.world.value = null
+					HomeHeroState.item.value = series
+				}
+			}
 			// Filmreihe: Infobereich zeigt den nächsten Teil (mit „1 von 3 gesehen · Weiter mit Teil 2“)
 			(item as? org.jellyfin.androidtv.tvclient.TvClientSections.MovieSeries)?.next?.let { next ->
 				selectedHeroItem = next

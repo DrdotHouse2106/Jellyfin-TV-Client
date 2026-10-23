@@ -14,12 +14,12 @@ class HomeRowTests : FunSpec({
 			HomeRow.RECOMMENDED_MOVIES,
 			HomeRow.RECOMMENDED_SERIES,
 			HomeRow.MOMENTS,
+			HomeRow.UPCOMING,
 			HomeRow.MOVIE_SERIES,
 			HomeRow.RECOMMENDED_LIVE_TV,
 			HomeRow.TOP10,
 			HomeRow.WORLDS,
 			HomeRow.LATEST_MEDIA,
-			HomeRow.WEB_SECTIONS,
 			HomeRow.GENRES,
 			HomeRow.LIBRARIES,
 		)
@@ -36,13 +36,6 @@ class HomeRowTests : FunSpec({
 
 	test("Jede Zeile hat einen eigenen Schlüssel") {
 		HomeRow.entries.map { it.preference.key }.distinct().size shouldBe HomeRow.entries.size
-	}
-
-	test("Abschnitte, die Quallenkino schon hat, werden aus dem Web nicht doppelt gezeigt") {
-		HomeScreenSections.isShown(HomeScreenSections.Section(section = "NextUp")) shouldBe false
-		HomeScreenSections.isShown(HomeScreenSections.Section(section = "LocalRecsMovies")) shouldBe false
-		HomeScreenSections.isShown(HomeScreenSections.Section(section = "TopTen")) shouldBe true
-		HomeScreenSections.isShown(HomeScreenSections.Section(section = null)) shouldBe false
 	}
 
 	test("Genre-Zeilen: höchstens 12, keine doppelten") {

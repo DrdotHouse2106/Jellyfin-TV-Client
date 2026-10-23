@@ -36,7 +36,18 @@ object TvClientSections {
 	private var configFor: String? = null
 	private var config: Config = Config()
 
-	data class Config(val movieSeries: Boolean = false, val movieSeriesTitle: String? = null, val seasonal: Boolean = false, val moments: Boolean = false)
+	data class Config(
+		val movieSeries: Boolean = false,
+		val movieSeriesTitle: String? = null,
+		val seasonal: Boolean = false,
+		val moments: Boolean = false,
+		val upcoming: Boolean = false,
+		/** Titel der Empfehlungszeilen und Schalter „Heute im TV für dich“ wie im Web (Plugin ab 12.48). */
+		val moviesTitle: String? = null,
+		val seriesTitle: String? = null,
+		val liveTvTitle: String? = null,
+		val liveTvRow: Boolean = true,
+	)
 
 	/** Begründung je Titel („Weiter mit Teil 3“, „4 Teile“): Id ohne Bindestriche → Text, für den Infobereich. */
 	val reasons = MutableStateFlow<Map<String, String>>(emptyMap())
@@ -66,6 +77,55 @@ object TvClientSections {
 
 	data class SeriesDetail(val series: MovieSeries, val parts: List<BaseItemDto>)
 
+	private fun JsonObject.text(key: String) = (this[key] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() }
+
+	/** Eintrag aus „Demnächst“: Folge (Klick öffnet die Serie) oder Film aus Radarr (Klick zeigt Titel und Text). */
+	data class Upcoming(
+		val title: String,
+		val subtitle: String?,
+		val series: BaseItemDto?,
+		val year: Int? = null,
+		val overview: String? = null,
+		val imageUrl: String? = null,
+	)
+
+	/** Antwort von GET /LocalRecs/Upcoming (testbar); Bildadressen sind relativ zum Server. */
+	fun parseUpcoming(baseUrl: String?, text: String): List<Upcoming> {
+		val base = baseUrl?.trimEnd('/')
+		fun abs(path: String?) = if (path.isNullOrBlank() || base == null) null else "$base/${path.trimStart('/')}"
+		return ((json.parseToJsonElement(text) as? JsonObject)?.get("Items") as? JsonArray).orEmpty().mapNotNull { entry ->
+			val obj = entry as? JsonObject ?: return@mapNotNull null
+			val title = obj.text("Title") ?: return@mapNotNull null
+			when (obj.text("Kind")) {
+				"Episode" -> {
+					val series = (obj["Series"] as? JsonObject)?.let { runCatching { json.decodeFromJsonElement(BaseItemDto.serializer(), it) }.getOrNull() } ?: return@mapNotNull null
+					Upcoming(title, obj.text("Subtitle"), series)
+				}
+				"Movie" -> {
+					val movie = obj["Movie"] as? JsonObject
+					Upcoming(
+						title = title,
+						subtitle = obj.text("Subtitle"),
+						series = null,
+						year = movie?.text("Year")?.toIntOrNull(),
+						overview = movie?.text("Overview"),
+						imageUrl = abs(movie?.text("BackdropUrl")) ?: abs(movie?.text("PosterUrl")),
+					)
+				}
+				else -> null
+			}
+		}
+	}
+
+	/** Zeile „Demnächst“ (Sonarr/Radarr über das Plugin ab 12.48). */
+	suspend fun upcomingRow(title: String): HomeFragmentRow? = withContext(Dispatchers.IO) {
+		if (!config().upcoming) return@withContext null
+		val entries = runCatching {
+			parseUpcoming(baseUrl(), TvClientBehavior.call("GET", "/LocalRecs/Upcoming?utcOffsetMinutes=${TvClientBehavior.utcOffsetMinutes()}").second)
+		}.onFailure { Timber.w(it, "Demnächst nicht verfügbar") }.getOrDefault(emptyList())
+		if (entries.isEmpty()) null else HomeFragmentUpcomingRow(title, entries)
+	}
+
 	private fun JsonObject.int(key: String) = (this[key] as? JsonPrimitive)?.content?.toIntOrNull() ?: 0
 
 	private fun baseUrl() = org.koin.java.KoinJavaComponent.get<org.jellyfin.sdk.api.client.ApiClient>(org.jellyfin.sdk.api.client.ApiClient::class.java).baseUrl
@@ -80,6 +140,11 @@ object TvClientSections {
 				movieSeriesTitle = (obj["MovieSeriesTitle"] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() },
 				seasonal = (obj["Seasonal"] as? JsonPrimitive)?.booleanOrNull == true,
 				moments = (obj["Moments"] as? JsonPrimitive)?.booleanOrNull == true,
+				upcoming = (obj["Upcoming"] as? JsonPrimitive)?.booleanOrNull == true,
+				moviesTitle = obj.text("MoviesTitle"),
+				seriesTitle = obj.text("SeriesTitle"),
+				liveTvTitle = obj.text("LiveTvTitle"),
+				liveTvRow = (obj["LiveTvRow"] as? JsonPrimitive)?.booleanOrNull != false,
 			)
 		}.getOrDefault(Config())
 		configFor = base

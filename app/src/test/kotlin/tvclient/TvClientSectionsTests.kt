@@ -38,4 +38,18 @@ class TvClientSectionsTests : FunSpec({
 		TvClientSections.MovieSeries(id = "1", name = "R", reason = "4 Teile", next = null, total = 4).caption shouldBe "4 Teile"
 		TvClientSections.MovieSeries(id = "1", name = "R", reason = null, next = null, total = 3, watched = 3).caption shouldBe "Alle 3 Teile gesehen"
 	}
+
+	test("Demnächst: Folgen mit Serie, Filme mit Bild relativ zum Server") {
+		val entries = TvClientSections.parseUpcoming(
+			"http://srv:8096/",
+			"""{"Items":[{"Kind":"Episode","Title":"Serie","Subtitle":"Fr · S2 E3","Series":{"Id":"c2b157ea3dc84584a30bcb96492eda16","Name":"Serie","Type":"Series"}},
+			{"Kind":"Movie","Title":"Film","Subtitle":"Kinostart 12.11.","Movie":{"TmdbId":42,"Year":2026,"Overview":"Text","BackdropUrl":"LocalRecs/Upcoming/Movies/7/Images/Backdrop"}},
+			{"Kind":"Movie","Title":"Ohne Bild","Movie":{"RadarrId":8}}],"TotalRecordCount":3}"""
+		)
+		entries.size shouldBe 3
+		entries[0].series?.name shouldBe "Serie"
+		entries[1].imageUrl shouldBe "http://srv:8096/LocalRecs/Upcoming/Movies/7/Images/Backdrop"
+		entries[1].year shouldBe 2026
+		entries[2].imageUrl shouldBe null
+	}
 })

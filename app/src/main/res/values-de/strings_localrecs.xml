@@ -223,4 +223,6 @@
     <string name="tvclient_series_continue">Weiter mit Teil %1$d</string>
     <string name="tvclient_series_from_start">Von vorn (Teil 1)</string>
     <string name="tvclient_series_all_parts">Alle %1$d Teile</string>
+    <string name="tvclient_home_upcoming">Demnächst</string>
+    <string name="tvclient_home_upcoming_description">Neue Folgen und Filme, die bald kommen (Sonarr/Radarr, Local Recommendations ab 12.48)</string>
 </resources>

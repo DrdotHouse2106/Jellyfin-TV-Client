@@ -10,7 +10,6 @@ Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** 
 |---|---|---|
 | [Local Recommendations](https://github.com/DrdotHouse2106/Lokal-Vorschlag-Jellyfin) **ab 12.9.0** (empfohlen) | Empfehlungen „für dich“ mit Begründung, Banner-Vorschläge, Top 10 über alle Benutzer, Daumen hoch/runter, „Heute im TV für dich“, Live-TV-Besetzung (mit XMLTV) | keine Empfehlungs-Zeilen, Top 10 nur aus Sicht der App, Banner zeigt die neuesten Titel |
 | [Jellyfin Enhanced](https://github.com/n00bcodr/Jellyfin-Enhanced) mit eingerichtetem Jellyseerr | Anfragen („+“ in der Navigation), Personenseiten, „Für dich“-Vorschläge zum Anfragen | kein „+“ (außer mit eigener Jellyseerr-Adresse und API-Schlüssel) |
-| [Home Screen Sections](https://github.com/IAmParadox27/jellyfin-plugin-home-sections) | weitere Abschnitte der Startseite aus der Weboberfläche | nur die eigenen Zeilen |
 | [Intro Skipper](https://github.com/intro-skipper/intro-skipper) (oder andere Mediensegmente) | Knopf „Überspringen“ für Intro und Abspann | kein Überspringen |
 
 ## Funktionen
@@ -24,10 +23,11 @@ Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** 
 - **Warum empfohlen?** Kurze Begründung im Infobereich und auf der Detailseite, z. B. „Weil du „…“ geschaut hast“ oder „Nächster Teil nach „…““ (Plugin ab 12.9.0) *
 - **Filmreihen für dich:** Karten wie im Web mit Bild und Name der Reihe, Fortschrittsbalken und „1 von 3 gesehen · Weiter mit Teil 2“; ein Klick öffnet die Reihen-Seite mit allen Teilen (gesehene mit Haken) und dem Knopf „Weiter mit Teil n“; auf der Detailseite eines Films „Weitere Teile der Reihe“ in Erscheinungsreihenfolge * (ab Plugin 12.45)
 - **Momente:** zeitabhängige Zeilen vom Server, z. B. „Läuft heute im TV – hier ohne Werbung“ (Sendungen, die es auch als Datei auf dem Server gibt), „Neu diese Woche“, „Vor dem Kinostart: Hol die Reihe nach“, „Heute vor X Jahren“ – Auswahl und Reihenfolge bestimmt der Server, Begründung im Infobereich * (ab Plugin 12.46)
+- **Demnächst:** neue Folgen (Sonarr) und Filme (Radarr), die bald kommen, mit Termin als Untertitel; Folgen öffnen die Serie, Filme zeigen Titel, Jahr und Beschreibung * (ab Plugin 12.48)
 - **Saison-Zeile:** zur passenden Zeit z. B. „Weihnachtsfilme“, „Halloween“ oder „Ostern“, direkt nach „Als Nächstes“ * (ab Plugin 12.45)
 - **Top 10 bei euch:** die meistgesehenen Filme und Serien aller Benutzer der letzten 60 Tage, mit großen Zahlen *
 - **Welten:** große Kacheln mit Logo für Marvel, Disney, Pixar, Minions & Co., DreamWorks, DC, Star Wars, Wizarding World, Mittelerde, James Bond, Jurassic Park und Studio Ghibli (Logos und Liste vom Plugin Local Recommendations); jede Welt hat eine eigene Seite mit Filmreihen (z. B. Avengers, Iron Man), Filmen, Serien und Neuem. Zusammengestellt über Studios und Sammlungen, nur Welten mit mindestens 5 Titeln
-- Genre-Zeilen mit zufälligen Titeln, Abschnitte aus „Home Screen Sections“, feste Reihenfolge mit Ein/Aus-Schaltern
+- Genre-Zeilen mit zufälligen Titeln, feste Reihenfolge mit Ein/Aus-Schaltern
 - 24-Stunden-Uhr
 
 **Detailseite**
@@ -73,7 +73,7 @@ Immer die neueste Version:
 
 ## Voraussetzungen
 
-- Jellyfin-Server 12. Empfohlen: Plugin **Local Recommendations ab 12.9.0** (Empfehlungen mit Begründung, Filmreihen, Top 10, Daumen, Live-TV-Besetzung; ältere Versionen ab 12.6.0 gehen ohne Besetzung und Begründungen). Optional: **Jellyfin Enhanced** mit Jellyseerr (Anfragen), **Home Screen Sections** (weitere Abschnitte).
+- Jellyfin-Server 12. Empfohlen: Plugin **Local Recommendations ab 12.9.0** (Empfehlungen mit Begründung, Filmreihen, Top 10, Daumen, Live-TV-Besetzung; ältere Versionen ab 12.6.0 gehen ohne Besetzung und Begründungen). Optional: **Jellyfin Enhanced** mit Jellyseerr (Anfragen). Die früheren Abschnitte aus „Home Screen Sections“ bringt Local Recommendations ab 12.48 selbst mit (Demnächst, Momente …).
 - Android TV / Google TV oder **Fire TV mit Fire OS** (Android). Geräte mit *Vega OS* (z. B. einige Fire-TV-Modelle ab 2025) können keine APKs installieren.
 
 Ohne Plugins funktioniert die App ganz normal, nur ohne die jeweiligen Zusatzfunktionen.
@@ -117,24 +117,25 @@ Die Zeilen der Startseite stehen in einer festen Reihenfolge und lassen sich unt
 
 1. Weiterschauen
 2. Als Nächstes
-3. Empfohlene Filme für dich *
-4. Empfohlene Serien für dich *
-5. Heute im TV für dich * (nur mit Live-TV-Zugriff)
-6. Top 10 bei euch *
-7. Welten (Marvel, Disney, Pixar …)
-8. Live-TV (TV-Programm, Aufnahmen, Läuft gerade; anfangs aus)
-9. Kürzlich hinzugefügt
-10. Weitere Abschnitte aus dem Web **
-11. Genres (zufällige Titel, bei jedem Öffnen neu gemischt)
-12. Weiterhören (anfangs aus)
-13. Aktive Aufnahmen (anfangs aus)
-14. Apps (anfangs aus)
-15. Gerät (anfangs aus)
-16. Meine Medien (Bibliotheken)
+3. Saison (z. B. Weihnachtsfilme – nur zur passenden Zeit) *
+4. Empfohlene Filme für dich *
+5. Empfohlene Serien für dich *
+6. Momente (Neu diese Woche, Läuft heute im TV, Vor dem Kinostart …) *
+7. Demnächst (Sonarr/Radarr) *
+8. Filmreihen für dich *
+9. Heute im TV für dich * (nur mit Live-TV-Zugriff; Titel und Schalter vom Server wie im Web)
+10. Top 10 bei euch *
+11. Welten (Marvel, Disney, Pixar …)
+12. Live-TV (TV-Programm, Aufnahmen, Läuft gerade; anfangs aus)
+13. Kürzlich hinzugefügt
+14. Genres (zufällige Titel, bei jedem Öffnen neu gemischt)
+15. Weiterhören (anfangs aus)
+16. Aktive Aufnahmen (anfangs aus)
+17. Apps (anfangs aus)
+18. Gerät (anfangs aus)
+19. Meine Medien (Bibliotheken)
 
 \* benötigt das Server-Plugin „Local Recommendations“ (Top 10 über alle Benutzer ab 12.6.0); ohne Plugin bleiben die Zeilen unsichtbar bzw. Top 10 zählt nur, was die App selbst sehen darf. Gesehene Titel verschwinden nach dem Anschauen.
-
-\*\* benötigt das Plugin „Home Screen Sections“; es werden die Abschnitte gezeigt, die der Benutzer in der Weboberfläche eingeschaltet hat (in dessen Reihenfolge). Abschnitte, die Quallenkino schon selbst zeigt (Weiterschauen, Als Nächstes, Meine Medien, Live-TV, Empfehlungen), werden übersprungen.
 
 Die normalen Startseiten-Einstellungen der Jellyfin-Weboberfläche („Startseitenabschnitte“) gelten für Quallenkino nicht mehr.
 

@@ -223,4 +223,6 @@
     <string name="tvclient_series_continue">Continue with part %1$d</string>
     <string name="tvclient_series_from_start">From the start (part 1)</string>
     <string name="tvclient_series_all_parts">All %1$d parts</string>
+    <string name="tvclient_home_upcoming">Upcoming</string>
+    <string name="tvclient_home_upcoming_description">New episodes and movies coming soon (Sonarr/Radarr, Local Recommendations 12.48 or newer)</string>
 </resources>
