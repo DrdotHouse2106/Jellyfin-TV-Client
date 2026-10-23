@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.35.2 – 2026-10-23
+
+- **Jahreszeit-Zeile repariert** (z. B. „Halloween“, Plugin ab 12.45): Sie blieb auf Android immer leer, weil die Antwort des Servers als Abfrage-Ergebnis gelesen wurde und das ohne Gesamtzahl still scheiterte. Jetzt kommen Titel und Karten direkt aus der Antwort – gleicher Titel und gleiche Position wie im Web (nach „Als Nächstes“).
+- Die Zeile wird auch abgefragt, wenn der Server den Schalter nicht eigens meldet. Fällt die Abfrage der Server-Einstellungen beim Start einmal aus, versucht die App es beim nächsten Laden erneut, statt bis zum Neustart ohne Filmreihen, Momente, Demnächst und Jahreszeit-Zeile zu bleiben.
+
 ## 1.35.1 – 2026-10-23
 
 - **Banner ohne doppelten Titel:** Hat ein Titel kein Hintergrundbild und zeigt das Banner stattdessen ein Thumb, auf dem der Titel meist schon steht, entfallen Logo und Titelzeile – wie in Jellyfin Web (Local Recommendations 12.50). Über echten Hintergrundbildern bleibt das Logo.

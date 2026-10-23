@@ -67,4 +67,14 @@ class TvClientSectionsTests : FunSpec({
 		episode.more shouldBe 2
 		TvClientSections.Episode(network = "ZDF").whenText() shouldBe "ZDF"
 	}
+
+	test("Saison-Zeile: Titel und Karten direkt aus der Antwort, nur wenn aktiv") {
+		val seasonal = TvClientSections.parseSeasonal(
+			"""{"Active":true,"Key":"halloween","Title":"Halloween","Items":[{"Id":"c2b157ea3dc84584a30bcb96492eda16","Name":"Film","Type":"Movie"}]}"""
+		)
+		seasonal?.title shouldBe "Halloween"
+		seasonal?.items?.map { it.name } shouldBe listOf("Film")
+		TvClientSections.parseSeasonal("""{"Active":false,"Title":"Halloween","Items":[]}""") shouldBe null
+		TvClientSections.parseSeasonal("""{"Active":true,"Title":"Halloween","Items":[]}""") shouldBe null
+	}
 })

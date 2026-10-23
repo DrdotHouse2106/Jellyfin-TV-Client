@@ -27,6 +27,7 @@ German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md
 
 \* needs the server plugin Local Recommendations (Top 10 of all users and thumbs since 12.6.0).
 
+- 1.35.2: the seasonal row (e.g. "Halloween") works on Android again, same title and position as in Jellyfin Web.
 - 1.35.1: no duplicate title in the banner – over a thumb (which usually contains the title) the logo/title is hidden, like Jellyfin Web.
 - New in 1.35.0 (Local Recommendations 12.49+): web-style "Upcoming" – an episode opens a view with season/episode, day, time, network, overview and "Go to series".
 - New in 1.34.0 (Local Recommendations 12.48+): "Upcoming" row (Sonarr/Radarr); recommendation row titles and the live TV row switch come from the server like in Jellyfin Web. The Home Screen Sections row was removed.

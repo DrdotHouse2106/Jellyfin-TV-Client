@@ -16,8 +16,6 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
 import org.jellyfin.androidtv.constant.QueryType
-import org.jellyfin.androidtv.data.querying.ExternalItemsRequest
-import org.jellyfin.androidtv.ui.home.HomeFragmentLocalRecommendationsRow
 import org.jellyfin.androidtv.ui.home.HomeFragmentRow
 import org.jellyfin.androidtv.ui.itemhandling.ItemRowAdapter
 import org.jellyfin.androidtv.ui.presentation.CardPresenter
@@ -175,12 +173,16 @@ object TvClientSections {
 	suspend fun config(): Config = withContext(Dispatchers.IO) {
 		val base = baseUrl()
 		if (configFor == base) return@withContext config
-		config = runCatching {
-			val obj = json.parseToJsonElement(TvClientBehavior.call("GET", "/LocalRecs/Web/Config").second) as JsonObject
+		// Nur eine erfolgreiche Antwort merken – sonst blieben nach einem Aussetzer beim Start alle Zeilen bis zum Neustart aus
+		runCatching {
+			val (code, body) = TvClientBehavior.call("GET", "/LocalRecs/Web/Config")
+			// Plugin fehlt oder ist zu alt: das ist eine Antwort, kein Aussetzer
+			if (code == 404) return@runCatching Config()
+			val obj = json.parseToJsonElement(body) as JsonObject
 			Config(
 				movieSeries = (obj["MovieSeries"] as? JsonPrimitive)?.booleanOrNull == true,
 				movieSeriesTitle = (obj["MovieSeriesTitle"] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() },
-				seasonal = (obj["Seasonal"] as? JsonPrimitive)?.booleanOrNull == true,
+				seasonal = (obj["Seasonal"] as? JsonPrimitive)?.booleanOrNull != false,
 				moments = (obj["Moments"] as? JsonPrimitive)?.booleanOrNull == true,
 				upcoming = (obj["Upcoming"] as? JsonPrimitive)?.booleanOrNull == true,
 				moviesTitle = obj.text("MoviesTitle"),
@@ -188,9 +190,10 @@ object TvClientSections {
 				liveTvTitle = obj.text("LiveTvTitle"),
 				liveTvRow = (obj["LiveTvRow"] as? JsonPrimitive)?.booleanOrNull != false,
 			)
-		}.getOrDefault(Config())
-		configFor = base
-		config
+		}.onSuccess {
+			config = it
+			configFor = base
+		}.onFailure { Timber.w(it, "LocalRecs-Einstellungen nicht verfügbar") }.getOrDefault(Config())
 	}
 
 	/** Antwort von GET /LocalRecs/MovieSeries (testbar). */
@@ -275,21 +278,29 @@ object TvClientSections {
 		moments.map { StaticRow(it.title, it.items) }
 	}
 
-	/** Saison-Zeile („Weihnachtsfilme“) – nur wenn der Server sie gerade aktiv meldet. */
-	suspend fun seasonalRow(): HomeFragmentRow? = withContext(Dispatchers.IO) {
-		if (!config().seasonal) return@withContext null
-		val offset = TvClientBehavior.utcOffsetMinutes()
-		val (active, title) = runCatching {
-			val obj = json.parseToJsonElement(TvClientBehavior.call("GET", "/LocalRecs/Seasonal?utcOffsetMinutes=$offset").second) as JsonObject
-			((obj["Active"] as? JsonPrimitive)?.booleanOrNull == true) to (obj["Title"] as? JsonPrimitive)?.content
-		}.getOrDefault(false to null)
-		if (!active || title.isNullOrBlank()) return@withContext null
-		HomeFragmentLocalRecommendationsRow(title, SeasonalRequest(offset))
+	data class Seasonal(val title: String, val items: List<BaseItemDto>)
+
+	/** Antwort von GET /LocalRecs/Seasonal (testbar); null, wenn gerade keine Saison aktiv ist. */
+	fun parseSeasonal(text: String): Seasonal? {
+		val obj = json.parseToJsonElement(text) as? JsonObject ?: return null
+		if ((obj["Active"] as? JsonPrimitive)?.booleanOrNull != true) return null
+		val title = obj.text("Title") ?: return null
+		val items = (obj["Items"] as? JsonArray).orEmpty().mapNotNull { item ->
+			(item as? JsonObject)?.let { runCatching { json.decodeFromJsonElement(BaseItemDto.serializer(), it) }.getOrNull() }
+		}
+		return if (items.isEmpty()) null else Seasonal(title, items)
 	}
 
-	private class SeasonalRequest(private val offset: Int) : ExternalItemsRequest {
-		override val path get() = "/LocalRecs/Seasonal"
-		override val queryParameters get() = mapOf<String, Any?>("utcOffsetMinutes" to offset)
+	/**
+	 * Saison-Zeile (z. B. „Halloween“, „Weihnachtsfilme“) – nur wenn der Server sie gerade aktiv meldet.
+	 * Die Titel kommen gleich mit (die Antwort hat kein TotalRecordCount, als Abfrage-Ergebnis gelesen blieb die Zeile leer).
+	 */
+	suspend fun seasonalRow(): HomeFragmentRow? = withContext(Dispatchers.IO) {
+		if (!config().seasonal) return@withContext null
+		val seasonal = runCatching {
+			parseSeasonal(TvClientBehavior.call("GET", "/LocalRecs/Seasonal?utcOffsetMinutes=${TvClientBehavior.utcOffsetMinutes()}").second)
+		}.onFailure { Timber.w(it, "Saison-Zeile nicht verfügbar") }.getOrNull()
+		seasonal?.let { StaticRow(it.title, it.items) }
 	}
 
 	/** Zeile mit fest vorgegebenen Titeln (in der Reihenfolge des Servers). */
