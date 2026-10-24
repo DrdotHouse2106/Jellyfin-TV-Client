@@ -294,7 +294,8 @@ object TvClientSections {
 			parseMoments(TvClientBehavior.call("GET", "/LocalRecs/Moments?utcOffsetMinutes=${TvClientBehavior.utcOffsetMinutes()}").second)
 		}.onFailure { Timber.w(it, "Momente nicht verfügbar") }.getOrDefault(emptyList())
 		reasons.value = reasons.value + moments.flatMap { it.reasons.entries }.associate { it.key to it.value }
-		moments.map { StaticRow(it.title, it.items) }
+		// Begründung je Karte darunter (z. B. „vor 20 Jahren“), wie im Web
+		moments.map { StaticRow(it.title, it.items, it.reasons) }
 	}
 
 	data class Seasonal(val title: String, val items: List<BaseItemDto>)
@@ -323,9 +324,14 @@ object TvClientSections {
 	}
 
 	/** Zeile mit fest vorgegebenen Titeln (in der Reihenfolge des Servers). */
-	private class StaticRow(private val title: String, private val items: List<BaseItemDto>) : HomeFragmentRow {
+	private class StaticRow(
+		private val title: String,
+		private val items: List<BaseItemDto>,
+		private val captions: Map<String, String> = emptyMap(),
+	) : HomeFragmentRow {
 		override fun addToRowsAdapter(context: Context, cardPresenter: CardPresenter, rowsAdapter: MutableObjectAdapter<Row>) {
-			val rowAdapter = ItemRowAdapter(context, items, cardPresenter, rowsAdapter, QueryType.StaticItems)
+			val presenter = if (captions.isEmpty()) cardPresenter else cardPresenter.withCaptions(captions)
+			val rowAdapter = ItemRowAdapter(context, items, presenter, rowsAdapter, QueryType.StaticItems)
 			val row = ListRow(HeaderItem(title), rowAdapter)
 			rowAdapter.setRow(row)
 			rowAdapter.Retrieve()

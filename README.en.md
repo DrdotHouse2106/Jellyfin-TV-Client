@@ -29,6 +29,7 @@ German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md
 
 \* needs the server plugin Local Recommendations (Top 10 of all users and thumbs since 12.6.0).
 
+- 1.36.5: moments rows show title and reason under each card, like Jellyfin Web.
 - 1.36.4: series page without empty future episodes (next episode as a hint instead), German date/time and 24-hour clocks everywhere, dark "Upcoming" dialog with time zone, consistent "FSK 12" ratings.
 - 1.36.3: Back returns focus to the last chosen card on person, world and movie series pages; the "My media" row is off by default (like Jellyfin Web).
 - 1.36.2: screensaver shows only unwatched titles; "Resume" on the details page fetches the current position right before starting.

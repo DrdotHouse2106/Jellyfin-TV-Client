@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.36.5 – 2026-10-24
+
+- **Momente wie im Web:** Unter jeder Karte der Momente-Zeilen stehen jetzt Titel und Begründung, z. B. „vor 20 Jahren“ oder „Heute 20:15 auf ZDF – hier ohne Werbung“ (bisher nur oben im Infobereich).
+
 ## 1.36.4 – 2026-10-24
 
 - **Serienseite ohne leere Zukunfts-Folgen:** Die Zeile mit noch nicht erschienenen Folgen (auf Deutsch missverständlich „Als Nächstes“, mit leeren Bildern und „Future“-Ecke) entfällt. Die nächste Folge steht als Hinweis oben – mit Sonarr wie bisher, sonst aus Jellyfin selbst, z. B. „Neue Folge am Fr. 30.10. · S01E18 Titel“.

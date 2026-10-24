@@ -45,6 +45,8 @@ public class CardPresenter extends Presenter {
     private boolean isUserView = false;
     private boolean isUniformAspect = false;
     private final Lazy<ImageHelper> imageHelper = KoinJavaComponent.<ImageHelper>inject(ImageHelper.class);
+    // Jellyfin-TV-Client: eigener Untertitel je Titel (Id ohne Bindestriche, z. B. Begründung eines Moments)
+    private java.util.Map<String, String> mCaptions = null;
 
     public CardPresenter() {
         super();
@@ -63,6 +65,16 @@ public class CardPresenter extends Presenter {
     public CardPresenter(boolean showInfo, int staticHeight) {
         this(showInfo);
         mStaticHeight = staticHeight;
+    }
+
+    /**
+     * Jellyfin-TV-Client: gleiche Karten, aber mit Titel und eigenem Untertitel darunter – wie im Web,
+     * z. B. „vor 20 Jahren“ oder „Heute 20:15 auf ZDF – hier ohne Werbung“ bei den Momenten.
+     */
+    public CardPresenter withCaptions(java.util.Map<String, String> captions) {
+        CardPresenter presenter = new CardPresenter(true, mImageType, mStaticHeight);
+        presenter.mCaptions = captions;
+        return presenter;
     }
 
     class ViewHolder extends Presenter.ViewHolder {
@@ -352,7 +364,11 @@ public class CardPresenter extends Presenter {
         holder.setItem(rowItem, mImageType, 130, 150, mStaticHeight);
 
         holder.mCardView.setTitleText(rowItem.getCardName(holder.mCardView.getContext()));
-        holder.mCardView.setContentText(rowItem.getSubText(holder.mCardView.getContext()));
+        String caption = null;
+        if (mCaptions != null && rowItem.getBaseItem() != null) {
+            caption = mCaptions.get(rowItem.getBaseItem().getId().toString().replace("-", "").toLowerCase(java.util.Locale.ROOT));
+        }
+        holder.mCardView.setContentText(caption != null ? caption : rowItem.getSubText(holder.mCardView.getContext()));
         if (ImageType.POSTER.equals(mImageType)) {
             holder.mCardView.setOverlayInfo(rowItem);
         }
