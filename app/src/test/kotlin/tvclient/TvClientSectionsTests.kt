@@ -62,7 +62,7 @@ class TvClientSectionsTests : FunSpec({
 		)
 		val episode = entries.single().episode!!
 		episode.line shouldBe "S02E01 · Neuanfang"
-		episode.whenText(java.time.ZoneId.of("Europe/Berlin")) shouldBe "Samstag, 24.10.2026 · 21:00 Uhr · Paramount+"
+		episode.whenText(java.time.ZoneId.of("Europe/Berlin")) shouldBe "Samstag, 24.10.2026 · 21:00 Uhr (MESZ) · Paramount+"
 		episode.overview shouldBe "Es geht weiter."
 		episode.more shouldBe 2
 		TvClientSections.Episode(network = "ZDF").whenText() shouldBe "ZDF"
@@ -88,5 +88,14 @@ class TvClientSectionsTests : FunSpec({
 		info.newIds shouldBe setOf("c2b157ea3dc84584a30bcb96492eda16")
 		SeriesUpcoming.parse("") shouldBe null
 		SeriesUpcoming.parse("""{"Text":""}""") shouldBe null
+	}
+
+	test("Demnächst: Zeit ohne Zonenangabe gilt als UTC, Zone wird genannt") {
+		TvClientSections.Episode(date = "2026-10-24T13:30:00", network = "TBS (JP)").whenText(java.time.ZoneId.of("Europe/Berlin")) shouldBe
+			"Samstag, 24.10.2026 · 15:30 Uhr (MESZ) · TBS (JP)"
+		TvClientSections.Episode(date = "2026-11-01T13:30:00Z").whenText(java.time.ZoneId.of("Europe/Berlin")) shouldBe
+			"Sonntag, 01.11.2026 · 14:30 Uhr (MEZ)"
+		TvClientSections.Episode(date = "2026-11-01T13:30:00Z").whenText(java.time.ZoneId.of("Asia/Tokyo")) shouldBe
+			"Sonntag, 01.11.2026 · 22:30 Uhr (UTC+9)"
 	}
 })

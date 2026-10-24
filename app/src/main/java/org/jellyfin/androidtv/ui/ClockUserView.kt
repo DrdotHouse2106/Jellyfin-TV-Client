@@ -39,6 +39,8 @@ class ClockUserView @JvmOverloads constructor(
 
 	init {
 		updateClockVisibility()
+		// Jellyfin-TV-Client: 24-Stunden-Format wie auf der Startseite
+		org.jellyfin.androidtv.tvclient.TimeFormat.apply(binding.clock)
 
 		val currentUser = userRepository.currentUser.value
 

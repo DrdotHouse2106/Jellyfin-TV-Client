@@ -143,7 +143,7 @@ fun BaseItemDto.getSubName(context: Context): String? = when (type) {
 	}
 
 	BaseItemKind.AUDIO -> name
-	else -> officialRating
+	else -> org.jellyfin.androidtv.tvclient.ParentalRating.display(officialRating)
 }
 
 fun BaseItemDto.buildChapterItems(api: ApiClient): List<ChapterItemInfo> = chapters?.mapIndexed { i, dto ->

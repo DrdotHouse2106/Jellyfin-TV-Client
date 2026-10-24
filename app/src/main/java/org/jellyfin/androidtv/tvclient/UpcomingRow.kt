@@ -1,6 +1,5 @@
 package org.jellyfin.androidtv.tvclient
 
-import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
@@ -50,22 +49,33 @@ fun onUpcomingClicked(context: Context, item: Any?): Boolean {
 	if (series != null) {
 		val episode = item.episode ?: TvClientSections.Episode()
 		val more = episode.more.takeIf { it > 0 }?.let { context.resources.getQuantityString(R.plurals.tvclient_upcoming_more, it, it) }
-		val message = listOf(item.subtitle, episode.line, episode.whenText(), episode.overview, more)
-			.filterNot { it.isNullOrBlank() }.joinToString("\n\n")
-		AlertDialog.Builder(context)
-			.setTitle(item.title)
-			.setMessage(message)
-			.setPositiveButton(R.string.tvclient_upcoming_to_series) { _, _ ->
-				KoinJavaComponent.get<NavigationRepository>(NavigationRepository::class.java).navigate(Destinations.itemDetails(series.id))
-			}
-			.setNegativeButton(R.string.tvclient_upcoming_close, null)
-			.show()
+		TvInfoDialog.show(
+			context,
+			item.title,
+			listOfNotNull(
+				item.subtitle?.let { TvInfoDialog.Line(it, TvInfoDialog.Style.REASON) },
+				TvInfoDialog.Line(episode.line, TvInfoDialog.Style.STRONG),
+				TvInfoDialog.Line(episode.whenText(), TvInfoDialog.Style.MUTED),
+				episode.overview?.let { TvInfoDialog.Line(it) },
+				more?.let { TvInfoDialog.Line(it, TvInfoDialog.Style.MUTED) },
+			),
+			listOf(
+				TvInfoDialog.Button(context.getString(R.string.tvclient_upcoming_to_series)) {
+					KoinJavaComponent.get<NavigationRepository>(NavigationRepository::class.java).navigate(Destinations.itemDetails(series.id))
+				},
+				TvInfoDialog.Button(context.getString(R.string.tvclient_upcoming_close)),
+			),
+		)
 	} else {
-		AlertDialog.Builder(context)
-			.setTitle(listOfNotNull(item.title, item.year?.toString()).joinToString(" · "))
-			.setMessage(listOfNotNull(item.subtitle, item.overview).joinToString("\n\n"))
-			.setPositiveButton(android.R.string.ok, null)
-			.show()
+		TvInfoDialog.show(
+			context,
+			listOfNotNull(item.title, item.year?.toString()).joinToString(" · "),
+			listOfNotNull(
+				item.subtitle?.let { TvInfoDialog.Line(it, TvInfoDialog.Style.REASON) },
+				item.overview?.let { TvInfoDialog.Line(it) },
+			),
+			listOf(TvInfoDialog.Button(context.getString(R.string.tvclient_upcoming_close))),
+		)
 	}
 	return true
 }

@@ -77,6 +77,10 @@ public class TimeUtils {
             }
         }
 
+        // Jellyfin-TV-Client: Mitternacht ist bei Terminen meist nur ein Platzhalter – dann ohne Uhrzeit
+        if (dateTime.getHour() == 0 && dateTime.getMinute() == 0) {
+            return DateTimeExtensionsKt.getShortDateFormatter(context).format(dateTime);
+        }
         return DateTimeExtensionsKt.getDateFormatter(context).format(dateTime);
     }
 }

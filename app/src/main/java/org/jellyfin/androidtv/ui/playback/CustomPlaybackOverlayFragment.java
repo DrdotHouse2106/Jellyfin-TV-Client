@@ -197,6 +197,8 @@ public class CustomPlaybackOverlayFragment extends Fragment implements LiveTvGui
         tvGuideBinding = OverlayTvGuideBinding.inflate(inflater, container, false);
         binding.getRoot().addView(tvGuideBinding.getRoot());
         tvGuideBinding.getRoot().setVisibility(View.GONE);
+        // Jellyfin-TV-Client: 24-Stunden-Format wie auf der Startseite
+        org.jellyfin.androidtv.tvclient.TimeFormat.apply(tvGuideBinding.textClock2);
 
         binding.getRoot().setOnTouchListener((v, event) -> {
             //and then manage our fade timer

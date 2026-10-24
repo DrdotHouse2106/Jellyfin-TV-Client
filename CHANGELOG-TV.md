@@ -1,5 +1,12 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.36.4 – 2026-10-24
+
+- **Serienseite ohne leere Zukunfts-Folgen:** Die Zeile mit noch nicht erschienenen Folgen (auf Deutsch missverständlich „Als Nächstes“, mit leeren Bildern und „Future“-Ecke) entfällt. Die nächste Folge steht als Hinweis oben – mit Sonarr wie bisher, sonst aus Jellyfin selbst, z. B. „Neue Folge am Fr. 30.10. · S01E18 Titel“.
+- **Datum und Uhrzeit deutsch:** Termine ohne „AM/PM“ und ohne Uhrzeit, wenn sie nur ein Platzhalter (Mitternacht) ist. Die Uhr oben rechts auf Detailseiten und im TV-Programm des Players zeigt wie die Startseite 24 Stunden („20:21“ statt „8:21“).
+- **„Demnächst“-Fenster im App-Stil:** dunkel, Knöpfe in normaler Schreibung. Die Sendezeit wird aus dem UTC-Termin in die Zeitzone des Geräts umgerechnet und mit Zone angezeigt, z. B. „15:30 Uhr (MESZ) · TBS (JP)“.
+- **Altersfreigabe einheitlich:** „FSK 12“ statt „12“ bzw. „FSK-16“ – auf Karten, in der Infozeile und im Infobereich.
+
 ## 1.36.3 – 2026-10-23
 
 - **Fokus nach „Zurück“:** Auf der Personenseite, einer Welt und der Seite einer Filmreihe steht der Fokus nach der Rückkehr von einer Detailseite wieder auf der zuletzt gewählten Karte (samt Position in der Reihe). Bisher sprang er auf den Seitenanfang – auf der Personenseite auf die Biografie. Sammlungen, Studios und Genres (Seiten der Jellyfin-App) behielten den Fokus schon.

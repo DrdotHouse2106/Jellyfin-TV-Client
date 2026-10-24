@@ -19,4 +19,12 @@ object TimeFormat {
 		}.getOrDefault(true)
 		return forced || DateFormat.is24HourFormat(context)
 	}
+
+	/** Uhr-Anzeigen (TextClock) wie auf der Startseite: „20:21“ statt „8:21“, auch bei 12-Stunden-System. */
+	@JvmStatic
+	fun apply(clock: android.widget.TextClock) {
+		if (!use24Hour(clock.context)) return
+		clock.format12Hour = "k:mm"
+		clock.format24Hour = "k:mm"
+	}
 }

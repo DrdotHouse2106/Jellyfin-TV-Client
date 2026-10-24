@@ -11,6 +11,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import org.jellyfin.sdk.model.api.BaseItemDto
 import org.jellyfin.sdk.model.api.BaseItemKind
+import org.jellyfin.sdk.api.client.extensions.tvShowsApi
 import timber.log.Timber
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -62,9 +63,30 @@ object SeriesUpcoming {
 					)
 					if (code == 200) parse(body) else null
 				}.onFailure { Timber.w(it, "Kommende Folgen nicht verfügbar") }.getOrNull()
+					?: fromJellyfin(seriesId)
 			} ?: return@launch
 			newIds.addAll(info.newIds)
 			onInfo(info)
 		}
+	}
+
+	/**
+	 * Ohne Plugin bzw. Sonarr: nächste angekündigte Folge aus Jellyfin selbst (virtuelle Folge) als Hinweis,
+	 * z. B. „Neue Folge am Fr. 30.10. · S01E18 Titel“ – statt einer Zeile mit leeren Karten.
+	 */
+	private suspend fun fromJellyfin(seriesId: UUID): Info? = runCatching {
+		val api = org.koin.java.KoinJavaComponent.get<org.jellyfin.sdk.api.client.ApiClient>(org.jellyfin.sdk.api.client.ApiClient::class.java)
+		val next = api.tvShowsApi.getUpcomingEpisodes(parentId = seriesId, limit = 1).content.items.firstOrNull()
+		next?.let { nextEpisodeHint(it) }?.let { Info(it, null, emptySet()) }
+	}.getOrNull()
+
+	/** „Neue Folge am Fr. 30.10. · S01E18 Titel“ (testbar); Termine von Jellyfin sind in UTC. */
+	fun nextEpisodeHint(episode: BaseItemDto, zone: java.time.ZoneId = java.time.ZoneId.systemDefault()): String? {
+		val date = episode.premiereDate ?: return null
+		val local = date.atZone(java.time.ZoneOffset.UTC).withZoneSameInstant(zone)
+		val day = local.format(java.time.format.DateTimeFormatter.ofPattern("EEE dd.MM.", java.util.Locale.GERMAN))
+		val code = if (episode.parentIndexNumber != null && episode.indexNumber != null) "S%02dE%02d".format(episode.parentIndexNumber, episode.indexNumber) else null
+		val title = listOfNotNull(code, episode.name?.takeIf { it.isNotBlank() }).joinToString(" ")
+		return listOf("Neue Folge am $day", title).filter { it.isNotBlank() }.joinToString(" · ")
 	}
 }

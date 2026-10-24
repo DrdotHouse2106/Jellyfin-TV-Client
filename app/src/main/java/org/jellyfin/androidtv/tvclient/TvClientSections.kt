@@ -105,15 +105,34 @@ object TvClientSections {
 				title,
 			).joinToString(" · ")
 
-		/** „Samstag, 24.10.2026 · 21:00 Uhr · Paramount+“ in der Zeitzone des Geräts. */
+		/**
+		 * „Samstag, 24.10.2026 · 21:00 Uhr (MESZ) · Paramount+“ – der Termin kommt in UTC (Sonarr airDateUtc) und
+		 * wird in die Zeitzone des Geräts umgerechnet; die Zone steht dabei, damit klar ist, welche Zeit gemeint ist.
+		 */
 		fun whenText(zone: java.time.ZoneId = java.time.ZoneId.systemDefault()): String {
-			val local = date?.let { runCatching { java.time.OffsetDateTime.parse(it).atZoneSameInstant(zone) }.getOrNull() }
+			val local = date?.let { parseUtc(it) }?.atZone(zone)
 			return listOfNotNull(
 				local?.format(java.time.format.DateTimeFormatter.ofPattern("EEEE, dd.MM.yyyy", java.util.Locale.GERMAN)),
-				local?.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm 'Uhr'")),
+				local?.let { it.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm 'Uhr'")) + " (" + zoneLabel(it) + ")" },
 				network,
 			).joinToString(" · ")
 		}
+	}
+
+	/** ISO-Zeitpunkt mit Zone („…Z“, „…+02:00“); ohne Angabe gilt UTC. */
+	fun parseUtc(text: String): java.time.Instant? =
+		runCatching { java.time.OffsetDateTime.parse(text).toInstant() }.getOrNull()
+			?: runCatching { java.time.LocalDateTime.parse(text).toInstant(java.time.ZoneOffset.UTC) }.getOrNull()
+
+	/** „MEZ“/„MESZ“ für mitteleuropäische Zeit, sonst die Abweichung von UTC („UTC+9“). */
+	fun zoneLabel(time: java.time.ZonedDateTime): String {
+		val central = setOf("Europe/Berlin", "Europe/Vienna", "Europe/Zurich", "Europe/Amsterdam", "Europe/Brussels", "Europe/Luxembourg", "Europe/Paris", "Europe/Rome", "Europe/Madrid", "Europe/Copenhagen", "Europe/Oslo", "Europe/Stockholm", "Europe/Prague", "Europe/Warsaw", "Europe/Budapest", "CET")
+		if (time.zone.id in central) return if (time.zone.rules.isDaylightSavings(time.toInstant())) "MESZ" else "MEZ"
+		val seconds = time.offset.totalSeconds
+		if (seconds == 0) return "UTC"
+		val hours = seconds / 3600
+		val minutes = Math.abs(seconds % 3600) / 60
+		return "UTC" + (if (seconds > 0) "+" else "-") + Math.abs(hours) + (if (minutes > 0) ":%02d".format(minutes) else "")
 	}
 
 	/** Antwort von GET /LocalRecs/Upcoming (testbar); Bildadressen sind relativ zum Server. */

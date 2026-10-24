@@ -47,7 +47,7 @@ class HomeHeroTests : FunSpec({
 			genres = listOf("Action", "Fantasy", "Abenteuer"),
 		)
 
-		heroFacts(movie) shouldBe listOf("2021", "FSK-18", "1 Std. 50 Min.", "★ 6,8", "Action, Fantasy")
+		heroFacts(movie) shouldBe listOf("2021", "FSK 18", "1 Std. 50 Min.", "★ 6,8", "Action, Fantasy")
 	}
 
 	test("Beschreibung ohne Markdown-Links und HTML") {
@@ -77,5 +77,13 @@ class HomeHeroTests : FunSpec({
 		heroShowsTitle(movie(backdrop = true)) shouldBe true
 		heroShowsTitle(movie(backdrop = false)) shouldBe false
 		heroShowsTitle(BaseItemDto(id = UUID.randomUUID(), type = BaseItemKind.MOVIE, name = "Ohne Bild")) shouldBe true
+	}
+
+	test("Altersfreigabe einheitlich als FSK") {
+		ParentalRating.display("12") shouldBe "FSK 12"
+		ParentalRating.display("FSK-16") shouldBe "FSK 16"
+		ParentalRating.display("DE-6") shouldBe "FSK 6"
+		ParentalRating.display("PG-13") shouldBe "PG-13"
+		ParentalRating.display(" ") shouldBe null
 	}
 })

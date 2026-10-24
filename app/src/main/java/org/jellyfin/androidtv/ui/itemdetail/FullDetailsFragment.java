@@ -635,8 +635,8 @@ public class FullDetailsFragment extends Fragment implements RecordingIndicatorV
                     return kotlin.Unit.INSTANCE;
                 });
 
-                ItemRowAdapter upcomingAdapter = new ItemRowAdapter(requireContext(), BrowsingUtils.createUpcomingEpisodesRequest(mBaseItem.getId()), new CardPresenter(), adapter);
-                addItemRow(adapter, upcomingAdapter, 2, getString(R.string.lbl_upcoming));
+                // Jellyfin-TV-Client: keine Zeile mit noch nicht erschienenen (virtuellen) Folgen – hieß auf Deutsch
+                // missverständlich „Als Nächstes“. Die nächste Folge steht als Hinweis oben (SeriesUpcoming).
 
                 if (mBaseItem.getPeople() != null && !mBaseItem.getPeople().isEmpty()) {
                     ItemRowAdapter seriesCastAdapter = new ItemRowAdapter(mBaseItem.getPeople(), requireContext(), new CardPresenter(true, 130), adapter);

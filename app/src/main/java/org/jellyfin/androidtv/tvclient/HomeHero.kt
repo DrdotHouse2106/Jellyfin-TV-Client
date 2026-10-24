@@ -360,7 +360,7 @@ fun heroSubtitle(item: BaseItemDto): String? = when (item.type) {
 /** Eckdaten: Jahr, FSK, Laufzeit, Bewertung, Genres. */
 fun heroFacts(item: BaseItemDto): List<String> = buildList {
 	item.productionYear?.let { add(it.toString()) }
-	item.officialRating?.takeIf { it.isNotBlank() }?.let { add(it) }
+	ParentalRating.display(item.officialRating)?.let { add(it) }
 	item.runTimeTicks?.takeIf { it > 0 && item.type != BaseItemKind.SERIES }?.let { ticks ->
 		val minutes = (ticks / 10).microseconds.inWholeMinutes
 		add(if (minutes >= 60) "${minutes / 60} Std. ${minutes % 60} Min." else "$minutes Min.")

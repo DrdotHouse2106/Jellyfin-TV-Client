@@ -55,6 +55,7 @@ fun InfoRowParentalRating(parentalRating: String) {
 		contentDescription = stringResource(R.string.lbl_rating),
 		colors = InfoRowColors.Default,
 	) {
-		Text(parentalRating)
+		// Jellyfin-TV-Client: „FSK 12“ statt „12“ bzw. „FSK-16“
+		Text(org.jellyfin.androidtv.tvclient.ParentalRating.display(parentalRating) ?: parentalRating)
 	}
 }

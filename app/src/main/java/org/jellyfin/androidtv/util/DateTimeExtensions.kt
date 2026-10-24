@@ -17,8 +17,20 @@ val Context.locale: Locale
 @JvmOverloads
 fun Context.getDateFormatter(
 	style: FormatStyle = FormatStyle.SHORT
-): DateTimeFormatter = DateTimeFormatter
-	.ofLocalizedDateTime(style)
+): DateTimeFormatter = when {
+	// Jellyfin-TV-Client: Datum wie gewohnt, Uhrzeit im 24-Stunden-Format („06.11.26 20:15“ statt „12:00 AM“)
+	style == FormatStyle.SHORT && TimeFormat.use24Hour(this) -> DateTimeFormatter.ofPattern(
+		java.time.format.DateTimeFormatterBuilder.getLocalizedDateTimePattern(FormatStyle.SHORT, null, java.time.chrono.IsoChronology.INSTANCE, locale) + " HH:mm",
+		locale,
+	)
+	else -> DateTimeFormatter
+		.ofLocalizedDateTime(style)
+		.withLocale(locale)
+}
+
+/** Jellyfin-TV-Client: nur das Datum (z. B. für Termine, deren Uhrzeit nur ein Platzhalter um Mitternacht ist). */
+fun Context.getShortDateFormatter(): DateTimeFormatter = DateTimeFormatter
+	.ofLocalizedDate(FormatStyle.SHORT)
 	.withLocale(locale)
 
 @JvmOverloads
