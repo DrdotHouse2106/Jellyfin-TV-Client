@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.36.8 – 2026-10-24
+
+- **Kein Hänger mehr über dem Player:** Lief der Bildschirmschoner über einer (pausierten) Wiedergabe, öffnete OK die Detailseite des gezeigten Titels über dem Player – dabei konnte die ganze App hängen bleiben. Liegt ein Player darunter, schließt OK jetzt nur den Schoner und man ist zurück in der Wiedergabe. (Seit 1.36.7 startet der Schoner bei Pause ohnehin nicht mehr.)
+
 ## 1.36.7 – 2026-10-24
 
 - **Kein Bildschirmschoner bei Pause:** Wie im Web bleibt bei pausierter Wiedergabe das Pausenbild stehen. Bisher sprang nach einigen Minuten der Bildschirmschoner an; der System-Bildschirmschoner beendete dabei die Wiedergabe, und das Fortsetzen danach konnte mit eingefrorenem Bild hängen. Nach 30 Minuten ohne Eingabe beendet die App eine Pause wie bisher selbst, damit Gerät und Server schlafen können.

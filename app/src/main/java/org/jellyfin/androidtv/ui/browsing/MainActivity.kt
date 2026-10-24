@@ -44,6 +44,7 @@ class MainActivity : FragmentActivity() {
 	private val userRepository by inject<UserRepository>()
 	private val interactionTrackerViewModel by viewModel<InteractionTrackerViewModel>()
 	private val workManager by inject<WorkManager>()
+	private val playbackControllerContainer by inject<org.jellyfin.androidtv.ui.playback.PlaybackControllerContainer>()
 
 	private lateinit var binding: ActivityMainBinding
 
@@ -179,7 +180,10 @@ class MainActivity : FragmentActivity() {
 			val itemId = ScreensaverDetails.current.value
 			if (event.action == KeyEvent.ACTION_UP) {
 				interactionTrackerViewModel.notifyInteraction(canCancel = true, userInitiated = true)
-				if (itemId != null) navigationRepository.navigate(Destinations.itemDetails(itemId))
+				// Liegt ein Player darunter (z. B. pausiert), nur den Schoner schließen und zur Wiedergabe
+				// zurückkehren – eine Detailseite über dem Player brachte die App zum Hängen
+				val playerActive = playbackControllerContainer.playbackController?.hasFragment() == true
+				if (itemId != null && !playerActive) navigationRepository.navigate(Destinations.itemDetails(itemId))
 			}
 			return true
 		}
