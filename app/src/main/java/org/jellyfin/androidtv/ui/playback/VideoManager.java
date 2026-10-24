@@ -131,11 +131,16 @@ public class VideoManager {
             public void onIsPlayingChanged(boolean isPlaying) {
                 if (isPlaying) {
                     if (mPlaybackControllerNotifiable != null) mPlaybackControllerNotifiable.onPrepared();
+                    stallWatch.reset();
                     startProgressLoop();
                     _helper.setScreensaverLock(true);
                 } else {
                     stopProgressLoop();
-                    _helper.setScreensaverLock(false);
+                    // Jellyfin-TV-Client: bei Pause (und beim Puffern) keinen Bildschirmschoner – wie im Web bleibt
+                    // das Pausenbild stehen. Sonst sprang der Schoner an, der System-Schoner beendete die Wiedergabe
+                    // und das Fortsetzen danach hing. Nach 30 Minuten ohne Eingabe beendet die App die Pause selbst.
+                    int state = mExoPlayer != null ? mExoPlayer.getPlaybackState() : Player.STATE_IDLE;
+                    if (state == Player.STATE_ENDED || state == Player.STATE_IDLE) _helper.setScreensaverLock(false);
                 }
             }
 
@@ -148,6 +153,10 @@ public class VideoManager {
                 if (playbackState == Player.STATE_ENDED) {
                     if (mPlaybackControllerNotifiable != null) mPlaybackControllerNotifiable.onCompletion();
                     stopProgressLoop();
+                }
+                // Jellyfin-TV-Client: ohne Inhalt (fertig bzw. gestoppt) darf der Bildschirmschoner wieder kommen
+                if ((playbackState == Player.STATE_ENDED || playbackState == Player.STATE_IDLE) && (mExoPlayer == null || !mExoPlayer.isPlaying())) {
+                    _helper.setScreensaverLock(false);
                 }
             }
 
@@ -617,12 +626,30 @@ public class VideoManager {
 
     private Runnable progressLoop;
 
+    // Jellyfin-TV-Client: Hänger erkennen (Position steht trotz Wiedergabe), einmal neu ansetzen und melden
+    private final org.jellyfin.androidtv.tvclient.PlaybackStallWatch stallWatch = new org.jellyfin.androidtv.tvclient.PlaybackStallWatch(position -> {
+        if (mExoPlayer != null) mExoPlayer.seekTo(position);
+        return kotlin.Unit.INSTANCE;
+    });
+
+    private String stallDetails() {
+        if (mExoPlayer == null) return "";
+        androidx.media3.common.Format video = mExoPlayer.getVideoFormat();
+        androidx.media3.common.Format audio = mExoPlayer.getAudioFormat();
+        return "Video: " + (video != null ? video.sampleMimeType + " " + video.width + "x" + video.height : "–")
+                + ", Ton: " + (audio != null ? audio.sampleMimeType + " " + audio.channelCount + " Kanäle" : "–")
+                + ", gepuffert bis " + mExoPlayer.getBufferedPosition() + " ms";
+    }
+
     private void startProgressLoop() {
         stopProgressLoop();
         progressLoop = new Runnable() {
             @Override
             public void run() {
                 if (mPlaybackControllerNotifiable != null) mPlaybackControllerNotifiable.onProgress();
+                if (mExoPlayer != null && mExoPlayer.isPlaying()) {
+                    stallWatch.check(mExoPlayer.getCurrentPosition(), android.os.SystemClock.elapsedRealtime(), () -> stallDetails());
+                }
                 mHandler.postDelayed(this, 500);
             }
         };

@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.36.7 – 2026-10-24
+
+- **Kein Bildschirmschoner bei Pause:** Wie im Web bleibt bei pausierter Wiedergabe das Pausenbild stehen. Bisher sprang nach einigen Minuten der Bildschirmschoner an; der System-Bildschirmschoner beendete dabei die Wiedergabe, und das Fortsetzen danach konnte mit eingefrorenem Bild hängen. Nach 30 Minuten ohne Eingabe beendet die App eine Pause wie bisher selbst, damit Gerät und Server schlafen können.
+- **Hänger erkennen:** Steht die Position trotz laufender Wiedergabe 8 Sekunden lang, setzt der Player einmal an derselben Stelle neu an (Bild und Ton werden neu aufgesetzt). Jeder Hänger wird mit Gerät, Video- und Tonformat ins Client-Log des Servers geschrieben (Dashboard → Protokolle).
+
 ## 1.36.6 – 2026-10-24
 
 - **Sendezeiten richtig umgerechnet** (Plugin ab 12.52.2): Die App schickt die Zeitzone des Geräts mit (statt nur eines festen Versatzes); die Uhrzeit kommt fertig vom Server, z. B. „15:30 Uhr MEZ“. Das gilt für „Demnächst“ und den Hinweis auf der Serienseite.

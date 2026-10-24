@@ -29,6 +29,7 @@ German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md
 
 \* needs the server plugin Local Recommendations (Top 10 of all users and thumbs since 12.6.0).
 
+- 1.36.7: no screensaver while playback is paused (like Jellyfin Web); stalled playback is detected, restarted once at the same position and logged to the server's client log.
 - 1.36.6: air times in the device time zone, "Next: S03E06 on Sun 01.11." in the Upcoming dialog (Local Recommendations 12.52.2+).
 - 1.36.5: moments rows show title and reason under each card, like Jellyfin Web.
 - 1.36.4: series page without empty future episodes (next episode as a hint instead), German date/time and 24-hour clocks everywhere, dark "Upcoming" dialog with time zone, consistent "FSK 12" ratings.
