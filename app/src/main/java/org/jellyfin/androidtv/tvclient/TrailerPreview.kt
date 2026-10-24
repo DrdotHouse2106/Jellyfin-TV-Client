@@ -132,6 +132,18 @@ fun TrailerVideo(
 				onPlayingChange(true)
 			}
 
+			override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
+				// Fehler (z. B. Datei gerade ersetzt, Decoder): wieder das Bild zeigen und den Grund melden
+				TrailerPreview.clearPosition(url)
+				visible = false
+				onPlayingChange(false)
+				val cause = (error.cause as? androidx.media3.datasource.HttpDataSource.InvalidResponseCodeException)?.responseCode?.let { " (HTTP $it)" }.orEmpty()
+				ClientDiagnostics.report(
+					"${if (holdScreensaver) "Trailer-Vorschau" else "Bildschirmschoner"}: Trailer abgebrochen nach ${player.currentPosition} ms – " +
+						"${error.errorCodeName}$cause: ${error.message} – ${url.substringBefore('?').substringAfter("/Videos/").substringBefore('/')}"
+				)
+			}
+
 			override fun onPlaybackStateChanged(playbackState: Int) {
 				// Am Ende wieder das Bild zeigen
 				if (playbackState == Player.STATE_ENDED) {

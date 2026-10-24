@@ -47,7 +47,11 @@ object ScreensaverTrailers {
 				// Anmeldung per Header (ServerAuth), nicht in der Adresse
 				queryParameters = mapOf("static" to true),
 			)
-			Trailer(url, video.runTimeTicks?.ticks)
+			val duration = video.runTimeTicks?.ticks
+			if (duration == null || duration < minDuration) {
+				ClientDiagnostics.report("Bildschirmschoner: Trailer „${video.name}“ (${video.id}) zu „${item.name}“ ohne brauchbare Länge ($duration) – zeige ihn mit Standardlänge")
+			}
+			Trailer(url, duration)
 		}.getOrNull()
 	}
 
@@ -60,6 +64,16 @@ object ScreensaverTrailers {
 
 	private val maxTeaser = 100.seconds
 
-	/** Wie lange ein Titel mit Trailer stehen bleibt: Trailerlänge plus kurzer Nachlauf, höchstens 3 Minuten. */
-	fun showDuration(duration: Duration?): Duration = minOf((duration ?: defaultDuration) + 3.seconds, maxDuration)
+	/** Unter dieser Länge ist die Angabe unbrauchbar (z. B. frisch ersetzte Trailer-Datei, noch nicht neu eingelesen). */
+	private val minDuration = 15.seconds
+
+	/**
+	 * Wie lange ein Titel mit Trailer stehen bleibt: Trailerlänge plus kurzer Nachlauf, höchstens 3 Minuten.
+	 * Fehlt die Länge oder ist sie unplausibel kurz, gilt der Standard – sonst sprang der Schoner schon nach
+	 * 2–3 Sekunden zum nächsten Titel.
+	 */
+	fun showDuration(duration: Duration?): Duration {
+		val usable = duration?.takeIf { it >= minDuration } ?: defaultDuration
+		return minOf(usable + 3.seconds, maxDuration)
+	}
 }

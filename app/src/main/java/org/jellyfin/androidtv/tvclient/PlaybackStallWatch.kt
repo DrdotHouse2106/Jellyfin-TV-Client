@@ -1,15 +1,5 @@
 package org.jellyfin.androidtv.tvclient
 
-import android.os.Build
-import androidx.lifecycle.ProcessLifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.jellyfin.androidtv.BuildConfig
-import org.jellyfin.sdk.api.client.ApiClient
-import org.jellyfin.sdk.api.client.extensions.clientLogApi
-import org.koin.java.KoinJavaComponent
-import timber.log.Timber
 
 /**
  * Jellyfin-TV-Client: erkennt einen hängenden Player – die Wiedergabe läuft laut Player, aber die Position
@@ -47,7 +37,6 @@ class PlaybackStallWatch(private val onRecover: (positionMs: Long) -> Unit) {
 		reported = true
 		val action = if (recoveries == 0) "Neuansatz an derselben Stelle" else "kein weiterer Neuansatz"
 		val text = "Player hängt: Position steht seit ${(now - lastMoveAt) / 1000} s bei $positionMs ms trotz laufender Wiedergabe – $action. ${details()}"
-		Timber.e(text)
 		report(text)
 		if (recoveries == 0) {
 			recoveries++
@@ -56,11 +45,5 @@ class PlaybackStallWatch(private val onRecover: (positionMs: Long) -> Unit) {
 		}
 	}
 
-	private fun report(text: String) {
-		val api = runCatching { KoinJavaComponent.get<ApiClient>(ApiClient::class.java) }.getOrNull() ?: return
-		val body = "Quallenkino ${BuildConfig.VERSION_NAME} (${Build.MANUFACTURER} ${Build.MODEL}, Android ${Build.VERSION.RELEASE})\n$text\n"
-		ProcessLifecycleOwner.get().lifecycleScope.launch(Dispatchers.IO) {
-			runCatching { api.clientLogApi.logFile(body) }.onFailure { Timber.w(it, "Hänger-Meldung nicht übertragen") }
-		}
-	}
+	private fun report(text: String) = ClientDiagnostics.report(text)
 }

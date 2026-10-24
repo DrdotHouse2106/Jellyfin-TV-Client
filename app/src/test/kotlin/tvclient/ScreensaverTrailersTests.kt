@@ -27,4 +27,12 @@ class ScreensaverTrailersTests : FunSpec({
 	test("Kein Teaser vorhanden") {
 		ScreensaverTrailers.pickTeaser(listOf(video("Trailer", 150))) shouldBe null
 	}
+
+	test("Anzeigedauer: unbrauchbar kurze oder fehlende Länge gilt als Standard") {
+		ScreensaverTrailers.showDuration(null) shouldBe kotlin.time.Duration.parse("123s")
+		ScreensaverTrailers.showDuration(kotlin.time.Duration.parse("0s")) shouldBe kotlin.time.Duration.parse("123s")
+		ScreensaverTrailers.showDuration(kotlin.time.Duration.parse("2s")) shouldBe kotlin.time.Duration.parse("123s")
+		ScreensaverTrailers.showDuration(kotlin.time.Duration.parse("60s")) shouldBe kotlin.time.Duration.parse("63s")
+		ScreensaverTrailers.showDuration(kotlin.time.Duration.parse("200s")) shouldBe kotlin.time.Duration.parse("180s")
+	}
 })

@@ -3,6 +3,8 @@
 ## 1.36.8 – 2026-10-24
 
 - **Kein Hänger mehr über dem Player:** Lief der Bildschirmschoner über einer (pausierten) Wiedergabe, öffnete OK die Detailseite des gezeigten Titels über dem Player – dabei konnte die ganze App hängen bleiben. Liegt ein Player darunter, schließt OK jetzt nur den Schoner und man ist zurück in der Wiedergabe. (Seit 1.36.7 startet der Schoner bei Pause ohnehin nicht mehr.)
+- **Trailer im Bildschirmschoner brechen nicht mehr nach 2–3 Sekunden ab:** Fehlte die Länge eines Trailers oder war sie unplausibel kurz (z. B. weil Trailarr die Datei gerade ersetzt hatte und Jellyfin sie neu einliest), sprang der Schoner nach wenigen Sekunden zum nächsten Titel. Dann gilt jetzt die Standarddauer. Bricht ein Trailer mit Fehler ab (z. B. Datei gerade ersetzt, Decoder), bleibt das Bild stehen.
+- **Diagnose:** Abgebrochene Trailer und Trailer ohne brauchbare Länge landen mit Grund (Fehlercode, HTTP-Status, Trailer-Id) im Client-Log des Servers.
 
 ## 1.36.7 – 2026-10-24
 
