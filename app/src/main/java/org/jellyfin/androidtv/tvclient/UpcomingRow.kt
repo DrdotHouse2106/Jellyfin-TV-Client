@@ -48,7 +48,8 @@ fun onUpcomingClicked(context: Context, item: Any?): Boolean {
 	val series = item.series
 	if (series != null) {
 		val episode = item.episode ?: TvClientSections.Episode()
-		val more = episode.more.takeIf { it > 0 }?.let { context.resources.getQuantityString(R.plurals.tvclient_upcoming_more, it, it) }
+		// „Danach: S03E06 am So. 01.11.“ vom Server, sonst nur die Anzahl
+		val more = episode.nextAfter ?: episode.more.takeIf { it > 0 }?.let { context.resources.getQuantityString(R.plurals.tvclient_upcoming_more, it, it) }
 		TvInfoDialog.show(
 			context,
 			item.title,

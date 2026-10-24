@@ -97,6 +97,10 @@ object TvClientSections {
 		val network: String? = null,
 		val overview: String? = null,
 		val more: Int = 0,
+		/** Uhrzeit vom Server in der Gerätezone (ab 12.52.2), z. B. „15:30 Uhr MEZ“. */
+		val localTime: String? = null,
+		/** „Danach: S03E06 am So. 01.11.“ (ab 12.52.2, bei weiteren neuen Folgen). */
+		val nextAfter: String? = null,
 	) {
 		/** „S02E05 · Folgentitel“. */
 		val line: String
@@ -113,7 +117,9 @@ object TvClientSections {
 			val local = date?.let { parseUtc(it) }?.atZone(zone)
 			return listOfNotNull(
 				local?.format(java.time.format.DateTimeFormatter.ofPattern("EEEE, dd.MM.yyyy", java.util.Locale.GERMAN)),
-				local?.let { it.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm 'Uhr'")) + " (" + zoneLabel(it) + ")" },
+				// Uhrzeit bevorzugt vom Server (in der Gerätezone berechnet), sonst selbst umgerechnet
+				localTime?.let { if (it.contains("Uhr")) it else "$it Uhr" }
+					?: local?.let { it.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm 'Uhr'")) + " (" + zoneLabel(it) + ")" },
 				network,
 			).joinToString(" · ")
 		}
@@ -157,6 +163,8 @@ object TvClientSections {
 							network = obj.text("Network"),
 							overview = obj.text("EpisodeOverview"),
 							more = obj.text("MoreEpisodes")?.toIntOrNull() ?: 0,
+							localTime = obj.text("LocalTime"),
+							nextAfter = (obj["NextAfter"] as? JsonObject)?.text("Text"),
 						),
 					)
 				}
@@ -180,7 +188,7 @@ object TvClientSections {
 	suspend fun upcomingRow(title: String): HomeFragmentRow? = withContext(Dispatchers.IO) {
 		if (!config().upcoming) return@withContext null
 		val entries = runCatching {
-			parseUpcoming(baseUrl(), TvClientBehavior.call("GET", "/LocalRecs/Upcoming?utcOffsetMinutes=${TvClientBehavior.utcOffsetMinutes()}").second)
+			parseUpcoming(baseUrl(), TvClientBehavior.call("GET", "/LocalRecs/Upcoming?utcOffsetMinutes=${TvClientBehavior.utcOffsetMinutes()}${TvClientBehavior.timeZoneParameter()}").second)
 		}.onFailure { Timber.w(it, "Demnächst nicht verfügbar") }.getOrDefault(emptyList())
 		if (entries.isEmpty()) null else HomeFragmentUpcomingRow(title, entries)
 	}

@@ -59,7 +59,7 @@ object SeriesUpcoming {
 				runCatching {
 					val (code, body) = TvClientBehavior.call(
 						"GET",
-						"/LocalRecs/Upcoming/Series/${TvClientSections.key(seriesId)}?utcOffsetMinutes=${TvClientBehavior.utcOffsetMinutes()}",
+						"/LocalRecs/Upcoming/Series/${TvClientSections.key(seriesId)}?utcOffsetMinutes=${TvClientBehavior.utcOffsetMinutes()}${TvClientBehavior.timeZoneParameter()}",
 					)
 					if (code == 200) parse(body) else null
 				}.onFailure { Timber.w(it, "Kommende Folgen nicht verfügbar") }.getOrNull()

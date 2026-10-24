@@ -48,6 +48,9 @@ object TvClientBehavior {
 	/** Abweichung der Ortszeit von UTC in Minuten (z. B. 120 im Sommer). */
 	fun utcOffsetMinutes(): Int = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / 60_000
 
+	/** Zeitzone des Geräts für Termine (Plugin ab 12.52.2), z. B. „&timeZone=Europe%2FBerlin“ – sonst rechnet es mit festem Versatz. */
+	fun timeZoneParameter(): String = "&timeZone=" + java.net.URLEncoder.encode(TimeZone.getDefault().id, "UTF-8")
+
 	internal fun call(method: String, path: String, body: String? = null): Pair<Int, String> {
 		val api = api()
 		val base = api.baseUrl?.trimEnd('/') ?: error("keine Server-Adresse")

@@ -98,4 +98,16 @@ class TvClientSectionsTests : FunSpec({
 		TvClientSections.Episode(date = "2026-11-01T13:30:00Z").whenText(java.time.ZoneId.of("Asia/Tokyo")) shouldBe
 			"Sonntag, 01.11.2026 · 22:30 Uhr (UTC+9)"
 	}
+
+	test("Demnächst ab 12.52.2: Uhrzeit vom Server und „Danach …“") {
+		val entries = TvClientSections.parseUpcoming(
+			null,
+			"""{"Items":[{"Kind":"Episode","Title":"Serie","Date":"2026-10-24T13:30:00Z","LocalTime":"15:30 Uhr MESZ","Network":"TBS (JP)",
+			"SeasonNumber":3,"EpisodeNumber":5,"MoreEpisodes":1,"NextAfter":{"SeasonNumber":3,"EpisodeNumber":6,"Text":"Danach: S03E06 am So. 01.11."},
+			"Series":{"Id":"c2b157ea3dc84584a30bcb96492eda16","Name":"Serie","Type":"Series"}}]}"""
+		)
+		val episode = entries.single().episode!!
+		episode.whenText(java.time.ZoneId.of("Europe/Berlin")) shouldBe "Samstag, 24.10.2026 · 15:30 Uhr MESZ · TBS (JP)"
+		episode.nextAfter shouldBe "Danach: S03E06 am So. 01.11."
+	}
 })

@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.36.6 – 2026-10-24
+
+- **Sendezeiten richtig umgerechnet** (Plugin ab 12.52.2): Die App schickt die Zeitzone des Geräts mit (statt nur eines festen Versatzes); die Uhrzeit kommt fertig vom Server, z. B. „15:30 Uhr MEZ“. Das gilt für „Demnächst“ und den Hinweis auf der Serienseite.
+- **„Danach: S03E06 am So. 01.11.“** statt nur „Dazu 1 weitere neue Folge“ im „Demnächst“-Fenster.
+
 ## 1.36.5 – 2026-10-24
 
 - **Momente wie im Web:** Unter jeder Karte der Momente-Zeilen stehen jetzt Titel und Begründung, z. B. „vor 20 Jahren“ oder „Heute 20:15 auf ZDF – hier ohne Werbung“ (bisher nur oben im Infobereich).
