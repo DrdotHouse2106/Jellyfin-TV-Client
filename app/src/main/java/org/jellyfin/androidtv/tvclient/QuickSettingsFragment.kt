@@ -216,6 +216,17 @@ private fun QuickSettings(onChooseAvatar: () -> Unit) {
 		) { set(UserPreferences.dtsMode, it) }
 		Hint(stringResource(R.string.tvclient_bitstream_dts_desc))
 
+		Section(stringResource(R.string.tvclient_hdr_mode))
+		Choices(
+			listOf(
+				Choice(TvClientHdr.HdrMode.AUTO, stringResource(R.string.tvclient_bitstream_dts_auto)),
+				Choice(TvClientHdr.HdrMode.CONVERT, stringResource(R.string.tvclient_hdr_convert)),
+				Choice(TvClientHdr.HdrMode.DIRECT, stringResource(R.string.tvclient_hdr_direct)),
+			),
+			prefs[UserPreferences.hdrMode],
+		) { set(UserPreferences.hdrMode, it) }
+		Hint(stringResource(R.string.tvclient_hdr_mode_desc))
+
 		Section(stringResource(R.string.tvclient_trailer_preview))
 		Choices(listOf(Choice(true, on), Choice(false, off)), prefs[TrailerPreview.enabledPreference]) { set(TrailerPreview.enabledPreference, it) }
 		Section(stringResource(R.string.tvclient_quick_trailer_sound))

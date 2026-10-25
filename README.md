@@ -168,6 +168,10 @@ Hürden, auf die wir selbst gestoßen sind – jeweils mit Symptom, Ursache und 
 - *Ursache:* „Audioausgabe: Zu Stereo heruntermischen“ oder „Dolby Digital durchreichen: Aus“. Dann darf der Ton nicht direkt laufen, der Server rechnet um. Bild-Untertitel (PGS) lassen sich in den umgerechneten Stream nicht einbetten und werden eingebrannt – dafür muss der Server auch das Video neu kodieren.
 - *Lösung:* In den Einstellungen unter Ton „Audioausgabe: Direkt“ und „Dolby Digital durchreichen: An“ (ab 1.30.4 direkt dort; 1.30.5 hat beides einmalig zurückgesetzt).
 
+**HDR-Film ist zu dunkel und blass**
+- *Ursache (bis 1.36.8):* Die App spielte HDR direkt ab, sobald der Stick es dekodieren konnte – auch wenn der Fernseher kein HDR kann.
+- *Lösung (ab 1.37.0 automatisch):* Die App fragt den Bildschirm, welche HDR-Arten er zeigen kann; den Rest wandelt der Server nach SDR um (dafür muss auf dem Server Tonemapping eingerichtet sein). Von Hand: Schnelleinstellungen → „HDR: Immer umwandeln“.
+
 **Film mit DTS- oder TrueHD-Ton bleibt stumm**
 - *Ursache:* Manche Sticks melden DTS-Decoder oder DTS-Durchreichen, geben aber keinen Ton aus (z. B. wenn ihr HDMI-Ausgang fest auf Dolby Digital steht).
 - *Lösung (ab 1.30.2 automatisch):* Nimmt der Ausgang DTS an (AV-Receiver), wird durchgereicht; sonst dekodiert die App selbst (eingebautes FFmpeg, 5.1 bleibt erhalten); erst als letzter Ausweg rechnet der Server in Dolby Digital um. Bleibt es trotzdem stumm: Einstellungen → Ton → „DTS und TrueHD durchreichen: Aus“ (dann rechnet immer der Server um).

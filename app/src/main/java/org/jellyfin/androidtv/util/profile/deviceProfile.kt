@@ -68,6 +68,7 @@ fun createDeviceProfile(
 	assDirectPlay = false,
 	pgsDirectPlay = userPreferences[UserPreferences.pgsDirectPlay],
 	jellyfinTenEleven = serverVersion >= ServerVersion(10, 11, 0),
+	displayHdr = org.jellyfin.androidtv.tvclient.TvClientHdr.display(context, userPreferences[UserPreferences.hdrMode]),
 )
 
 fun createDeviceProfile(
@@ -80,6 +81,8 @@ fun createDeviceProfile(
 	jellyfinTenEleven: Boolean,
 	/** Jellyfin-TV-Client: erlaubte DTS-/TrueHD-Codecs (null = alle), siehe [org.jellyfin.androidtv.tvclient.TvClientAudioOutput]. */
 	directHdAudio: Set<String>? = null,
+	/** Jellyfin-TV-Client: HDR-Arten, die der Bildschirm zeigen kann (siehe [org.jellyfin.androidtv.tvclient.TvClientHdr]). */
+	displayHdr: org.jellyfin.androidtv.tvclient.TvClientHdr.DisplayHdr = org.jellyfin.androidtv.tvclient.TvClientHdr.ALL,
 ) = buildDeviceProfile {
 	// Jellyfin-TV-Client: DTS/TrueHD nur, wenn der Ausgang sie annimmt (sonst wandelt der Server den Ton um)
 	val hdAudioCodecs = org.jellyfin.androidtv.tvclient.TvClientAudioOutput.HD_AUDIO_CODECS
@@ -108,16 +111,17 @@ fun createDeviceProfile(
 	/// HDR capabilities
 
 	// Codecs
+	// Jellyfin-TV-Client: Decoder UND Bildschirm müssen die HDR-Art können, sonst Tonemapping auf dem Server
 	// AV1
-	val supportsAV1DolbyVision = mediaTest.supportsAV1DolbyVision()
-	val supportsAV1HDR10 = mediaTest.supportsAV1HDR10()
-	val supportsAV1HDR10Plus = mediaTest.supportsAV1HDR10Plus()
+	val supportsAV1DolbyVision = mediaTest.supportsAV1DolbyVision() && displayHdr.dolbyVision
+	val supportsAV1HDR10 = mediaTest.supportsAV1HDR10() && displayHdr.hdr10
+	val supportsAV1HDR10Plus = mediaTest.supportsAV1HDR10Plus() && displayHdr.hdr10PlusOrBase
 
 	// HEVC
-	val supportsHevcDolbyVision = mediaTest.supportsHevcDolbyVision()
-	val supportsHevcDolbyVisionEL = mediaTest.supportsHevcDolbyVisionEL()
-	val supportsHevcHDR10 = mediaTest.supportsHevcHDR10()
-	val supportsHevcHDR10Plus = mediaTest.supportsHevcHDR10Plus()
+	val supportsHevcDolbyVision = mediaTest.supportsHevcDolbyVision() && displayHdr.dolbyVision
+	val supportsHevcDolbyVisionEL = mediaTest.supportsHevcDolbyVisionEL() && displayHdr.dolbyVision
+	val supportsHevcHDR10 = mediaTest.supportsHevcHDR10() && displayHdr.hdr10
+	val supportsHevcHDR10Plus = mediaTest.supportsHevcHDR10Plus() && displayHdr.hdr10PlusOrBase
 
 	name = "AndroidTV-Default"
 
@@ -410,7 +414,13 @@ fun createDeviceProfile(
 		if (!supportsAV1HDR10Plus) {
 			add(VideoRangeType.HDR10_PLUS.serialName)
 
-			if (!mediaTest.supportsAV1HDR10()) add(VideoRangeType.HDR10.serialName)
+			if (!supportsAV1HDR10) add(VideoRangeType.HDR10.serialName)
+		}
+
+		// Jellyfin-TV-Client: HLG nur auf einem Bildschirm mit HLG
+		if (!displayHdr.hlg) {
+			add(VideoRangeType.HLG.serialName)
+			if (jellyfinTenEleven) add("DOVIWithHLG")
 		}
 	}
 
@@ -439,6 +449,12 @@ fun createDeviceProfile(
 		if (jellyfinTenEleven && KnownDefects.hevcDoviHdr10PlusBug) {
 			add("DOVIWithHDR10Plus")
 			add("DOVIWithELHDR10Plus")
+		}
+
+		// Jellyfin-TV-Client: HLG nur auf einem Bildschirm mit HLG
+		if (!displayHdr.hlg) {
+			add(VideoRangeType.HLG.serialName)
+			if (jellyfinTenEleven) add("DOVIWithHLG")
 		}
 	}
 

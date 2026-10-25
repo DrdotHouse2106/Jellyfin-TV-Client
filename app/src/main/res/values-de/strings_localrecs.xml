@@ -203,6 +203,10 @@
     <string name="tvclient_bitstream_dts">DTS und TrueHD durchreichen</string>
     <string name="tvclient_bitstream_dts_desc">Automatisch: Nimmt Fernseher oder AV-Receiver DTS/TrueHD an, wird durchgereicht; sonst dekodiert Quallenkino selbst (5.1, bei reinem Stereo-Ausgang Stereo) – ohne den Server zu belasten. Geprüft bei jedem Wiedergabestart. Aus: Der Server wandelt den Ton in Dolby Digital 5.1 um.</string>
     <string name="tvclient_bitstream_dts_auto">Automatisch</string>
+    <string name="tvclient_hdr_mode">HDR</string>
+    <string name="tvclient_hdr_convert">Immer umwandeln</string>
+    <string name="tvclient_hdr_direct">Immer direkt</string>
+    <string name="tvclient_hdr_mode_desc">Automatisch: HDR wird nur direkt abgespielt, wenn der Fernseher es zeigen kann (bei jedem Wiedergabestart geprüft); sonst wandelt der Server es mit Tonemapping nach SDR um, damit das Bild nicht zu dunkel ist. Immer umwandeln: HDR immer nach SDR. Immer direkt: Nur der Decoder entscheidet (wie bisher).</string>
     <string name="tvclient_billboard_later">Später</string>
     <string name="tvclient_billboard_later_done">Kommt 3 Wochen nicht mehr im Banner</string>
     <string name="tvclient_billboard_later_failed">Titel konnte nicht weggelegt werden</string>

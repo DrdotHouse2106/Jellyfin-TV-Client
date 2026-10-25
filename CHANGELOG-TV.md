@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.37.0 – 2026-10-25
+
+- **HDR nur auf HDR-Fernsehern direkt:** Bisher entschied allein der Decoder des Sticks – an einem Fernseher ohne HDR war das Bild bei HDR-Filmen zu dunkel und blass. Jetzt prüft die App bei jedem Wiedergabestart, welche HDR-Arten der Bildschirm meldet (HDR10, HDR10+, HLG, Dolby Vision), und spielt nur diese direkt ab; den Rest wandelt der Server mit Tonemapping nach SDR um. Einzeln je Art: Kann der Fernseher HDR10, aber kein Dolby Vision, laufen Dolby-Vision-Filme mit HDR10-Grundlage als HDR10 direkt.
+- **Einstellung „HDR“** (Schnelleinstellungen): Automatisch (Standard), Immer umwandeln, Immer direkt.
+- Welche HDR-Arten der Bildschirm meldet, steht im Client-Log des Servers.
+
 ## 1.36.8 – 2026-10-24
 
 - **Kein Hänger mehr über dem Player:** Lief der Bildschirmschoner über einer (pausierten) Wiedergabe, öffnete OK die Detailseite des gezeigten Titels über dem Player – dabei konnte die ganze App hängen bleiben. Liegt ein Player darunter, schließt OK jetzt nur den Schoner und man ist zurück in der Wiedergabe. (Seit 1.36.7 startet der Schoner bei Pause ohnehin nicht mehr.)

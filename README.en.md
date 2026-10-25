@@ -29,6 +29,7 @@ German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md
 
 \* needs the server plugin Local Recommendations (Top 10 of all users and thumbs since 12.6.0).
 
+- 1.37.0: HDR is only played directly if the TV can show it (otherwise the server tone-maps to SDR); setting "HDR": Automatic / Always convert / Always direct.
 - 1.36.8: OK in the screensaver over an active player only closes the screensaver (no more hang).
 - 1.36.7: no screensaver while playback is paused (like Jellyfin Web); stalled playback is detected, restarted once at the same position and logged to the server's client log.
 - 1.36.6: air times in the device time zone, "Next: S03E06 on Sun 01.11." in the Upcoming dialog (Local Recommendations 12.52.2+).

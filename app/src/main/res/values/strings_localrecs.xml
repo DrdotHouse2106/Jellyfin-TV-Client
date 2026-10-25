@@ -203,6 +203,10 @@
     <string name="tvclient_bitstream_dts">Pass through DTS and TrueHD</string>
     <string name="tvclient_bitstream_dts_desc">Automatic: if the TV or AV receiver accepts DTS/TrueHD, the audio is passed through; otherwise Quallenkino decodes it itself (5.1, or stereo if the output only has stereo) – the server is not involved. Checked at every playback start. Off: the server converts the audio to Dolby Digital 5.1.</string>
     <string name="tvclient_bitstream_dts_auto">Automatic</string>
+    <string name="tvclient_hdr_mode">HDR</string>
+    <string name="tvclient_hdr_convert">Always convert</string>
+    <string name="tvclient_hdr_direct">Always direct</string>
+    <string name="tvclient_hdr_mode_desc">Automatic: HDR is played directly only if the TV can show it (checked at every playback start); otherwise the server converts it to SDR with tone mapping, so the picture is not too dark. Always convert: HDR is always converted to SDR. Always direct: only the decoder decides (as before).</string>
     <string name="tvclient_billboard_later">Later</string>
     <string name="tvclient_billboard_later_done">Hidden from the banner for 3 weeks</string>
     <string name="tvclient_billboard_later_failed">Could not hide the title</string>

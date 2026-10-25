@@ -132,6 +132,9 @@ class UserPreferences(context: Context) : SharedPreferenceStore(
 		 */
 		var dtsMode = enumPreference("pref_tvclient_dts_mode", org.jellyfin.androidtv.tvclient.TvClientAudioOutput.DtsMode.AUTO)
 
+		/** Jellyfin-TV-Client: HDR direkt nur auf HDR-Bildschirmen (Automatisch), immer umwandeln oder immer direkt. */
+		var hdrMode = enumPreference("pref_tvclient_hdr_mode", org.jellyfin.androidtv.tvclient.TvClientHdr.HdrMode.AUTO)
+
 		/* Live TV */
 		/**
 		 * Use direct play
