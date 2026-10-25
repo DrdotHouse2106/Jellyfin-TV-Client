@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.38.0 – 2026-10-25
+
+- **Entdecken-Reihen wie im Web** (Plugin Local Recommendations ab 12.54): „Demnächst im Kino“ (deutsche Kinostarts der nächsten 8 Wochen), „Neu dieses Jahr – Filme“ und „Neu dieses Jahr – Serien“ (mit deutschen Abo-Anbietern) – nach „Demnächst“, im Querformat mit Termin unter der Karte. Titel in der Bibliothek tragen „· In der Bibliothek“ und öffnen ihre Detailseite; die anderen zeigen Termin, Genres · FSK · Laufzeit, „Im Abo bei …“, Beschreibung und „Trailer ansehen“. Es wird nie automatisch etwas angefragt. Abschaltbar unter Einstellungen → Startseite.
+
 ## 1.37.1 – 2026-10-25
 
 - **Nur echte Trailer:** Bildschirmschoner und Trailer-Vorschau nehmen nur noch Trailer des Titels (lokale Trailer bzw. Extras vom Typ „Trailer“) – nie andere Extras wie Making-of, entfallene Szenen oder kurze DVD-Clips. Bisher galt jedes Extra unter 100 Sekunden als „Teaser“, sodass z. B. ein 6-Sekunden-Clip lief.

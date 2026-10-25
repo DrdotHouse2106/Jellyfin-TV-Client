@@ -110,4 +110,25 @@ class TvClientSectionsTests : FunSpec({
 		episode.whenText(java.time.ZoneId.of("Europe/Berlin")) shouldBe "Samstag, 24.10.2026 · 15:30 Uhr MESZ · TBS (JP)"
 		episode.nextAfter shouldBe "Danach: S03E06 am So. 01.11."
 	}
+
+	test("Entdecken: Reihen mit Kinostart, Bibliothek und Abo-Anbietern") {
+		val rows = TvClientSections.parseDiscover(
+			"http://srv:8096",
+			"""{"Rows":[{"Key":"cinema","Title":"Demnächst im Kino","TotalRecordCount":2,"Items":[
+			{"TmdbId":1,"MediaType":"movie","Title":"Film","Year":2026,"BackdropUrl":"https://image.tmdb.org/t/p/w1280/a.jpg","ReleaseText":"Kinostart am Do. 05.11.",
+			"Genres":["Action","Drama"],"OfficialRating":"12","RuntimeMinutes":110,"TrailerKey":"abc"},
+			{"TmdbId":2,"MediaType":"tv","Title":"Serie","Providers":["Netflix"],"InLibrary":true,"JellyfinId":"c2b157ea3dc84584a30bcb96492eda16"}]},
+			{"Key":"leer","Title":"Leer","Items":[]}],"TotalRecordCount":1}"""
+		)
+		rows.size shouldBe 1
+		rows[0].title shouldBe "Demnächst im Kino"
+		val film = rows[0].items[0]
+		film.imageUrl shouldBe "https://image.tmdb.org/t/p/w1280/a.jpg"
+		film.facts shouldBe "Action, Drama · FSK 12 · 1 Std. 50 Min."
+		film.trailerKey shouldBe "abc"
+		val serie = rows[0].items[1]
+		serie.inLibrary shouldBe true
+		serie.jellyfinId.toString() shouldBe "c2b157ea-3dc8-4584-a30b-cb96492eda16"
+		serie.providers shouldBe listOf("Netflix")
+	}
 })

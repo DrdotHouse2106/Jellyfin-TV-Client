@@ -124,6 +124,7 @@ Die Zeilen der Startseite stehen in einer festen Reihenfolge und lassen sich unt
 5. Empfohlene Serien für dich *
 6. Momente (Neu diese Woche, Läuft heute im TV, Vor dem Kinostart …) *
 7. Demnächst (Sonarr/Radarr) *
+   - Entdecken: Demnächst im Kino, Neu dieses Jahr – Filme/Serien * (ab Plugin 12.54)
 8. Filmreihen für dich *
 9. Heute im TV für dich * (nur mit Live-TV-Zugriff; Titel und Schalter vom Server wie im Web)
 10. Top 10 bei euch *

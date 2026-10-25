@@ -39,6 +39,43 @@ class HomeFragmentUpcomingRow(private val title: String, private val entries: Li
 	}
 }
 
+/** Jellyfin-TV-Client: Entdecken-Reihe (Kinostarts, Neu dieses Jahr; Plugin ab 12.54) im Querformat. */
+class HomeFragmentDiscoverRow(private val title: String, private val entries: List<TvClientSections.Discover>) : HomeFragmentRow {
+	override fun addToRowsAdapter(context: Context, cardPresenter: CardPresenter, rowsAdapter: MutableObjectAdapter<Row>) {
+		if (entries.isEmpty()) return
+		val adapter = MutableObjectAdapter<Any>(UpcomingPresenter())
+		entries.forEach(adapter::add)
+		rowsAdapter.add(ListRow(HeaderItem(title), adapter))
+	}
+}
+
+/**
+ * OK auf eine Entdecken-Karte: in der Bibliothek → lokale Detailseite; sonst Termin, Genres · FSK · Laufzeit,
+ * „Im Abo bei …“, Beschreibung und „Trailer ansehen“ (YouTube). Angefragt wird nie automatisch.
+ */
+fun onDiscoverClicked(context: Context, item: Any?): Boolean {
+	if (item !is TvClientSections.Discover) return false
+	if (item.inLibrary && item.jellyfinId != null) {
+		KoinJavaComponent.get<NavigationRepository>(NavigationRepository::class.java).navigate(Destinations.itemDetails(item.jellyfinId))
+		return true
+	}
+	TvInfoDialog.show(
+		context,
+		listOfNotNull(item.title, item.year?.toString()).joinToString(" · "),
+		listOfNotNull(
+			item.releaseText?.let { TvInfoDialog.Line(it, TvInfoDialog.Style.REASON) },
+			item.facts.takeIf { it.isNotEmpty() }?.let { TvInfoDialog.Line(it, TvInfoDialog.Style.MUTED) },
+			item.providers.takeIf { it.isNotEmpty() }?.let { TvInfoDialog.Line(context.getString(R.string.tvclient_discover_providers, it.joinToString(", ")), TvInfoDialog.Style.STRONG) },
+			item.overview?.let { TvInfoDialog.Line(it) },
+		),
+		listOfNotNull(
+			item.trailerKey?.let { key -> TvInfoDialog.Button(context.getString(R.string.tvclient_discover_trailer)) { TrailerWindow.showYoutube(context, key) } },
+			TvInfoDialog.Button(context.getString(R.string.tvclient_upcoming_close)),
+		),
+	)
+	return true
+}
+
 /**
  * OK auf einen Eintrag wie im Web: Folge zeigt „SxxEyy · Folgentitel“, Termin, Sender, Beschreibung und den Knopf
  * „Zur Serie“; ein Film zeigt Titel, Jahr, Termin und Beschreibung (es wird nichts angefragt).
@@ -142,6 +179,17 @@ private class UpcomingPresenter : Presenter() {
 
 	override fun onBindViewHolder(viewHolder: ViewHolder, item: Any?) {
 		val holder = viewHolder as Holder
+		// Entdecken-Karten (Kino, Neuheiten) sehen genauso aus: Bild, Titel, Termin
+		if (item is TvClientSections.Discover) {
+			holder.title.text = item.title
+			holder.subtitle.text = listOfNotNull(
+				item.releaseText,
+				holder.view.context.getString(R.string.tvclient_discover_in_library).takeIf { item.inLibrary },
+			).joinToString(" · ")
+			holder.placeholder.text = item.title
+			if (item.imageUrl != null) holder.image.load(url = item.imageUrl, aspectRatio = 16.0 / 9.0) else holder.image.setImageDrawable(null)
+			return
+		}
 		val entry = item as? TvClientSections.Upcoming ?: return
 		holder.title.text = entry.title
 		holder.subtitle.text = entry.subtitle.orEmpty()

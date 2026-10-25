@@ -156,6 +156,7 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 							HomeRow.RECOMMENDED_SERIES -> listOf(helper.loadLocalRecommendations(LocalRecommendationsType.SERIES, sections.seriesTitle))
 							HomeRow.RECOMMENDED_LIVE_TV -> if (liveTvAccess && sections.liveTvRow) listOf(helper.loadLocalRecommendations(LocalRecommendationsType.LIVE_TV, sections.liveTvTitle)) else emptyList()
 							HomeRow.UPCOMING -> listOfNotNull(org.jellyfin.androidtv.tvclient.TvClientSections.upcomingRow(getString(org.jellyfin.androidtv.R.string.tvclient_home_upcoming)))
+							HomeRow.DISCOVER -> org.jellyfin.androidtv.tvclient.TvClientSections.discoverRows()
 							HomeRow.LIVE_TV -> if (liveTvAccess) listOf(liveTVRow, helper.loadOnNow()) else emptyList()
 							HomeRow.TOP10 -> listOf(HomeFragmentTop10Row(Top10.load(api, currentUser)))
 							HomeRow.WORLDS -> listOf(HomeFragmentWorldsRow(Worlds.available(api, currentUser.id)))
@@ -208,6 +209,7 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			registerListener { _, item, _, _ -> onWorldClicked(item) }
 			registerListener { _, item, _, _ -> org.jellyfin.androidtv.tvclient.onMovieSeriesClicked(item) }
 			registerListener { _, item, _, _ -> org.jellyfin.androidtv.tvclient.onUpcomingClicked(requireContext(), item) }
+			registerListener { _, item, _, _ -> org.jellyfin.androidtv.tvclient.onDiscoverClicked(requireContext(), item) }
 			registerListener(liveTVRow::onItemClicked)
 			registerListener(notificationsRow::onItemClicked)
 		}

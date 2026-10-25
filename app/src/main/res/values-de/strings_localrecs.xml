@@ -230,6 +230,11 @@
     <string name="tvclient_home_upcoming">Demnächst</string>
     <string name="tvclient_home_upcoming_description">Neue Folgen und Filme, die bald kommen (Sonarr/Radarr, Local Recommendations ab 12.48)</string>
     <string name="tvclient_new_badge">NEU</string>
+    <string name="tvclient_home_discover">Entdecken (Kino &amp; Neuheiten)</string>
+    <string name="tvclient_home_discover_description">Demnächst im Kino, Neu dieses Jahr – Filme und Serien (TMDb, Local Recommendations ab 12.54)</string>
+    <string name="tvclient_discover_in_library">In der Bibliothek</string>
+    <string name="tvclient_discover_providers">Im Abo bei %s</string>
+    <string name="tvclient_discover_trailer">Trailer ansehen</string>
     <string name="tvclient_upcoming_to_series">Zur Serie</string>
     <string name="tvclient_upcoming_close">Schließen</string>
     <plurals name="tvclient_upcoming_more">

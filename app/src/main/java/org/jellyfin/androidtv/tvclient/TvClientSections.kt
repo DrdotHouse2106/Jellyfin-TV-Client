@@ -21,6 +21,7 @@ import org.jellyfin.androidtv.ui.itemhandling.ItemRowAdapter
 import org.jellyfin.androidtv.ui.presentation.CardPresenter
 import org.jellyfin.androidtv.ui.presentation.MutableObjectAdapter
 import org.jellyfin.sdk.model.api.BaseItemDto
+import org.jellyfin.sdk.model.serializer.toUUID
 import timber.log.Timber
 import java.util.UUID
 
@@ -40,6 +41,8 @@ object TvClientSections {
 		val seasonal: Boolean = false,
 		val moments: Boolean = false,
 		val upcoming: Boolean = false,
+		/** Entdecken-Reihen (Kinostarts, Neu dieses Jahr; Plugin ab 12.54). */
+		val discover: Boolean = false,
 		/** Titel der Empfehlungszeilen und Schalter „Heute im TV für dich“ wie im Web (Plugin ab 12.48). */
 		val moviesTitle: String? = null,
 		val seriesTitle: String? = null,
@@ -193,6 +196,80 @@ object TvClientSections {
 		if (entries.isEmpty()) null else HomeFragmentUpcomingRow(title, entries)
 	}
 
+	/** Eintrag einer Entdecken-Reihe (TMDb): Kinostart bzw. Neuheit, ggf. schon in der Bibliothek. */
+	data class Discover(
+		val tmdbId: Int,
+		val mediaType: String,
+		val title: String,
+		val year: Int? = null,
+		val overview: String? = null,
+		val imageUrl: String? = null,
+		val releaseText: String? = null,
+		val genres: List<String> = emptyList(),
+		val officialRating: String? = null,
+		val runtimeMinutes: Int? = null,
+		val providers: List<String> = emptyList(),
+		val trailerKey: String? = null,
+		val inLibrary: Boolean = false,
+		val jellyfinId: UUID? = null,
+	) {
+		/** „Genres · FSK 12 · 1 Std. 50 Min.“ */
+		val facts: String
+			get() = listOfNotNull(
+				genres.take(3).joinToString(", ").takeIf { it.isNotEmpty() },
+				ParentalRating.display(officialRating),
+				runtimeMinutes?.takeIf { it > 0 }?.let { if (it >= 60) "${it / 60} Std. ${it % 60} Min." else "$it Min." },
+			).joinToString(" · ")
+	}
+
+	data class DiscoverRow(val key: String, val title: String, val items: List<Discover>)
+
+	/** Antwort von GET /LocalRecs/Discover (testbar); Bildadressen können relativ zum Server sein. */
+	fun parseDiscover(baseUrl: String?, text: String): List<DiscoverRow> {
+		val base = baseUrl?.trimEnd('/')
+		fun abs(path: String?) = when {
+			path.isNullOrBlank() -> null
+			path.startsWith("http") -> path
+			base == null -> null
+			else -> "$base/${path.trimStart('/')}"
+		}
+		fun JsonObject.strings(key: String) = (this[key] as? JsonArray).orEmpty().mapNotNull { (it as? JsonPrimitive)?.content?.takeIf { s -> s.isNotBlank() } }
+		return ((json.parseToJsonElement(text) as? JsonObject)?.get("Rows") as? JsonArray).orEmpty().mapNotNull { rowEntry ->
+			val row = rowEntry as? JsonObject ?: return@mapNotNull null
+			val title = row.text("Title") ?: return@mapNotNull null
+			val items = (row["Items"] as? JsonArray).orEmpty().mapNotNull { entry ->
+				val obj = entry as? JsonObject ?: return@mapNotNull null
+				val itemTitle = obj.text("Title") ?: return@mapNotNull null
+				Discover(
+					tmdbId = obj.text("TmdbId")?.toIntOrNull() ?: return@mapNotNull null,
+					mediaType = obj.text("MediaType") ?: "movie",
+					title = itemTitle,
+					year = obj.text("Year")?.toIntOrNull(),
+					overview = obj.text("Overview"),
+					imageUrl = abs(obj.text("BackdropUrl")) ?: abs(obj.text("PosterUrl")),
+					releaseText = obj.text("ReleaseText"),
+					genres = obj.strings("Genres"),
+					officialRating = obj.text("OfficialRating"),
+					runtimeMinutes = obj.text("RuntimeMinutes")?.toIntOrNull(),
+					providers = obj.strings("Providers"),
+					trailerKey = obj.text("TrailerKey"),
+					inLibrary = (obj["InLibrary"] as? JsonPrimitive)?.booleanOrNull == true,
+					jellyfinId = obj.text("JellyfinId")?.let { runCatching { it.toUUID() }.getOrNull() },
+				)
+			}
+			if (items.isEmpty()) null else DiscoverRow(row.text("Key").orEmpty(), title, items)
+		}
+	}
+
+	/** Entdecken-Reihen „Demnächst im Kino“, „Neu dieses Jahr – Filme/Serien“ (Plugin ab 12.54), Reihenfolge vom Server. */
+	suspend fun discoverRows(): List<HomeFragmentRow> = withContext(Dispatchers.IO) {
+		if (!config().discover) return@withContext emptyList()
+		runCatching {
+			parseDiscover(baseUrl(), TvClientBehavior.call("GET", "/LocalRecs/Discover").second)
+		}.onFailure { Timber.w(it, "Entdecken nicht verfügbar") }.getOrDefault(emptyList())
+			.map { HomeFragmentDiscoverRow(it.title, it.items) }
+	}
+
 	private fun JsonObject.int(key: String) = (this[key] as? JsonPrimitive)?.content?.toIntOrNull() ?: 0
 
 	private fun baseUrl() = org.koin.java.KoinJavaComponent.get<org.jellyfin.sdk.api.client.ApiClient>(org.jellyfin.sdk.api.client.ApiClient::class.java).baseUrl
@@ -212,6 +289,7 @@ object TvClientSections {
 				seasonal = (obj["Seasonal"] as? JsonPrimitive)?.booleanOrNull != false,
 				moments = (obj["Moments"] as? JsonPrimitive)?.booleanOrNull == true,
 				upcoming = (obj["Upcoming"] as? JsonPrimitive)?.booleanOrNull == true,
+				discover = (obj["Discover"] as? JsonPrimitive)?.booleanOrNull == true,
 				moviesTitle = obj.text("MoviesTitle"),
 				seriesTitle = obj.text("SeriesTitle"),
 				liveTvTitle = obj.text("LiveTvTitle"),
