@@ -267,6 +267,8 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 		// Fokus kommt in die Zeilen: Infobereich zeigt die dort ausgewählte Karte
 		val focusListener = android.view.ViewTreeObserver.OnGlobalFocusChangeListener { _, newFocus ->
 			val grid = verticalGridView ?: return@OnGlobalFocusChangeListener
+			// Für die Trailer-Vorschau in den Reihen: nur solange eine Karte der Reihen den Fokus hat
+			HomeHeroState.rowsFocused.value = newFocus != null && newFocus !== grid && isDescendant(grid, newFocus)
 			if (newFocus != null && newFocus !== grid && isDescendant(grid, newFocus)) {
 				HomeHeroState.world.value = selectedWorld
 				if (selectedWorld == null && selectedHeroItem != null && HomeHeroState.item.value?.id != selectedHeroItem?.id) HomeHeroState.item.value = selectedHeroItem
@@ -274,7 +276,13 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 		}
 		view.viewTreeObserver.addOnGlobalFocusChangeListener(focusListener)
 		viewLifecycleOwner.lifecycle.addObserver(object : androidx.lifecycle.DefaultLifecycleObserver {
+			override fun onPause(owner: androidx.lifecycle.LifecycleOwner) {
+				// Seite verlassen (Detailseite, Player): Vorschau aus
+				HomeHeroState.rowsFocused.value = false
+			}
+
 			override fun onDestroy(owner: androidx.lifecycle.LifecycleOwner) {
+				HomeHeroState.rowsFocused.value = false
 				if (view.viewTreeObserver.isAlive) view.viewTreeObserver.removeOnGlobalFocusChangeListener(focusListener)
 			}
 		})
@@ -379,6 +387,16 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			// das Banner nicht überschreiben. Welt-Kacheln haben keinen eigenen Titel.
 			// Nie auf leer setzen (Leanback meldet beim Neuaufbau der Zeilen auch „nichts ausgewählt“)
 			(item as? BaseRowItem)?.baseItem?.let { selectedHeroItem = it }
+			// Für das Client-Log der Trailer-Vorschau: in welcher Reihe die Karte steht
+			(row as? ListRow)?.headerItem?.name?.let { HomeHeroState.rowTitle.value = it }
+			// Vorschau nur für den Titel, der wirklich zur ausgewählten Karte gehört (nicht für Entdecken-, Welt- oder
+			// Radarr-Karten, bei denen der Infobereich noch den vorigen Titel zeigt)
+			HomeHeroState.rowItemId.value = when (item) {
+				is BaseRowItem -> item.baseItem?.id
+				is org.jellyfin.androidtv.tvclient.TvClientSections.Upcoming -> item.series?.id
+				is org.jellyfin.androidtv.tvclient.TvClientSections.MovieSeries -> item.next?.id
+				else -> null
+			}
 			// Demnächst: Folge → Infobereich zeigt die Serie
 			(item as? org.jellyfin.androidtv.tvclient.TvClientSections.Upcoming)?.series?.let { series ->
 				selectedHeroItem = series

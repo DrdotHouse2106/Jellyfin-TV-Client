@@ -41,6 +41,25 @@ object TrailerPreview {
 	// Neuer Schlüssel: Trailer laufen jetzt standardmäßig mit Ton (alter Schlüssel „…_sound“ war aus)
 	val soundPreference = booleanPreference("pref_tvclient_trailer_sound_on", true)
 
+	/** Vorschau auch beim Stehenbleiben auf einer Karte in den Reihen der Startseite (nicht nur im Banner). */
+	val rowsPreference = booleanPreference("pref_tvclient_trailer_preview_rows", true)
+
+	/** Wartezeit in den Reihen; auf alten Geräten (Android 5) etwas länger, damit beim Blättern nichts ruckelt. */
+	val rowDelay get() = if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) 5.seconds else 3.seconds
+
+	private val reportedMissing = java.util.Collections.synchronizedSet(mutableSetOf<java.util.UUID>())
+
+	/** Ohne Trailer bleibt das Bild – einmal je Titel ins Client-Log (Reihe, Titel, Grund). */
+	fun reportMissing(row: String?, item: BaseItemDto) {
+		if (!reportedMissing.add(item.id)) return
+		val reason = when {
+			item.type != BaseItemKind.MOVIE && item.type != BaseItemKind.SERIES -> "kein Film und keine Serie (${item.type})"
+			(item.localTrailerCount ?: 0) == 0 -> "kein lokaler Trailer"
+			else -> "nur zu kurze Trailer (unter 15 s) oder nicht abrufbar"
+		}
+		ClientDiagnostics.report("Trailer-Vorschau: kein Trailer – Reihe „${row ?: "?"}“, „${item.name}“ (${item.id}): $reason")
+	}
+
 	/** Lautstärke von Trailern relativ zur Gerätelautstärke (nicht so laut wie Filme). */
 	const val volume = 0.75f
 

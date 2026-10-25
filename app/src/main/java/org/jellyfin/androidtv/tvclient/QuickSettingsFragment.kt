@@ -229,6 +229,8 @@ private fun QuickSettings(onChooseAvatar: () -> Unit) {
 
 		Section(stringResource(R.string.tvclient_trailer_preview))
 		Choices(listOf(Choice(true, on), Choice(false, off)), prefs[TrailerPreview.enabledPreference]) { set(TrailerPreview.enabledPreference, it) }
+		Section(stringResource(R.string.tvclient_trailer_preview_rows))
+		Choices(listOf(Choice(true, on), Choice(false, off)), prefs[TrailerPreview.rowsPreference]) { set(TrailerPreview.rowsPreference, it) }
 		Section(stringResource(R.string.tvclient_quick_trailer_sound))
 		Choices(listOf(Choice(true, on), Choice(false, off)), prefs[TrailerPreview.soundPreference]) { set(TrailerPreview.soundPreference, it) }
 

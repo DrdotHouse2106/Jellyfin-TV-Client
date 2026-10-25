@@ -29,6 +29,7 @@ German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md
 
 \* needs the server plugin Local Recommendations (Top 10 of all users and thumbs since 12.6.0).
 
+- New in 1.39.0: trailer preview also when the selection rests on a movie or series in a row (setting "Trailer preview in rows").
 - New in 1.38.0 (Local Recommendations 12.54+): discover rows "In cinemas soon", "New this year – movies/series", like Jellyfin Web.
 - 1.37.1: screensaver and trailer preview use only real trailers (no other extras), clips under 15 s are skipped.
 - 1.37.0: HDR is only played directly if the TV can show it (otherwise the server tone-maps to SDR); setting "HDR": Automatic / Always convert / Always direct.

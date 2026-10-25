@@ -17,7 +17,7 @@ Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** 
 **Startseite**
 - Navigation am linken Rand, großer Infobereich mit Logo, Eckdaten und Beschreibung
 - Banner mit wechselnden Vorschlägen und den Knöpfen Abspielen / Mehr Infos / Trailer; nach dem Anmelden ist „Abspielen“ ausgewählt. Mit „Links“ und „Rechts“ am Rand der Knöpfe wechselt man zum vorherigen bzw. nächsten Vorschlag
-- **Trailer-Vorschau im Banner:** nach drei Sekunden läuft oben der Trailer vom Server (mit Ton bei 75 %, abschaltbar); das Banner wechselt erst nach dem Trailer weiter. Steht die Auswahl in einer Reihe, bleibt es beim Bild
+- **Trailer-Vorschau im Banner:** nach drei Sekunden läuft oben der Trailer vom Server (mit Ton bei 75 %, abschaltbar); das Banner wechselt erst nach dem Trailer weiter. Ab 1.39.0 läuft die Vorschau auch, wenn die Auswahl auf einem Film oder einer Serie in einer Reihe stehen bleibt (abschaltbar: „Trailer-Vorschau in Reihen“)
 - „Trailer“ öffnet den Trailer in einem kleinen Fenster in der App (vom Server, sonst YouTube)
 - Zeilen **Empfohlene Filme / Serien für dich** und **Heute im TV für dich** *
 - **Warum empfohlen?** Kurze Begründung im Infobereich und auf der Detailseite, z. B. „Weil du „…“ geschaut hast“ oder „Nächster Teil nach „…““ (Plugin ab 12.9.0) *

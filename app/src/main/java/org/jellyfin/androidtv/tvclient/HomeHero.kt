@@ -74,8 +74,17 @@ object HomeHeroState {
 	/** Ausgewählte Welt-Kachel – dann zeigt der Infobereich die Welt statt eines Titels. */
 	val world = MutableStateFlow<Worlds.World?>(null)
 
-	/** Ist die Banner-Knopfzeile ausgewählt? Nur dann läuft die Trailer-Vorschau. */
+	/** Ist die Banner-Knopfzeile ausgewählt? Dann läuft die Trailer-Vorschau. */
 	val billboardFocused = MutableStateFlow(false)
+
+	/** Hat eine Karte der Reihen den Fokus? Dann läuft die Vorschau des ausgewählten Titels (abschaltbar). */
+	val rowsFocused = MutableStateFlow(false)
+
+	/** Titel, der zur ausgewählten Karte der Reihen gehört (null bei Karten ohne eigenen Titel, z. B. Entdecken). */
+	val rowItemId = MutableStateFlow<java.util.UUID?>(null)
+
+	/** Titel der Reihe mit der ausgewählten Karte (für das Client-Log). */
+	val rowTitle = MutableStateFlow<String?>(null)
 }
 
 /**
@@ -103,6 +112,12 @@ fun HomeHeroBackdrop(modifier: Modifier = Modifier) {
 		}
 	}
 
+	// Jellyfin-TV-Client: Vorschau auch beim Stehenbleiben auf einer Karte in den Reihen (abschaltbar)
+	val rowsFocused by HomeHeroState.rowsFocused.collectAsState()
+	val rowItemId by HomeHeroState.rowItemId.collectAsState()
+	val rowPreview = rowsFocused && !billboardFocused && rowItemId != null && rowItemId == item?.id && userPreferences[TrailerPreview.rowsPreference]
+	val previewActive = billboardFocused || rowPreview
+
 	Box(modifier.fillMaxSize().background(Color.Black)) {
 		AnimatedContent(
 			targetState = item,
@@ -118,11 +133,22 @@ fun HomeHeroBackdrop(modifier: Modifier = Modifier) {
 
 			// Trailer-Vorschau: nach kurzer Zeit auf demselben Titel statt des Bildes
 			var trailerUrl by remember(current?.id) { mutableStateOf<String?>(null) }
-			// Nur solange das Banner ausgewählt ist – steht der Fokus in einer Reihe, bleibt es beim Bild
-			LaunchedEffect(current?.id, billboardFocused) {
+			// Solange das Banner bzw. eine Karte der Reihen ausgewählt ist; jeder Fokuswechsel stoppt sofort
+			LaunchedEffect(current?.id, previewActive) {
 				trailerUrl = null
-				if (!billboardFocused) HomeHeroState.trailerPlaying.value = false
-				if (current == null || !billboardFocused || !userPreferences[TrailerPreview.enabledPreference]) return@LaunchedEffect
+				if (!previewActive) HomeHeroState.trailerPlaying.value = false
+				if (current == null || !previewActive || !userPreferences[TrailerPreview.enabledPreference]) return@LaunchedEffect
+				if (rowPreview) {
+					// In den Reihen erst, wenn die Auswahl still steht (kein Laden beim Durchblättern)
+					delay(TrailerPreview.rowDelay)
+					val url = TrailerPreview.streamUrl(api, current)
+					if (url == null) {
+						TrailerPreview.reportMissing(HomeHeroState.rowTitle.value, current)
+						return@LaunchedEffect
+					}
+					trailerUrl = url
+					return@LaunchedEffect
+				}
 				val url = TrailerPreview.streamUrl(api, current) ?: return@LaunchedEffect
 				// Nach „Zurück“ von der Detailseite gleich an derselben Stelle weiter
 				if (TrailerPreview.resumePosition(url) == null) delay(TrailerPreview.delay)
