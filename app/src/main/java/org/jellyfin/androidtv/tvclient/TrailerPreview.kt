@@ -79,7 +79,8 @@ object TrailerPreview {
 
 		return try {
 			val trailer = withContext(Dispatchers.IO) {
-				api.userLibraryApi.getLocalTrailers(item.id).content.firstOrNull()
+				// Nur echte Trailer, Clips unter 15 s überspringen, „Trailer“ vor „Teaser“
+				ScreensaverTrailers.pickTrailer(api.userLibraryApi.getLocalTrailers(item.id).content)
 			} ?: return null
 
 			api.createUrl(

@@ -14,18 +14,22 @@ class ScreensaverTrailersTests : FunSpec({
 		runTimeTicks = seconds?.let { it * 10_000_000 },
 	)
 
-	test("Teaser am Namen erkennen") {
-		val teaser = video("Dune - Teaser", 150)
-		ScreensaverTrailers.pickTeaser(listOf(video("Dune - Trailer", 140), teaser)) shouldBe teaser
+	test("Trailer vor Teaser, sonst der längste") {
+		val trailer = video("Dune - Trailer", 140)
+		ScreensaverTrailers.pickTrailer(listOf(video("Dune - Teaser", 150), trailer)) shouldBe trailer
+		val long = video("Spot 2", 120)
+		ScreensaverTrailers.pickTrailer(listOf(video("Spot 1", 80), long)) shouldBe long
 	}
 
-	test("Sonst das kürzeste Video unter 100 Sekunden") {
-		val short = video("Clip", 45)
-		ScreensaverTrailers.pickTeaser(listOf(video("Trailer", 150), video("Spot", 80), short)) shouldBe short
+	test("Clips unter 15 Sekunden fallen weg") {
+		ScreensaverTrailers.pickTrailer(listOf(video("Das Mercury Puzzle-other", 6))) shouldBe null
+		val ok = video("Trailer", 59)
+		ScreensaverTrailers.pickTrailer(listOf(video("Clip", 6), ok)) shouldBe ok
 	}
 
-	test("Kein Teaser vorhanden") {
-		ScreensaverTrailers.pickTeaser(listOf(video("Trailer", 150))) shouldBe null
+	test("Ohne Längenangabe gilt ein Trailer als brauchbar") {
+		val unknown = video("Trailer", null)
+		ScreensaverTrailers.pickTrailer(listOf(unknown)) shouldBe unknown
 	}
 
 	test("Anzeigedauer: unbrauchbar kurze oder fehlende Länge gilt als Standard") {

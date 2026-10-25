@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.37.1 – 2026-10-25
+
+- **Nur echte Trailer:** Bildschirmschoner und Trailer-Vorschau nehmen nur noch Trailer des Titels (lokale Trailer bzw. Extras vom Typ „Trailer“) – nie andere Extras wie Making-of, entfallene Szenen oder kurze DVD-Clips. Bisher galt jedes Extra unter 100 Sekunden als „Teaser“, sodass z. B. ein 6-Sekunden-Clip lief.
+- Clips unter 15 Sekunden werden übersprungen. Hat ein Titel mehrere Trailer, gewinnt einer mit „Trailer“ im Namen vor dem „Teaser“, sonst der längste.
+
 ## 1.37.0 – 2026-10-25
 
 - **HDR nur auf HDR-Fernsehern direkt:** Bisher entschied allein der Decoder des Sticks – an einem Fernseher ohne HDR war das Bild bei HDR-Filmen zu dunkel und blass. Jetzt prüft die App bei jedem Wiedergabestart, welche HDR-Arten der Bildschirm meldet (HDR10, HDR10+, HLG, Dolby Vision), und spielt nur diese direkt ab; den Rest wandelt der Server mit Tonemapping nach SDR um. Einzeln je Art: Kann der Fernseher HDR10, aber kein Dolby Vision, laufen Dolby-Vision-Filme mit HDR10-Grundlage als HDR10 direkt.

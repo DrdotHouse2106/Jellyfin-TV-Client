@@ -28,41 +28,47 @@ object ScreensaverTrailers {
 	data class Trailer(val url: String, val duration: Duration?)
 
 	/**
-	 * Video für den Bildschirmschoner: ein **Teaser** vom Server, wenn es einen gibt (kurz, kaum
-	 * Spoiler), sonst der erste Trailer. Teaser erkennt die App am Namen bzw. Dateipfad („Teaser“)
-	 * oder an der Länge (bis 100 Sekunden), unter Trailern und Extras.
+	 * Video für den Bildschirmschoner: nur **echte Trailer** des Titels (LocalTrailers bzw. Extras vom Typ
+	 * Trailer) – nie andere Extras wie Making-of, entfallene Szenen oder kurze Clips von DVDs.
 	 */
 	suspend fun trailer(api: ApiClient, item: BaseItemDto): Trailer? {
 		if (item.type != BaseItemKind.MOVIE && item.type != BaseItemKind.SERIES) return null
 		return runCatching {
-			val (trailers, extras) = withContext(Dispatchers.IO) {
+			val candidates = withContext(Dispatchers.IO) {
 				val trailers = api.userLibraryApi.getLocalTrailers(item.id).content
-				val extras = runCatching { api.userLibraryApi.getSpecialFeatures(item.id).content }.getOrDefault(emptyList())
-				trailers to extras
+				val extraTrailers = runCatching { api.userLibraryApi.getSpecialFeatures(item.id).content }.getOrDefault(emptyList())
+					.filter { it.extraType == org.jellyfin.sdk.model.api.ExtraType.TRAILER }
+				(trailers + extraTrailers).distinctBy { it.id }
 			}
-			val video = pickTeaser(trailers + extras) ?: trailers.firstOrNull() ?: return null
+			val video = pickTrailer(candidates)
+			if (video == null) {
+				if (candidates.isNotEmpty()) ClientDiagnostics.report("Bildschirmschoner: zu „${item.name}“ nur zu kurze Trailer (${candidates.joinToString { "${it.name} ${it.runTimeTicks?.ticks}" }}) – zeige das Bild")
+				return null
+			}
 			val url = api.createUrl(
 				pathTemplate = "/Videos/{itemId}/stream",
 				pathParameters = mapOf("itemId" to video.id),
 				// Anmeldung per Header (ServerAuth), nicht in der Adresse
 				queryParameters = mapOf("static" to true),
 			)
-			val duration = video.runTimeTicks?.ticks
-			if (duration == null || duration < minDuration) {
-				ClientDiagnostics.report("Bildschirmschoner: Trailer „${video.name}“ (${video.id}) zu „${item.name}“ ohne brauchbare Länge ($duration) – zeige ihn mit Standardlänge")
-			}
-			Trailer(url, duration)
+			Trailer(url, video.runTimeTicks?.ticks)
 		}.getOrNull()
 	}
 
-	/** Teaser auswählen (testbar): Name/Pfad mit „Teaser“ zuerst, sonst ein kurzes Video. */
-	fun pickTeaser(videos: List<BaseItemDto>): BaseItemDto? {
-		fun BaseItemDto.isTeaser() = listOfNotNull(name, path).any { it.contains("teaser", ignoreCase = true) }
-		return videos.firstOrNull { it.isTeaser() }
-			?: videos.filter { (it.runTimeTicks?.ticks ?: maxTeaser) < maxTeaser }.minByOrNull { it.runTimeTicks ?: Long.MAX_VALUE }
+	/**
+	 * Trailer auswählen (testbar): Clips unter 15 Sekunden fallen weg, „Trailer“ im Namen geht vor „Teaser“,
+	 * sonst der längste. Videos ohne Längenangabe (z. B. gerade neu eingelesen) gelten als brauchbar.
+	 */
+	fun pickTrailer(videos: List<BaseItemDto>): BaseItemDto? {
+		fun BaseItemDto.named(word: String) = listOfNotNull(name, path).any { it.contains(word, ignoreCase = true) }
+		return videos
+			.filter { video -> video.runTimeTicks?.ticks?.let { it >= minDuration } ?: true }
+			.sortedWith(
+				compareByDescending<BaseItemDto> { it.named("trailer") && !it.named("teaser") }
+					.thenByDescending { it.runTimeTicks ?: 0L }
+			)
+			.firstOrNull()
 	}
-
-	private val maxTeaser = 100.seconds
 
 	/** Unter dieser Länge ist die Angabe unbrauchbar (z. B. frisch ersetzte Trailer-Datei, noch nicht neu eingelesen). */
 	private val minDuration = 15.seconds
