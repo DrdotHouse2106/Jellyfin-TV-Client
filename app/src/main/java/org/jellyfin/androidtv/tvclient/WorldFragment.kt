@@ -10,6 +10,7 @@ import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,7 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -97,6 +98,17 @@ private fun WorldScreen(key: String) {
 	val page = "world-$key"
 	val restoreKey = remember { PageFocus.take(page) }
 	val restore = remember { FocusRequester() }
+	// „Chronologisch (Handlungszeit)“ (Plugin ab 12.55); Standard Erscheinungsjahr, bleibt nach „Zurück“ erhalten
+	var chronological by remember { mutableStateOf(PageFocus.chronological(page)) }
+	var chronoSections by remember { mutableStateOf<List<Worlds.Section>?>(null) }
+	LaunchedEffect(chronological, world) {
+		PageFocus.setChronological(page, chronological)
+		val current = world ?: return@LaunchedEffect
+		if (!chronological || chronoSections != null) return@LaunchedEffect
+		val userId = userRepository.currentUser.value?.id ?: return@LaunchedEffect
+		chronoSections = Worlds.chronologySections(api, userId, current, context.getString(R.string.tvclient_world_chronological))
+	}
+	val shown = if (chronological && world?.chronology?.isNotEmpty() == true) chronoSections else sections
 
 	LaunchedEffect(key) {
 		val userId = userRepository.currentUser.value?.id ?: run { sections = emptyList(); return@LaunchedEffect }
@@ -110,17 +122,17 @@ private fun WorldScreen(key: String) {
 		)
 		sections = Worlds.sections(api, userId, found, labels)
 	}
-	LaunchedEffect(sections) {
-		if (!sections.isNullOrEmpty()) {
+	LaunchedEffect(shown) {
+		if (!shown.isNullOrEmpty()) {
 			delay(100)
-			val present = sections.orEmpty().withIndex().any { (row, section) -> section.items.any { "$row:${it.id}" == restoreKey } }
+			val present = shown.orEmpty().withIndex().any { (row, section) -> section.items.any { "$row:${it.id}" == restoreKey } }
 			restoreFocus(restore, firstFocus, present)
 		}
 	}
 
 	val accent = Color(world?.definition?.color ?: 0xFF333333)
 	// Hintergrund: Bild des ersten Titels mit Hintergrundbild
-	val backdrop = sections.orEmpty().asSequence().flatMap { it.items.asSequence() }.firstNotNullOfOrNull(::heroBackdropImage)
+	val backdrop = (shown ?: sections).orEmpty().asSequence().flatMap { it.items.asSequence() }.firstNotNullOfOrNull(::heroBackdropImage)
 
 	Box(Modifier.fillMaxSize().background(Color.Black)) {
 		if (backdrop != null) {
@@ -173,13 +185,20 @@ private fun WorldScreen(key: String) {
 			)
 			// Farbe der Welt nur als schmaler Akzent unter dem Namen
 			Box(Modifier.padding(top = 8.dp).width(64.dp).height(3.dp).clip(RoundedCornerShape(2.dp)).background(accent))
+			// Umschalter nur, wenn die Welt eine Chronologie hat
+			if (current?.chronology?.any { it.itemId != null } == true) {
+				Row(Modifier.padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+					OrderButton(stringResource(R.string.tvclient_world_order_year), active = !chronological) { chronological = false }
+					OrderButton(stringResource(R.string.tvclient_world_order_chrono), active = chronological) { chronological = true }
+				}
+			}
 			Spacer(Modifier.height(16.dp))
 			// Beschnitten, damit die Reihen nicht unter den Kopf laufen
 			Column(Modifier.weight(1f).clipToBounds().verticalScroll(rememberScrollState())) {
 				when {
-					sections == null -> Text(stringResource(R.string.loading), color = Color(0xFFB3B3B3))
-					sections!!.isEmpty() -> Text(stringResource(R.string.tvclient_world_empty), color = Color(0xFFB3B3B3))
-					else -> sections!!.forEachIndexed { index, section ->
+					shown == null -> Text(stringResource(R.string.loading), color = Color(0xFFB3B3B3))
+					shown.isEmpty() -> Text(stringResource(R.string.tvclient_world_empty), color = Color(0xFFB3B3B3))
+					else -> shown.forEachIndexed { index, section ->
 						WorldRow(index, section, if (index == 0) firstFocus else null, restoreKey, restore) { itemKey, item ->
 							PageFocus.set(page, itemKey)
 							navigationRepository.navigate(Destinations.itemDetails(item.id))
@@ -217,7 +236,8 @@ private fun WorldRow(
 			horizontalArrangement = Arrangement.spacedBy(16.dp),
 			contentPadding = PaddingValues(12.dp),
 		) {
-			items(section.items, key = { it.id }) { item ->
+			// Ein Titel kann in der Chronologie mehrfach vorkommen (z. B. verschiedene Staffeln)
+			itemsIndexed(section.items, key = { index, item -> "$index-${item.id}" }) { index, item ->
 				val itemKey = "$row:${item.id}"
 				var modifier = Modifier.width(120.dp)
 				if (itemKey == restoreKey) modifier = modifier.focusRequester(restore)
@@ -225,14 +245,14 @@ private fun WorldRow(
 					modifier = modifier.focusRequester(first).firstItemScroll(listState, scope)
 					if (focus != null) modifier = modifier.focusRequester(focus)
 				}
-				PosterCard(item, modifier) { onClick(itemKey, item) }
+				PosterCard(item, modifier, section.captions?.getOrNull(index)) { onClick(itemKey, item) }
 			}
 		}
 	}
 }
 
 @Composable
-private fun PosterCard(item: BaseItemDto, modifier: Modifier, onClick: () -> Unit) {
+private fun PosterCard(item: BaseItemDto, modifier: Modifier, caption: String? = null, onClick: () -> Unit) {
 	val imageHelper = koinInject<ImageHelper>()
 	val interaction = remember { MutableInteractionSource() }
 	val focused by interaction.collectIsFocusedAsState()
@@ -275,5 +295,24 @@ private fun PosterCard(item: BaseItemDto, modifier: Modifier, onClick: () -> Uni
 				color = if (focused) Color.White else Color(0xFFB3B3B3),
 			)
 		}
+		// Chronologie: Handlungszeit und ggf. Staffeln, z. B. „2256–2258 · Staffel 1–2“
+		caption?.let {
+			Text(it, maxLines = 2, overflow = TextOverflow.Ellipsis, fontSize = 12.sp, lineHeight = 15.sp, color = Color(0xFF8A8F99))
+		}
+	}
+}
+
+@Composable
+private fun OrderButton(label: String, active: Boolean, onClick: () -> Unit) {
+	val interaction = remember { MutableInteractionSource() }
+	val focused by interaction.collectIsFocusedAsState()
+	Box(
+		Modifier
+			.clip(RoundedCornerShape(8.dp))
+			.background(if (focused) Color.White else Color.White.copy(alpha = if (active) 0.28f else 0.12f))
+			.clickable(interactionSource = interaction, indication = null, onClick = onClick)
+			.padding(horizontal = 18.dp, vertical = 8.dp)
+	) {
+		Text((if (active) "✓  " else "") + label, color = if (focused) Color.Black else Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp)
 	}
 }

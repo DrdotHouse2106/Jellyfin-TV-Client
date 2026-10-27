@@ -54,6 +54,15 @@ object PageFocus {
 
 	/** Einmalig abholen – ein späteres neues Öffnen der Seite beginnt wieder oben. */
 	fun take(page: String): String? = keys.remove(page)
+
+	private val chronologicalPages = mutableSetOf<String>()
+
+	/** Welt-Seite: zuletzt gewählte Sortierung („Chronologisch“), damit sie nach „Zurück“ erhalten bleibt. */
+	fun chronological(page: String) = page in chronologicalPages
+
+	fun setChronological(page: String, value: Boolean) {
+		if (value) chronologicalPages += page else chronologicalPages -= page
+	}
 }
 
 /** Reihe zur wiederherzustellenden Karte scrollen, damit sie zusammengesetzt ist und den Fokus bekommen kann. */

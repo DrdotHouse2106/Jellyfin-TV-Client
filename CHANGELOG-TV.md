@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.40.0 – 2026-10-27
+
+- **Welten chronologisch** (Plugin Local Recommendations ab 12.55): Hat eine Welt eine Reihenfolge nach Handlungszeit (z. B. Star Trek), erscheinen oben die Knöpfe „Erscheinungsjahr“ und „Chronologisch (Handlungszeit)“. Chronologisch stehen die Titel in Abschnitten wie „Hauptzeitlinie“ oder „Kelvin-Zeitlinie (alternativ)“, unter jeder Karte die Handlungszeit und bei Serien die Staffeln, z. B. „2256–2258 · Staffel 1–2“. Standard bleibt das Erscheinungsjahr; die Wahl bleibt nach „Zurück“ erhalten.
+
 ## 1.39.0 – 2026-10-25
 
 - **Trailer-Vorschau auch in den Reihen:** Bleibt die Auswahl etwa 3 Sekunden auf einem Film oder einer Serie stehen (auf Android 5 nach 5 Sekunden), läuft oben im Infobereich der Trailer – wie beim Banner und im Web. Jeder Fokuswechsel, das Weiterblättern oder Öffnen stoppt ihn sofort; es läuft immer nur ein Trailer (kein Ton-Überlappen mit dem Banner). Gleiche Auswahl wie im Bildschirmschoner: nur echte Trailer, nichts unter 15 Sekunden, „Trailer“ vor „Teaser“.

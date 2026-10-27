@@ -119,12 +119,22 @@ object Worlds {
 		val backdropUrl: String? = null,
 		/** Titel mit lokalem Trailer für die Vorschau (Plugin-Feld „TrailerItemId“). */
 		val trailerItemId: String? = null,
+		/** Reihenfolge nach Handlungszeit (Plugin ab 12.55, Feld „Chronology“), sonst leer. */
+		val chronology: List<ChronologyEntry> = emptyList(),
 	) {
 		val key get() = definition.key
 		val name get() = definition.name
 	}
 
-	data class Section(val title: String, val items: List<BaseItemDto>)
+	/** Abschnitt bzw. Titel mit Handlungszeit (bei Serien ggf. nur bestimmte Staffeln). */
+	data class ChronologyEntry(val section: String? = null, val itemId: UUID? = null, val label: String? = null, val seasons: List<Int> = emptyList()) {
+		/** „2256–2258 · Staffel 1–2“; ohne Zeitangabe nur die Staffeln. */
+		val caption: String
+			get() = listOfNotNull(label?.takeIf { it.isNotBlank() }, seasonsText(seasons)).joinToString(" · ")
+	}
+
+	/** [captions] (falls gesetzt) steht je Karte darunter, z. B. die Handlungszeit. */
+	data class Section(val title: String, val items: List<BaseItemDto>, val captions: List<String?>? = null)
 
 	/** Überschriften der Welt-Seite (aus den Ressourcen). */
 	data class Labels(val forYou: String, val latest: String, val movies: String, val series: String)
@@ -205,7 +215,8 @@ object Worlds {
 						// Logo der Welt vom eigenen Server (Plugin, aus dem Welten-Repo), sonst das Studio-Bild
 						val logo = pluginWorlds?.let { pluginField(it, definition, "LogoUrl") }?.let { serverUrl(api, it) }
 						val trailerItemId = pluginWorlds?.let { pluginField(it, definition, "TrailerItemId") }
-						World(definition, matchedStudios.map { it.id }, matchedCollections, count, logo ?: image, backdrop, trailerItemId)
+						val chronology = pluginWorlds?.let { pluginChronology(it, definition) }.orEmpty()
+						World(definition, matchedStudios.map { it.id }, matchedCollections, count, logo ?: image, backdrop, trailerItemId, chronology)
 					}
 				}.awaitAll()
 			}.filter { it.count >= MIN_ITEMS }
@@ -394,6 +405,58 @@ object Worlds {
 
 	/** ImageItemId der passenden Plugin-Welt. */
 	fun pluginImageItemId(text: String, definition: Definition): String? = pluginField(text, definition, "ImageItemId")
+
+	/** „Chronology“ der passenden Plugin-Welt (testbar); null oder fehlend → leer. */
+	fun pluginChronology(text: String, definition: Definition): List<ChronologyEntry> {
+		val id = pluginWorldId(text, definition) ?: return emptyList()
+		val list = runCatching { json.parseToJsonElement(text) as? JsonArray }.getOrNull() ?: return emptyList()
+		val world = list.mapNotNull { it as? JsonObject }.firstOrNull { (it["Id"] as? JsonPrimitive)?.content == id } ?: return emptyList()
+		return (world["Chronology"] as? JsonArray).orEmpty().mapNotNull { entry ->
+			val obj = entry as? JsonObject ?: return@mapNotNull null
+			fun text(key: String) = (obj[key] as? JsonPrimitive)?.takeIf { it.isString }?.content?.takeIf { it.isNotBlank() }
+			text("Section")?.let { return@mapNotNull ChronologyEntry(section = it) }
+			val itemId = text("ItemId")?.toUUIDOrNull() ?: return@mapNotNull null
+			val seasons = (obj["Seasons"] as? JsonArray).orEmpty().mapNotNull { (it as? JsonPrimitive)?.content?.toIntOrNull() }
+			ChronologyEntry(itemId = itemId, label = text("Label"), seasons = seasons)
+		}
+	}
+
+	/** „Staffel 1–2“, „Staffel 3“, „Staffel 1, 3“ (testbar); leer → null. */
+	fun seasonsText(seasons: List<Int>): String? {
+		if (seasons.isEmpty()) return null
+		val sorted = seasons.sorted()
+		if (sorted.size == 1) return "Staffel ${sorted[0]}"
+		val consecutive = sorted.zipWithNext().all { (a, b) -> b == a + 1 }
+		return if (consecutive) "Staffel ${sorted.first()}–${sorted.last()}" else "Staffel ${sorted.joinToString(", ")}"
+	}
+
+	/** Chronologie in Abschnitte teilen (testbar): jede Überschrift beginnt eine neue Reihe, leere fallen weg. */
+	fun chronologyGroups(entries: List<ChronologyEntry>, fallbackTitle: String): List<Pair<String, List<ChronologyEntry>>> {
+		val groups = mutableListOf<Pair<String, MutableList<ChronologyEntry>>>()
+		for (entry in entries) {
+			when {
+				entry.section != null -> groups += entry.section to mutableListOf()
+				entry.itemId != null -> {
+					if (groups.isEmpty()) groups += fallbackTitle to mutableListOf()
+					groups.last().second += entry
+				}
+			}
+		}
+		return groups.filter { it.second.isNotEmpty() }
+	}
+
+	/** Welt-Seite „Chronologisch (Handlungszeit)“: Abschnitte in Handlungsreihenfolge, Zeitangabe unter jeder Karte. */
+	suspend fun chronologySections(api: ApiClient, userId: UUID, world: World, fallbackTitle: String): List<Section> = withContext(Dispatchers.IO) {
+		val groups = chronologyGroups(world.chronology, fallbackTitle)
+		val ids = groups.flatMap { (_, entries) -> entries.mapNotNull { it.itemId } }.distinct()
+		val byId = runCatching {
+			api.itemsApi.getItems(GetItemsRequest(userId = userId, ids = ids, fields = ItemRepository.browseFields, enableTotalRecordCount = false)).content.items
+		}.onFailure { Timber.w(it, "Chronologie der Welt konnte nicht geladen werden") }.getOrDefault(emptyList()).associateBy { it.id }
+		groups.mapNotNull { (title, entries) ->
+			val found = entries.mapNotNull { entry -> entry.itemId?.let(byId::get)?.let { it to entry.caption.ifBlank { null } } }
+			if (found.isEmpty()) null else Section(title, found.map { it.first }, found.map { it.second })
+		}
+	}
 
 	/** Ein Textfeld der passenden Plugin-Welt (z. B. „LogoUrl“). */
 	fun pluginField(text: String, definition: Definition, field: String): String? {

@@ -128,7 +128,7 @@ Die Zeilen der Startseite stehen in einer festen Reihenfolge und lassen sich unt
 8. Filmreihen für dich *
 9. Heute im TV für dich * (nur mit Live-TV-Zugriff; Titel und Schalter vom Server wie im Web)
 10. Top 10 bei euch *
-11. Welten (Marvel, Disney, Pixar …)
+11. Welten (Marvel, Disney, Pixar …) – mit Handlungszeit-Liste vom Plugin (ab 12.55) auch „Chronologisch“ sortierbar
 12. Live-TV (TV-Programm, Aufnahmen, Läuft gerade; anfangs aus)
 13. Kürzlich hinzugefügt
 14. Genres (zufällige Titel, bei jedem Öffnen neu gemischt)
