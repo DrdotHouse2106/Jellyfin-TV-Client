@@ -479,17 +479,21 @@ object Worlds {
 	/** Id der Plugin-Welt, die zu dieser Welt passt (über Id, Name oder Studio), sonst null. */
 	fun pluginWorldId(text: String, definition: Definition): String? {
 		val list = runCatching { json.parseToJsonElement(text) as? JsonArray }.getOrNull() ?: return null
-		val candidates = (listOf(definition.name, definition.key) + definition.aliases).map(::normalize).toSet()
-		return list.firstNotNullOfOrNull { element ->
-			val obj = element as? JsonObject ?: return@firstNotNullOfOrNull null
-			val id = (obj["Id"] as? JsonPrimitive)?.content ?: return@firstNotNullOfOrNull null
-			val name = (obj["Name"] as? JsonPrimitive)?.content.orEmpty()
-			val keys = setOf(normalize(id), normalize(name))
-			val matched = keys.any { it in candidates } ||
-				candidates.any { candidate -> keys.any { it.contains(candidate) } } ||
-				definition.studios.any { name.lowercase().contains(it) }
-			id.takeIf { matched }
+		val worlds = list.mapNotNull { element ->
+			val obj = element as? JsonObject ?: return@mapNotNull null
+			val id = (obj["Id"] as? JsonPrimitive)?.content ?: return@mapNotNull null
+			id to (obj["Name"] as? JsonPrimitive)?.content.orEmpty()
 		}
+		// 1. Die Welt kommt vom Plugin: genau ihre Id
+		definition.pluginId?.let { pluginId -> worlds.firstOrNull { it.first == pluginId }?.let { return it.first } }
+		val candidates = (listOf(definition.name, definition.key) + definition.aliases).map(::normalize).toSet()
+		// 2. Genaue Übereinstimmung von Id oder Name – sonst träfe „Star Wars“ auch „Star Wars: Legends“
+		worlds.firstOrNull { (id, name) -> normalize(id) in candidates || normalize(name) in candidates }?.let { return it.first }
+		// 3. Erst dann Teilstring bzw. Studio
+		return worlds.firstOrNull { (id, name) ->
+			val keys = setOf(normalize(id), normalize(name))
+			candidates.any { candidate -> keys.any { it.contains(candidate) } } || definition.studios.any { name.lowercase().contains(it) }
+		}?.first
 	}
 
 	fun parseIds(text: String): List<UUID> {

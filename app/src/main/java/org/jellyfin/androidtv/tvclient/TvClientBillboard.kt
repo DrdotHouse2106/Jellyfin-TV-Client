@@ -37,11 +37,15 @@ object TvClientBillboard {
 	suspend fun isAvailable(): Boolean = withContext(Dispatchers.IO) {
 		val base = baseUrl()
 		if (availableFor == base) return@withContext available
-		available = runCatching {
-			val config = json.parseToJsonElement(TvClientBehavior.call("GET", "/LocalRecs/Web/Config").second) as? JsonObject
-			(config?.get("Billboard") as? JsonPrimitive)?.booleanOrNull == true
-		}.getOrDefault(false)
-		availableFor = base
+		// Nur eine echte Antwort merken (auch 404 = Plugin fehlt); nach einem Aussetzer beim nächsten Mal neu fragen
+		val result = runCatching {
+			val response = TvClientBehavior.call("GET", "/LocalRecs/Web/Config")
+			if (response.first == 404) return@runCatching false
+			val config = json.parseToJsonElement(response.second) as? JsonObject ?: error("keine gültige Antwort")
+			(config["Billboard"] as? JsonPrimitive)?.booleanOrNull == true
+		}
+		available = result.getOrDefault(false)
+		if (result.isSuccess) availableFor = base
 		available
 	}
 

@@ -8,6 +8,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.coroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -349,7 +350,8 @@ object TvClientSections {
 			.onFailure { Timber.w(it, "Filmreihen nicht verfügbar") }.getOrDefault(emptyList())
 		val cards = series.filter { it.next != null }
 		if (cards.isEmpty()) return@withContext null
-		reasons.value = reasons.value + cards.mapNotNull { s -> s.next?.id?.let { key(it) to s.caption } }
+		// Atomar ergänzen – mehrere Reihen laden gleichzeitig
+		reasons.update { it + cards.mapNotNull { s -> s.next?.id?.let { key(it) to s.caption } } }
 		HomeFragmentMovieSeriesRow(cfg.movieSeriesTitle ?: defaultTitle, cards)
 	}
 
@@ -379,7 +381,7 @@ object TvClientSections {
 		val moments = runCatching {
 			parseMoments(TvClientBehavior.call("GET", "/LocalRecs/Moments?utcOffsetMinutes=${TvClientBehavior.utcOffsetMinutes()}").second)
 		}.onFailure { Timber.w(it, "Momente nicht verfügbar") }.getOrDefault(emptyList())
-		reasons.value = reasons.value + moments.flatMap { it.reasons.entries }.associate { it.key to it.value }
+		reasons.update { it + moments.flatMap { m -> m.reasons.entries }.associate { e -> e.key to e.value } }
 		// Begründung je Karte darunter (z. B. „vor 20 Jahren“), wie im Web
 		moments.map { StaticRow(it.title, it.items, it.reasons) }
 	}

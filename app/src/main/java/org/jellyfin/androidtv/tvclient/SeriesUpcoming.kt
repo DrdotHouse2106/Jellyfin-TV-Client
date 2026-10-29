@@ -80,13 +80,21 @@ object SeriesUpcoming {
 		next?.let { nextEpisodeHint(it) }?.let { Info(it, null, emptySet()) }
 	}.getOrNull()
 
-	/** „Neue Folge am Fr. 30.10. · S01E18 Titel“ (testbar); Termine von Jellyfin sind in UTC. */
+	/** „Neue Folge am Fr. 30.10. · S01E18 Titel“ (testbar); das SDK liefert Termine schon in Gerätezeit. */
 	fun nextEpisodeHint(episode: BaseItemDto, zone: java.time.ZoneId = java.time.ZoneId.systemDefault()): String? {
 		val date = episode.premiereDate ?: return null
-		val local = date.atZone(java.time.ZoneOffset.UTC).withZoneSameInstant(zone)
+		val local = date.atZone(java.time.ZoneId.systemDefault()).withZoneSameInstant(zone)
 		val day = local.format(java.time.format.DateTimeFormatter.ofPattern("EEE dd.MM.", java.util.Locale.GERMAN))
 		val code = if (episode.parentIndexNumber != null && episode.indexNumber != null) "S%02dE%02d".format(episode.parentIndexNumber, episode.indexNumber) else null
 		val title = listOfNotNull(code, episode.name?.takeIf { it.isNotBlank() }).joinToString(" ")
 		return listOf("Neue Folge am $day", title).filter { it.isNotBlank() }.joinToString(" · ")
+	}
+
+	/** Termin um Mitternacht UTC = Platzhalter ohne Uhrzeit (testbar); [local] ist Gerätezeit wie vom SDK. */
+	@JvmStatic
+	@JvmOverloads
+	fun isPlaceholderTime(local: java.time.LocalDateTime, zone: java.time.ZoneId = java.time.ZoneId.systemDefault()): Boolean {
+		val utc = local.atZone(zone).withZoneSameInstant(java.time.ZoneOffset.UTC)
+		return utc.hour == 0 && utc.minute == 0
 	}
 }

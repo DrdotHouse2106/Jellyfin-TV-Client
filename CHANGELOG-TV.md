@@ -1,5 +1,15 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.40.1 – 2026-10-29
+
+Fehlerbehebungen nach einer Durchsicht:
+
+- **Richtiger Tag bei „Neue Folge am …“** auf der Serienseite: Spät abends (ab etwa 22 Uhr) stand dort der Folgetag, weil der Termin doppelt umgerechnet wurde.
+- **Termine ohne Uhrzeit:** Platzhalter-Termine (00:00 UTC) erscheinen jetzt auch in Deutschland ohne „01:00“/„02:00“.
+- **Welten richtig zugeordnet:** „Star Wars“ und „Star Wars: Legends“ werden nicht mehr verwechselt (genaue Zuordnung vor Teilstring).
+- Begründungen von Filmreihen und Momenten gehen beim gleichzeitigen Laden nicht mehr verloren.
+- Prüfungen, ob Plugin-Funktionen (Verhaltenssignale, Erinnerungen, Banner) verfügbar sind, merken sich einen Aussetzer nicht mehr bis zum Neustart.
+
 ## 1.40.0 – 2026-10-27
 
 - **Welten chronologisch** (Plugin Local Recommendations ab 12.55): Hat eine Welt eine Reihenfolge nach Handlungszeit (z. B. Star Trek), erscheinen oben die Knöpfe „Erscheinungsjahr“ und „Chronologisch (Handlungszeit)“. Chronologisch stehen die Titel in Abschnitten wie „Hauptzeitlinie“ oder „Kelvin-Zeitlinie (alternativ)“, unter jeder Karte die Handlungszeit und bei Serien die Staffeln, z. B. „2256–2258 · Staffel 1–2“. Standard bleibt das Erscheinungsjahr; die Wahl bleibt nach „Zurück“ erhalten.

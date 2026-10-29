@@ -78,11 +78,15 @@ object TvClientReminders {
 	suspend fun isAvailable(): Boolean = withContext(Dispatchers.IO) {
 		val base = api().baseUrl
 		if (availableFor == base) return@withContext available
-		available = runCatching {
-			val config = json.parseToJsonElement(call("GET", "/LocalRecs/Web/Config").body) as? JsonObject
-			(config?.get("Reminders") as? JsonPrimitive)?.booleanOrNull == true
-		}.getOrDefault(false)
-		availableFor = base
+		// Nur eine echte Antwort merken (auch 404 = Plugin fehlt); nach einem Aussetzer beim nächsten Mal neu fragen
+		val result = runCatching {
+			val response = call("GET", "/LocalRecs/Web/Config")
+			if (response.code == 404) return@runCatching false
+			val config = json.parseToJsonElement(response.body) as? JsonObject ?: error("keine gültige Antwort")
+			(config["Reminders"] as? JsonPrimitive)?.booleanOrNull == true
+		}
+		available = result.getOrDefault(false)
+		if (result.isSuccess) availableFor = base
 		available
 	}
 

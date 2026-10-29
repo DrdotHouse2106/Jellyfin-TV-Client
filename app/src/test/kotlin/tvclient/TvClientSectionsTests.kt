@@ -131,4 +131,18 @@ class TvClientSectionsTests : FunSpec({
 		serie.jellyfinId.toString() shouldBe "c2b157ea-3dc8-4584-a30b-cb96492eda16"
 		serie.providers shouldBe listOf("Netflix")
 	}
+
+	test("Serienseite: Hinweis aus Jellyfin in Gerätezeit, auch spät abends richtiger Tag") {
+		val berlin = java.time.ZoneId.of("Europe/Berlin")
+		// SDK liefert Gerätezeit; hier so tun, als stünde das Gerät in Berlin
+		val local = java.time.ZonedDateTime.of(2026, 10, 30, 22, 30, 0, 0, berlin).withZoneSameInstant(java.time.ZoneId.systemDefault()).toLocalDateTime()
+		val episode = org.jellyfin.sdk.model.api.BaseItemDto(
+			id = java.util.UUID.randomUUID(), type = org.jellyfin.sdk.model.api.BaseItemKind.EPISODE, name = "Folge",
+			parentIndexNumber = 1, indexNumber = 18, premiereDate = local,
+		)
+		SeriesUpcoming.nextEpisodeHint(episode, berlin) shouldBe "Neue Folge am Fr. 30.10. · S01E18 Folge"
+		// 00:00 UTC ist ein Platzhalter, auch wenn es in Berlin 01:00 ist
+		SeriesUpcoming.isPlaceholderTime(java.time.LocalDateTime.of(2026, 11, 6, 1, 0), berlin) shouldBe true
+		SeriesUpcoming.isPlaceholderTime(java.time.LocalDateTime.of(2026, 11, 6, 21, 0), berlin) shouldBe false
+	}
 })

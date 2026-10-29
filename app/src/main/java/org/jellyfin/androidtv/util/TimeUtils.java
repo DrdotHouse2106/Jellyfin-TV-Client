@@ -77,8 +77,9 @@ public class TimeUtils {
             }
         }
 
-        // Jellyfin-TV-Client: Mitternacht ist bei Terminen meist nur ein Platzhalter – dann ohne Uhrzeit
-        if (dateTime.getHour() == 0 && dateTime.getMinute() == 0) {
+        // Jellyfin-TV-Client: Mitternacht (UTC) ist bei Terminen meist nur ein Platzhalter – dann ohne Uhrzeit.
+        // Das SDK liefert Gerätezeit, deshalb zurück nach UTC rechnen (in Deutschland wird aus 00:00 UTC 01:00/02:00).
+        if (org.jellyfin.androidtv.tvclient.SeriesUpcoming.isPlaceholderTime(dateTime)) {
             return DateTimeExtensionsKt.getShortDateFormatter(context).format(dateTime);
         }
         return DateTimeExtensionsKt.getDateFormatter(context).format(dateTime);
