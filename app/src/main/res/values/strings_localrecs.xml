@@ -203,6 +203,9 @@
     <string name="tvclient_bitstream_dts">Pass through DTS and TrueHD</string>
     <string name="tvclient_bitstream_dts_desc">Automatic: if the TV or AV receiver accepts DTS/TrueHD, the audio is passed through; otherwise Quallenkino decodes it itself (5.1, or stereo if the output only has stereo) – the server is not involved. Checked at every playback start. Off: the server converts the audio to Dolby Digital 5.1.</string>
     <string name="tvclient_bitstream_dts_auto">Automatic</string>
+    <string name="tvclient_subtitle_effects">Subtitle effects (ASS/SSA)</string>
+    <string name="tvclient_subtitle_effects_desc">Automatic: anime subtitles (ASS/SSA) are drawn with all effects – fonts from the file, positions, signs, karaoke. On weak devices, or if pictures were dropped, as plain text. Off: always plain text. Never burned in by the server.</string>
+    <string name="tvclient_subtitle_effects_auto_off">Automatic is using plain text on this device because effects dropped pictures. Choose again to retry.</string>
     <string name="tvclient_hdr_mode">HDR</string>
     <string name="tvclient_hdr_convert">Always convert</string>
     <string name="tvclient_hdr_direct">Always direct</string>

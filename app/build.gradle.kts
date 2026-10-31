@@ -23,6 +23,16 @@ android {
 		applicationId = TV_CLIENT_APPLICATION_ID
 		versionName = project.getVersionName()
 		versionCode = getVersionCode(versionName!!)
+
+		// Jellyfin-TV-Client: nur ARM (Fire TV, Android-TV-Sticks) – hält die APK mit libass und FFmpeg klein
+		ndk {
+			abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+		}
+	}
+
+	packaging {
+		// libass und FFmpeg bringen beide die C++-Laufzeit mit
+		jniLibs.pickFirsts += "**/libc++_shared.so"
 	}
 
 	buildFeatures {
@@ -181,6 +191,8 @@ dependencies {
 	implementation(libs.androidx.media3.exoplayer.hls)
 	implementation(libs.androidx.media3.ui)
 	implementation(libs.jellyfin.androidx.media3.ffmpeg.decoder)
+	// Jellyfin-TV-Client: ASS/SSA-Untertitel mit allen Effekten (libass)
+	implementation(libs.libass.media3)
 
 	// Markdown
 	implementation(libs.bundles.markwon)

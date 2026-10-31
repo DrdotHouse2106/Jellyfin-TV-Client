@@ -182,6 +182,21 @@ private fun QuickSettings(onChooseAvatar: () -> Unit) {
 		) { set(TvClientSubtitles.modePreference, it) }
 		if (TvClientSubtitles.mode() == TvClientSubtitles.SMART) Hint(stringResource(R.string.tvclient_quick_subtitles_hint))
 
+		Section(stringResource(R.string.tvclient_subtitle_effects))
+		Choices(
+			listOf(
+				Choice(SubtitleEffects.Mode.AUTO, stringResource(R.string.tvclient_bitstream_dts_auto)),
+				Choice(SubtitleEffects.Mode.ON, on),
+				Choice(SubtitleEffects.Mode.OFF, off),
+			),
+			prefs[SubtitleEffects.modePreference],
+		) {
+			// Neu wählen gibt „Automatisch“ auf diesem Gerät eine neue Chance
+			prefs[SubtitleEffects.autoDisabledPreference] = false
+			set(SubtitleEffects.modePreference, it)
+		}
+		Hint(stringResource(if (prefs[SubtitleEffects.autoDisabledPreference]) R.string.tvclient_subtitle_effects_auto_off else R.string.tvclient_subtitle_effects_desc))
+
 		Section(stringResource(R.string.tvclient_quick_audio))
 		Choices(
 			listOf(

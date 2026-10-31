@@ -53,6 +53,7 @@ Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** 
 - Empfehlungen nach Tageszeit und aus Suchen und angesehenen Titeln (Plugin Local Recommendations ab 12.36) – abschaltbar und löschbar unter Einstellungen → „Suchen und angesehene Titel für Empfehlungen nutzen“
 - Heimnetz: Mit eingetragener lokaler Server-Adresse (Einstellungen → Heimnetz) spricht die App zu Hause direkt mit dem Server. Die Adresse gilt nur in dem Netz, in dem sie gespeichert wurde – in fremden Netzen bleibt es bei der normalen Adresse
 - Profilbild selbst wählen: Figur und Hintergrundfarbe (Katalog und Bild vom Plugin Local Recommendations ab 12.22) – über „Profile verwalten“ oder Einstellungen → Konto
+- **Anime-Untertitel (ASS/SSA) mit allen Effekten** (libass: Schriften aus der Datei, Schilder, Karaoke) – ohne Umwandeln auf dem Server; abschaltbar unter „Untertitel-Effekte“
 - **Bildschirmschoner** mit persönlichen Empfehlungen statt Zufall (nur Ungesehenes, nichts Angefangenes – wie im Web), auf Wunsch mit **Trailern** vom Server (nur echte Trailer, keine anderen Extras)
 - **Autostart** beim Einschalten des Geräts (bis Android 9, z. B. Fire TV Stick mit Fire OS 7; standardmäßig aus)
 - Steuerung komplett per Handy, z. B. mit [Jellyfin Remote](https://github.com/DrdotHouse2106/Jellyfin-Remote)
@@ -301,4 +302,4 @@ dem Handy), bewerten und verwalten, mit Preisverlauf, Editionen und PAL/USK-Anga
 
 ## Lizenz
 
-GPL v2, wie die offizielle App (siehe [LICENSE](LICENSE)).
+GPL v2, wie die offizielle App (siehe [LICENSE](LICENSE)). Für ASS/SSA-Untertitel enthält die App [libass-android](https://github.com/peerless2012/libass-android) (MIT) mit [libass](https://github.com/libass/libass) (ISC).

@@ -203,6 +203,9 @@
     <string name="tvclient_bitstream_dts">DTS und TrueHD durchreichen</string>
     <string name="tvclient_bitstream_dts_desc">Automatisch: Nimmt Fernseher oder AV-Receiver DTS/TrueHD an, wird durchgereicht; sonst dekodiert Quallenkino selbst (5.1, bei reinem Stereo-Ausgang Stereo) – ohne den Server zu belasten. Geprüft bei jedem Wiedergabestart. Aus: Der Server wandelt den Ton in Dolby Digital 5.1 um.</string>
     <string name="tvclient_bitstream_dts_auto">Automatisch</string>
+    <string name="tvclient_subtitle_effects">Untertitel-Effekte (ASS/SSA)</string>
+    <string name="tvclient_subtitle_effects_desc">Automatisch: Anime-Untertitel (ASS/SSA) erscheinen mit allen Effekten – Schriften aus der Datei, Positionen, Schilder, Karaoke. Auf schwachen Geräten bzw. wenn dabei Bilder verloren gingen als einfacher Text. Aus: immer einfacher Text. Der Server brennt nichts ein.</string>
+    <string name="tvclient_subtitle_effects_auto_off">„Automatisch“ zeigt auf diesem Gerät einfachen Text, weil mit Effekten Bilder verloren gingen. Neu wählen, um es noch einmal zu versuchen.</string>
     <string name="tvclient_hdr_mode">HDR</string>
     <string name="tvclient_hdr_convert">Immer umwandeln</string>
     <string name="tvclient_hdr_direct">Immer direkt</string>

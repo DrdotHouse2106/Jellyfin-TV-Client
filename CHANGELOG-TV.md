@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.41.0 – 2026-10-31
+
+- **Anime-Untertitel mit allen Effekten:** ASS/SSA-Untertitel zeichnet die App jetzt mit libass – mit den Schriften aus der Datei (MKV-Anhänge), Positionen, Schildern (Signs), Karaoke und Animationen. Das Video läuft weiter direkt, der Server brennt nichts ein.
+- **Einstellung „Untertitel-Effekte (ASS/SSA)“** (Schnelleinstellungen): Automatisch (Standard), An, Aus. Aus bzw. auf schwachen Geräten: einfacher Text wie in 1.40.2. Gehen bei „Automatisch“ mit Effekten Bilder verloren, schaltet die App auf diesem Gerät für die nächsten Wiedergaben auf einfachen Text um (und schreibt das ins Client-Log); neu wählen gibt den Effekten eine neue Chance.
+- Die APK enthält nur noch ARM-Bibliotheken (arm64-v8a, armeabi-v7a) – passend für Fire TV und Android-TV-Sticks.
+
 ## 1.40.2 – 2026-10-31
 
 - **ASS/SSA-Untertitel ohne Umwandlung:** Der eingebaute Player zeigt ASS/SSA-Untertitel (häufig bei Anime) jetzt selbst an – als Text ohne Spezialeffekte. Bisher brannte der Server sie ins Bild und musste dafür das ganze Video neu kodieren (schlechtere Qualität, mehr Last).
