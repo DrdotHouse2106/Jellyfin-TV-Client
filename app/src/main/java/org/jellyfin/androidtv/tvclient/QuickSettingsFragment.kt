@@ -182,6 +182,9 @@ private fun QuickSettings(onChooseAvatar: () -> Unit) {
 		) { set(TvClientSubtitles.modePreference, it) }
 		if (TvClientSubtitles.mode() == TvClientSubtitles.SMART) Hint(stringResource(R.string.tvclient_quick_subtitles_hint))
 
+		Section(stringResource(R.string.tvclient_trickplay))
+		Choices(listOf(Choice(true, on), Choice(false, off)), prefs[UserPreferences.trickPlayEnabled]) { set(UserPreferences.trickPlayEnabled, it) }
+
 		Section(stringResource(R.string.tvclient_subtitle_effects))
 		Choices(
 			listOf(

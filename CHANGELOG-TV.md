@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.41.1 – 2026-10-31
+
+- **Vorschaubilder beim Spulen** (Trickplay) sind jetzt standardmäßig an – wie im Web. Die Anzeige war schon eingebaut, aber ab Werk aus und nur unter „Entwickler“ einzuschalten; deshalb kamen nie Vorschaubilder. Abschaltbar in den Schnelleinstellungen („Vorschaubilder beim Spulen“).
+
 ## 1.41.0 – 2026-10-31
 
 - **Anime-Untertitel mit allen Effekten:** ASS/SSA-Untertitel zeichnet die App jetzt mit libass – mit den Schriften aus der Datei (MKV-Anhänge), Positionen, Schildern (Signs), Karaoke und Animationen. Das Video läuft weiter direkt, der Server brennt nichts ein.

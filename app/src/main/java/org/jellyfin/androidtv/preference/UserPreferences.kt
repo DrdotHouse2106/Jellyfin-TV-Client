@@ -256,7 +256,8 @@ class UserPreferences(context: Context) : SharedPreferenceStore(
 		/**
 		 * Enable TrickPlay in legacy player user interface while seeking.
 		 */
-		var trickPlayEnabled = booleanPreference("trick_play_enabled", false)
+		// Jellyfin-TV-Client: Vorschaubilder beim Spulen standardmäßig an (wie im Web); bisher aus und nur unter „Entwickler“
+		var trickPlayEnabled = booleanPreference("trick_play_enabled", true)
 
 		/**
   		 * Enable PGS subtitle direct-play.
