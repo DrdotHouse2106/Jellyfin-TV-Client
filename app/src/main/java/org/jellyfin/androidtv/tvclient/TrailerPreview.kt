@@ -53,7 +53,9 @@ object TrailerPreview {
 	fun reportMissing(row: String?, item: BaseItemDto) {
 		if (!reportedMissing.add(item.id)) return
 		val reason = when {
-			item.type != BaseItemKind.MOVIE && item.type != BaseItemKind.SERIES -> "kein Film und keine Serie (${item.type})"
+			item.type == BaseItemKind.EPISODE && item.seriesId == null -> "Folge ohne Serie"
+			item.type != BaseItemKind.MOVIE && item.type != BaseItemKind.SERIES && item.type != BaseItemKind.EPISODE -> "kein Film und keine Serie (${item.type})"
+			item.type == BaseItemKind.EPISODE -> "Serie ohne Trailer ab 15 s"
 			(item.localTrailerCount ?: 0) == 0 -> "kein lokaler Trailer"
 			else -> "nur zu kurze Trailer (unter 15 s) oder nicht abrufbar"
 		}
@@ -94,12 +96,17 @@ object TrailerPreview {
 
 	/** Adresse des ersten lokalen Trailers oder null. */
 	suspend fun streamUrl(api: ApiClient, item: BaseItemDto): String? {
-		if (item.type != BaseItemKind.MOVIE && item.type != BaseItemKind.SERIES) return null
+		// Folgen (z. B. in „Weiterschauen“, „Als Nächstes“): Trailer der Serie
+		val targetId = when (item.type) {
+			BaseItemKind.MOVIE, BaseItemKind.SERIES -> item.id
+			BaseItemKind.EPISODE -> item.seriesId ?: return null
+			else -> return null
+		}
 
 		return try {
 			val trailer = withContext(Dispatchers.IO) {
 				// Nur echte Trailer, Clips unter 15 s überspringen, „Trailer“ vor „Teaser“
-				ScreensaverTrailers.pickTrailer(api.userLibraryApi.getLocalTrailers(item.id).content)
+				ScreensaverTrailers.pickTrailer(api.userLibraryApi.getLocalTrailers(targetId).content)
 			} ?: return null
 
 			api.createUrl(

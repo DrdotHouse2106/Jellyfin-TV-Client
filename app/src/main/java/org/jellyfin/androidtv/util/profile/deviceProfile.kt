@@ -65,7 +65,9 @@ fun createDeviceProfile(
 	isAC3Enabled = userPreferences[UserPreferences.ac3Enabled],
 	directHdAudio = org.jellyfin.androidtv.tvclient.TvClientAudioOutput.directHdAudio(context, userPreferences[UserPreferences.dtsMode]),
 	downMixAudio = userPreferences[UserPreferences.audioBehaviour] == AudioBehavior.DOWNMIX_TO_STEREO,
-	assDirectPlay = false,
+	// Jellyfin-TV-Client: ASS/SSA zeigt der eingebaute Player selbst (Media3-SSA, Text ohne Effekte) – sonst brennt
+	// der Server die Untertitel ins Bild und muss dafür das ganze Video neu kodieren
+	assDirectPlay = true,
 	pgsDirectPlay = userPreferences[UserPreferences.pgsDirectPlay],
 	jellyfinTenEleven = serverVersion >= ServerVersion(10, 11, 0),
 	displayHdr = org.jellyfin.androidtv.tvclient.TvClientHdr.display(context, userPreferences[UserPreferences.hdrMode]),

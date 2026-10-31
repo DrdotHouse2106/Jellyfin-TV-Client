@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.40.2 – 2026-10-31
+
+- **ASS/SSA-Untertitel ohne Umwandlung:** Der eingebaute Player zeigt ASS/SSA-Untertitel (häufig bei Anime) jetzt selbst an – als Text ohne Spezialeffekte. Bisher brannte der Server sie ins Bild und musste dafür das ganze Video neu kodieren (schlechtere Qualität, mehr Last).
+- **Trailer-Vorschau bei Folgen:** In „Weiterschauen“ und „Als Nächstes“ läuft für Folgen der Trailer der Serie.
+
 ## 1.40.1 – 2026-10-29
 
 Fehlerbehebungen nach einer Durchsicht:
