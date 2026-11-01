@@ -83,7 +83,11 @@ fun onDiscoverClicked(context: Context, item: Any?): Boolean {
 				TvInfoDialog.Button(context.getString(R.string.tvclient_discover_request)) {
 					navigation.navigate(Destinations.jellyseerrDetails(item.mediaType, item.tmdbId))
 				}.takeIf { canRequest },
-				item.trailerKey?.let { key -> TvInfoDialog.Button(context.getString(R.string.tvclient_discover_trailer)) { TrailerWindow.showYoutube(context, key) } },
+				item.trailerKey?.let { key ->
+					TvInfoDialog.Button(TrailerWindow.buttonLabel(context.getString(R.string.tvclient_discover_trailer), item.trailerLanguage)) {
+						TrailerWindow.showYoutube(context, key, TrailerWindow.subtitlesFor(item.trailerLanguage))
+					}
+				},
 				TvInfoDialog.Button(context.getString(R.string.tvclient_upcoming_close)),
 			),
 		)

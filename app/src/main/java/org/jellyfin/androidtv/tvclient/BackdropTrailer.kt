@@ -143,7 +143,7 @@ private fun YoutubeInline(key: String, withSound: Boolean, modifier: Modifier, o
 						onUnavailable()
 					}
 				}, "Quallenkino")
-				loadDataWithBaseURL("${TrailerWindow.ORIGIN}/", TrailerWindow.youtubeHtml(key, withSound), "text/html", "UTF-8", null)
+				loadDataWithBaseURL("${TrailerWindow.ORIGIN}/", TrailerWindow.youtubeHtml(key, withSound, subtitles = TrailerWindow.subtitlesFor(label)), "text/html", "UTF-8", null)
 			}
 		},
 		onRelease = { webView ->

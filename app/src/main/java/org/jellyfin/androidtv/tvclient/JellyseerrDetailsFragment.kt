@@ -319,11 +319,15 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 									if (localTrailer && item != null) {
 										// Trailer, der auf dem Server liegt (z. B. von Trailarr)
 										scope.launch { HomeBillboard.playTrailer(context, api, playbackLauncher, item) }
-									} else info.trailerKey?.let { key -> TrailerWindow.showYoutube(context, key) }
+									} else info.trailerKey?.let { key -> TrailerWindow.showYoutube(context, key, TrailerWindow.subtitlesFor(info.trailerLabel)) }
 								},
 								modifier = (if (!canRequest && jellyfinId == null) Modifier.focusRequester(primaryFocus) else Modifier)
 									.focusRequester(requestedFocus),
-							) { Text(stringResource(R.string.lbl_play_trailers)) }
+							) {
+								// YouTube-Trailer mit Sprache wie im Web: „(EN)“, „(OmU)“
+								val text = stringResource(R.string.lbl_play_trailers)
+								Text(if (localTrailer && jellyfinItem != null) text else TrailerWindow.buttonLabel(text, info.trailerLabel))
+							}
 						}
 						if (!canRequest && !showTrailerButton && jellyfinId == null) {
 							Button(onClick = { navigationRepository.goBack() }, modifier = Modifier.focusRequester(primaryFocus).focusRequester(requestedFocus)) {

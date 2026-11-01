@@ -49,6 +49,39 @@ object TrailerWindow {
 		return key?.takeIf { it.matches(YOUTUBE_KEY) }
 	}
 
+	/**
+	 * Deutsche Untertitel nur bei fremdsprachigen Trailern. Nimmt die Sprache aus /LocalRecs/Discover
+	 * („de“, „OmU“, „en“ …) oder die Kennzeichnung („EN“, „OmU“; keine = deutsch). Deutsch, OmU (meist
+	 * eingebrannt) und Unbekanntes: keine Untertitel erzwingen.
+	 */
+	fun subtitlesFor(language: String?): Boolean {
+		val lang = language?.trim()?.lowercase().orEmpty()
+		return lang.isNotEmpty() && lang != "omu" && !isGermanLanguage(lang)
+	}
+
+	/** Läuft eine deutsche Tonspur? null, solange noch keine Tonspur gewählt ist oder die Sprache fehlt. */
+	private fun germanAudio(tracks: androidx.media3.common.Tracks): Boolean? {
+		val audio = tracks.groups.firstOrNull { it.type == androidx.media3.common.C.TRACK_TYPE_AUDIO && it.isSelected } ?: return null
+		val language = (0 until audio.length).firstOrNull { audio.isTrackSelected(it) }?.let { audio.getTrackFormat(it).language }
+			?: return null
+		return isGermanLanguage(language)
+	}
+
+	/** „de“, „deu“, „ger“, „de-DE“ … */
+	fun isGermanLanguage(language: String?): Boolean =
+		language?.trim()?.lowercase()?.substringBefore('-')?.substringBefore('_') in setOf("de", "deu", "ger", "german", "deutsch")
+
+	/** „Trailer ansehen (EN)“ bzw. „(OmU)“ wie im Web; deutsche oder unbekannte Trailer ohne Zusatz. */
+	fun buttonLabel(text: String, language: String?): String {
+		val lang = language?.trim().orEmpty()
+		val tag = when {
+			lang.equals("omu", true) -> "OmU"
+			!subtitlesFor(lang) -> return text
+			else -> lang.uppercase()
+		}
+		return "$text ($tag)"
+	}
+
 	/** Gültige YouTube-Video-Id (11 Zeichen). Alles andere kommt nie ins Player-HTML. */
 	val YOUTUBE_KEY = Regex("[A-Za-z0-9_-]{11}")
 
@@ -91,9 +124,20 @@ object TrailerWindow {
 			volume = 1f
 			playWhenReady = true
 			prepare()
+			// Untertitel nur, wenn der Trailer nicht deutsch ist – dann bevorzugt deutsche
+			trackSelectionParameters = trackSelectionParameters.buildUpon().setPreferredTextLanguage("de").build()
 			addListener(object : Player.Listener {
 				override fun onPlaybackStateChanged(playbackState: Int) {
 					if (playbackState == Player.STATE_ENDED) dialog.dismiss()
+				}
+
+				override fun onTracksChanged(tracks: androidx.media3.common.Tracks) {
+					val german = germanAudio(tracks) ?: return
+					val disabled = trackSelectionParameters.disabledTrackTypes.contains(androidx.media3.common.C.TRACK_TYPE_TEXT)
+					if (german != disabled) {
+						trackSelectionParameters = trackSelectionParameters.buildUpon()
+							.setTrackTypeDisabled(androidx.media3.common.C.TRACK_TYPE_TEXT, german).build()
+					}
 				}
 			})
 		}
@@ -112,7 +156,7 @@ object TrailerWindow {
 
 	/** YouTube-Trailer im Vollbild abspielen; ohne passende WebView direkt in der YouTube-App. */
 	@SuppressLint("SetJavaScriptEnabled")
-	fun showYoutube(context: Context, key: String) {
+	fun showYoutube(context: Context, key: String, subtitles: Boolean = false) {
 		// Sehr alte WebViews (z. B. Fire TV Stick 1. Generation) können den Player nicht
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return openApp(context, key)
 
@@ -156,7 +200,7 @@ object TrailerWindow {
 		}
 		container.addView(webView, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 
-		val html = youtubeHtml(key, withSound = true, volume = 1f)
+		val html = youtubeHtml(key, withSound = true, volume = 1f, subtitles = subtitles)
 		webView.loadDataWithBaseURL("$ORIGIN/", html, "text/html", "UTF-8", null)
 
 		// Kommt der Player nicht in Gang (z. B. ohne Internet), die YouTube-App versuchen
@@ -178,10 +222,13 @@ object TrailerWindow {
 	 * Seite mit dem offiziellen YouTube-IFrame-Player. Meldet über das JavaScript-Objekt „Quallenkino“
 	 * ready(), ended() und error(code). Der Player wird nicht verdeckt oder beschnitten.
 	 */
-	fun youtubeHtml(key: String, withSound: Boolean, volume: Float = TrailerPreview.volume): String {
+	fun youtubeHtml(key: String, withSound: Boolean, volume: Float = TrailerPreview.volume, subtitles: Boolean = false): String {
 		if (!key.matches(YOUTUBE_KEY)) return "<!DOCTYPE html><html><body style=\"background:#000\"></body></html>"
 		val percent = (volume.coerceIn(0f, 1f) * 100).toInt()
 		val mute = if (withSound) "false" else "true"
+		// Fremdsprache: deutsche Untertitel an; sonst keine erzwingen und eingeschaltete wieder ausblenden
+		val captions = if (subtitles) "cc_load_policy: 1, cc_lang_pref: 'de', hl: 'de'," else "cc_load_policy: 0, hl: 'de',"
+		val captionsOff = if (subtitles) "" else "try { e.target.unloadModule('captions'); e.target.unloadModule('cc'); } catch (x) {}"
 		return """
 			<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1">
 			<style>html,body,#player{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden}</style></head>
@@ -191,10 +238,10 @@ object TrailerWindow {
 			function onYouTubeIframeAPIReady() {
 				new YT.Player('player', {
 					width: '100%', height: '100%', videoId: '$key',
-					playerVars: { autoplay: 1, controls: 0, rel: 0, playsinline: 1, iv_load_policy: 3, origin: '$ORIGIN' },
+					playerVars: { autoplay: 1, controls: 0, rel: 0, playsinline: 1, iv_load_policy: 3, $captions origin: '$ORIGIN' },
 					events: {
-						onReady: function (e) { Quallenkino.ready(); e.target.setVolume($percent); if ($mute) e.target.mute(); else e.target.unMute(); e.target.playVideo(); },
-						onStateChange: function (e) { if (e.data === 0) Quallenkino.ended(); },
+						onReady: function (e) { Quallenkino.ready(); e.target.setVolume($percent); if ($mute) e.target.mute(); else e.target.unMute(); e.target.playVideo(); $captionsOff },
+						onStateChange: function (e) { if (e.data === 0) Quallenkino.ended(); if (e.data === 1) { $captionsOff } },
 						onError: function (e) { Quallenkino.error(e.data); }
 					}
 				});

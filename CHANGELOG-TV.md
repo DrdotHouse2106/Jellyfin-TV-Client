@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.41.6 – 2026-11-01
+
+- **Untertitel nur bei fremdsprachigen Trailern:** YouTube-Trailer mit deutschem Ton (und OmU, dort meist eingebrannt) laufen ohne Untertitel, englische und andere fremdsprachige mit deutschen Untertiteln. Die Sprache kommt aus Entdecken (`TrailerLanguage`, ab Quallenkino 12.57) bzw. aus Jellyseerr. Trailer vom Server (z. B. Trailarr): deutsche Tonspur ⇒ keine Untertitel, sonst bevorzugt deutsche.
+- **„Trailer ansehen (EN)“ / „(OmU)“** in Entdecken und auf der Anfrage-Seite, wie im Web.
+- Enthält auch 1.41.4 und 1.41.5 (Vollbild-Trailer, kein Bildschirmschoner während eines Trailers).
+
 ## 1.41.5 – 2026-11-01
 
 - **„Trailer ansehen“ immer im Vollbild:** Server- und YouTube-Trailer füllen jetzt den ganzen Bildschirm (Detailseite, Entdecken, Banner, Anfrage-Seite) statt eines kleinen Fensters. „Zurück“ führt wieder zur vorigen Ansicht. Die kleinen Vorschau-Trailer bleiben, wie sie sind.

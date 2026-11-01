@@ -211,6 +211,8 @@ object TvClientSections {
 		val runtimeMinutes: Int? = null,
 		val providers: List<String> = emptyList(),
 		val trailerKey: String? = null,
+		/** Sprache des Trailers („de“, „OmU“, „en“ …), seit LocalRecs 12.57. */
+		val trailerLanguage: String? = null,
 		val inLibrary: Boolean = false,
 		val jellyfinId: UUID? = null,
 		/** Schon erschienen (Kino bzw. Streaming)? Fehlt die Angabe, gilt „ja“. */
@@ -256,6 +258,7 @@ object TvClientSections {
 					runtimeMinutes = obj.text("RuntimeMinutes")?.toIntOrNull(),
 					providers = obj.strings("Providers"),
 					trailerKey = obj.text("TrailerKey"),
+					trailerLanguage = obj.text("TrailerLanguage"),
 					inLibrary = (obj["InLibrary"] as? JsonPrimitive)?.booleanOrNull == true,
 					jellyfinId = obj.text("JellyfinId")?.let { runCatching { it.toUUID() }.getOrNull() },
 					released = (obj["Released"] as? JsonPrimitive)?.booleanOrNull != false,

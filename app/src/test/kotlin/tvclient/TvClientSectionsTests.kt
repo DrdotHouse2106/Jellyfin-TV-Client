@@ -116,7 +116,7 @@ class TvClientSectionsTests : FunSpec({
 			"http://srv:8096",
 			"""{"Rows":[{"Key":"cinema","Title":"Demnächst im Kino","TotalRecordCount":2,"Items":[
 			{"TmdbId":1,"MediaType":"movie","Title":"Film","Year":2026,"BackdropUrl":"https://image.tmdb.org/t/p/w1280/a.jpg","ReleaseText":"Kinostart am Do. 05.11.",
-			"Genres":["Action","Drama"],"OfficialRating":"12","RuntimeMinutes":110,"TrailerKey":"abc"},
+			"Genres":["Action","Drama"],"OfficialRating":"12","RuntimeMinutes":110,"TrailerKey":"abc","TrailerLanguage":"en","TrailerSource":"tmdb"},
 			{"TmdbId":2,"MediaType":"tv","Title":"Serie","Providers":["Netflix"],"InLibrary":true,"JellyfinId":"c2b157ea3dc84584a30bcb96492eda16"}]},
 			{"Key":"leer","Title":"Leer","Items":[]}],"TotalRecordCount":1}"""
 		)
@@ -126,6 +126,7 @@ class TvClientSectionsTests : FunSpec({
 		film.imageUrl shouldBe "https://image.tmdb.org/t/p/w1280/a.jpg"
 		film.facts shouldBe "Action, Drama · FSK 12 · 1 Std. 50 Min."
 		film.trailerKey shouldBe "abc"
+		film.trailerLanguage shouldBe "en"
 		val serie = rows[0].items[1]
 		serie.inLibrary shouldBe true
 		serie.jellyfinId.toString() shouldBe "c2b157ea-3dc8-4584-a30b-cb96492eda16"
