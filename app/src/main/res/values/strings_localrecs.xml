@@ -242,6 +242,8 @@
     <string name="tvclient_home_discover_description">In cinemas soon, new this year – movies and series (TMDb, Local Recommendations 12.54 or newer)</string>
     <string name="tvclient_discover_in_library">In the library</string>
     <string name="tvclient_discover_providers">Streaming on %s</string>
+    <string name="tvclient_discover_request">Request …</string>
+    <string name="tvclient_discover_after_cinema">Comes after the cinema release, as soon as it is available digitally.</string>
     <string name="tvclient_discover_trailer">Watch trailer</string>
     <string name="tvclient_upcoming_to_series">Go to series</string>
     <string name="tvclient_upcoming_close">Close</string>

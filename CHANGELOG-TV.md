@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.41.2 – 2026-11-01
+
+- **Entdecken: „Anfragen …“** in allen drei Reihen (auch „Demnächst im Kino“), sofern Jellyseerr eingerichtet ist. Der Knopf öffnet die Anfrage-Seite mit Status („Angefragt“/„Verfügbar“) – angefragt wird erst dort. Bei Kinofilmen vor dem Start: „Kommt nach dem Kinostart, sobald er digital verfügbar ist.“
+
 ## 1.41.1 – 2026-10-31
 
 - **Vorschaubilder beim Spulen** (Trickplay) sind jetzt standardmäßig an – wie im Web. Die Anzeige war schon eingebaut, aber ab Werk aus und nur unter „Entwickler“ einzuschalten; deshalb kamen nie Vorschaubilder. Abschaltbar in den Schnelleinstellungen („Vorschaubilder beim Spulen“).

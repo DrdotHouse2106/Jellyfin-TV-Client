@@ -29,6 +29,7 @@ German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md
 
 \* needs the server plugin Local Recommendations (Top 10 of all users and thumbs since 12.6.0).
 
+- 1.41.2: "Request …" in the discover rows (Jellyseerr), also for upcoming cinema releases.
 - 1.41.1: preview pictures while seeking (trickplay) on by default.
 - 1.41.0: ASS/SSA subtitles with all effects via libass (fonts from the file, signs, karaoke); setting "Subtitle effects": Automatic / On / Off; ARM-only APK.
 - 1.40.2: ASS/SSA subtitles are shown by the built-in player (no burn-in/transcoding); episodes use the series trailer for the preview.

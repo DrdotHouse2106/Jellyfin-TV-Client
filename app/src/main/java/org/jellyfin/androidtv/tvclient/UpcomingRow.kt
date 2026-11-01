@@ -16,6 +16,8 @@ import androidx.leanback.widget.ListRow
 import androidx.leanback.widget.Presenter
 import androidx.leanback.widget.Row
 import org.jellyfin.androidtv.R
+import kotlinx.coroutines.launch
+import androidx.lifecycle.lifecycleScope
 import org.jellyfin.androidtv.ui.AsyncImageView
 import org.jellyfin.androidtv.ui.home.HomeFragmentRow
 import org.jellyfin.androidtv.ui.navigation.Destinations
@@ -55,24 +57,37 @@ class HomeFragmentDiscoverRow(private val title: String, private val entries: Li
  */
 fun onDiscoverClicked(context: Context, item: Any?): Boolean {
 	if (item !is TvClientSections.Discover) return false
+	val navigation = KoinJavaComponent.get<NavigationRepository>(NavigationRepository::class.java)
 	if (item.inLibrary && item.jellyfinId != null) {
-		KoinJavaComponent.get<NavigationRepository>(NavigationRepository::class.java).navigate(Destinations.itemDetails(item.jellyfinId))
+		navigation.navigate(Destinations.itemDetails(item.jellyfinId))
 		return true
 	}
-	TvInfoDialog.show(
-		context,
-		listOfNotNull(item.title, item.year?.toString()).joinToString(" · "),
-		listOfNotNull(
-			item.releaseText?.let { TvInfoDialog.Line(it, TvInfoDialog.Style.REASON) },
-			item.facts.takeIf { it.isNotEmpty() }?.let { TvInfoDialog.Line(it, TvInfoDialog.Style.MUTED) },
-			item.providers.takeIf { it.isNotEmpty() }?.let { TvInfoDialog.Line(context.getString(R.string.tvclient_discover_providers, it.joinToString(", ")), TvInfoDialog.Style.STRONG) },
-			item.overview?.let { TvInfoDialog.Line(it) },
-		),
-		listOfNotNull(
-			item.trailerKey?.let { key -> TvInfoDialog.Button(context.getString(R.string.tvclient_discover_trailer)) { TrailerWindow.showYoutube(context, key) } },
-			TvInfoDialog.Button(context.getString(R.string.tvclient_upcoming_close)),
-		),
-	)
+	// „Anfragen …“ nur, wenn Jellyseerr erreichbar ist (Ergebnis wird zwischengespeichert)
+	val api = KoinJavaComponent.get<org.jellyfin.sdk.api.client.ApiClient>(org.jellyfin.sdk.api.client.ApiClient::class.java)
+	androidx.lifecycle.ProcessLifecycleOwner.get().lifecycleScope.launch {
+		val canRequest = runCatching { kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { Jellyseerr.detect(api) } != null }.getOrDefault(false)
+		TvInfoDialog.show(
+			context,
+			listOfNotNull(item.title, item.year?.toString()).joinToString(" · "),
+			listOfNotNull(
+				item.releaseText?.let { TvInfoDialog.Line(it, TvInfoDialog.Style.REASON) },
+				item.facts.takeIf { it.isNotEmpty() }?.let { TvInfoDialog.Line(it, TvInfoDialog.Style.MUTED) },
+				item.providers.takeIf { it.isNotEmpty() }?.let { TvInfoDialog.Line(context.getString(R.string.tvclient_discover_providers, it.joinToString(", ")), TvInfoDialog.Style.STRONG) },
+				// Kinofilm vor dem Start: Anfrage wartet, bis er digital zu haben ist
+				TvInfoDialog.Line(context.getString(R.string.tvclient_discover_after_cinema), TvInfoDialog.Style.MUTED)
+					.takeIf { canRequest && !item.released && item.mediaType == "movie" },
+				item.overview?.let { TvInfoDialog.Line(it) },
+			),
+			listOfNotNull(
+				// Öffnet die Anfrage-Seite (Status „Angefragt“/„Verfügbar“, Staffelwahl) – angefragt wird erst dort per Knopf
+				TvInfoDialog.Button(context.getString(R.string.tvclient_discover_request)) {
+					navigation.navigate(Destinations.jellyseerrDetails(item.mediaType, item.tmdbId))
+				}.takeIf { canRequest },
+				item.trailerKey?.let { key -> TvInfoDialog.Button(context.getString(R.string.tvclient_discover_trailer)) { TrailerWindow.showYoutube(context, key) } },
+				TvInfoDialog.Button(context.getString(R.string.tvclient_upcoming_close)),
+			),
+		)
+	}
 	return true
 }
 

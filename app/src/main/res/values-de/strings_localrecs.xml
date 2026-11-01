@@ -242,6 +242,8 @@
     <string name="tvclient_home_discover_description">Demnächst im Kino, Neu dieses Jahr – Filme und Serien (TMDb, Local Recommendations ab 12.54)</string>
     <string name="tvclient_discover_in_library">In der Bibliothek</string>
     <string name="tvclient_discover_providers">Im Abo bei %s</string>
+    <string name="tvclient_discover_request">Anfragen …</string>
+    <string name="tvclient_discover_after_cinema">Kommt nach dem Kinostart, sobald er digital verfügbar ist.</string>
     <string name="tvclient_discover_trailer">Trailer ansehen</string>
     <string name="tvclient_upcoming_to_series">Zur Serie</string>
     <string name="tvclient_upcoming_close">Schließen</string>

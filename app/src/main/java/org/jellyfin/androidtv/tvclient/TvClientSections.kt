@@ -213,6 +213,8 @@ object TvClientSections {
 		val trailerKey: String? = null,
 		val inLibrary: Boolean = false,
 		val jellyfinId: UUID? = null,
+		/** Schon erschienen (Kino bzw. Streaming)? Fehlt die Angabe, gilt „ja“. */
+		val released: Boolean = true,
 	) {
 		/** „Genres · FSK 12 · 1 Std. 50 Min.“ */
 		val facts: String
@@ -256,6 +258,7 @@ object TvClientSections {
 					trailerKey = obj.text("TrailerKey"),
 					inLibrary = (obj["InLibrary"] as? JsonPrimitive)?.booleanOrNull == true,
 					jellyfinId = obj.text("JellyfinId")?.let { runCatching { it.toUUID() }.getOrNull() },
+					released = (obj["Released"] as? JsonPrimitive)?.booleanOrNull != false,
 				)
 			}
 			if (items.isEmpty()) null else DiscoverRow(row.text("Key").orEmpty(), title, items)
