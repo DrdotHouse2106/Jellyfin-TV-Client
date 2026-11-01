@@ -1009,6 +1009,9 @@ public class FullDetailsFragment extends Fragment implements RecordingIndicatorV
             mDetailsOverviewRow.addAction(remindButton);
             mDetailsOverviewRow.addAction(remindSeriesButton);
             org.jellyfin.androidtv.tvclient.TvClientReminders.bind(getLifecycle(), mProgramInfo, remindButton, remindSeriesButton);
+            // Jellyfin-TV-Client: „Seltener vorschlagen“ / „Weniger <Genre>“ / „Nie mehr vorschlagen“ (Heute im TV für dich)
+            mDetailsOverviewRow.addAction(TextUnderButton.create(requireContext(), R.drawable.tvclient_ic_thumb_down, buttonSize, 2, getString(R.string.tvclient_livetv_less),
+                    v -> org.jellyfin.androidtv.tvclient.LiveTvFeedback.INSTANCE.showMenu(requireContext(), mProgramInfo, kind -> kotlin.Unit.INSTANCE, () -> kotlin.Unit.INSTANCE)));
         }
 
         org.jellyfin.sdk.model.api.UserItemDataDto userData = mBaseItem.getUserData();

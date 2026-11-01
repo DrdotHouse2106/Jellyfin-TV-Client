@@ -245,7 +245,42 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 
 	override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
 		if (event?.action != KeyEvent.ACTION_UP) return false
+		// Jellyfin-TV-Client: langer OK-Druck (bzw. Menütaste) auf einer Sendung – „Seltener vorschlagen“ …
+		val item = currentItem
+		val program = item?.baseItem
+		if ((keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_BUTTON_Y) &&
+			item?.baseRowType == org.jellyfin.androidtv.ui.itemhandling.BaseRowType.LiveTvProgram && program != null
+		) {
+			val row = currentRow
+			org.jellyfin.androidtv.tvclient.LiveTvFeedback.showMenu(
+				requireContext(), program,
+				onApplied = { kind ->
+					removeProgramCards(row, item, kind)
+					org.jellyfin.androidtv.tvclient.LiveTvFeedback.consumePendingTitles()
+				},
+				onUndone = { refreshRows(force = true, delayed = false) },
+			)
+			return true
+		}
 		return keyProcessor.handleKey(keyCode, currentItem, activity)
+	}
+
+	/** Karte sofort entfernen; bei „Seltener“/„Nie mehr“ alle Ausstrahlungen derselben Sendung auf der Startseite. */
+	private fun removeProgramCards(row: ListRow?, item: BaseRowItem, kind: org.jellyfin.androidtv.tvclient.LiveTvFeedback.Kind) {
+		val program = item.baseItem ?: return
+		val title = org.jellyfin.androidtv.tvclient.LiveTvFeedback.titleOf(program)
+		if (kind == org.jellyfin.androidtv.tvclient.LiveTvFeedback.Kind.LESS_GENRE || title == null) {
+			(row?.adapter as? ItemRowAdapter)?.remove(item)
+		} else {
+			repeat(adapter.size()) { i ->
+				val rowAdapter = (adapter[i] as? ListRow)?.adapter as? ItemRowAdapter ?: return@repeat
+				(0 until rowAdapter.size()).mapNotNull { rowAdapter.get(it) as? BaseRowItem }
+					.filter { it.baseRowType == org.jellyfin.androidtv.ui.itemhandling.BaseRowType.LiveTvProgram }
+					.filter { other -> other.baseItem?.let { org.jellyfin.androidtv.tvclient.LiveTvFeedback.titleOf(it) }.equals(title, ignoreCase = true) }
+					.forEach { rowAdapter.remove(it) }
+			}
+		}
+		if (currentItem === item) currentItem = null
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -313,6 +348,17 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			(currentRow!!.adapter as ItemRowAdapter).remove(currentItem)
 			currentItem = null
 			dataRefreshService.lastDeletedItemId = null
+		}
+
+		// Jellyfin-TV-Client: auf der Sendungsseite „Seltener“/„Nie mehr“ gewählt – Karten gleich entfernen
+		org.jellyfin.androidtv.tvclient.LiveTvFeedback.consumePendingTitles().takeIf { it.isNotEmpty() }?.let { titles ->
+			repeat(adapter.size()) { i ->
+				val rowAdapter = (adapter[i] as? ListRow)?.adapter as? ItemRowAdapter ?: return@repeat
+				(0 until rowAdapter.size()).mapNotNull { rowAdapter.get(it) as? BaseRowItem }
+					.filter { it.baseRowType == org.jellyfin.androidtv.ui.itemhandling.BaseRowType.LiveTvProgram }
+					.filter { other -> other.baseItem?.let { org.jellyfin.androidtv.tvclient.LiveTvFeedback.titleOf(it)?.lowercase() } in titles }
+					.forEach { rowAdapter.remove(it) }
+			}
 		}
 
 		if (!justLoaded) {

@@ -252,4 +252,14 @@
         <item quantity="one">%d more new episode</item>
         <item quantity="other">%d more new episodes</item>
     </plurals>
+    <!-- Heute im TV: Rückmeldung „Weniger davon“ (LocalRecs 12.58) -->
+    <string name="tvclient_livetv_less">Suggest less often</string>
+    <string name="tvclient_livetv_less_genre">Less %1$s</string>
+    <string name="tvclient_livetv_never">Never suggest again</string>
+    <string name="tvclient_livetv_less_done">Will be suggested less often</string>
+    <string name="tvclient_livetv_never_done">Will not be suggested again</string>
+    <string name="tvclient_livetv_genre_done">%1$s will be suggested less often</string>
+    <string name="tvclient_livetv_undo">Undo</string>
+    <string name="tvclient_livetv_ok">OK</string>
+    <string name="tvclient_livetv_feedback_failed">Could not be saved</string>
 </resources>

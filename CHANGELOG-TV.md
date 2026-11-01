@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.42.0 – 2026-11-01
+
+- **„Heute im TV für dich“: Seltener vorschlagen.** Langer OK-Druck (bzw. Menütaste) auf eine Sendung öffnet ein Menü mit „Seltener vorschlagen“, „Weniger <Genre>“ und „Nie mehr vorschlagen“; der Knopf „Seltener vorschlagen“ steht auch auf der Sendungsseite. Die Karte verschwindet sofort, ein kurzer Hinweis bietet „Rückgängig“. Die Rückmeldung geht an den Server (Quallenkino ab 12.58) und gilt damit auch im Web und auf anderen Geräten.
+
 ## 1.41.6 – 2026-11-01
 
 - **Untertitel nur bei fremdsprachigen Trailern:** YouTube-Trailer mit deutschem Ton (und OmU, dort meist eingebrannt) laufen ohne Untertitel, englische und andere fremdsprachige mit deutschen Untertiteln. Die Sprache kommt aus Entdecken (`TrailerLanguage`, ab Quallenkino 12.57) bzw. aus Jellyseerr. Trailer vom Server (z. B. Trailarr): deutsche Tonspur ⇒ keine Untertitel, sonst bevorzugt deutsche.

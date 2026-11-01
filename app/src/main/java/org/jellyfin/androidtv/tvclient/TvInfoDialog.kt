@@ -25,7 +25,7 @@ object TvInfoDialog {
 
 	data class Button(val label: String, val onClick: () -> Unit = {})
 
-	fun show(context: Context, title: String, lines: List<Line>, buttons: List<Button>): Dialog {
+	fun show(context: Context, title: String, lines: List<Line>, buttons: List<Button>, verticalButtons: Boolean = false): Dialog {
 		fun dp(value: Int) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value.toFloat(), context.resources.displayMetrics).toInt()
 
 		val dialog = Dialog(context)
@@ -72,7 +72,8 @@ object TvInfoDialog {
 			}, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(10) })
 		}
 
-		val row = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL }
+		// Untereinander, wenn die Knöpfe zu lang für eine Reihe sind (z. B. Menü „Seltener vorschlagen“)
+		val row = LinearLayout(context).apply { orientation = if (verticalButtons) LinearLayout.VERTICAL else LinearLayout.HORIZONTAL }
 		val views = buttons.mapIndexed { index, button ->
 			TextView(context).apply {
 				text = button.label
@@ -98,7 +99,9 @@ object TvInfoDialog {
 					button.onClick()
 				}
 			}.also {
-				row.addView(it, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { if (index > 0) marginStart = dp(12) })
+				row.addView(it, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+					if (index > 0) { if (verticalButtons) topMargin = dp(10) else marginStart = dp(12) }
+				})
 			}
 		}
 		content.addView(row, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(24) })
