@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.41.3 – 2026-11-01
+
+- **Anfrage-Seite mit den Begriffen aus dem Web:** „Schon vorhanden“, „Teilweise vorhanden“, „Schon angefragt“; Knöpfe „Anfragen“ (Film), „Serie anfragen“ bzw. „Fehlende Staffeln anfragen“.
+
 ## 1.41.2 – 2026-11-01
 
 - **Entdecken: „Anfragen …“** in allen drei Reihen (auch „Demnächst im Kino“), sofern Jellyseerr eingerichtet ist. Der Knopf öffnet die Anfrage-Seite mit Status („Angefragt“/„Verfügbar“) – angefragt wird erst dort. Bei Kinofilmen vor dem Start: „Kommt nach dem Kinostart, sobald er digital verfügbar ist.“

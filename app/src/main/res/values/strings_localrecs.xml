@@ -74,9 +74,9 @@
     <string name="tvclient_jellyseerr_confirm">Request „%1$s“?</string>
     <string name="tvclient_jellyseerr_request">Request</string>
     <string name="tvclient_jellyseerr_requested">„%1$s“ has been requested</string>
-    <string name="tvclient_jellyseerr_available">Available</string>
-    <string name="tvclient_jellyseerr_partial">Partially</string>
-    <string name="tvclient_jellyseerr_pending">Requested</string>
+    <string name="tvclient_jellyseerr_available">Already available</string>
+    <string name="tvclient_jellyseerr_partial">Partly available</string>
+    <string name="tvclient_jellyseerr_pending">Already requested</string>
     <string name="tvclient_saved">Saved</string>
     <string name="tvclient_like">Like</string>
     <string name="tvclient_dislike">Not for me</string>
@@ -94,7 +94,8 @@
     <string name="tvclient_jellyseerr_director">Director: %1$s</string>
     <string name="tvclient_jellyseerr_creator">Created by: %1$s</string>
     <string name="tvclient_jellyseerr_open">Open in Jellyfin</string>
-    <string name="tvclient_jellyseerr_request_all">Request all seasons</string>
+    <string name="tvclient_jellyseerr_request_all">Request series</string>
+    <string name="tvclient_jellyseerr_request_missing">Request missing seasons</string>
     <string name="tvclient_jellyseerr_choose_seasons">Choose seasons</string>
     <string name="tvclient_jellyseerr_seasons_title">Seasons</string>
     <string name="tvclient_jellyseerr_cast">Cast</string>

@@ -294,7 +294,15 @@ private fun JellyseerrDetailsScreen(type: String, tmdbId: Int) {
 							Button(
 								onClick = { request(info, if (info.media.type == "tv") info.seasons.filter { it.status == Jellyseerr.Status.NONE }.map { it.number }.ifEmpty { null } else null) },
 								modifier = if (jellyfinId == null || info.media.status == Jellyseerr.Status.NONE) Modifier.focusRequester(primaryFocus) else Modifier,
-							) { Text(stringResource(if (info.media.type == "tv") R.string.tvclient_jellyseerr_request_all else R.string.tvclient_jellyseerr_request)) }
+							) {
+								// Wie im Web: „Anfragen“ (Film), „Serie anfragen“ bzw. „Fehlende Staffeln anfragen“, wenn es schon Staffeln gibt
+								val label = when {
+									info.media.type != "tv" -> R.string.tvclient_jellyseerr_request
+									info.seasons.any { it.status != Jellyseerr.Status.NONE } -> R.string.tvclient_jellyseerr_request_missing
+									else -> R.string.tvclient_jellyseerr_request_all
+								}
+								Text(stringResource(label))
+							}
 							if (info.media.type == "tv" && info.seasons.count { it.status == Jellyseerr.Status.NONE } > 1) {
 								Button(onClick = { chooseSeasons(info) }) { Text(stringResource(R.string.tvclient_jellyseerr_choose_seasons)) }
 							}
