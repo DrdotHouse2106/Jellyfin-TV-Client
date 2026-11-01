@@ -25,6 +25,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import org.jellyfin.androidtv.R
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 import timber.log.Timber
 
 /**
@@ -51,6 +52,21 @@ object TrailerWindow {
 
 	/** Gültige YouTube-Video-Id (11 Zeichen). Alles andere kommt nie ins Player-HTML. */
 	val YOUTUBE_KEY = Regex("[A-Za-z0-9_-]{11}")
+
+	/**
+	 * Solange ein Trailer im Fenster läuft: kein Bildschirmschoner der App darunter (sonst liefen zwei Trailer
+	 * mit Ton gleichzeitig) und Bildschirm wach halten. Gibt die Freigabe für das Schließen zurück.
+	 */
+	private fun holdScreensaver(context: Context, dialog: Dialog): () -> Unit {
+		dialog.window?.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+		val activity = generateSequence(context) { (it as? android.content.ContextWrapper)?.baseContext }
+			.filterIsInstance<androidx.activity.ComponentActivity>().firstOrNull() ?: return {}
+		return runCatching {
+			// Dieselbe Instanz wie in MainActivity (an die Activity gebunden)
+			val tracker = activity.getViewModel<org.jellyfin.androidtv.ui.InteractionTrackerViewModel>()
+			tracker.addLifecycleLock(activity.lifecycle)
+		}.onFailure { Timber.w(it, "Bildschirmschoner ließ sich nicht zurückhalten") }.getOrDefault({})
+	}
 
 	private fun dialog(context: Context): Pair<Dialog, FrameLayout> {
 		val dialog = Dialog(context)
@@ -89,7 +105,11 @@ object TrailerWindow {
 			resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
 			this.player = player
 		}, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-		dialog.setOnDismissListener { player.release() }
+		val release = holdScreensaver(context, dialog)
+		dialog.setOnDismissListener {
+			player.release()
+			release()
+		}
 		dialog.show()
 	}
 
@@ -145,10 +165,12 @@ object TrailerWindow {
 		// Kommt der Player nicht in Gang (z. B. ohne Internet), die YouTube-App versuchen
 		handler.postDelayed({ if (!ready) fallback() }, READY_TIMEOUT_MS)
 
+		val release = holdScreensaver(context, dialog)
 		dialog.setOnDismissListener {
 			handler.removeCallbacksAndMessages(null)
 			webView.loadUrl("about:blank")
 			webView.destroy()
+			release()
 		}
 		dialog.show()
 	}

@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.41.4 – 2026-11-01
+
+- **Kein Bildschirmschoner während eines Trailers:** Das Trailer-Fenster (YouTube und Server-Trailer) hält den Bildschirmschoner jetzt zurück und lässt den Bildschirm an. Vorher konnte er darunter starten und einen zweiten Trailer mit Ton abspielen.
+
 ## 1.41.3 – 2026-11-01
 
 - **Anfrage-Seite mit den Begriffen aus dem Web:** „Schon vorhanden“, „Teilweise vorhanden“, „Schon angefragt“; Knöpfe „Anfragen“ (Film), „Serie anfragen“ bzw. „Fehlende Staffeln anfragen“.
