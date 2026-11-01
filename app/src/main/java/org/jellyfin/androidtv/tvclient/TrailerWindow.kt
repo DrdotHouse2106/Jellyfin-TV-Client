@@ -10,7 +10,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.view.Gravity
 import android.view.ViewGroup
 import android.view.Window
 import android.webkit.JavascriptInterface
@@ -29,7 +28,7 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 import timber.log.Timber
 
 /**
- * Jellyfin-TV-Client: Trailer in einem kleinen Fenster in der App statt in einer anderen App.
+ * Jellyfin-TV-Client: Trailer im Vollbild in der App statt in einer anderen App.
  * Lokale Trailer (auf dem Server) laufen über ExoPlayer, YouTube-Trailer über den offiziellen
  * YouTube-IFrame-Player. „Zurück“ schließt das Fenster. Lässt sich ein YouTube-Video nicht einbetten,
  * öffnet sich die YouTube-App direkt.
@@ -68,23 +67,21 @@ object TrailerWindow {
 		}.onFailure { Timber.w(it, "Bildschirmschoner ließ sich nicht zurückhalten") }.getOrDefault({})
 	}
 
+	/** Vollbild-Fenster: „Trailer ansehen“ füllt immer den ganzen Bildschirm, „Zurück“ führt zurück. */
 	private fun dialog(context: Context): Pair<Dialog, FrameLayout> {
-		val dialog = Dialog(context)
+		val dialog = Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-		val metrics = context.resources.displayMetrics
-		val width = (metrics.widthPixels * 0.5f).toInt()
 		val container = FrameLayout(context).apply { setBackgroundColor(Color.BLACK) }
-		dialog.setContentView(container, ViewGroup.LayoutParams(width, width * 9 / 16))
+		dialog.setContentView(container, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 		dialog.window?.apply {
 			setBackgroundDrawable(ColorDrawable(Color.BLACK))
-			setLayout(width, width * 9 / 16)
-			setGravity(Gravity.CENTER)
-			setDimAmount(0.7f)
+			setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+			addFlags(android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN)
 		}
 		return dialog to container
 	}
 
-	/** Lokalen Trailer (Stream-Adresse vom Jellyfin-Server) im Fenster abspielen. */
+	/** Lokalen Trailer (Stream-Adresse vom Jellyfin-Server) im Vollbild abspielen. */
 	@OptIn(UnstableApi::class)
 	fun showLocal(context: Context, url: String) {
 		val (dialog, container) = dialog(context)
@@ -113,7 +110,7 @@ object TrailerWindow {
 		dialog.show()
 	}
 
-	/** YouTube-Trailer im Fenster abspielen; ohne passende WebView direkt in der YouTube-App. */
+	/** YouTube-Trailer im Vollbild abspielen; ohne passende WebView direkt in der YouTube-App. */
 	@SuppressLint("SetJavaScriptEnabled")
 	fun showYoutube(context: Context, key: String) {
 		// Sehr alte WebViews (z. B. Fire TV Stick 1. Generation) können den Player nicht

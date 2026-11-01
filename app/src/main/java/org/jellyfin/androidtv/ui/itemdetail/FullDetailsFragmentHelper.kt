@@ -178,7 +178,7 @@ fun FullDetailsFragment.togglePlayed() {
 fun FullDetailsFragment.playTrailers() {
 	val localTrailerCount = mBaseItem.localTrailerCount ?: 0
 
-	// Jellyfin-TV-Client: Trailer im kleinen Fenster in der App (Server-Trailer oder YouTube)
+	// Jellyfin-TV-Client: Trailer im Vollbild in der App (Server-Trailer oder YouTube)
 	trailerHolder?.stop()
 	lifecycleScope.launch {
 		val api by inject<ApiClient>()

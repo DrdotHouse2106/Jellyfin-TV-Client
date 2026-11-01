@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.41.5 – 2026-11-01
+
+- **„Trailer ansehen“ immer im Vollbild:** Server- und YouTube-Trailer füllen jetzt den ganzen Bildschirm (Detailseite, Entdecken, Banner, Anfrage-Seite) statt eines kleinen Fensters. „Zurück“ führt wieder zur vorigen Ansicht. Die kleinen Vorschau-Trailer bleiben, wie sie sind.
+
 ## 1.41.4 – 2026-11-01
 
 - **Kein Bildschirmschoner während eines Trailers:** Das Trailer-Fenster (YouTube und Server-Trailer) hält den Bildschirmschoner jetzt zurück und lässt den Bildschirm an. Vorher konnte er darunter starten und einen zweiten Trailer mit Ton abspielen.
