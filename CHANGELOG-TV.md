@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.42.1 – 2026-11-02
+
+- **Filmreihen mit Lücke:** Ist ein späterer Teil gesehen, ein früherer aber nicht, steht jetzt „Teil n fehlt noch“ (Text vom Server, ab Quallenkino 12.58.2) und der Knopf heißt „Teil n nachholen“ statt „Weiter mit Teil n“.
+
 ## 1.42.0 – 2026-11-01
 
 - **„Heute im TV für dich“: Seltener vorschlagen.** Langer OK-Druck (bzw. Menütaste) auf eine Sendung öffnet ein Menü mit „Seltener vorschlagen“, „Weniger <Genre>“ und „Nie mehr vorschlagen“; der Knopf „Seltener vorschlagen“ steht auch auf der Sendungsseite. Die Karte verschwindet sofort, ein kurzer Hinweis bietet „Rückgängig“. Die Rückmeldung geht an den Server (Quallenkino ab 12.58) und gilt damit auch im Web und auf anderen Geräten.

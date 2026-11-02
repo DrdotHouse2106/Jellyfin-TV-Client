@@ -37,6 +37,8 @@ class TvClientSectionsTests : FunSpec({
 		TvClientSections.MovieSeries(id = "1", name = "R", reason = null, next = null, total = 4, watched = 2, nextIndex = 2).caption shouldBe "2 von 4 gesehen · Weiter mit Teil 3"
 		TvClientSections.MovieSeries(id = "1", name = "R", reason = "4 Teile", next = null, total = 4).caption shouldBe "4 Teile"
 		TvClientSections.MovieSeries(id = "1", name = "R", reason = null, next = null, total = 3, watched = 3).caption shouldBe "Alle 3 Teile gesehen"
+		TvClientSections.MovieSeries(id = "1", name = "R", reason = "1 von 3 gesehen · Teil 1 fehlt noch", next = null, total = 3, watched = 1, nextIndex = 0, nextIsGap = true).caption shouldBe "1 von 3 gesehen · Teil 1 fehlt noch"
+		TvClientSections.MovieSeries(id = "1", name = "R", reason = null, next = null, total = 3, watched = 1, nextIndex = 0, nextIsGap = true).caption shouldBe "1 von 3 gesehen · Teil 1 fehlt noch"
 	}
 
 	test("Demnächst: Folgen mit Serie, Filme mit Bild relativ zum Server") {

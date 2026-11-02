@@ -62,11 +62,15 @@ object TvClientSections {
 		val total: Int = 0,
 		val watched: Int = 0,
 		val nextIndex: Int = 0,
+		/** Ein früherer Teil fehlt noch, obwohl ein späterer gesehen ist (Plugin ab 12.58.2). */
+		val nextIsGap: Boolean = false,
 		val hasBackdrop: Boolean = false,
 	) {
 		/** „1 von 3 gesehen · Weiter mit Teil 2“ bzw. „4 Teile“ (wie im Web). */
 		val caption: String
 			get() = when {
+				// Lücke: Text vom Server übernehmen („Teil 1 fehlt noch“), sonst selbst bauen
+				nextIsGap -> reason ?: "$watched von $total gesehen · Teil ${nextIndex + 1} fehlt noch"
 				watched in 1 until total -> "$watched von $total gesehen · Weiter mit Teil ${nextIndex + 1}"
 				total in 1..watched -> "Alle $total Teile gesehen"
 				else -> reason ?: "$total Teile"
@@ -323,6 +327,7 @@ object TvClientSections {
 		total = obj.int("Total"),
 		watched = obj.int("Watched"),
 		nextIndex = obj.int("NextIndex"),
+		nextIsGap = (obj["NextIsGap"] as? JsonPrimitive)?.booleanOrNull == true,
 		hasBackdrop = (obj["HasBackdrop"] as? JsonPrimitive)?.booleanOrNull == true,
 	)
 

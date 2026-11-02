@@ -145,6 +145,7 @@ private fun MovieSeriesScreen(id: String) {
 			if (next != null) {
 				Spacer(Modifier.height(20.dp))
 				val label = if (allWatched) stringResource(R.string.tvclient_series_from_start)
+				else if (series?.nextIsGap == true) stringResource(R.string.tvclient_series_catch_up, series.nextIndex + 1)
 				else stringResource(R.string.tvclient_series_continue, (series?.nextIndex ?: 0) + 1)
 				ContinueButton(label, Modifier.focusRequester(continueFocus)) {
 					playbackHelper.retrieveAndPlay(next.id, false, context)
