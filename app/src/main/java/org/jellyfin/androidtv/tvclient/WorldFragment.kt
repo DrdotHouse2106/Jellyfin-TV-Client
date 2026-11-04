@@ -101,14 +101,25 @@ private fun WorldScreen(key: String) {
 	// „Chronologisch (Handlungszeit)“ (Plugin ab 12.55); Standard Erscheinungsjahr, bleibt nach „Zurück“ erhalten
 	var chronological by remember { mutableStateOf(PageFocus.chronological(page)) }
 	var chronoSections by remember { mutableStateOf<List<Worlds.Section>?>(null) }
-	LaunchedEffect(chronological, world) {
+	// Fehlende Titel (Plugin ab 12.60) nur mit verknüpftem Jellyseerr – im Hintergrund, die Seite wartet nicht
+	var missing by remember { mutableStateOf<Worlds.Missing?>(null) }
+	LaunchedEffect(world) {
+		val current = world ?: return@LaunchedEffect
+		val seerr = runCatching { kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { Jellyseerr.detect(api) } }.getOrNull()
+		if (seerr != null) missing = runCatching { Worlds.missing(api, current) }.getOrNull()
+	}
+	val chronology = missing?.chronology ?: world?.chronology.orEmpty()
+	LaunchedEffect(chronological, world, missing) {
 		PageFocus.setChronological(page, chronological)
 		val current = world ?: return@LaunchedEffect
-		if (!chronological || chronoSections != null) return@LaunchedEffect
+		if (!chronological) return@LaunchedEffect
 		val userId = userRepository.currentUser.value?.id ?: return@LaunchedEffect
-		chronoSections = Worlds.chronologySections(api, userId, current, context.getString(R.string.tvclient_world_chronological))
+		chronoSections = Worlds.chronologySections(api, userId, current, context.getString(R.string.tvclient_world_chronological), missing)
 	}
-	val shown = if (chronological && world?.chronology?.isNotEmpty() == true) chronoSections else sections
+	// Normale Ansicht: am Ende „Noch nicht in der Bibliothek“ (abgedunkelt, „Fehlt“)
+	val missingTitle = stringResource(R.string.tvclient_world_missing_row)
+	val normal = sections?.let { list -> missing?.let { list + Worlds.missingSection(missingTitle, it) } ?: list }
+	val shown = if (chronological && chronology.isNotEmpty()) chronoSections else normal
 
 	LaunchedEffect(key) {
 		val userId = userRepository.currentUser.value?.id ?: run { sections = emptyList(); return@LaunchedEffect }
@@ -183,10 +194,24 @@ private fun WorldScreen(key: String) {
 				color = Color.White,
 				modifier = Modifier.padding(top = if (logoLoaded) 6.dp else 0.dp),
 			)
+			// „42 Titel · 3 fehlen“ wie im Web
+			val missingCount = missing?.items?.size ?: 0
+			if (current != null && missingCount > 0) {
+				Text(
+					stringResource(
+						R.string.tvclient_world_count_missing,
+						current.count,
+						androidx.compose.ui.res.pluralStringResource(R.plurals.tvclient_world_missing_count, missingCount, missingCount),
+					),
+					fontSize = 15.sp,
+					color = Color(0xFFB3B3B3),
+					modifier = Modifier.padding(top = 4.dp),
+				)
+			}
 			// Farbe der Welt nur als schmaler Akzent unter dem Namen
 			Box(Modifier.padding(top = 8.dp).width(64.dp).height(3.dp).clip(RoundedCornerShape(2.dp)).background(accent))
 			// Umschalter nur, wenn die Welt eine Chronologie hat
-			if (current?.chronology?.any { it.itemId != null } == true) {
+			if (chronology.any { it.itemId != null || it.missing }) {
 				Row(Modifier.padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
 					OrderButton(stringResource(R.string.tvclient_world_order_year), active = !chronological) { chronological = false }
 					OrderButton(stringResource(R.string.tvclient_world_order_chrono), active = chronological) { chronological = true }
@@ -199,9 +224,11 @@ private fun WorldScreen(key: String) {
 					shown == null -> Text(stringResource(R.string.loading), color = Color(0xFFB3B3B3))
 					shown.isEmpty() -> Text(stringResource(R.string.tvclient_world_empty), color = Color(0xFFB3B3B3))
 					else -> shown.forEachIndexed { index, section ->
-						WorldRow(index, section, if (index == 0) firstFocus else null, restoreKey, restore) { itemKey, item ->
+						WorldRow(index, section, if (index == 0) firstFocus else null, restoreKey, restore) { itemKey, item, gap ->
 							PageFocus.set(page, itemKey)
-							navigationRepository.navigate(Destinations.itemDetails(item.id))
+							// Fehlender Titel: Entdecken-Fenster (Im Abo, Kinotermin, „Anfragen …“, Trailer)
+							if (gap != null) onDiscoverClicked(context, gap)
+							else navigationRepository.navigate(Destinations.itemDetails(item.id))
 						}
 					}
 				}
@@ -218,7 +245,7 @@ private fun WorldRow(
 	focus: FocusRequester?,
 	restoreKey: String?,
 	restore: FocusRequester,
-	onClick: (String, BaseItemDto) -> Unit,
+	onClick: (String, BaseItemDto, TvClientSections.Discover?) -> Unit,
 ) {
 	Spacer(Modifier.height(16.dp))
 	Text(section.title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
@@ -245,18 +272,20 @@ private fun WorldRow(
 					modifier = modifier.focusRequester(first).firstItemScroll(listState, scope)
 					if (focus != null) modifier = modifier.focusRequester(focus)
 				}
-				PosterCard(item, modifier, section.captions?.getOrNull(index)) { onClick(itemKey, item) }
+				val gap = section.gaps?.getOrNull(index)
+				PosterCard(item, modifier, section.captions?.getOrNull(index), gap) { onClick(itemKey, item, gap) }
 			}
 		}
 	}
 }
 
 @Composable
-private fun PosterCard(item: BaseItemDto, modifier: Modifier, caption: String? = null, onClick: () -> Unit) {
+private fun PosterCard(item: BaseItemDto, modifier: Modifier, caption: String? = null, gap: TvClientSections.Discover? = null, onClick: () -> Unit) {
 	val imageHelper = koinInject<ImageHelper>()
 	val interaction = remember { MutableInteractionSource() }
 	val focused by interaction.collectIsFocusedAsState()
-	val url = remember(item.id) { imageHelper.getPrimaryImageUrl(item, height = 360) }
+	// Fehlender Titel: Plakat von TMDb statt vom eigenen Server
+	val url = remember(item.id, gap) { if (gap != null) gap.posterUrl ?: gap.imageUrl else imageHelper.getPrimaryImageUrl(item, height = 360) }
 	Column(modifier.clickable(interactionSource = interaction, indication = null, onClick = onClick)) {
 		Box(
 			Modifier
@@ -272,6 +301,8 @@ private fun PosterCard(item: BaseItemDto, modifier: Modifier, caption: String? =
 					contentDescription = item.name,
 					imageLoader = koinInject<coil3.ImageLoader>(),
 					contentScale = ContentScale.Crop,
+					// Fehlt in der Bibliothek: abgedunkelt, beim Fokus etwas heller
+					alpha = if (gap == null) 1f else if (focused) 0.7f else 0.4f,
 					modifier = Modifier.fillMaxSize(),
 				)
 			} else {
@@ -280,6 +311,16 @@ private fun PosterCard(item: BaseItemDto, modifier: Modifier, caption: String? =
 					color = Color(0xFFB3B3B3),
 					textAlign = TextAlign.Center,
 					modifier = Modifier.align(Alignment.Center).padding(8.dp),
+				)
+			}
+			if (gap != null) {
+				Text(
+					stringResource(R.string.tvclient_world_missing_badge),
+					color = Color.White,
+					fontSize = 12.sp,
+					fontWeight = FontWeight.Bold,
+					modifier = Modifier.align(Alignment.TopStart).padding(6.dp)
+						.clip(RoundedCornerShape(4.dp)).background(Color(0xFF5A5A5A)).padding(horizontal = 6.dp, vertical = 2.dp),
 				)
 			}
 			Box(Modifier.fillMaxSize().border(3.dp, if (focused) Color.White else Color.Transparent, RoundedCornerShape(6.dp)))

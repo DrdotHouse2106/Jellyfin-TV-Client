@@ -209,6 +209,8 @@ object TvClientSections {
 		val year: Int? = null,
 		val overview: String? = null,
 		val imageUrl: String? = null,
+		/** Plakat (hochkant), z. B. für fehlende Titel in Welten. */
+		val posterUrl: String? = null,
 		val releaseText: String? = null,
 		val genres: List<String> = emptyList(),
 		val officialRating: String? = null,
@@ -234,7 +236,17 @@ object TvClientSections {
 	data class DiscoverRow(val key: String, val title: String, val items: List<Discover>)
 
 	/** Antwort von GET /LocalRecs/Discover (testbar); Bildadressen können relativ zum Server sein. */
-	fun parseDiscover(baseUrl: String?, text: String): List<DiscoverRow> {
+	fun parseDiscover(baseUrl: String?, text: String): List<DiscoverRow> =
+		((json.parseToJsonElement(text) as? JsonObject)?.get("Rows") as? JsonArray).orEmpty().mapNotNull { rowEntry ->
+			val row = rowEntry as? JsonObject ?: return@mapNotNull null
+			val title = row.text("Title") ?: return@mapNotNull null
+			val items = (row["Items"] as? JsonArray).orEmpty().mapNotNull { parseDiscoverItem(baseUrl, it as? JsonObject) }
+			if (items.isEmpty()) null else DiscoverRow(row.text("Key").orEmpty(), title, items)
+		}
+
+	/** Ein Entdecken-Eintrag (auch fehlende Titel in Welten, Plugin ab 12.60); ohne Titel oder TMDb-ID null. */
+	fun parseDiscoverItem(baseUrl: String?, obj: JsonObject?): Discover? {
+		obj ?: return null
 		val base = baseUrl?.trimEnd('/')
 		fun abs(path: String?) = when {
 			path.isNullOrBlank() -> null
@@ -243,19 +255,15 @@ object TvClientSections {
 			else -> "$base/${path.trimStart('/')}"
 		}
 		fun JsonObject.strings(key: String) = (this[key] as? JsonArray).orEmpty().mapNotNull { (it as? JsonPrimitive)?.content?.takeIf { s -> s.isNotBlank() } }
-		return ((json.parseToJsonElement(text) as? JsonObject)?.get("Rows") as? JsonArray).orEmpty().mapNotNull { rowEntry ->
-			val row = rowEntry as? JsonObject ?: return@mapNotNull null
-			val title = row.text("Title") ?: return@mapNotNull null
-			val items = (row["Items"] as? JsonArray).orEmpty().mapNotNull { entry ->
-				val obj = entry as? JsonObject ?: return@mapNotNull null
-				val itemTitle = obj.text("Title") ?: return@mapNotNull null
-				Discover(
-					tmdbId = obj.text("TmdbId")?.toIntOrNull() ?: return@mapNotNull null,
+		val itemTitle = obj.text("Title") ?: return null
+		return Discover(
+					tmdbId = obj.text("TmdbId")?.toIntOrNull() ?: return null,
 					mediaType = obj.text("MediaType") ?: "movie",
 					title = itemTitle,
 					year = obj.text("Year")?.toIntOrNull(),
 					overview = obj.text("Overview"),
 					imageUrl = abs(obj.text("BackdropUrl")) ?: abs(obj.text("PosterUrl")),
+					posterUrl = abs(obj.text("PosterUrl")),
 					releaseText = obj.text("ReleaseText"),
 					genres = obj.strings("Genres"),
 					officialRating = obj.text("OfficialRating"),
@@ -268,9 +276,6 @@ object TvClientSections {
 					jellyfinId = obj.text("JellyfinId")?.let { runCatching { it.toUUID() }.getOrNull() },
 					released = (obj["Released"] as? JsonPrimitive)?.booleanOrNull != false,
 				)
-			}
-			if (items.isEmpty()) null else DiscoverRow(row.text("Key").orEmpty(), title, items)
-		}
 	}
 
 	/** Entdecken-Reihen „Demnächst im Kino“, „Neu dieses Jahr – Filme/Serien“ (Plugin ab 12.54), Reihenfolge vom Server. */

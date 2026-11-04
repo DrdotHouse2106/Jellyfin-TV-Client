@@ -11,6 +11,7 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.booleanOrNull
 import org.jellyfin.androidtv.data.repository.ItemRepository
 import org.jellyfin.androidtv.util.apiclient.getUrl
 import org.jellyfin.androidtv.util.apiclient.itemImages
@@ -127,14 +128,69 @@ object Worlds {
 	}
 
 	/** Abschnitt bzw. Titel mit Handlungszeit (bei Serien ggf. nur bestimmte Staffeln). */
-	data class ChronologyEntry(val section: String? = null, val itemId: UUID? = null, val label: String? = null, val seasons: List<Int> = emptyList()) {
+	data class ChronologyEntry(
+		val section: String? = null,
+		val itemId: UUID? = null,
+		val label: String? = null,
+		val seasons: List<Int> = emptyList(),
+		/** Fehlender Titel (aus /Worlds/{id}/Missing, Plugin ab 12.60): TMDb-ID statt Jellyfin-ID. */
+		val missing: Boolean = false,
+		val tmdbId: Int? = null,
+		val mediaType: String? = null,
+	) {
 		/** „2256–2258 · Staffel 1–2“; ohne Zeitangabe nur die Staffeln. */
 		val caption: String
 			get() = listOfNotNull(label?.takeIf { it.isNotBlank() }, seasonsText(seasons)).joinToString(" · ")
 	}
 
-	/** [captions] (falls gesetzt) steht je Karte darunter, z. B. die Handlungszeit. */
-	data class Section(val title: String, val items: List<BaseItemDto>, val captions: List<String?>? = null)
+	/**
+	 * [captions] (falls gesetzt) steht je Karte darunter, z. B. die Handlungszeit. [gaps]: an diesen Stellen
+	 * fehlt der Titel in der Bibliothek (Platzhalter in [items]) – Karte abgedunkelt mit „Fehlt“, öffnet das
+	 * Entdecken-Fenster.
+	 */
+	data class Section(
+		val title: String,
+		val items: List<BaseItemDto>,
+		val captions: List<String?>? = null,
+		val gaps: List<TvClientSections.Discover?>? = null,
+	)
+
+	/** Fehlende Titel einer Welt: Karten und die vollständige, fertig sortierte Chronologie (null = keine). */
+	data class Missing(val items: List<TvClientSections.Discover>, val chronology: List<ChronologyEntry>?)
+
+	/** Platzhalter-Karte für einen fehlenden Titel (feste Id je TMDb-Eintrag). */
+	fun placeholder(gap: TvClientSections.Discover): BaseItemDto = BaseItemDto(
+		id = UUID.nameUUIDFromBytes("missing-${gap.mediaType}-${gap.tmdbId}".toByteArray()),
+		type = if (gap.mediaType == "tv") BaseItemKind.SERIES else BaseItemKind.MOVIE,
+		name = gap.title,
+		productionYear = gap.year,
+	)
+
+	/** Reihe „Noch nicht in der Bibliothek“. */
+	fun missingSection(title: String, missing: Missing): Section =
+		Section(title, missing.items.map(::placeholder), missing.items.map { it.releaseText }, missing.items)
+
+	/** Antwort von GET /LocalRecs/Worlds/{id}/Missing (testbar); null, wenn ausgeschaltet oder leer. */
+	fun parseMissing(baseUrl: String?, text: String): Missing? {
+		val obj = runCatching { json.parseToJsonElement(text) as? JsonObject }.getOrNull() ?: return null
+		if ((obj["Enabled"] as? JsonPrimitive)?.booleanOrNull == false) return null
+		val items = (obj["Items"] as? JsonArray).orEmpty().mapNotNull { TvClientSections.parseDiscoverItem(baseUrl, it as? JsonObject) }
+		if (items.isEmpty()) return null
+		val chronology = (obj["Chronology"] as? JsonArray)?.let(::parseChronology)
+		return Missing(items, chronology)
+	}
+
+	/** Fehlende Titel nur mit Jellyseerr (Aufrufer prüft das); der erste Abruf einer großen Welt kann dauern. */
+	suspend fun missing(api: ApiClient, world: World): Missing? = withContext(Dispatchers.IO) {
+		val worldsText = pluginGet(api, "/LocalRecs/Worlds") ?: return@withContext null
+		val pluginId = pluginWorldId(worldsText, world.definition) ?: return@withContext null
+		val base = api.baseUrl?.trimEnd('/') ?: return@withContext null
+		val token = api.accessToken ?: return@withContext null
+		pluginGetUncached(base, token, "/LocalRecs/Worlds/${java.net.URLEncoder.encode(pluginId, "UTF-8")}/Missing", MISSING_TIMEOUT_MS)
+			?.let { parseMissing(base, it) }
+	}
+
+	private const val MISSING_TIMEOUT_MS = 30_000
 
 	/** Überschriften der Welt-Seite (aus den Ressourcen). */
 	data class Labels(val forYou: String, val latest: String, val movies: String, val series: String)
@@ -356,12 +412,12 @@ object Worlds {
 		return pluginGetUncached(base, token, path)?.also { pluginCache[key] = System.currentTimeMillis() to it }
 	}
 
-	private fun pluginGetUncached(base: String, token: String, path: String): String? {
+	private fun pluginGetUncached(base: String, token: String, path: String, timeoutMs: Int = TIMEOUT_MS): String? {
 		return runCatching {
 			val connection = URL(base + path).openConnection() as HttpURLConnection
 			try {
 				connection.connectTimeout = TIMEOUT_MS
-				connection.readTimeout = TIMEOUT_MS
+				connection.readTimeout = timeoutMs
 				connection.setRequestProperty("Authorization", "MediaBrowser Token=\"$token\"")
 				connection.setRequestProperty("Accept", "application/json")
 				if (connection.responseCode == 200) connection.inputStream.bufferedReader().use { it.readText() } else null
@@ -411,14 +467,21 @@ object Worlds {
 		val id = pluginWorldId(text, definition) ?: return emptyList()
 		val list = runCatching { json.parseToJsonElement(text) as? JsonArray }.getOrNull() ?: return emptyList()
 		val world = list.mapNotNull { it as? JsonObject }.firstOrNull { (it["Id"] as? JsonPrimitive)?.content == id } ?: return emptyList()
-		return (world["Chronology"] as? JsonArray).orEmpty().mapNotNull { entry ->
-			val obj = entry as? JsonObject ?: return@mapNotNull null
-			fun text(key: String) = (obj[key] as? JsonPrimitive)?.takeIf { it.isString }?.content?.takeIf { it.isNotBlank() }
-			text("Section")?.let { return@mapNotNull ChronologyEntry(section = it) }
-			val itemId = text("ItemId")?.toUUIDOrNull() ?: return@mapNotNull null
-			val seasons = (obj["Seasons"] as? JsonArray).orEmpty().mapNotNull { (it as? JsonPrimitive)?.content?.toIntOrNull() }
-			ChronologyEntry(itemId = itemId, label = text("Label"), seasons = seasons)
+		return parseChronology((world["Chronology"] as? JsonArray).orEmpty())
+	}
+
+	/** Einträge der Chronologie: Überschrift, vorhandener Titel (Jellyfin-ID) oder fehlender Titel (TMDb-ID). */
+	fun parseChronology(entries: List<JsonElement>): List<ChronologyEntry> = entries.mapNotNull { entry ->
+		val obj = entry as? JsonObject ?: return@mapNotNull null
+		fun text(key: String) = (obj[key] as? JsonPrimitive)?.takeIf { it.isString }?.content?.takeIf { it.isNotBlank() }
+		text("Section")?.let { return@mapNotNull ChronologyEntry(section = it) }
+		val seasons = (obj["Seasons"] as? JsonArray).orEmpty().mapNotNull { (it as? JsonPrimitive)?.content?.toIntOrNull() }
+		if ((obj["Missing"] as? JsonPrimitive)?.booleanOrNull == true) {
+			val tmdbId = (obj["TmdbId"] as? JsonPrimitive)?.content?.toIntOrNull() ?: return@mapNotNull null
+			return@mapNotNull ChronologyEntry(label = text("Label"), seasons = seasons, missing = true, tmdbId = tmdbId, mediaType = text("MediaType") ?: "movie")
 		}
+		val itemId = text("ItemId")?.toUUIDOrNull() ?: return@mapNotNull null
+		ChronologyEntry(itemId = itemId, label = text("Label"), seasons = seasons)
 	}
 
 	/** „Staffel 1–2“, „Staffel 3“, „Staffel 1, 3“ (testbar); leer → null. */
@@ -436,7 +499,7 @@ object Worlds {
 		for (entry in entries) {
 			when {
 				entry.section != null -> groups += entry.section to mutableListOf()
-				entry.itemId != null -> {
+				entry.itemId != null || (entry.missing && entry.tmdbId != null) -> {
 					if (groups.isEmpty()) groups += fallbackTitle to mutableListOf()
 					groups.last().second += entry
 				}
@@ -446,15 +509,23 @@ object Worlds {
 	}
 
 	/** Welt-Seite „Chronologisch (Handlungszeit)“: Abschnitte in Handlungsreihenfolge, Zeitangabe unter jeder Karte. */
-	suspend fun chronologySections(api: ApiClient, userId: UUID, world: World, fallbackTitle: String): List<Section> = withContext(Dispatchers.IO) {
-		val groups = chronologyGroups(world.chronology, fallbackTitle)
+	suspend fun chronologySections(api: ApiClient, userId: UUID, world: World, fallbackTitle: String, missing: Missing? = null): List<Section> = withContext(Dispatchers.IO) {
+		// Mit fehlenden Titeln: Chronologie vom Server inklusive Lücken an ihrer Stelle
+		val groups = chronologyGroups(missing?.chronology ?: world.chronology, fallbackTitle)
+		val gapsById = missing?.items.orEmpty().associateBy { "${it.mediaType}-${it.tmdbId}" }
 		val ids = groups.flatMap { (_, entries) -> entries.mapNotNull { it.itemId } }.distinct()
 		val byId = runCatching {
 			api.itemsApi.getItems(GetItemsRequest(userId = userId, ids = ids, fields = ItemRepository.browseFields, enableTotalRecordCount = false)).content.items
 		}.onFailure { Timber.w(it, "Chronologie der Welt konnte nicht geladen werden") }.getOrDefault(emptyList()).associateBy { it.id }
 		groups.mapNotNull { (title, entries) ->
-			val found = entries.mapNotNull { entry -> entry.itemId?.let(byId::get)?.let { it to entry.caption.ifBlank { null } } }
-			if (found.isEmpty()) null else Section(title, found.map { it.first }, found.map { it.second })
+			val found = entries.mapNotNull { entry ->
+				if (entry.missing) {
+					val gap = gapsById["${entry.mediaType ?: "movie"}-${entry.tmdbId}"] ?: return@mapNotNull null
+					Triple(placeholder(gap), entry.caption.ifBlank { null } ?: gap.releaseText, gap)
+				} else entry.itemId?.let(byId::get)?.let { Triple(it, entry.caption.ifBlank { null }, null) }
+			}
+			if (found.isEmpty()) null
+			else Section(title, found.map { it.first }, found.map { it.second }, found.map { it.third }.takeIf { gaps -> gaps.any { it != null } })
 		}
 	}
 

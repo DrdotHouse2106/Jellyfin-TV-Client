@@ -35,6 +35,7 @@ German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md
 - 1.40.2: ASS/SSA subtitles are shown by the built-in player (no burn-in/transcoding); episodes use the series trailer for the preview.
 - 1.40.1: fixes – correct day for "new episode on …", placeholder times, world matching, lost reasons, availability caches.
 - New in 1.40.0 (Local Recommendations 12.55+): worlds can be sorted chronologically by story time (e.g. Star Trek), with sections and the story year under each card.
+- New in 1.43.0 (Local Recommendations 12.60+, with Jellyseerr): worlds also show missing movies and series – dimmed with "Missing", in "Not in the library yet" or in story order; OK opens the Discover window with "Request …" and trailer.
 - New in 1.39.0: trailer preview also when the selection rests on a movie or series in a row (setting "Trailer preview in rows").
 - New in 1.38.0 (Local Recommendations 12.54+): discover rows "In cinemas soon", "New this year – movies/series", like Jellyfin Web.
 - 1.37.1: screensaver and trailer preview use only real trailers (no other extras), clips under 15 s are skipped.

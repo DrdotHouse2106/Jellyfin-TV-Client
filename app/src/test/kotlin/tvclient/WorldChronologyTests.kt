@@ -29,4 +29,22 @@ class WorldChronologyTests : FunSpec({
 		Worlds.seasonsText(listOf(1, 3)) shouldBe "Staffel 1, 3"
 		Worlds.seasonsText(emptyList()) shouldBe null
 	}
+
+	test("Fehlende Titel (Plugin 12.60): Karten und Chronologie mit Lücke an der richtigen Stelle") {
+		val missing = Worlds.parseMissing(
+			"http://srv",
+			"""{"Enabled":true,"Items":[{"TmdbId":828023,"MediaType":"movie","Title":"Fehlender Film","PosterUrl":"https://image.tmdb.org/p.jpg","ReleaseText":"Erschienen 2020","ChronologyIndex":2}],
+			"Chronology":[{"Index":0,"Section":"Hauptzeitlinie"},{"Index":1,"ItemId":"c2b157ea3dc84584a30bcb96492eda16","Label":"2151"},
+			{"Index":2,"Missing":true,"TmdbId":828023,"MediaType":"movie","Label":"um 2160"}],"TotalRecordCount":3}""",
+		)!!
+		missing.items.single().posterUrl shouldBe "https://image.tmdb.org/p.jpg"
+		val groups = Worlds.chronologyGroups(missing.chronology!!, "Chronologisch")
+		groups.single().first shouldBe "Hauptzeitlinie"
+		groups.single().second.map { it.label } shouldBe listOf("2151", "um 2160")
+		groups.single().second.last().missing shouldBe true
+		val section = Worlds.missingSection("Noch nicht in der Bibliothek", missing)
+		section.gaps!!.single()!!.tmdbId shouldBe 828023
+		section.items.single().name shouldBe "Fehlender Film"
+		Worlds.parseMissing("http://srv", """{"Enabled":false,"Items":[]}""") shouldBe null
+	}
 })

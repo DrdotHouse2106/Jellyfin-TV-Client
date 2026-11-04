@@ -266,4 +266,12 @@
     <string name="tvclient_pref_client_diagnostics">Fehlerhinweise an den Server senden</string>
     <string name="tvclient_pref_client_diagnostics_enabled">Kurze technische Hinweise (z. B. Player hängt, Trailer fehlt) gehen ins Client-Log deines Jellyfin-Servers – ohne Zugangsdaten und ohne Titel</string>
     <string name="tvclient_pref_client_diagnostics_disabled">Es werden keine Fehlerhinweise gesendet</string>
+    <!-- Welten: fehlende Titel (LocalRecs 12.60) -->
+    <string name="tvclient_world_missing_row">Noch nicht in der Bibliothek</string>
+    <string name="tvclient_world_missing_badge">Fehlt</string>
+    <string name="tvclient_world_count_missing">%1$d Titel · %2$s</string>
+    <plurals name="tvclient_world_missing_count">
+        <item quantity="one">%d fehlt</item>
+        <item quantity="other">%d fehlen</item>
+    </plurals>
 </resources>
