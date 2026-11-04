@@ -1,6 +1,6 @@
 # Datenschutzerklärung – Quallenkino
 
-*Stand: 16. Oktober 2026* · [English version](PRIVACY.en.md)
+*Stand: 4. November 2026* · [English version](PRIVACY.en.md)
 
 Quallenkino („die App“) ist eine App für Android TV und Fire TV, mit der man Medien von einem **eigenen Jellyfin-Server** ansieht. Sie basiert auf der offiziellen Jellyfin-App für Android TV und ist kein offizielles Produkt des Jellyfin-Projekts.
 
@@ -19,6 +19,9 @@ Wie jede Jellyfin-App sendet Quallenkino an den eingetragenen Server:
 - **Einstellungen**, die zwischen deinen Jellyfin-Apps synchronisiert werden (z. B. Startseitenabschnitte).
 - **Liste der installierten Apps** auf dem Fernseher (nur Name und Paketname, z. B. „Netflix“), damit du sie mit der Handy-Fernbedienung „Jellyfin Remote“ starten kannst. Das passiert nur, solange die Zeile „Apps“ eingeschaltet ist (Einstellungen → Startseite).
 - **Absturzberichte** (technische Fehlerdaten und Protokoll), falls die App abstürzt. Sie gehen ebenfalls nur an deinen Jellyfin-Server und lassen sich in den Einstellungen der App abschalten.
+- **Fehlerhinweise** ins Client-Log des Servers (z. B. „Player hängt“, „Trailer abgebrochen“, HDR-Hinweise): Gerätemodell, Android- und App-Version und die technische Meldung. Zugangsdaten werden geschwärzt, Titel in Anführungszeichen durch „…“ ersetzt; Element-IDs können enthalten sein. Abschaltbar unter Einstellungen → Erweitert → Absturzberichte → „Fehlerhinweise an den Server senden“.
+- **Zeitzone** des Geräts (z. B. „Europe/Berlin“) bzw. die Abweichung von UTC, damit Sendezeiten, Termine und Vorschläge nach Tageszeit stimmen (mit dem Plugin Local Recommendations).
+- **„Seltener vorschlagen“** in „Heute im TV für dich“ (ab Plugin 12.58): Sendung (ID, Serie, Titel) bzw. Genre und die gewählte Art („Seltener“, „Weniger <Genre>“, „Nie mehr“). Der Server merkt sich das für dein Konto; „Rückgängig“ löscht es wieder.
 
 Diese Daten gehen ausschließlich an den von dir eingetragenen Server, nicht an den Entwickler oder an Dritte.
 
@@ -38,7 +41,14 @@ Die App speichert auf dem Fernseher die Serveradresse, die Anmeldung (ein Zugang
 
 ## Dienste Dritter
 
-Die App enthält keine Dienste Dritter für Werbung oder Analyse. Öffnest du einen Trailer oder einen externen Player, startet die jeweilige App (z. B. YouTube); dafür gelten deren Datenschutzbestimmungen.
+Die App enthält keine Dienste Dritter für Werbung oder Analyse. Folgende Dienste Dritter kann sie direkt ansprechen:
+
+- **YouTube (Google)**: YouTube-Trailer laufen im offiziellen YouTube-Player in einer WebView der App – im Vollbild über „Trailer ansehen“ und, wenn die Trailer-Vorschau eingeschaltet ist, automatisch nach etwa 2 Sekunden als kleine Vorschau (z. B. auf der Detailseite). Dabei lädt die WebView Seiten und Skripte von YouTube; YouTube kann Cookies und lokalen Speicher setzen und erfährt deine IP-Adresse und welches Video läuft. Es gelten die Datenschutzbestimmungen von Google. Die Vorschau lässt sich in den Einstellungen unter „Trailer-Vorschau“ abschalten. Ältere Geräte ohne passende WebView öffnen stattdessen die YouTube-App.
+- **Jellyseerr / Seerr** (optional): Trägst du in der App eine Jellyseerr-Adresse und einen API-Schlüssel ein, spricht die App diesen Dienst direkt an (Suche, Details, Anfragen). Betreiber ist, wer Jellyseerr aufgesetzt hat – meist derselbe wie beim Jellyfin-Server.
+- **TMDB (The Movie Database)**: Bilder zu Titeln, die nicht auf deinem Server liegen (Entdecken, Anfragen, Personen), lädt die App direkt vom Bildserver von TMDB (image.tmdb.org). Dabei erfährt TMDB deine IP-Adresse und welche Bilder geladen werden.
+- **GitHub**: für die Update-Prüfung (siehe oben).
+
+Öffnest du einen externen Player, startet die jeweilige App; dafür gelten deren Datenschutzbestimmungen.
 
 ## Kinder
 

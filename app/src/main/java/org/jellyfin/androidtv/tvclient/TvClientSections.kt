@@ -261,7 +261,8 @@ object TvClientSections {
 					officialRating = obj.text("OfficialRating"),
 					runtimeMinutes = obj.text("RuntimeMinutes")?.toIntOrNull(),
 					providers = obj.strings("Providers"),
-					trailerKey = obj.text("TrailerKey"),
+					// Nur echte YouTube-Ids (11 Zeichen) – der Schlüssel landet im Player-HTML
+					trailerKey = obj.text("TrailerKey")?.takeIf { it.matches(TrailerWindow.YOUTUBE_KEY) },
 					trailerLanguage = obj.text("TrailerLanguage"),
 					inLibrary = (obj["InLibrary"] as? JsonPrimitive)?.booleanOrNull == true,
 					jellyfinId = obj.text("JellyfinId")?.let { runCatching { it.toUUID() }.getOrNull() },

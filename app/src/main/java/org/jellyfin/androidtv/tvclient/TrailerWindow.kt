@@ -178,9 +178,7 @@ object TrailerWindow {
 
 		webView.apply {
 			setBackgroundColor(Color.BLACK)
-			settings.javaScriptEnabled = true
-			settings.domStorageEnabled = true
-			settings.mediaPlaybackRequiresUserGesture = false
+			lockDown(this)
 			webChromeClient = WebChromeClient()
 			isFocusable = false
 			addJavascriptInterface(object {
@@ -217,6 +215,34 @@ object TrailerWindow {
 	}
 
 	const val ORIGIN = "https://de.drdothouse.jellyfintv"
+
+	/**
+	 * Gemeinsame Einstellungen für die YouTube-WebViews: JavaScript für den offiziellen Player, aber kein
+	 * Dateizugriff (auf API 24–29 ausdrücklich, dort ist die Vorgabe noch „an“), keine Inhalts-Anbieter und
+	 * keine Navigation weg von der Player-Seite – Links (z. B. „Auf YouTube ansehen“) öffnen weder eine
+	 * andere Seite in der WebView noch per ACTION_VIEW eine App.
+	 */
+	@SuppressLint("SetJavaScriptEnabled")
+	fun lockDown(webView: WebView) = webView.apply {
+		settings.javaScriptEnabled = true
+		settings.domStorageEnabled = true
+		settings.mediaPlaybackRequiresUserGesture = false
+		settings.allowFileAccess = false
+		settings.allowContentAccess = false
+		@Suppress("DEPRECATION")
+		settings.allowFileAccessFromFileURLs = false
+		@Suppress("DEPRECATION")
+		settings.allowUniversalAccessFromFileURLs = false
+		settings.setSupportMultipleWindows(false)
+		settings.javaScriptCanOpenWindowsAutomatically = false
+		webViewClient = object : android.webkit.WebViewClient() {
+			override fun shouldOverrideUrlLoading(view: WebView, request: android.webkit.WebResourceRequest): Boolean =
+				request.isForMainFrame && !isPlayerPage(request.url?.toString())
+		}
+	}
+
+	/** Nur die eigene Player-Seite (geladen mit [ORIGIN]) und about:blank darf die Haupt-Seite sein. */
+	fun isPlayerPage(url: String?): Boolean = url != null && (url == "about:blank" || url.startsWith("$ORIGIN/"))
 
 	/**
 	 * Seite mit dem offiziellen YouTube-IFrame-Player. Meldet über das JavaScript-Objekt „Quallenkino“

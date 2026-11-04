@@ -1,5 +1,14 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.42.2 – 2026-11-04
+
+Sicherheit (zweiter Prüfdurchgang):
+- **Untertitel-Effekte (ASS/SSA) standardmäßig aus:** Die eingebaute libass 0.17.3 hat bekannte Lücken bei manipulierten Untertitel-Dateien (CVE-2026-61626/-61627, behoben erst in 0.17.5; ein Update der Bibliothek gibt es noch nicht). „Automatisch“ zeigt deshalb vorerst einfachen Text (Media3); libass läuft nur noch, wenn „An“ ausdrücklich gewählt ist – dann mit Grenzen für Bildfläche und Cache.
+- **Fehlerhinweise ans Server-Protokoll** lassen sich abschalten (Einstellungen → Erweitert → Absturzberichte → „Fehlerhinweise an den Server senden“); Zugangsdaten werden geschwärzt, Titel durch „…“ ersetzt.
+- **YouTube-WebViews:** kein Dateizugriff (auch auf Android 7–10 ausdrücklich), keine Pop-ups, keine Navigation weg von der Player-Seite (Links öffnen keine andere App mehr).
+- Trailer-Ids aus Entdecken werden geprüft (nur echte YouTube-Ids); Releases werden nur aus signierten Builds veröffentlicht.
+- Datenschutzerklärung ergänzt: YouTube-Player in der App (auch die automatische Vorschau), Jellyseerr, TMDB-Bilder, Zeitzone, Fehlerhinweise und „Seltener vorschlagen“.
+
 ## 1.42.1 – 2026-11-02
 
 - **Filmreihen mit Lücke:** Ist ein späterer Teil gesehen, ein früherer aber nicht, steht jetzt „Teil n fehlt noch“ (Text vom Server, ab Quallenkino 12.58.2) und der Knopf heißt „Teil n nachholen“ statt „Weiter mit Teil n“.

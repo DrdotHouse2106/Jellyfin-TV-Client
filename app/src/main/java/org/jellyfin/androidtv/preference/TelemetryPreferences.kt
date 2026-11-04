@@ -15,6 +15,9 @@ class TelemetryPreferences(context: Context) : SharedPreferenceStore(
 		var crashReportEnabled = booleanPreference(ACRA.PREF_ENABLE_ACRA, true)
 		var crashReportIncludeLogs = booleanPreference(ACRA.PREF_ENABLE_SYSTEM_LOGS, true)
 
+		/** Jellyfin-TV-Client: kurze Fehlerhinweise (Player-Hänger, Trailer, HDR) ins Client-Log des Servers. */
+		var diagnosticsEnabled = booleanPreference("pref_tvclient_client_diagnostics", true)
+
 		var crashReportToken = stringPreference("server_token", "")
 		var crashReportUrl = stringPreference("server_url", "")
 	}

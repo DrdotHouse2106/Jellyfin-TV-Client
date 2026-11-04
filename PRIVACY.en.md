@@ -1,6 +1,6 @@
 # Privacy policy – Quallenkino
 
-*Last updated: 16 October 2026* · [Deutsche Fassung](PRIVACY.md)
+*Last updated: 4 November 2026* · [Deutsche Fassung](PRIVACY.md)
 
 Quallenkino ("the app") is an Android TV / Fire TV app for watching media from **your own Jellyfin server**. It is based on the official Jellyfin Android TV app and is not an official Jellyfin product.
 
@@ -30,13 +30,23 @@ Server address, sign-in token (not your password) and settings are stored on the
 - **Local server discovery**: during setup the app looks for Jellyfin servers on your local network.
 - **Home network address** (optional): if you enter a local server address, the app stores a network fingerprint (hash of gateway, DNS servers and domain) and uses the address only in that network. The fingerprint stays on the device. With the Local Recommendations plugin 12.35 or newer, the server must also prove it knows this device's token before the token is sent to the local address.
 - **Searches and viewed titles** (with the Local Recommendations plugin 12.36 or newer): your search terms (after a short typing pause) and the movie and series detail pages you open are sent to your Jellyfin server to improve your recommendations, together with your time offset from UTC for time-of-day suggestions. The server only stores this if the admin enabled it and you did not turn it off – under Settings → "Use searches and viewed titles for recommendations" you can turn it off and delete what was stored. The retention period (default 365 days) is shown there.
+- **Error notes** to the server's client log (e.g. "player stalled", "trailer aborted", HDR notes): device model, Android and app version and the technical message. Credentials are redacted and quoted titles replaced with "…"; item IDs may be included. Can be turned off under Settings → Advanced → Crash reports → "Send error notes to the server".
+- **Time zone** of the device (e.g. "Europe/Berlin") or the offset from UTC, so airing times, dates and time-of-day suggestions are right (with the Local Recommendations plugin).
+- **"Suggest less often"** in "TV for you today" (plugin 12.58+): the programme (ID, series, title) or genre and the chosen kind. The server stores it for your account; "Undo" deletes it.
 - **Updates**: at most once a day the app asks GitHub for a newer version (public release list, no personal data). Can be turned off under Settings → Updates.
 - **Microphone** (optional): voice search only; speech recognition is handled by your device's speech service (e.g. Amazon or Google) under their privacy policies.
 - **Launching other apps / opening settings**: the app reads only the list of launchable apps, never their content.
 
 ## Third parties
 
-No third-party advertising or analytics services. Trailers or external players open the respective app (e.g. YouTube), subject to its privacy policy.
+No third-party advertising or analytics services. The app may contact these third parties directly:
+
+- **YouTube (Google)**: YouTube trailers play in the official YouTube player inside an in-app WebView – full screen via "Watch trailer" and, if trailer previews are on, automatically after about 2 seconds as a small preview (e.g. on the detail page). The WebView loads pages and scripts from YouTube; YouTube may set cookies and local storage and learns your IP address and which video plays. Google's privacy policy applies. Previews can be turned off in the settings ("Trailer preview"). Older devices without a suitable WebView open the YouTube app instead.
+- **Jellyseerr / Seerr** (optional): if you enter a Jellyseerr address and API key, the app talks to it directly (search, details, requests). It is run by whoever set it up – usually the Jellyfin server operator.
+- **TMDB (The Movie Database)**: images for titles not on your server (Discover, requests, people) load directly from TMDB's image server (image.tmdb.org), which learns your IP address and the images loaded.
+- **GitHub**: for update checks (see above).
+
+External players open the respective app, subject to its privacy policy.
 
 ## Children
 

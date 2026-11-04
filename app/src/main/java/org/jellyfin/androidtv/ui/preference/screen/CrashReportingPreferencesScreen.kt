@@ -26,6 +26,13 @@ class CrashReportingPreferencesScreen : OptionsFragment() {
 				bind(telemetryPreferences, TelemetryPreferences.crashReportIncludeLogs)
 				depends { telemetryPreferences[TelemetryPreferences.crashReportEnabled] }
 			}
+
+			// Jellyfin-TV-Client: Fehlerhinweise ins Client-Log des Servers (ohne Tokens und Titel)
+			checkbox {
+				setTitle(R.string.tvclient_pref_client_diagnostics)
+				setContent(R.string.tvclient_pref_client_diagnostics_enabled, R.string.tvclient_pref_client_diagnostics_disabled)
+				bind(telemetryPreferences, TelemetryPreferences.diagnosticsEnabled)
+			}
 		}
 	}
 }

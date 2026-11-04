@@ -206,7 +206,7 @@
     <string name="tvclient_bitstream_dts_auto">Automatisch</string>
     <string name="tvclient_trickplay">Vorschaubilder beim Spulen</string>
     <string name="tvclient_subtitle_effects">Untertitel-Effekte (ASS/SSA)</string>
-    <string name="tvclient_subtitle_effects_desc">Automatisch: Anime-Untertitel (ASS/SSA) erscheinen mit allen Effekten – Schriften aus der Datei, Positionen, Schilder, Karaoke. Auf schwachen Geräten bzw. wenn dabei Bilder verloren gingen als einfacher Text. Aus: immer einfacher Text. Der Server brennt nichts ein.</string>
+    <string name="tvclient_subtitle_effects_desc">Automatisch: vorerst einfacher Text, bis die Effekt-Bibliothek (libass) ohne bekannte Sicherheitslücken verfügbar ist. An: Anime-Untertitel (ASS/SSA) mit allen Effekten – Schriften aus der Datei, Positionen, Schilder, Karaoke; die eingebaute libass 0.17.3 hat bekannte Lücken bei manipulierten Untertitel-Dateien, deshalb nur für vertrauenswürdige Dateien. Aus: immer einfacher Text. Der Server brennt nichts ein.</string>
     <string name="tvclient_subtitle_effects_auto_off">„Automatisch“ zeigt auf diesem Gerät einfachen Text, weil mit Effekten Bilder verloren gingen. Neu wählen, um es noch einmal zu versuchen.</string>
     <string name="tvclient_hdr_mode">HDR</string>
     <string name="tvclient_hdr_convert">Immer umwandeln</string>
@@ -263,4 +263,7 @@
     <string name="tvclient_livetv_undo">Rückgängig</string>
     <string name="tvclient_livetv_ok">OK</string>
     <string name="tvclient_livetv_feedback_failed">Konnte nicht gespeichert werden</string>
+    <string name="tvclient_pref_client_diagnostics">Fehlerhinweise an den Server senden</string>
+    <string name="tvclient_pref_client_diagnostics_enabled">Kurze technische Hinweise (z. B. Player hängt, Trailer fehlt) gehen ins Client-Log deines Jellyfin-Servers – ohne Zugangsdaten und ohne Titel</string>
+    <string name="tvclient_pref_client_diagnostics_disabled">Es werden keine Fehlerhinweise gesendet</string>
 </resources>

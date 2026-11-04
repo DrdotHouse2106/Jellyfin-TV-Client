@@ -60,7 +60,6 @@ import java.util.List;
 import java.util.Optional;
 
 import io.github.peerless2012.ass.media.AssHandler;
-import io.github.peerless2012.ass.media.AssHandlerConfig;
 import io.github.peerless2012.ass.media.kt.AssPlayerKt;
 import io.github.peerless2012.ass.media.parser.AssSubtitleParserFactory;
 import io.github.peerless2012.ass.media.type.AssRenderType;
@@ -96,7 +95,7 @@ public class VideoManager {
         nightModeEnabled = userPreferences.get(UserPreferences.Companion.getAudioNightMode());
 
         // Jellyfin-TV-Client: ASS/SSA mit allen Effekten über libass (abschaltbar, auf schwachen Geräten einfacher Text)
-        assHandler = SubtitleEffects.enabled(activity, userPreferences) ? new AssHandler(AssRenderType.OVERLAY_CANVAS, new AssHandlerConfig()) : null;
+        assHandler = SubtitleEffects.enabled(activity, userPreferences) ? new AssHandler(AssRenderType.OVERLAY_CANVAS, SubtitleEffects.handlerConfig()) : null;
         mExoPlayer = configureExoplayerBuilder(activity, assHandler).build();
         if (assHandler != null) {
             mExoPlayer.addAnalyticsListener(new AnalyticsListener() {

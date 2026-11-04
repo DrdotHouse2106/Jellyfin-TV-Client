@@ -125,9 +125,7 @@ private fun YoutubeInline(key: String, withSound: Boolean, modifier: Modifier, o
 				isFocusableInTouchMode = false
 				descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
 				setBackgroundColor(android.graphics.Color.BLACK)
-				settings.javaScriptEnabled = true
-				settings.domStorageEnabled = true
-				settings.mediaPlaybackRequiresUserGesture = false
+				TrailerWindow.lockDown(this)
 				webChromeClient = WebChromeClient()
 				addJavascriptInterface(object {
 					@JavascriptInterface
