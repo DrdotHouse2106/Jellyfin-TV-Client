@@ -42,9 +42,29 @@ class WorldChronologyTests : FunSpec({
 		groups.single().first shouldBe "Hauptzeitlinie"
 		groups.single().second.map { it.label } shouldBe listOf("2151", "um 2160")
 		groups.single().second.last().missing shouldBe true
-		val section = Worlds.missingSection("Noch nicht in der Bibliothek", missing)
+		val section = Worlds.withMissing(Worlds.missingSection("Noch nicht in der Bibliothek", missing), expanded = false) { "Alle anzeigen ($it weitere)" }
 		section.gaps!!.single()!!.tmdbId shouldBe 828023
 		section.items.single().name shouldBe "Fehlender Film"
 		Worlds.parseMissing("http://srv", """{"Enabled":false,"Items":[]}""") shouldBe null
+	}
+
+	test("Abschnitte (Plugin 12.61): eigene Titel, fehlende mit Grund, wenig bekannte hinter „Alle anzeigen“") {
+		val sections = Worlds.parseSections(
+			"http://srv",
+			"""{"MissingEnabled":true,"Sections":[
+			{"Key":"real","Title":"Realverfilmungen","ItemIds":["c2b157ea3dc84584a30bcb96492eda16"],"Missing":[
+				{"TmdbId":1,"MediaType":"movie","Title":"Bekannt","Reason":"Weil du „Halloween“ gesehen hast"},
+				{"TmdbId":2,"MediaType":"movie","Title":"Unbekannt","Minor":true,"ReleaseText":"Erschienen 1999"}]},
+			{"Key":"leer","Title":"Leer","ItemIds":[],"Missing":[]}]}""",
+		)
+		sections.map { it.title } shouldBe listOf("Realverfilmungen")
+		sections.single().missing.first().reason shouldBe "Weil du „Halloween“ gesehen hast"
+		val own = org.jellyfin.sdk.model.api.BaseItemDto(id = sections.single().itemIds.single(), type = org.jellyfin.sdk.model.api.BaseItemKind.MOVIE, name = "Vorhanden")
+		val section = Worlds.Section("Realverfilmungen", listOf(own), pendingGaps = sections.single().missing, key = "real")
+		val collapsed = Worlds.withMissing(section, expanded = false) { "Alle anzeigen ($it weitere)" }
+		collapsed.items.map { it.name } shouldBe listOf("Vorhanden", "Bekannt", "Alle anzeigen (1 weitere)")
+		collapsed.captions shouldBe listOf(null, "Weil du „Halloween“ gesehen hast", null)
+		collapsed.showMoreIndex shouldBe 2
+		Worlds.withMissing(section, expanded = true) { "" }.items.map { it.name } shouldBe listOf("Vorhanden", "Bekannt", "Unbekannt")
 	}
 })

@@ -274,4 +274,8 @@
         <item quantity="one">%d fehlt</item>
         <item quantity="other">%d fehlen</item>
     </plurals>
+    <plurals name="tvclient_world_show_more">
+        <item quantity="one">Alle anzeigen (%d weitere)</item>
+        <item quantity="other">Alle anzeigen (%d weitere)</item>
+    </plurals>
 </resources>

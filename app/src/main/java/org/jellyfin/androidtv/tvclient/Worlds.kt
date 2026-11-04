@@ -122,6 +122,8 @@ object Worlds {
 		val trailerItemId: String? = null,
 		/** Reihenfolge nach Handlungszeit (Plugin ab 12.55, Feld „Chronology“), sonst leer. */
 		val chronology: List<ChronologyEntry> = emptyList(),
+		/** Eigene Abschnitte statt flacher Film-/Serien-Liste (Plugin ab 12.61, „HasSections“). */
+		val hasSections: Boolean = false,
 	) {
 		val key get() = definition.key
 		val name get() = definition.name
@@ -153,7 +155,59 @@ object Worlds {
 		val items: List<BaseItemDto>,
 		val captions: List<String?>? = null,
 		val gaps: List<TvClientSections.Discover?>? = null,
+		/** Fehlende Titel des Abschnitts (persönlich sortiert), noch nicht eingefügt – nur mit Jellyseerr zeigen. */
+		val pendingGaps: List<TvClientSections.Discover> = emptyList(),
+		/** An dieser Stelle steht die Karte „Alle anzeigen (n weitere)“. */
+		val showMoreIndex: Int? = null,
+		/** Schlüssel des Abschnitts (für „Alle anzeigen“). */
+		val key: String = title,
 	)
+
+	/**
+	 * Fehlende Titel hinter die eigenen hängen (testbar): bekannte zuerst, wenig bekannte (Minor) erst nach
+	 * „Alle anzeigen (n weitere)“, außer [expanded]. Unter der Karte steht der Grund, sonst der Termin.
+	 */
+	fun withMissing(section: Section, expanded: Boolean, moreLabel: (Int) -> String): Section {
+		if (section.pendingGaps.isEmpty()) return section
+		val minor = section.pendingGaps.filter { it.minor }
+		val shownGaps = if (expanded || minor.isEmpty()) section.pendingGaps else section.pendingGaps.filterNot { it.minor }
+		val own = section.items.size
+		val items = section.items + shownGaps.map(::placeholder)
+		val captions = (section.captions ?: List(own) { null }) + shownGaps.map { it.reason ?: it.releaseText }
+		val gaps = List<TvClientSections.Discover?>(own) { null } + shownGaps
+		if (expanded || minor.isEmpty()) return section.copy(items = items, captions = captions, gaps = gaps, pendingGaps = emptyList())
+		val more = BaseItemDto(id = UUID.nameUUIDFromBytes("more-${section.key}".toByteArray()), type = BaseItemKind.FOLDER, name = moreLabel(minor.size))
+		return section.copy(items = items + more, captions = captions + null, gaps = gaps + null, pendingGaps = emptyList(), showMoreIndex = items.size)
+	}
+
+	/** Abschnitt vom Plugin: Titel, eigene Ids (neueste zuerst) und fehlende Titel. */
+	data class PluginSection(val key: String, val title: String, val itemIds: List<UUID>, val missing: List<TvClientSections.Discover>)
+
+	/** Antwort von GET /LocalRecs/Worlds/{id}/Sections (testbar); Abschnitte ohne Titel fallen weg. */
+	fun parseSections(baseUrl: String?, text: String): List<PluginSection> {
+		val obj = runCatching { json.parseToJsonElement(text) as? JsonObject }.getOrNull() ?: return emptyList()
+		val missingEnabled = (obj["MissingEnabled"] as? JsonPrimitive)?.booleanOrNull != false
+		return (obj["Sections"] as? JsonArray).orEmpty().mapIndexedNotNull { index, entry ->
+			val section = entry as? JsonObject ?: return@mapIndexedNotNull null
+			val title = (section["Title"] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() } ?: return@mapIndexedNotNull null
+			val ids = (section["ItemIds"] as? JsonArray).orEmpty().mapNotNull { (it as? JsonPrimitive)?.content?.toUUIDOrNull() }
+			val missing = if (!missingEnabled) emptyList() else (section["Missing"] as? JsonArray).orEmpty().mapNotNull { TvClientSections.parseDiscoverItem(baseUrl, it as? JsonObject) }
+			val key = (section["Key"] as? JsonPrimitive)?.content ?: "$index"
+			PluginSection("section-$key", title, ids, missing).takeIf { ids.isNotEmpty() || missing.isNotEmpty() }
+		}
+	}
+
+	private suspend fun pluginSections(api: ApiClient, userId: UUID, pluginId: String): List<Section> {
+		val base = api.baseUrl?.trimEnd('/') ?: return emptyList()
+		val token = api.accessToken ?: return emptyList()
+		val text = pluginGetUncached(base, token, "/LocalRecs/Worlds/${java.net.URLEncoder.encode(pluginId, "UTF-8")}/Sections", MISSING_TIMEOUT_MS) ?: return emptyList()
+		val parsed = parseSections(base, text)
+		val ids = parsed.flatMap { it.itemIds }.distinct()
+		val byId = if (ids.isEmpty()) emptyMap() else runCatching {
+			api.itemsApi.getItems(GetItemsRequest(userId = userId, ids = ids, fields = ItemRepository.browseFields, enableTotalRecordCount = false)).content.items
+		}.onFailure { Timber.w(it, "Abschnitte der Welt konnten nicht geladen werden") }.getOrDefault(emptyList()).associateBy { it.id }
+		return parsed.map { section -> Section(section.title, section.itemIds.mapNotNull(byId::get), pendingGaps = section.missing, key = section.key) }
+	}
 
 	/** Fehlende Titel einer Welt: Karten und die vollständige, fertig sortierte Chronologie (null = keine). */
 	data class Missing(val items: List<TvClientSections.Discover>, val chronology: List<ChronologyEntry>?)
@@ -168,7 +222,7 @@ object Worlds {
 
 	/** Reihe „Noch nicht in der Bibliothek“. */
 	fun missingSection(title: String, missing: Missing): Section =
-		Section(title, missing.items.map(::placeholder), missing.items.map { it.releaseText }, missing.items)
+		Section(title, emptyList(), pendingGaps = missing.items, key = "missing")
 
 	/** Antwort von GET /LocalRecs/Worlds/{id}/Missing (testbar); null, wenn ausgeschaltet oder leer. */
 	fun parseMissing(baseUrl: String?, text: String): Missing? {
@@ -272,7 +326,8 @@ object Worlds {
 						val logo = pluginWorlds?.let { pluginField(it, definition, "LogoUrl") }?.let { serverUrl(api, it) }
 						val trailerItemId = pluginWorlds?.let { pluginField(it, definition, "TrailerItemId") }
 						val chronology = pluginWorlds?.let { pluginChronology(it, definition) }.orEmpty()
-						World(definition, matchedStudios.map { it.id }, matchedCollections, count, logo ?: image, backdrop, trailerItemId, chronology)
+						val hasSections = pluginWorlds?.let { pluginFlag(it, definition, "HasSections") } == true
+						World(definition, matchedStudios.map { it.id }, matchedCollections, count, logo ?: image, backdrop, trailerItemId, chronology, hasSections)
 					}
 				}.awaitAll()
 			}.filter { it.count >= MIN_ITEMS }
@@ -351,14 +406,19 @@ object Worlds {
 				} else if (hasStudios) query(byStudio(types, ItemSortBy.DATE_CREATED, SortOrder.DESCENDING)) else emptyList()
 			}
 
+			// Abschnitte vom Plugin (ab 12.61) ersetzen die flache Film-/Serien-Liste
+			val sections = async { if (pluginId != null && world.hasSections) runCatching { pluginSections(api, userId, pluginId) }.getOrDefault(emptyList()) else emptyList() }
+			val flat = sections.await().ifEmpty {
+				listOf(
+					Section(labels.movies, movies.await()),
+					Section(labels.series, series.await()),
+				)
+			}
 			listOf(
 				Section(labels.forYou, forYou.await()),
 				Section(labels.latest, latest.await().take(20)),
-			) + collections.awaitAll() + listOf(
-				Section(labels.movies, movies.await()),
-				Section(labels.series, series.await()),
-			)
-		}.filter { it.items.isNotEmpty() }
+			) + collections.awaitAll() + flat
+		}.filter { it.items.isNotEmpty() || it.pendingGaps.isNotEmpty() }
 	}
 
 	/**
@@ -530,6 +590,15 @@ object Worlds {
 	}
 
 	/** Ein Textfeld der passenden Plugin-Welt (z. B. „LogoUrl“). */
+	/** Wahrheitswert der passenden Plugin-Welt (z. B. „HasSections“); fehlt er, null. */
+	fun pluginFlag(text: String, definition: Definition, field: String): Boolean? {
+		val id = pluginWorldId(text, definition) ?: return null
+		val list = runCatching { json.parseToJsonElement(text) as? JsonArray }.getOrNull() ?: return null
+		return list.mapNotNull { it as? JsonObject }
+			.firstOrNull { (it["Id"] as? JsonPrimitive)?.content == id }
+			?.let { it[field] as? JsonPrimitive }?.booleanOrNull
+	}
+
 	fun pluginField(text: String, definition: Definition, field: String): String? {
 		val id = pluginWorldId(text, definition) ?: return null
 		val list = runCatching { json.parseToJsonElement(text) as? JsonArray }.getOrNull() ?: return null

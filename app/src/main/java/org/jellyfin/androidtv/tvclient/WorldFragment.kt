@@ -103,10 +103,13 @@ private fun WorldScreen(key: String) {
 	var chronoSections by remember { mutableStateOf<List<Worlds.Section>?>(null) }
 	// Fehlende Titel (Plugin ab 12.60) nur mit verknüpftem Jellyseerr – im Hintergrund, die Seite wartet nicht
 	var missing by remember { mutableStateOf<Worlds.Missing?>(null) }
+	var seerr by remember { mutableStateOf(false) }
+	// Abschnitte, in denen „Alle anzeigen“ die wenig bekannten fehlenden Titel aufgeklappt hat
+	var expanded by remember { mutableStateOf(emptySet<String>()) }
 	LaunchedEffect(world) {
 		val current = world ?: return@LaunchedEffect
-		val seerr = runCatching { kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { Jellyseerr.detect(api) } }.getOrNull()
-		if (seerr != null) missing = runCatching { Worlds.missing(api, current) }.getOrNull()
+		seerr = runCatching { kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { Jellyseerr.detect(api) } }.getOrNull() != null
+		if (seerr) missing = runCatching { Worlds.missing(api, current) }.getOrNull()
 	}
 	val chronology = missing?.chronology ?: world?.chronology.orEmpty()
 	LaunchedEffect(chronological, world, missing) {
@@ -116,9 +119,18 @@ private fun WorldScreen(key: String) {
 		val userId = userRepository.currentUser.value?.id ?: return@LaunchedEffect
 		chronoSections = Worlds.chronologySections(api, userId, current, context.getString(R.string.tvclient_world_chronological), missing)
 	}
-	// Normale Ansicht: am Ende „Noch nicht in der Bibliothek“ (abgedunkelt, „Fehlt“)
+	// Normale Ansicht: Abschnitte vom Plugin zeigen ihre fehlenden Titel hinter den eigenen (persönlich sortiert);
+	// ohne Abschnitte am Ende „Noch nicht in der Bibliothek“. Wenig bekannte erst nach „Alle anzeigen“.
 	val missingTitle = stringResource(R.string.tvclient_world_missing_row)
-	val normal = sections?.let { list -> missing?.let { list + Worlds.missingSection(missingTitle, it) } ?: list }
+	val moreLabel: (Int) -> String = { n -> context.resources.getQuantityString(R.plurals.tvclient_world_show_more, n, n) }
+	val normal = sections?.let { list ->
+		val inSections = list.any { it.pendingGaps.isNotEmpty() }
+		val extra = missing?.takeIf { !inSections }?.let { Worlds.missingSection(missingTitle, it) }
+		val withExtra = if (extra != null) list + extra else list
+		withExtra
+			.map { section -> if (seerr) Worlds.withMissing(section, section.key in expanded, moreLabel) else section.copy(pendingGaps = emptyList()) }
+			.filter { it.items.isNotEmpty() }
+	}
 	val shown = if (chronological && chronology.isNotEmpty()) chronoSections else normal
 
 	LaunchedEffect(key) {
@@ -225,6 +237,11 @@ private fun WorldScreen(key: String) {
 					shown.isEmpty() -> Text(stringResource(R.string.tvclient_world_empty), color = Color(0xFFB3B3B3))
 					else -> shown.forEachIndexed { index, section ->
 						WorldRow(index, section, if (index == 0) firstFocus else null, restoreKey, restore) { itemKey, item, gap ->
+							// „Alle anzeigen (n weitere)“: wenig bekannte fehlende Titel dieser Reihe aufklappen
+							if (section.showMoreIndex != null && section.items.getOrNull(section.showMoreIndex)?.id == item.id) {
+								expanded = expanded + section.key
+								return@WorldRow
+							}
 							PageFocus.set(page, itemKey)
 							// Fehlender Titel: Entdecken-Fenster (Im Abo, Kinotermin, „Anfragen …“, Trailer)
 							if (gap != null) onDiscoverClicked(context, gap)

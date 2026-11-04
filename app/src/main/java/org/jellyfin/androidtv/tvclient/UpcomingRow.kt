@@ -70,7 +70,9 @@ fun onDiscoverClicked(context: Context, item: Any?): Boolean {
 			context,
 			listOfNotNull(item.title, item.year?.toString()).joinToString(" · "),
 			listOfNotNull(
-				item.releaseText?.let { TvInfoDialog.Line(it, TvInfoDialog.Style.REASON) },
+				// Welten: persönlicher Grund zuerst, der Termin darunter
+				item.reason?.let { TvInfoDialog.Line(it, TvInfoDialog.Style.REASON) },
+				item.releaseText?.let { TvInfoDialog.Line(it, if (item.reason != null) TvInfoDialog.Style.MUTED else TvInfoDialog.Style.REASON) },
 				item.facts.takeIf { it.isNotEmpty() }?.let { TvInfoDialog.Line(it, TvInfoDialog.Style.MUTED) },
 				item.providers.takeIf { it.isNotEmpty() }?.let { TvInfoDialog.Line(context.getString(R.string.tvclient_discover_providers, it.joinToString(", ")), TvInfoDialog.Style.STRONG) },
 				// Kinofilm vor dem Start: Anfrage wartet, bis er digital zu haben ist

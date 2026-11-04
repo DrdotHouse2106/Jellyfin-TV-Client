@@ -223,6 +223,10 @@ object TvClientSections {
 		val jellyfinId: UUID? = null,
 		/** Schon erschienen (Kino bzw. Streaming)? Fehlt die Angabe, gilt „ja“. */
 		val released: Boolean = true,
+		/** Welten (Plugin ab 12.61): persönlicher Grund, z. B. „Weil du „Halloween“ gesehen hast“. */
+		val reason: String? = null,
+		/** Wenig bekannter Titel – erst hinter „Alle anzeigen“. */
+		val minor: Boolean = false,
 	) {
 		/** „Genres · FSK 12 · 1 Std. 50 Min.“ */
 		val facts: String
@@ -275,6 +279,8 @@ object TvClientSections {
 					inLibrary = (obj["InLibrary"] as? JsonPrimitive)?.booleanOrNull == true,
 					jellyfinId = obj.text("JellyfinId")?.let { runCatching { it.toUUID() }.getOrNull() },
 					released = (obj["Released"] as? JsonPrimitive)?.booleanOrNull != false,
+					reason = obj.text("Reason")?.takeIf { it != "null" },
+					minor = (obj["Minor"] as? JsonPrimitive)?.booleanOrNull == true,
 				)
 	}
 
