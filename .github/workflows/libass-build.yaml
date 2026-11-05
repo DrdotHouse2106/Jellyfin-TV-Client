@@ -1,6 +1,6 @@
 # Quallenkino: libass-android (ass-kt, ass-media) selbst bauen – libass 0.17.5, FreeType 2.14.3, FriBidi 1.0.18,
 # nur arm64-v8a und armeabi-v7a, mit Grenzen für Schrift-Anhänge aus MKV-Dateien. Quellen und Versionen stehen in
-# third_party/libass-android/PINS. Ergebnis: Release „libass-android-<Version>“ mit dem Maven-Verzeichnis als ZIP;
+# third_party/libass-android/PINS. Ergebnis: Release „v0.0.0-libass-<Version>“ mit dem Maven-Verzeichnis als ZIP;
 # die App-Builds laden es und prüfen die SHA-256-Summe (third_party/libass-android/maven.sha256).
 name: libass / Build
 
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       release:
-        description: 'Release „libass-android-<Version>“ anlegen bzw. ersetzen'
+        description: 'Release „v0.0.0-libass-<Version>“ anlegen bzw. ersetzen'
         type: boolean
         default: true
 
@@ -43,7 +43,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           source third_party/libass-android/PINS
-          TAG="libass-android-$ARTIFACT_VERSION"
+          # Release-Tags müssen mit „v“ beginnen (Regel im Repo); „v0.0.0-…“ sortiert unter jede App-Version
+          TAG="v0.0.0-libass-$ARTIFACT_VERSION"
           cd third_party/libass-android/out
           gh release create "$TAG" libass-android-maven.zip libass-android-maven.zip.sha256 SOURCES.txt \
             --target "$GITHUB_SHA" --prerelease --title "libass-android $ARTIFACT_VERSION (Quallenkino)" \

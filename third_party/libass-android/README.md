@@ -8,7 +8,7 @@ Die ASS/SSA-Untertitel-Effekte nutzen [libass-android](https://github.com/peerle
 
 ## Bauen
 
-Über GitHub Actions: Workflow **„libass / Build“** (`.github/workflows/libass-build.yaml`). Er führt [build.sh](build.sh) aus, prüft `LIBASS_VERSION` (0x01705000) und die Architekturen und legt das Release `libass-android-<Version>` mit dem Maven-Verzeichnis als ZIP an. Die App-Builds laden dieses ZIP und prüfen es gegen [maven.sha256](maven.sha256).
+Über GitHub Actions: Workflow **„libass / Build“** (`.github/workflows/libass-build.yaml`). Er führt [build.sh](build.sh) aus, prüft `LIBASS_VERSION` (0x01705000) und die Architekturen und legt das Release `v0.0.0-libass-<Version>` mit dem Maven-Verzeichnis als ZIP an. Die App-Builds laden dieses ZIP und prüfen es gegen [maven.sha256](maven.sha256).
 
 Lokal (Linux mit Android-SDK/NDK, gperf, gettext, autopoint, libtool, autoconf, ninja): `third_party/libass-android/build.sh`.
 
