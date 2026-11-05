@@ -42,7 +42,7 @@ object ScreensaverTrailers {
 			}
 			val video = pickTrailer(candidates)
 			if (video == null) {
-				if (candidates.isNotEmpty()) ClientDiagnostics.report("Bildschirmschoner: zu „${item.name}“ nur zu kurze Trailer (${candidates.joinToString { "${it.name} ${it.runTimeTicks?.ticks}" }}) – zeige das Bild")
+				if (candidates.isNotEmpty()) ClientDiagnostics.report("Bildschirmschoner: zu „${item.name}“ (${item.id}) nur zu kurze Trailer (${candidates.joinToString { "${it.id} ${it.runTimeTicks?.ticks}" }}) – zeige das Bild")
 				return null
 			}
 			val url = api.createUrl(

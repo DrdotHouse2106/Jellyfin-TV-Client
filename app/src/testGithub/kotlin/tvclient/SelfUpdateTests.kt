@@ -45,4 +45,13 @@ class SelfUpdateTests : FunSpec({
 		SelfUpdate.shouldOffer("1.30.7|${now - 13L * 60 * 60 * 1000}", "1.30.7", now) shouldBe true
 		SelfUpdate.shouldOffer("1.30.6|${now - 60_000}", "1.30.7", now) shouldBe true
 	}
+
+	test("Update nur aus den Releases dieses Repos und von GitHub-Hosts") {
+		SelfUpdate.isAllowedDownload("https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/download/v1.44.1/quallenkino.apk") shouldBe true
+		SelfUpdate.isAllowedDownload("https://github.com/andere/Repo/releases/download/v1/quallenkino.apk") shouldBe false
+		SelfUpdate.isAllowedDownload("http://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/download/v1/x.apk") shouldBe false
+		SelfUpdate.isAllowedHost(java.net.URL("https://objects.githubusercontent.com/x")) shouldBe true
+		SelfUpdate.isAllowedHost(java.net.URL("https://evil.example/x")) shouldBe false
+		SelfUpdate.isAllowedHost(java.net.URL("http://github.com/x")) shouldBe false
+	}
 })

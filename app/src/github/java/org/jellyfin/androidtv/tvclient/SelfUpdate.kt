@@ -105,6 +105,8 @@ object SelfUpdate {
 			connection.setRequestProperty("Accept", "application/vnd.github+json")
 			connection.setRequestProperty("User-Agent", "Quallenkino/${BuildConfig.VERSION_NAME}")
 			if (connection.responseCode != HttpURLConnection.HTTP_OK) error("HTTP ${connection.responseCode}")
+			// Nach Weiterleitungen nur GitHub-Hosts (Release-Dateien liegen auf *.githubusercontent.com)
+			if (!isAllowedHost(connection.url)) error("Unerwarteter Download-Host ${connection.url.host}")
 			connection.inputStream.bufferedReader().use { it.readText() }
 		} finally {
 			connection.disconnect()
@@ -120,7 +122,8 @@ object SelfUpdate {
 			.mapNotNull { it as? JsonObject }
 			.firstOrNull { (it["name"] as? JsonPrimitive)?.content == APK_NAME }
 			?: return@withContext null
-		val url = (asset["browser_download_url"] as? JsonPrimitive)?.content ?: return@withContext null
+		// Nur Downloads aus den Releases dieses Repos auf GitHub (https)
+		val url = (asset["browser_download_url"] as? JsonPrimitive)?.content?.takeIf(::isAllowedDownload) ?: return@withContext null
 		val digest = (asset["digest"] as? JsonPrimitive)?.content?.takeIf { it.startsWith("sha256:") }?.removePrefix("sha256:")
 		val notes = runCatching { changesSince(get(CHANGELOG_URL), BuildConfig.VERSION_NAME) }.getOrDefault("")
 		Release(tag.removePrefix("v"), url, (asset["size"] as? JsonPrimitive)?.longOrNull, digest, notes)
@@ -293,6 +296,14 @@ object SelfUpdate {
 		}
 	}
 
+	/** Download-Adresse aus den Releases dieses Repos (testbar). */
+	fun isAllowedDownload(url: String): Boolean = url.startsWith("https://github.com/$REPO/releases/download/")
+
+	private val allowedHosts = setOf("github.com", "objects.githubusercontent.com", "release-assets.githubusercontent.com")
+
+	/** Endgültiger Host nach Weiterleitungen (testbar). */
+	fun isAllowedHost(url: URL): Boolean = url.protocol == "https" && url.host in allowedHosts
+
 	private suspend fun download(context: Context, release: Release, onProgress: (Int) -> Unit): File = withContext(Dispatchers.IO) {
 		val dir = File(context.cacheDir, "updates").apply { mkdirs() }
 		// Alte Downloads aufräumen
@@ -359,9 +370,9 @@ object SelfUpdate {
 		val expected = signatures(installed)
 		val actual = signatures(archive)
 		if (expected.isEmpty()) return false
-		// Manche ältere Geräte liefern für Archive keine Signaturen; dann prüft Android beim Installieren selbst,
-		// dass die Signatur zur installierten App passt (ein Update mit fremder Signatur lehnt Android immer ab)
-		actual.isEmpty() || actual == expected
+		// Nur sehr alte Geräte (vor Android 9) liefern für Archive manchmal keine Signaturen; dann prüft Android beim
+		// Installieren selbst, dass die Signatur zur installierten App passt. Ab Android 9 muss sie hier passen.
+		if (actual.isEmpty()) Build.VERSION.SDK_INT < Build.VERSION_CODES.P else actual == expected
 	}.onFailure { Timber.w(it, "Signatur des Updates nicht prüfbar") }.getOrDefault(false)
 
 	private fun canInstall(context: Context): Boolean =

@@ -252,9 +252,12 @@ object TvClientSections {
 	fun parseDiscoverItem(baseUrl: String?, obj: JsonObject?): Discover? {
 		obj ?: return null
 		val base = baseUrl?.trimEnd('/')
+		// Fremde Bild-Hosts: nur TMDb (https), sonst nur Adressen auf dem eigenen Server
 		fun abs(path: String?) = when {
 			path.isNullOrBlank() -> null
-			path.startsWith("http") -> path
+			path.startsWith("https://image.tmdb.org/") -> path
+			base != null && path.startsWith("$base/") -> path
+			path.startsWith("http") -> null
 			base == null -> null
 			else -> "$base/${path.trimStart('/')}"
 		}

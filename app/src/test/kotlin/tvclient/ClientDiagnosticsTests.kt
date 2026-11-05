@@ -16,4 +16,14 @@ class ClientDiagnosticsTests : FunSpec({
 		TrailerWindow.isPlayerPage("https://www.youtube.com/watch?v=abcdefghijk") shouldBe false
 		TrailerWindow.isPlayerPage("${TrailerWindow.ORIGIN}.evil.example/") shouldBe false
 	}
+
+	test("Entdecken: Bilder nur von TMDb bzw. dem eigenen Server") {
+		fun item(url: String) = TvClientSections.parseDiscoverItem(
+			"http://srv:8096",
+			kotlinx.serialization.json.Json.parseToJsonElement("""{"TmdbId":1,"Title":"X","PosterUrl":"$url"}""") as kotlinx.serialization.json.JsonObject,
+		)?.posterUrl
+		item("https://image.tmdb.org/t/p/a.jpg") shouldBe "https://image.tmdb.org/t/p/a.jpg"
+		item("/LocalRecs/x.jpg") shouldBe "http://srv:8096/LocalRecs/x.jpg"
+		item("https://evil.example/a.jpg") shouldBe null
+	}
 })

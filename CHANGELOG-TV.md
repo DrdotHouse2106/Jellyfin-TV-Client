@@ -1,5 +1,12 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.44.1 – 2026-11-05
+
+Sicherheit (Nachtrag zum Prüfdurchgang):
+- Fehlerhinweise vom Bildschirmschoner enthalten keine Trailer-Namen mehr (nur IDs und Laufzeiten).
+- **Selbst-Update** lädt nur Dateien aus den Releases dieses Repos und nur von GitHub-Hosts; ab Android 9 muss die Signatur der neuen Version schon vor dem Installieren passen.
+- Bilder zu Entdecken-Titeln nur von TMDb bzw. dem eigenen Server.
+
 ## 1.44.0 – 2026-11-05
 
 - **Welten mit Abschnitten** wie bei Disney+ (Quallenkino ab 12.61, z. B. Animation, Realverfilmungen, Familienfilme): Sie ersetzen die Reihen „Filme“ und „Serien“. Jeder Abschnitt zeigt die eigenen Titel (neueste zuerst) und dahinter – mit Jellyseerr – die fehlenden.
