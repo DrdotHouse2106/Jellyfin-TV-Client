@@ -1,0 +1,51 @@
+# Quallenkino: libass-android (ass-kt, ass-media) selbst bauen – libass 0.17.5, FreeType 2.14.3, FriBidi 1.0.18,
+# nur arm64-v8a und armeabi-v7a, mit Grenzen für Schrift-Anhänge aus MKV-Dateien. Quellen und Versionen stehen in
+# third_party/libass-android/PINS. Ergebnis: Release „libass-android-<Version>“ mit dem Maven-Verzeichnis als ZIP;
+# die App-Builds laden es und prüfen die SHA-256-Summe (third_party/libass-android/maven.sha256).
+name: libass / Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Release „libass-android-<Version>“ anlegen bzw. ersetzen'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - name: Setup Java
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y gperf gettext autopoint libtool autoconf automake ninja-build pkg-config python3 zip
+      - name: Build libass-android
+        run: third_party/libass-android/build.sh
+      - name: Upload artifact
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        with:
+          name: libass-android-maven
+          path: third_party/libass-android/out/
+          if-no-files-found: error
+      - name: Create GitHub release
+        if: inputs.release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          source third_party/libass-android/PINS
+          TAG="libass-android-$ARTIFACT_VERSION"
+          cd third_party/libass-android/out
+          gh release create "$TAG" libass-android-maven.zip libass-android-maven.zip.sha256 SOURCES.txt \
+            --target "$GITHUB_SHA" --prerelease --title "libass-android $ARTIFACT_VERSION (Quallenkino)" \
+            --notes "Eigenbau für Quallenkino: $(tr '\n' ';' < SOURCES.txt)" \
+            || gh release upload "$TAG" libass-android-maven.zip libass-android-maven.zip.sha256 SOURCES.txt --clobber

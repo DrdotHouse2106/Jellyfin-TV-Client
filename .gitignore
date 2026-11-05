@@ -7,3 +7,8 @@ local.properties
 .kotlin/
 build/
 captures/
+
+# libass-Eigenbau
+/third_party/libass-android/build/
+/third_party/libass-android/out/
+/third_party/maven/

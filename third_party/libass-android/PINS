@@ -1,0 +1,14 @@
+# Gepinnte Quellen für den libass-Eigenbau (build.sh). Beim Anheben: Commit und Version zusammen ändern.
+ARTIFACT_VERSION=0.5.1-qk1
+# peerless2012/libass-android v0.5.1
+LIBASS_ANDROID_COMMIT=504f64a325059ab5188c4c9d0eddc99c9356a23a
+# peerless2012/libass-cmake (Stand von libass-android v0.5.1)
+LIBASS_CMAKE_COMMIT=d3f00a43ca66e42a2c34de964b1a7dbbfa9dbc8b
+# libass 0.17.5 (behebt CVE-2026-61626/-61627)
+LIBASS_COMMIT=4a05d8127f525943ebf45fdc6497c9e665947f0d
+LIBASS_VERSION_EXPECTED=0x01705000
+# FreeType VER-2-14-3
+FREETYPE_COMMIT=0a0221a1347e2f1e07c395263540026e9a0aa7c7
+# FriBidi v1.0.18
+FRIBIDI_COMMIT=15393e4937aa95bcf865d92143735746aeb654fa
+# HarfBuzz 11.3.3, fontconfig, expat 2.7.1, libunibreak 6.1: wie in libass-cmake gepinnt
