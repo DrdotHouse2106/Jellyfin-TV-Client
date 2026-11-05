@@ -43,6 +43,9 @@ jobs:
             echo "JELLYFIN_VERSION=$(tr -d '[:space:]' < tv-client-version.txt)" >> $GITHUB_ENV
           fi
 
+      - name: Fetch libass build
+        run: third_party/libass-android/fetch.sh
+
       - name: Unit tests
         run: ./gradlew :app:testGithubDebugUnitTest :app:testAmazonDebugUnitTest
 

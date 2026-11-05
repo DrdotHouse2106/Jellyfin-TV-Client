@@ -22,6 +22,13 @@ pluginManagement {
 
 dependencyResolutionManagement {
 	repositories {
+		// Quallenkino: libass-Eigenbau (libass 0.17.5), von third_party/libass-android/fetch.sh entpackt
+		if (file("third_party/maven/io/github/peerless2012").isDirectory) {
+			exclusiveContent {
+				forRepository { maven(file("third_party/maven")) { name = "libassEigenbau" } }
+				filter { includeGroup("io.github.peerless2012") }
+			}
+		}
 		mavenCentral()
 		google()
 
