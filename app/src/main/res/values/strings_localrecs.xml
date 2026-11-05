@@ -206,7 +206,7 @@
     <string name="tvclient_bitstream_dts_auto">Automatic</string>
     <string name="tvclient_trickplay">Preview pictures while seeking</string>
     <string name="tvclient_subtitle_effects">Subtitle effects (ASS/SSA)</string>
-    <string name="tvclient_subtitle_effects_desc">Automatic: plain text for now, until the effects library (libass) is available without known security issues. On: anime subtitles (ASS/SSA) with all effects – fonts from the file, positions, signs, karaoke; the bundled libass 0.17.3 has known issues with crafted subtitle files, so only for trusted files. Off: always plain text. Never burned in by the server.</string>
+    <string name="tvclient_subtitle_effects_desc">Automatic: anime subtitles (ASS/SSA) are drawn with all effects – fonts from the file, positions, signs, karaoke (libass 0.17.5). On weak devices, or if pictures were dropped, as plain text. On: always with effects. Off: always plain text. Never burned in by the server.</string>
     <string name="tvclient_subtitle_effects_auto_off">Automatic is using plain text on this device because effects dropped pictures. Choose again to retry.</string>
     <string name="tvclient_hdr_mode">HDR</string>
     <string name="tvclient_hdr_convert">Always convert</string>

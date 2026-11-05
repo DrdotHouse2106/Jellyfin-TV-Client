@@ -99,3 +99,5 @@ Then my other project might be just right for you: **[ZockerDB](https://zockerdb
 collection in one place. Track games, consoles and accessories (including barcode scanning with your
 phone), rate and manage them, with price history, editions and PAL/USK details. Use it directly at
 [zockerdb.de](https://zockerdb.de) or self-host [ZockerDB Basis](https://github.com/DrdotHouse2106/ZockerDBBasis) on your own server.
+
+ASS/SSA subtitles use a self-built [libass-android](https://github.com/peerless2012/libass-android) (MIT) with libass 0.17.5 (ISC), FreeType 2.14.3 (FreeType License), HarfBuzz 11.3.3 (MIT), FriBidi 1.0.18 (LGPL-2.1), fontconfig (MIT-style), expat 2.7.1 (MIT) and libunibreak 6.1 (zlib); see [third_party/libass-android](third_party/libass-android).

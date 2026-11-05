@@ -26,14 +26,13 @@ object SubtitleEffects {
 	fun enabled(context: Context, prefs: UserPreferences): Boolean = when (prefs[modePreference]) {
 		Mode.ON -> true
 		Mode.OFF -> false
-		// Sicherheit: ass-media 0.5.1 bündelt libass 0.17.3 (CVE-2026-61626/-61627, behoben erst in 0.17.5).
-		// Bis es eine Fassung mit libass ≥ 0.17.5 gibt, nutzt „Automatisch“ die einfache Textdarstellung von
-		// Media3; libass läuft nur, wenn „An“ ausdrücklich gewählt ist.
+		// Eigenbau mit libass 0.17.5 (third_party/libass-android): „Automatisch“ zeigt wieder alle Effekte und
+		// schaltet bei verlorenen Bildern auf einfachen Text zurück
 		Mode.AUTO -> LIBASS_SAFE && !prefs[autoDisabledPreference] && !lowRam(context)
 	}
 
-	/** Gebündelte libass ohne bekannte Sicherheitslücken? Erst mit libass ≥ 0.17.5 auf true setzen. */
-	const val LIBASS_SAFE = false
+	/** Gebündelte libass ohne bekannte Sicherheitslücken (Eigenbau mit libass 0.17.5, siehe third_party/libass-android). */
+	const val LIBASS_SAFE = true
 
 	/** Grenzen für libass: höchstens Full-HD-Fläche pro Bild, kleinerer Glyphen-/Bild-Cache als die Vorgabe. */
 	@JvmStatic

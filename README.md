@@ -302,4 +302,4 @@ dem Handy), bewerten und verwalten, mit Preisverlauf, Editionen und PAL/USK-Anga
 
 ## Lizenz
 
-GPL v2, wie die offizielle App (siehe [LICENSE](LICENSE)). Für ASS/SSA-Untertitel enthält die App [libass-android](https://github.com/peerless2012/libass-android) (MIT) mit [libass](https://github.com/libass/libass) (ISC).
+GPL v2, wie die offizielle App (siehe [LICENSE](LICENSE)). Für ASS/SSA-Untertitel enthält die App einen Eigenbau von [libass-android](https://github.com/peerless2012/libass-android) (MIT) mit [libass](https://github.com/libass/libass) 0.17.5 (ISC), [FreeType](https://freetype.org) 2.14.3 (FreeType-Lizenz), [HarfBuzz](https://github.com/harfbuzz/harfbuzz) 11.3.3 (MIT), [FriBidi](https://github.com/fribidi/fribidi) 1.0.18 (LGPL-2.1), [fontconfig](https://www.freedesktop.org/wiki/Software/fontconfig/) (MIT-artig), [expat](https://libexpat.github.io) 2.7.1 (MIT) und [libunibreak](https://github.com/adah1972/libunibreak) 6.1 (zlib) – Bauweise und gepinnte Stände in [third_party/libass-android](third_party/libass-android).

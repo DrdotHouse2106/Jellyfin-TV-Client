@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.44.2 – 2026-11-05
+
+- **Untertitel-Effekte wieder automatisch, jetzt mit libass 0.17.5:** Quallenkino baut die Untertitel-Bibliothek selbst (libass 0.17.5, FreeType 2.14.3, FriBidi 1.0.18; Bauweise und gepinnte Stände in `third_party/libass-android`). Damit sind CVE-2026-61626/-61627 behoben, und „Automatisch“ zeigt Anime-Untertitel (ASS/SSA) wieder mit allen Effekten – bei verlorenen Bildern fällt es wie bisher auf einfachen Text zurück. Die Grenzen für Bildfläche und Cache bleiben.
+- **Schrift-Anhänge aus MKV-Dateien begrenzt:** höchstens 20 MB je Schrift, 64 Schriften und 128 MB zusammen; Anhänge ohne Namen oder Typ werden übersprungen statt die Wiedergabe abzubrechen.
+
 ## 1.44.1 – 2026-11-05
 
 Sicherheit (Nachtrag zum Prüfdurchgang):
