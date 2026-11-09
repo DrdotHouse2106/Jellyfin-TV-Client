@@ -2,6 +2,9 @@
 
 [![Spendier mir einen Kaffee](https://img.shields.io/badge/☕_Spendier_mir_einen_Kaffee-PayPal-0070ba?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/DrdotHouse)
 
+> [!TIP]
+> **Tester gesucht!** Du möchtest meine Apps vor allen anderen ausprobieren – auf iPhone, Android, Fire TV, Android TV oder LG webOS? Schreib eine kurze E-Mail an **tester.entwickler@zockerdb.de** mit deinem Namen, deinen Geräten und der E-Mail-Adresse deiner Apple-ID bzw. deines Google-Kontos. Ich trage dich ein, und du bekommst Bescheid, sobald es eine neue App oder Version zum Testen gibt. Deine Angaben bleiben privat und werden nur dafür verwendet.
+
 Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** ([jellyfin/jellyfin-androidtv](https://github.com/jellyfin/jellyfin-androidtv)) mit einer Startseite im Kino-Stil und persönlichen Empfehlungen vom Plugin [Local Recommendations](https://github.com/DrdotHouse2106/Lokal-Vorschlag-Jellyfin).
 
 **Plugins auf dem Jellyfin-Server** – keines ist Pflicht, die App läuft auch ohne, nur ohne die jeweiligen Zusatzfunktionen:
