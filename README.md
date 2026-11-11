@@ -234,7 +234,7 @@ Gebaut wird automatisch mit dem Workflow [`TV-Client / Build`](.github/workflows
 
 Der Workflow [`Amazon / Veröffentlichen`](.github/workflows/amazon-publish.yaml) lädt die Amazon-Fassung aus dem GitHub-Release über die **Amazon Appstore App Submission API** hoch: Edit anlegen (oder offenes Edit weiterverwenden) → APK ersetzen → Versionshinweise aus `CHANGELOG-TV.md` (Deutsch; andere Sprachen: kurzer englischer Hinweis) → prüfen → einreichen.
 
-- **Automatisch** nach jedem erfolgreichen Build eines Tags `v*` – aber erst, wenn die Repository-Variable `AMAZON_AUTO_SUBMIT` = `true` ist.
+- **Automatisch** nach jedem erfolgreichen Build, der ein Release angelegt hat (Tag `v*` oder „Release anlegen“) – aber erst, wenn die Repository-Variable `AMAZON_AUTO_SUBMIT` = `true` ist.
 - **Von Hand:** Actions → „Amazon / Veröffentlichen“ → *Run workflow* → Tag (leer = neuestes Release). Ohne Haken bei „Einreichen“ wird das Edit nur vorbereitet und geprüft – dann in der Developer-Konsole ansehen und dort einreichen oder verwerfen.
 
 Einmalig in der [Amazon-Developer-Konsole](https://developer.amazon.com/):
