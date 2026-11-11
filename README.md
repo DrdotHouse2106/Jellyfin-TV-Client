@@ -177,8 +177,9 @@ Hürden, auf die wir selbst gestoßen sind – jeweils mit Symptom, Ursache und 
 - *Fehlersuche:* Unter Einstellungen → Ton steht, was erkannt und gemeldet wurde, z. B. „HDMI, Passthrough: AC3, E-AC3; max. 6 Kanäle“. Dieselbe Zeile steht im App-Log und – wenn „Fehlerhinweise an den Server senden“ an ist – im Client-Log des Servers.
 
 **Fassung aus dem Amazon Appstore meldet ein Update**
-- *Ursache (bis 1.44.x):* Im Store lag nicht die Amazon-Fassung (`quallenkino-vX-amazon.apk`, ganz ohne Update-Code), sondern die GitHub-Fassung. Die erkennt eine Store-Installation nur am Installer (`com.amazon.venezia`) – meldet Fire OS ihn nicht, sucht sie bei GitHub nach Updates.
-- *Lösung (ab 1.45.0):* Zwei Sicherungen. Die Amazon-Fassung wird nur noch automatisch über die App Submission API hochgeladen (der Workflow lehnt jede APK mit Update-Berechtigung ab, der Build schlägt fehl, wenn die Amazon-Fassung Update-Code enthält). Und die GitHub-Fassung bietet zusätzlich nur dann Updates an, wenn sie mit dem GitHub-Schlüssel signiert ist – Amazon signiert seine Fassung neu.
+- *Stand:* Im Store liegt die Amazon-Fassung (bis 1.44.x: 1.36.1). Sie enthält keinen Update-Code und keine Update-Meldung, das ist an der APK nachgeprüft. Eine Meldung „Update verfügbar“ kommt nur aus der GitHub-Fassung. Steht sie auf einem Fire TV, wurde dort zusätzlich oder stattdessen die APK von GitHub installiert (z. B. per Downloader).
+- *Ab 1.45.0:* Die GitHub-Fassung bietet Updates außerdem nur noch an, wenn sie mit dem GitHub-Schlüssel signiert ist (Amazon signiert seine Fassung neu). Der Build schlägt fehl, wenn die Amazon-Fassung Update-Code enthält, und in den Store wird automatisch nur die Amazon-APK hochgeladen.
+- *Prüfen:* Einstellungen → Apps → Quallenkino zeigt die Version; Einstellungen → Updates in Quallenkino zeigt bei der Store-Fassung „Aus einem App-Store installiert“.
 
 **Film stockt, Ton nur Stereo, Untertitel ins Bild eingebrannt**
 - *Ursache:* „Audioausgabe: Zu Stereo heruntermischen“ oder „Dolby Digital durchreichen: Aus“. Dann darf der Ton nicht direkt laufen, der Server rechnet um. Bild-Untertitel (PGS) lassen sich in den umgerechneten Stream nicht einbetten und werden eingebrannt – dafür muss der Server auch das Video neu kodieren.
