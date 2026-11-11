@@ -1,5 +1,12 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.45.0 – 2026-11-11
+
+- **Ton automatisch passend zum Ausgang:** Bei jedem Wiedergabestart prüft Quallenkino, was Fernseher, Soundbar oder AV-Receiver über HDMI wirklich annehmen (AC3, E-AC3, E-AC3-JOC, TrueHD, DTS) und wie viele Kanäle der Ausgang schafft; Bluetooth und Kopfhörer gelten als Stereo. Dolby Digital (Plus) und Mehrkanal meldet die App nur noch als direkt abspielbar, wenn der Ausgang sie durchreicht oder der Stick sie selbst dekodiert und die Kanalzahl passt. Sonst wandelt der Server nur den Ton in AAC Stereo um – das Bild bleibt beim Direct Play unangetastet. Behebt „Bild ja, Ton nein“ mit E-AC3 5.1/7.1 auf Fire TV Sticks an Fernsehern ohne E-AC3.
+- **„Kein Ton?“ im Player:** startet an derselben Stelle mit Stereo-Ton neu und merkt sich das dauerhaft für dieses Gerät und diesen Ausgang.
+- **Neue Einstellung „Ton“:** Automatisch (Standard) / Immer Stereo / Durchreichen erzwingen (für AV-Receiver). Darunter steht, was erkannt und gemeldet wurde, z. B. „HDMI, Passthrough: AC3, E-AC3; max. 6 Kanäle“ (auch im App-Log und, falls eingeschaltet, im Client-Log des Servers).
+- **Amazon Appstore:** Die GitHub-Fassung bietet Updates nur noch an, wenn sie mit dem GitHub-Schlüssel signiert ist (zusätzlich zur Erkennung des Amazon-Installers). Der Build bricht ab, wenn die Amazon-Fassung Update-Code oder die Berechtigung „Apps installieren“ enthält. Neue Versionen gehen automatisch über die Amazon App Submission API in den Appstore.
+
 ## 1.44.2 – 2026-11-05
 
 - **Untertitel-Effekte wieder automatisch, jetzt mit libass 0.17.5:** Quallenkino baut die Untertitel-Bibliothek selbst (libass 0.17.5, FreeType 2.14.3, FriBidi 1.0.18; Bauweise und gepinnte Stände in `third_party/libass-android`). Damit sind CVE-2026-61626/-61627 behoben, und „Automatisch“ zeigt Anime-Untertitel (ASS/SSA) wieder mit allen Effekten – bei verlorenen Bildern fällt es wie bisher auf einfachen Text zurück. Die Grenzen für Bildfläche und Cache bleiben.

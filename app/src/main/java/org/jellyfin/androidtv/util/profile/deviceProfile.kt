@@ -59,19 +59,24 @@ fun createDeviceProfile(
 	context: Context,
 	userPreferences: UserPreferences,
 	serverVersion: ServerVersion,
-) = createDeviceProfile(
+): org.jellyfin.sdk.model.api.DeviceProfile {
+	// Jellyfin-TV-Client: Ton passend zum aktuellen Ausgang (bei jedem Wiedergabestart neu ermittelt)
+	val sound = org.jellyfin.androidtv.tvclient.TvClientSound.current(context, userPreferences)
+	return createDeviceProfile(
 	mediaTest = MediaCodecCapabilitiesTest(context),
 	maxBitrate = userPreferences.getMaxBitrate(),
 	isAC3Enabled = userPreferences[UserPreferences.ac3Enabled],
 	directHdAudio = org.jellyfin.androidtv.tvclient.TvClientAudioOutput.directHdAudio(context, userPreferences[UserPreferences.dtsMode]),
-	downMixAudio = userPreferences[UserPreferences.audioBehaviour] == AudioBehavior.DOWNMIX_TO_STEREO,
+	downMixAudio = userPreferences[UserPreferences.audioBehaviour] == AudioBehavior.DOWNMIX_TO_STEREO || sound?.stereo == true,
+	sound = sound?.takeUnless { it.stereo },
 	// Jellyfin-TV-Client: ASS/SSA zeigt der eingebaute Player selbst (Media3-SSA, Text ohne Effekte) – sonst brennt
 	// der Server die Untertitel ins Bild und muss dafür das ganze Video neu kodieren
 	assDirectPlay = true,
 	pgsDirectPlay = userPreferences[UserPreferences.pgsDirectPlay],
 	jellyfinTenEleven = serverVersion >= ServerVersion(10, 11, 0),
 	displayHdr = org.jellyfin.androidtv.tvclient.TvClientHdr.display(context, userPreferences[UserPreferences.hdrMode]),
-)
+	)
+}
 
 fun createDeviceProfile(
 	mediaTest: MediaCodecCapabilitiesTest,
@@ -85,6 +90,8 @@ fun createDeviceProfile(
 	directHdAudio: Set<String>? = null,
 	/** Jellyfin-TV-Client: HDR-Arten, die der Bildschirm zeigen kann (siehe [org.jellyfin.androidtv.tvclient.TvClientHdr]). */
 	displayHdr: org.jellyfin.androidtv.tvclient.TvClientHdr.DisplayHdr = org.jellyfin.androidtv.tvclient.TvClientHdr.ALL,
+	/** Jellyfin-TV-Client: Ton-Fähigkeiten des Ausgangs (null = alles melden), siehe [org.jellyfin.androidtv.tvclient.TvClientSound]. */
+	sound: org.jellyfin.androidtv.tvclient.TvClientSound.Decision? = null,
 ) = buildDeviceProfile {
 	// Jellyfin-TV-Client: DTS/TrueHD nur, wenn der Ausgang sie annimmt (sonst wandelt der Server den Ton um)
 	val hdAudioCodecs = org.jellyfin.androidtv.tvclient.TvClientAudioOutput.HD_AUDIO_CODECS
@@ -92,7 +99,10 @@ fun createDeviceProfile(
 		downMixAudio -> downmixSupportedAudioCodecs
 		!isAC3Enabled -> supportedAudioCodecs.filterNot { it == Codec.Audio.EAC3 || it == Codec.Audio.AC3 }.toTypedArray()
 		else -> supportedAudioCodecs
-	}.filter { it !in hdAudioCodecs || directHdAudio == null || it in directHdAudio }.toTypedArray()
+	}.filter { it !in hdAudioCodecs || directHdAudio == null || it in directHdAudio }
+		.filter { sound == null || it !in sound.blocked }.toTypedArray()
+	// Jellyfin-TV-Client: durchreichbare Formate haben keine Kanalgrenze, alles andere höchstens so viele Kanäle wie der Ausgang
+	val passthroughCodecs = allowedAudioCodecs.filter { sound != null && it in sound.passthrough }
 
 	val supportsHevc = mediaTest.supportsHevc()
 	val supportsHevcMain10 = mediaTest.supportsHevcMain10()
@@ -145,7 +155,15 @@ fun createDeviceProfile(
 
 		// Jellyfin-TV-Client: Muss der Ton umgewandelt werden, zuerst Dolby Digital (Plus) – behält 5.1 und
 		// läuft über jeden Ausgang (auch durchgereicht zum AV-Receiver)
-		audioCodec(*allowedAudioCodecs.sortedBy { if (it == Codec.Audio.EAC3 || it == Codec.Audio.AC3) 0 else 1 }.toTypedArray())
+		if (sound == null) {
+			audioCodec(*allowedAudioCodecs.sortedBy { if (it == Codec.Audio.EAC3 || it == Codec.Audio.AC3) 0 else 1 }.toTypedArray())
+		} else {
+			// Automatisch: Dolby nur, wenn der Ausgang es durchreicht (5.1), sonst AAC Stereo – nie unverändert E-AC3
+			// an einen Ausgang, der es nicht hörbar macht
+			val dolby = passthroughCodecs.filter { it in org.jellyfin.androidtv.tvclient.TvClientSound.DOLBY }
+			audioCodec(*(dolby + Codec.Audio.AAC).toTypedArray())
+			maxAudioChannels = if (dolby.isEmpty()) "2" else "6"
+		}
 
 		copyTimestamps = false
 		enableSubtitlesInManifest = true
@@ -496,11 +514,29 @@ fun createDeviceProfile(
 	}
 
 	// Audio channel profile
-	codecProfile {
+	if (sound == null) codecProfile {
 		type = CodecType.VIDEO_AUDIO
 
 		conditions {
 			ProfileConditionValue.AUDIO_CHANNELS lowerThanOrEquals if (downMixAudio) 2 else 8
+		}
+	} else {
+		// Jellyfin-TV-Client: selbst dekodierte Formate nur bis zur Kanalzahl des Ausgangs, durchgereichte bis 8
+		codecProfile {
+			type = CodecType.VIDEO_AUDIO
+			codec = allowedAudioCodecs.filterNot { it in passthroughCodecs }.joinToString(",")
+
+			conditions {
+				ProfileConditionValue.AUDIO_CHANNELS lowerThanOrEquals sound.maxChannels
+			}
+		}
+		if (passthroughCodecs.isNotEmpty()) codecProfile {
+			type = CodecType.VIDEO_AUDIO
+			codec = passthroughCodecs.joinToString(",")
+
+			conditions {
+				ProfileConditionValue.AUDIO_CHANNELS lowerThanOrEquals 8
+			}
 		}
 	}
 

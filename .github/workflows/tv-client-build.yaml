@@ -75,6 +75,33 @@ jobs:
         if: steps.keystore.outputs.signed != 'true'
         run: ./gradlew :app:assembleGithubDebug :app:assembleAmazonDebug
 
+      - name: Check Amazon APK (kein Selbst-Update)
+        # Bricht den Build ab, wenn die Amazon-Fassung Update-Code oder die Berechtigung „Apps installieren“ enthält.
+        # Gegenprobe mit der GitHub-Fassung, damit die Prüfung selbst nicht unbemerkt ins Leere läuft.
+        shell: python3 {0}
+        run: |
+          import glob, sys, zipfile
+          marks = {
+              "REQUEST_INSTALL_PACKAGES": lambda m, d: "REQUEST_INSTALL_PACKAGES".encode("utf-16le") in m or b"REQUEST_INSTALL_PACKAGES" in m,
+              "FileProvider .updates": lambda m, d: ".updates".encode("utf-16le") in m,
+              "GitHub-Update-Abfrage": lambda m, d: b"api.github.com/repos" in d,
+              "APK-Installation": lambda m, d: b"application/vnd.android.package-archive" in d,
+          }
+          def found(path):
+              z = zipfile.ZipFile(path)
+              m = z.read("AndroidManifest.xml")
+              d = b"".join(z.read(n) for n in z.namelist() if n.endswith(".dex"))
+              return [k for k, f in marks.items() if f(m, d)]
+          amazon = glob.glob("app/build/outputs/apk/amazon/**/*.apk", recursive=True)
+          github = glob.glob("app/build/outputs/apk/github/**/*.apk", recursive=True)
+          if not amazon or not github: sys.exit("::error::Amazon- oder GitHub-APK fehlt")
+          bad = [f"{a}: {', '.join(found(a))}" for a in amazon if found(a)]
+          missing = [g for g in github if len(found(g)) != len(marks)]
+          for b in bad: print(f"::error::Amazon-APK enthält Selbst-Update: {b}")
+          for g in missing: print(f"::error::Gegenprobe fehlgeschlagen (GitHub-APK ohne Update-Code?): {g}")
+          if bad or missing: sys.exit(1)
+          print("Amazon-APK ohne Selbst-Update:", *amazon)
+
       - name: Collect APKs
         run: |
           mkdir -p build/tv-client

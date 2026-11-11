@@ -278,4 +278,11 @@
         <item quantity="one">Alle anzeigen (%d weitere)</item>
         <item quantity="other">Alle anzeigen (%d weitere)</item>
     </plurals>
+    <!-- Ton automatisch passend zum Ausgang -->
+    <string name="tvclient_sound">Ton</string>
+    <string name="tvclient_sound_stereo">Immer Stereo</string>
+    <string name="tvclient_sound_passthrough">Durchreichen erzwingen</string>
+    <string name="tvclient_sound_hint">Automatisch: Bei jedem Start prüft Quallenkino, was Fernseher, Soundbar oder AV-Receiver wirklich annehmen. Dolby und Mehrkanal gehen nur direkt, wenn sie hörbar ankommen – sonst wandelt der Server nur den Ton in Stereo um, das Bild bleibt. „Durchreichen erzwingen“ nur für AV-Receiver. Ändern setzt „Kein Ton?“ zurück.</string>
+    <string name="tvclient_no_sound">Kein Ton?</string>
+    <string name="tvclient_no_sound_done">Ton läuft in Stereo – ändern in den Einstellungen</string>
 </resources>

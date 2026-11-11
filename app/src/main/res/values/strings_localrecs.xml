@@ -278,4 +278,11 @@
         <item quantity="one">Show all (%d more)</item>
         <item quantity="other">Show all (%d more)</item>
     </plurals>
+    <!-- Sound matched to the audio output -->
+    <string name="tvclient_sound">Sound</string>
+    <string name="tvclient_sound_stereo">Always stereo</string>
+    <string name="tvclient_sound_passthrough">Force passthrough</string>
+    <string name="tvclient_sound_hint">Automatic: at every start Quallenkino checks what the TV, soundbar or AV receiver really accepts. Dolby and multichannel only play directly if they arrive audibly – otherwise the server converts just the audio to stereo, the picture stays. “Force passthrough” is for AV receivers only. Changing this resets “No sound?”.</string>
+    <string name="tvclient_no_sound">No sound?</string>
+    <string name="tvclient_no_sound_done">Audio now plays in stereo – change it in the settings</string>
 </resources>

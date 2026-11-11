@@ -144,17 +144,38 @@ object SelfUpdate {
 	private val STORES = setOf("com.amazon.venezia", "com.amazon.appmanager")
 
 	/**
-	 * Aus einem Store installiert (Amazon Appstore, Google Play)? Dann gibt es kein Selbst-Update – die Stores
-	 * erlauben keine Updates an ihnen vorbei, und ihre Fassung ist ohnehin mit einem anderen Schlüssel signiert.
+	 * Fingerabdruck (SHA-256) des Schlüssels, mit dem die GitHub-Releases signiert sind (öffentlich, kein Geheimnis).
+	 * Der Amazon Appstore signiert die ausgelieferte App mit einem eigenen Schlüssel neu – eine so installierte App
+	 * könnte ein GitHub-Update ohnehin nicht annehmen.
 	 */
-	fun isStoreInstall(context: Context): Boolean = runCatching {
-		val installer = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-			context.packageManager.getInstallSourceInfo(context.packageName).installingPackageName
-		} else {
-			@Suppress("DEPRECATION")
-			context.packageManager.getInstallerPackageName(context.packageName)
-		}
-		installer in STORES
+	private const val GITHUB_CERT_SHA256 = "ceb279eb1abcf4670e24120c0f02f8cd5455461de76218ead1a6de2ae8e9c41d"
+
+	/**
+	 * Aus einem Store installiert oder nicht mit dem GitHub-Schlüssel signiert? Dann gibt es kein Selbst-Update – die
+	 * Stores erlauben keine Updates an ihnen vorbei. Zwei unabhängige Prüfungen: Installer (Amazon Appstore) und
+	 * Signatur, falls der Installer fehlt oder anders heißt (z. B. bei der Ersteinrichtung eines Fire TV).
+	 */
+	fun isStoreInstall(context: Context): Boolean {
+		val installer = runCatching {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+				context.packageManager.getInstallSourceInfo(context.packageName).installingPackageName
+			} else {
+				@Suppress("DEPRECATION")
+				context.packageManager.getInstallerPackageName(context.packageName)
+			}
+		}.getOrNull()
+		val githubSigned = isGithubSigned(context)
+		Timber.i("Selbst-Update: Installer=%s, GitHub-Signatur=%s", installer, githubSigned)
+		return installer in STORES || !githubSigned
+	}
+
+	@Suppress("DEPRECATION")
+	private fun isGithubSigned(context: Context): Boolean = runCatching {
+		val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) PackageManager.GET_SIGNING_CERTIFICATES else PackageManager.GET_SIGNATURES
+		val info = context.packageManager.getPackageInfo(context.packageName, flags)
+		val signers = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) info.signingInfo?.apkContentsSigners else info.signatures
+		val digest = MessageDigest.getInstance("SHA-256")
+		signers.orEmpty().any { sig -> digest.digest(sig.toByteArray()).joinToString("") { "%02x".format(it) } == GITHUB_CERT_SHA256 }
 	}.getOrDefault(false)
 
 	@Volatile private var checking = false
@@ -230,6 +251,7 @@ object SelfUpdate {
 
 	/** „Nach Updates suchen“ in den Einstellungen. */
 	fun manualCheck(activity: Activity) {
+		if (isStoreInstall(activity)) return
 		val owner = activity as? LifecycleOwner ?: return
 		Toast.makeText(activity, R.string.tvclient_update_checking, Toast.LENGTH_SHORT).show()
 		owner.lifecycleScope.launch {
@@ -258,6 +280,7 @@ object SelfUpdate {
 
 	/** Herunterladen (mit Fortschritt), prüfen und installieren. */
 	fun install(activity: Activity, release: Release) {
+		if (isStoreInstall(activity)) return
 		val owner = activity as? LifecycleOwner ?: return
 		if (!canInstall(activity)) return requestInstallPermission(activity)
 

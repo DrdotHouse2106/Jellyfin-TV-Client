@@ -165,9 +165,20 @@ Hinweise:
 - Jellyfin Remote zeigt für „Quallenkino“ zusätzlich Knöpfe für die Bereiche der App (Bibliotheken, Live-TV, TV-Programm, Aufnahmen, Suche, Einstellungen), die installierten Apps des Fernsehers und dessen Einstellungen (WLAN, Bluetooth, Bild, Ton).
 - Die Fire-TV-App bzw. Google-TV-App auf dem Handy funktioniert natürlich weiterhin.
 
-## Häufige Probleme
+## Probleme und Lösungen
 
 Hürden, auf die wir selbst gestoßen sind – jeweils mit Symptom, Ursache und Lösung.
+
+**Bild ja, Ton nein (Dolby Digital Plus / E-AC3, 5.1 und 7.1)**
+- *Symptom:* Film läuft, aber es bleibt still – vor allem bei E-AC3 in 5.1/7.1, auch wenn der Server nur das Bild umwandelt (z. B. AV1-HDR → H.264). Manchmal bricht die Wiedergabe ab. Auf dem Server keine Fehler.
+- *Ursache (bis 1.44.x):* Die App meldete E-AC3 und Mehrkanal pauschal als abspielbar. Fire-TV-Stick → HDMI → Fernseher machen daraus aber nicht immer etwas Hörbares (Fernseher ohne E-AC3, Ausgang nur Stereo). Die offizielle Jellyfin-App verhält sich genauso.
+- *Lösung (ab 1.45.0 automatisch):* Bei jedem Wiedergabestart prüft Quallenkino den Ausgang (HDMI, Bluetooth …): Was durchgereicht werden kann (AC3, E-AC3, TrueHD, DTS) und wie viele Kanäle er schafft. Dolby und Mehrkanal laufen nur direkt, wenn sie hörbar ankommen – sonst wandelt der Server nur den Ton in AAC Stereo um, das Bild bleibt unangetastet. Mit Soundbar oder AV-Receiver wird E-AC3 weiter durchgereicht.
+- *Wenn es trotzdem still bleibt:* Im Player **„Kein Ton?“** drücken. Der Film startet an derselben Stelle mit Stereo-Ton neu; Quallenkino merkt sich das dauerhaft für dieses Gerät und diesen Ausgang (auch nach einem Neustart). Zurück: Einstellungen → **Ton** → „Automatisch“ erneut wählen. Für AV-Receiver gibt es dort „Durchreichen erzwingen“, für Problemfälle „Immer Stereo“.
+- *Fehlersuche:* Unter Einstellungen → Ton steht, was erkannt und gemeldet wurde, z. B. „HDMI, Passthrough: AC3, E-AC3; max. 6 Kanäle“. Dieselbe Zeile steht im App-Log und – wenn „Fehlerhinweise an den Server senden“ an ist – im Client-Log des Servers.
+
+**Fassung aus dem Amazon Appstore meldet ein Update**
+- *Ursache (bis 1.44.x):* Im Store lag nicht die Amazon-Fassung (`quallenkino-vX-amazon.apk`, ganz ohne Update-Code), sondern die GitHub-Fassung. Die erkennt eine Store-Installation nur am Installer (`com.amazon.venezia`) – meldet Fire OS ihn nicht, sucht sie bei GitHub nach Updates.
+- *Lösung (ab 1.45.0):* Zwei Sicherungen. Die Amazon-Fassung wird nur noch automatisch über die App Submission API hochgeladen (der Workflow lehnt jede APK mit Update-Berechtigung ab, der Build schlägt fehl, wenn die Amazon-Fassung Update-Code enthält). Und die GitHub-Fassung bietet zusätzlich nur dann Updates an, wenn sie mit dem GitHub-Schlüssel signiert ist – Amazon signiert seine Fassung neu.
 
 **Film stockt, Ton nur Stereo, Untertitel ins Bild eingebrannt**
 - *Ursache:* „Audioausgabe: Zu Stereo heruntermischen“ oder „Dolby Digital durchreichen: Aus“. Dann darf der Ton nicht direkt laufen, der Server rechnet um. Bild-Untertitel (PGS) lassen sich in den umgerechneten Stream nicht einbetten und werden eingebrannt – dafür muss der Server auch das Video neu kodieren.
@@ -217,6 +228,22 @@ Gebaut wird automatisch mit dem Workflow [`TV-Client / Build`](.github/workflows
 - **Push auf `main`** → APK als Artefakt im Workflow-Lauf (Version aus `tv-client-version.txt`).
 - **Tag `v*`** (z. B. `v1.0.1`) → zusätzlich ein GitHub-Release mit der APK.
 - **Release ohne Tag:** Actions → „TV-Client / Build“ → *Run workflow* → Haken bei „GitHub-Release … anlegen“ → legt das Release `v{Version aus tv-client-version.txt}` an.
+
+### Amazon Appstore (automatisch)
+
+Der Workflow [`Amazon / Veröffentlichen`](.github/workflows/amazon-publish.yaml) lädt die Amazon-Fassung aus dem GitHub-Release über die **Amazon Appstore App Submission API** hoch: Edit anlegen (oder offenes Edit weiterverwenden) → APK ersetzen → Versionshinweise aus `CHANGELOG-TV.md` (Deutsch; andere Sprachen: kurzer englischer Hinweis) → prüfen → einreichen.
+
+- **Automatisch** nach jedem erfolgreichen Build eines Tags `v*` – aber erst, wenn die Repository-Variable `AMAZON_AUTO_SUBMIT` = `true` ist.
+- **Von Hand:** Actions → „Amazon / Veröffentlichen“ → *Run workflow* → Tag (leer = neuestes Release). Ohne Haken bei „Einreichen“ wird das Edit nur vorbereitet und geprüft – dann in der Developer-Konsole ansehen und dort einreichen oder verwerfen.
+
+Einmalig in der [Amazon-Developer-Konsole](https://developer.amazon.com/):
+1. *Apps & Services → API Access* → bei „App Submission API“ ein **Security Profile** anlegen (oder ein vorhandenes zuordnen).
+2. Im Security Profile unter *Web Settings* **Client ID** und **Client Secret** ablesen.
+3. Die **App-ID** der App (beginnt mit `amzn1.devportal.mobileapp.`) steht in der App-Übersicht bzw. in der Adresse der App-Seite.
+
+GitHub-Secrets (*Settings → Secrets and variables → Actions*): `AMAZON_CLIENT_ID`, `AMAZON_CLIENT_SECRET`, `AMAZON_APP_ID`. Variable (Reiter *Variables*): `AMAZON_AUTO_SUBMIT` = `true`, sobald die erste Einreichung geprüft ist.
+
+Signatur: Die Amazon-Fassung wird mit demselben Schlüssel wie die GitHub-Fassung gebaut; Amazon signiert sie für den Store mit dem eigenen, app-spezifischen Schlüssel neu.
 
 ### Signatur einrichten (einmalig)
 

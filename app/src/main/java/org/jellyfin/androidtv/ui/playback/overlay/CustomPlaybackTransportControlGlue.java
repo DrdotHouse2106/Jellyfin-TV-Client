@@ -64,6 +64,7 @@ public class CustomPlaybackTransportControlGlue extends PlaybackTransportControl
     private ZoomAction zoomAction;
     private ChapterAction chapterAction;
     private org.jellyfin.androidtv.ui.playback.overlay.action.RateAction rateAction;
+    private org.jellyfin.androidtv.ui.playback.overlay.action.NoSoundAction noSoundAction;
 
     // TV actions
     private PreviousLiveTvChannelAction previousLiveTvChannelAction;
@@ -207,6 +208,9 @@ public class CustomPlaybackTransportControlGlue extends PlaybackTransportControl
         // Jellyfin-TV-Client: Daumen hoch/runter
         rateAction = new org.jellyfin.androidtv.ui.playback.overlay.action.RateAction(context, this);
         rateAction.setLabels(new String[]{context.getString(R.string.tvclient_rate)});
+        // Jellyfin-TV-Client: „Kein Ton?“ – neu starten mit Stereo-Ton
+        noSoundAction = new org.jellyfin.androidtv.ui.playback.overlay.action.NoSoundAction(context, this);
+        noSoundAction.setLabels(new String[]{context.getString(R.string.tvclient_no_sound)});
         chapterAction = new ChapterAction(context, this);
         chapterAction.setLabels(new String[]{context.getString(R.string.lbl_chapters)});
 
@@ -256,6 +260,8 @@ public class CustomPlaybackTransportControlGlue extends PlaybackTransportControl
         if (!playerAdapter.isLiveTv()) {
             primaryActionsAdapter.add(rateAction);
         }
+
+        primaryActionsAdapter.add(noSoundAction);
 
         if (playerAdapter.isLiveTv()) {
             primaryActionsAdapter.add(channelBarChannelAction);

@@ -74,6 +74,8 @@ German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md
 
 ## Troubleshooting
 
+- **Picture but no sound (E-AC3, 5.1/7.1):** since 1.45.0 the app checks the audio output (HDMI, Bluetooth …) at every playback start and only reports Dolby/multichannel as playable if it arrives audibly; otherwise the server converts just the audio to AAC stereo. Still silent: press **"No sound?"** in the player – it restarts at the same position in stereo and remembers this for the device and output. Settings → Sound: Automatic / Always stereo / Force passthrough (AV receivers).
+- **Amazon Appstore version offers an update (up to 1.44.x):** the store held the GitHub build. Since 1.45.0 the Amazon build is uploaded automatically (the workflow rejects APKs with the install permission) and the GitHub build only self-updates when signed with the GitHub key.
 - **Stuttering, stereo-only audio, burned-in subtitles:** "Audio output: Downmix to stereo" or "Bitstream Dolby Digital: off" forces the server to convert the audio; picture subtitles (PGS) are then burned in and the video re-encoded. Set Audio → "Direct" and Dolby Digital "On" (shown in the settings since 1.30.4).
 - **No sound with DTS/TrueHD:** since 1.30.2 the app passes DTS through if the output accepts it, otherwise decodes it itself (FFmpeg, keeps 5.1); the server converts only as a last resort. Still silent: Settings → Audio → "Pass through DTS and TrueHD: Off".
 - **Forced subtitles not detected:** many MKVs only name the track "Forced" without the flag. Since 1.30.3 the name is enough. To fix the file: `mkvpropedit file.mkv --edit track:sN --set flag-forced=1`, then refresh the item in Jellyfin (stagger bulk changes – they trigger rescans in Jellyfin and Sonarr/Radarr).
@@ -84,7 +86,7 @@ German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md
 - **Device stuck on an old version:** up to 1.30.6 the app only checked on a cold start, and every update needs a confirmation. Use Settings → Updates → "Check for updates" once; from 1.30.7 the app also checks whenever you return to it.
 - **Update won't install:** allow "Install unknown apps" for Quallenkino once; an APK signed with a different key requires uninstalling first.
 
-More details (German): [README.md](README.md#häufige-probleme).
+More details (German): [README.md](README.md#probleme-und-lösungen).
 
 ## Data sources
 

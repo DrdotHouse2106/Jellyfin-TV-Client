@@ -1,0 +1,52 @@
+# Quallenkino: Amazon-Fassung aus dem GitHub-Release in den Amazon Appstore bringen (App Submission API).
+# Automatisch nach jedem erfolgreichen Build eines Tags v*, sobald die Repository-Variable AMAZON_AUTO_SUBMIT=true ist.
+# Von Hand: Actions → „Amazon / Veröffentlichen“ → Tag angeben; „Einreichen“ aus = nur vorbereiten und prüfen.
+# Secrets: AMAZON_CLIENT_ID, AMAZON_CLIENT_SECRET, AMAZON_APP_ID (siehe README → Amazon Appstore).
+name: Amazon / Veröffentlichen
+
+on:
+  workflow_run:
+    workflows: [TV-Client / Build]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release-Tag, z. B. v1.45.0 (leer = neuestes Release)'
+        required: false
+      commit:
+        description: 'Einreichen (aus = Edit nur vorbereiten und prüfen)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency: amazon-publish
+
+jobs:
+  publish:
+    name: Amazon Appstore
+    runs-on: ubuntu-24.04
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' &&
+       startsWith(github.event.workflow_run.head_branch, 'v') && vars.AMAZON_AUTO_SUBMIT == 'true')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Download Amazon APK
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag || github.event.workflow_run.head_branch }}
+        run: |
+          [ -n "$TAG" ] || TAG="$(gh release view --json tagName -q .tagName)"
+          gh release download "$TAG" --pattern '*-amazon.apk' --dir apk
+          echo "VERSION=${TAG#v}" >> "$GITHUB_ENV"
+
+      - name: Publish
+        env:
+          AMAZON_CLIENT_ID: ${{ secrets.AMAZON_CLIENT_ID }}
+          AMAZON_CLIENT_SECRET: ${{ secrets.AMAZON_CLIENT_SECRET }}
+          AMAZON_APP_ID: ${{ secrets.AMAZON_APP_ID }}
+        run: .github/scripts/amazon-publish.sh apk/*-amazon.apk "$VERSION" "${{ github.event_name == 'workflow_run' || inputs.commit }}"

@@ -209,6 +209,21 @@ private fun QuickSettings(onChooseAvatar: () -> Unit) {
 			),
 			prefs[TvClientAudio.modePreference],
 		) { set(TvClientAudio.modePreference, it) }
+		// Ton passend zum Ausgang: Automatisch / Immer Stereo / Durchreichen erzwingen (setzt „Kein Ton?“ zurück)
+		Section(stringResource(R.string.tvclient_sound))
+		Choices(
+			listOf(
+				Choice(TvClientSound.Mode.AUTO, stringResource(R.string.tvclient_bitstream_dts_auto)),
+				Choice(TvClientSound.Mode.STEREO, stringResource(R.string.tvclient_sound_stereo)),
+				Choice(TvClientSound.Mode.PASSTHROUGH, stringResource(R.string.tvclient_sound_passthrough)),
+			),
+			prefs[TvClientSound.modePreference],
+		) {
+			TvClientSound.forgetNoSound(context)
+			set(TvClientSound.modePreference, it)
+		}
+		Hint(stringResource(R.string.tvclient_sound_hint))
+		TvClientSound.lastReport?.let { Hint(it) }
 		// Audioausgabe und Dolby Digital sichtbar machen: „Stereo“ bzw. Dolby Digital aus lassen den Server den Ton
 		// umrechnen – bei Bild-Untertiteln (PGS) muss er dann auch das Bild neu kodieren
 		Section(stringResource(R.string.lbl_audio_output))
