@@ -38,7 +38,7 @@ Your Jellyfin, cinematic – recommendations, Top 10, requests and phone remote
 | Kategorie | Unterhaltung / Video-Player & -Editoren |
 | Werbung | Nein |
 | Zielgruppe | 16–17 und 18+ |
-| Datenschutzerklärung | https://github.com/DrdotHouse2106/Jellyfin-TV-Client/blob/main/PRIVACY.md |
+| Datenschutzerklärung | https://github.com/DrdotHouse2106/Quallenkino-AndroidTV/blob/main/PRIVACY.md |
 | App-Zugriff (Anmeldung nötig) | Ja – Demo-Server: https://demo.jellyfin.org/stable, Benutzer `demo`, ohne Passwort |
 | Datensicherheit | Keine Daten an den Entwickler oder Dritte; Daten gehen nur an den vom Nutzer eingetragenen eigenen Server (siehe PRIVACY.md) |
 | Nachrichten-App / Behörden-App / Gesundheit / Finanzen | Nein |

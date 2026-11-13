@@ -60,7 +60,7 @@ Da der Entwickler keine Daten über dich hat, kann er auch keine Auskunft geben 
 
 ## Quellcode und Kontakt
 
-Die App ist Open Source (GPL v2): <https://github.com/DrdotHouse2106/Jellyfin-TV-Client>  
-Fragen zum Datenschutz: <https://github.com/DrdotHouse2106/Jellyfin-TV-Client/issues>
+Die App ist Open Source (GPL v2): <https://github.com/DrdotHouse2106/Quallenkino-AndroidTV>  
+Fragen zum Datenschutz: <https://github.com/DrdotHouse2106/Quallenkino-AndroidTV/issues>
 
 Änderungen dieser Erklärung werden in diesem Repository veröffentlicht.

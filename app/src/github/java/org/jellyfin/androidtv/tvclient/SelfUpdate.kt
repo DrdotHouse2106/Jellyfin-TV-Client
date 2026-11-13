@@ -47,8 +47,10 @@ import java.security.MessageDigest
  * Quallenkino erlaubt werden.
  */
 object SelfUpdate {
-	private const val REPO = "DrdotHouse2106/Jellyfin-TV-Client"
-	private const val LATEST_URL = "https://api.github.com/repos/$REPO/releases/latest"
+	private const val OWNER = "DrdotHouse2106"
+	private const val REPO = "$OWNER/Quallenkino-AndroidTV"
+	// Über die feste Repository-Id statt des Namens: übersteht Umbenennungen (früher „Jellyfin-TV-Client“)
+	private const val LATEST_URL = "https://api.github.com/repositories/1422240363/releases/latest"
 	private const val CHANGELOG_URL = "https://raw.githubusercontent.com/$REPO/main/CHANGELOG-TV.md"
 	private const val APK_NAME = "quallenkino.apk"
 	private const val PREFS = "tvclient_update"
@@ -320,7 +322,8 @@ object SelfUpdate {
 	}
 
 	/** Download-Adresse aus den Releases dieses Repos (testbar). */
-	fun isAllowedDownload(url: String): Boolean = url.startsWith("https://github.com/$REPO/releases/download/")
+	fun isAllowedDownload(url: String): Boolean =
+		Regex("https://github\\.com/$OWNER/[A-Za-z0-9._-]+/releases/download/.+", RegexOption.IGNORE_CASE).matches(url)
 
 	private val allowedHosts = setOf("github.com", "objects.githubusercontent.com", "release-assets.githubusercontent.com")
 

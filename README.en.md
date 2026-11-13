@@ -1,22 +1,22 @@
-# Quallenkino – for Jellyfin (Jellyfin-TV-Client)
+# Quallenkino – for Jellyfin (Quallenkino-AndroidTV)
 
 [![Buy me a coffee](https://img.shields.io/badge/☕_Buy_me_a_coffee-PayPal-0070ba?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/DrdotHouse)
 
 > [!TIP]
 > **Testers wanted!** Want to try my apps before everyone else – on iPhone, Android, Fire TV, Android TV or LG webOS? Send a short e-mail to **tester.entwickler@zockerdb.de** with your name, your devices and the e-mail address of your Apple ID or Google account. I'll add you and let you know whenever there is a new app or version to test. Your details stay private and are only used for this.
 
-Customized build of the official **Jellyfin app for Android TV and Fire TV** ([jellyfin/jellyfin-androidtv](https://github.com/jellyfin/jellyfin-androidtv), base v0.19.10, GPL v2) with a cinematic home screen and personal recommendations from the [Local Recommendations](https://github.com/DrdotHouse2106/Lokal-Vorschlag-Jellyfin) plugin.
+Customized build of the official **Jellyfin app for Android TV and Fire TV** ([jellyfin/jellyfin-androidtv](https://github.com/jellyfin/jellyfin-androidtv), base v0.19.10, GPL v2) with a cinematic home screen and personal recommendations from the [Local Recommendations](https://github.com/DrdotHouse2106/Quallenkino-Empfehlungen) plugin.
 
 **Server plugins** – none is required; without them the app works normally, just without the related extras:
 
-- [Local Recommendations](https://github.com/DrdotHouse2106/Lokal-Vorschlag-Jellyfin) **12.9.0 or newer** (recommended): recommendations with reasons, banner suggestions, Top 10 of all users, thumbs up/down, "on TV today for you", live TV cast (with XMLTV)
+- [Local Recommendations](https://github.com/DrdotHouse2106/Quallenkino-Empfehlungen) **12.9.0 or newer** (recommended): recommendations with reasons, banner suggestions, Top 10 of all users, thumbs up/down, "on TV today for you", live TV cast (with XMLTV)
 - [Jellyfin Enhanced](https://github.com/n00bcodr/Jellyfin-Enhanced) with Jellyseerr set up: requests ("+" in the navigation), person pages
 - [Home Screen Sections](https://github.com/IAmParadox27/jellyfin-plugin-home-sections): additional home screen sections from the web UI
 - [Intro Skipper](https://github.com/intro-skipper/intro-skipper) (or other media segments): "Skip" button for intro and credits
 
 German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md](CHANGELOG-TV.md)
 
-**Download (always the latest):** https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk
+**Download (always the latest):** https://github.com/DrdotHouse2106/Quallenkino-AndroidTV/releases/latest/download/quallenkino.apk
 
 **Amazon Appstore:** since 1.36.1 there is a separate build `quallenkino-vX-amazon.apk` in each release – without self-update and without the "install apps" permission; it only updates through the store.
 

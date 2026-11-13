@@ -47,7 +47,7 @@ fi
 NOTES_DE="$(awk -v v="## $VERSION " 'index($0,v)==1{f=1;next} /^## /{f=0} f' CHANGELOG-TV.md \
 	| sed -E 's/\*\*//g; s/`//g; s/^- /• /' | sed '/^$/d')"
 [ -n "$NOTES_DE" ] || NOTES_DE="Fehlerbehebungen und Verbesserungen."
-NOTES_EN="Bug fixes and improvements. Details: https://github.com/DrdotHouse2106/Jellyfin-TV-Client/blob/main/CHANGELOG-TV.md"
+NOTES_EN="Bug fixes and improvements. Details: https://github.com/DrdotHouse2106/Quallenkino-AndroidTV/blob/main/CHANGELOG-TV.md"
 for LANG_CODE in $(api GET "/edits/$EDIT/listings" | jq -r '.listings | keys[]'); do
 	case "$LANG_CODE" in de*) NOTES="$NOTES_DE" ;; *) NOTES="$NOTES_EN" ;; esac
 	P="/edits/$EDIT/listings/$LANG_CODE"

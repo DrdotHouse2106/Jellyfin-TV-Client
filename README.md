@@ -1,17 +1,17 @@
-# Quallenkino – für Jellyfin (Jellyfin-TV-Client)
+# Quallenkino – für Jellyfin (Quallenkino-AndroidTV)
 
 [![Spendier mir einen Kaffee](https://img.shields.io/badge/☕_Spendier_mir_einen_Kaffee-PayPal-0070ba?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/DrdotHouse)
 
 > [!TIP]
 > **Tester gesucht!** Du möchtest meine Apps vor allen anderen ausprobieren – auf iPhone, Android, Fire TV, Android TV oder LG webOS? Schreib eine kurze E-Mail an **tester.entwickler@zockerdb.de** mit deinem Namen, deinen Geräten und der E-Mail-Adresse deiner Apple-ID bzw. deines Google-Kontos. Ich trage dich ein, und du bekommst Bescheid, sobald es eine neue App oder Version zum Testen gibt. Deine Angaben bleiben privat und werden nur dafür verwendet.
 
-Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** ([jellyfin/jellyfin-androidtv](https://github.com/jellyfin/jellyfin-androidtv)) mit einer Startseite im Kino-Stil und persönlichen Empfehlungen vom Plugin [Local Recommendations](https://github.com/DrdotHouse2106/Lokal-Vorschlag-Jellyfin).
+Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** ([jellyfin/jellyfin-androidtv](https://github.com/jellyfin/jellyfin-androidtv)) mit einer Startseite im Kino-Stil und persönlichen Empfehlungen vom Plugin [Local Recommendations](https://github.com/DrdotHouse2106/Quallenkino-Empfehlungen).
 
 **Plugins auf dem Jellyfin-Server** – keines ist Pflicht, die App läuft auch ohne, nur ohne die jeweiligen Zusatzfunktionen:
 
 | Plugin | Wofür | Ohne Plugin |
 |---|---|---|
-| [Local Recommendations](https://github.com/DrdotHouse2106/Lokal-Vorschlag-Jellyfin) **ab 12.9.0** (empfohlen) | Empfehlungen „für dich“ mit Begründung, Banner-Vorschläge, Top 10 über alle Benutzer, Daumen hoch/runter, „Heute im TV für dich“, Live-TV-Besetzung (mit XMLTV) | keine Empfehlungs-Zeilen, Top 10 nur aus Sicht der App, Banner zeigt die neuesten Titel |
+| [Local Recommendations](https://github.com/DrdotHouse2106/Quallenkino-Empfehlungen) **ab 12.9.0** (empfohlen) | Empfehlungen „für dich“ mit Begründung, Banner-Vorschläge, Top 10 über alle Benutzer, Daumen hoch/runter, „Heute im TV für dich“, Live-TV-Besetzung (mit XMLTV) | keine Empfehlungs-Zeilen, Top 10 nur aus Sicht der App, Banner zeigt die neuesten Titel |
 | [Jellyfin Enhanced](https://github.com/n00bcodr/Jellyfin-Enhanced) mit eingerichtetem Jellyseerr | Anfragen („+“ in der Navigation), Personenseiten, „Für dich“-Vorschläge zum Anfragen | kein „+“ (außer mit eigener Jellyseerr-Adresse und API-Schlüssel) |
 | [Intro Skipper](https://github.com/intro-skipper/intro-skipper) (oder andere Mediensegmente) | Knopf „Überspringen“ für Intro und Abspann | kein Überspringen |
 
@@ -59,7 +59,7 @@ Angepasste Version der offiziellen **Jellyfin-App für Android TV und Fire TV** 
 - **Anime-Untertitel (ASS/SSA) mit allen Effekten** (libass: Schriften aus der Datei, Schilder, Karaoke) – ohne Umwandeln auf dem Server; abschaltbar unter „Untertitel-Effekte“
 - **Bildschirmschoner** mit persönlichen Empfehlungen statt Zufall (nur Ungesehenes, nichts Angefangenes – wie im Web), auf Wunsch mit **Trailern** vom Server (nur echte Trailer, keine anderen Extras); er startet nie, solange ein Video oder Trailer läuft
 - **Autostart** beim Einschalten des Geräts (bis Android 9, z. B. Fire TV Stick mit Fire OS 7; standardmäßig aus)
-- Steuerung komplett per Handy, z. B. mit [Jellyfin Remote](https://github.com/DrdotHouse2106/Jellyfin-Remote)
+- Steuerung komplett per Handy, z. B. mit [Jellyfin Remote](https://github.com/DrdotHouse2106/Quallenkino-Fernbedienung)
 
 \* benötigt das Server-Plugin „Local Recommendations“ (Top 10 über alle Benutzer und Daumen ab **12.6.0**, Live-TV-Besetzung ab **12.7.1**, Begründungen ab **12.9.0**). Ohne Plugin funktioniert die App normal, nur ohne diese Zeilen.
 
@@ -74,7 +74,7 @@ Alles andere ist wie in der offiziellen App: Player, Live-TV, Intro Skipper, Bed
 
 Immer die neueste Version:
 
-- **Fire TV / Android TV:** https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk
+- **Fire TV / Android TV:** https://github.com/DrdotHouse2106/Quallenkino-AndroidTV/releases/latest/download/quallenkino.apk
 - **Amazon Appstore:** Für den Store gibt es ab 1.36.1 eine eigene Fassung `quallenkino-vX-amazon.apk` (im jeweiligen Release) – ohne Selbst-Update und ohne die Berechtigung „Apps installieren“; sie bekommt Updates nur über den Store.
 
 ## Voraussetzungen
@@ -95,7 +95,7 @@ Die App heißt auf dem Gerät **„Quallenkino“** (eigenes Symbol, eigenes Log
 1. Einstellungen → Mein Fire TV → Entwickleroptionen → **Apps unbekannter Herkunft** für die App „Downloader“ erlauben (Entwickleroptionen erscheinen nach 7× Klick auf Einstellungen → Mein Fire TV → Info → Gerätename).
 2. App **Downloader** aus dem Amazon-Appstore installieren.
 3. In Downloader diese Adresse eingeben und installieren (zeigt immer auf die neueste Version):
-   `https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk`
+   `https://github.com/DrdotHouse2106/Quallenkino-AndroidTV/releases/latest/download/quallenkino.apk`
 4. „Quallenkino“ öffnen und mit dem eigenen Jellyfin-Konto anmelden.
 
 ### Android TV / Google TV (z. B. waipu.tv 4K Stick, Chromecast, Nvidia Shield)
@@ -103,7 +103,7 @@ Die App heißt auf dem Gerät **„Quallenkino“** (eigenes Symbol, eigenes Log
 1. Im Play Store des Sticks die App **Downloader** (von AFTVnews) installieren.
 2. Einstellungen → Geräteeinstellungen → Sicherheit & Einschränkungen → **Unbekannte Quellen** → „Downloader“ erlauben.
 3. In Downloader diese Adresse eingeben und installieren (zeigt immer auf die neueste Version):
-   `https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk`
+   `https://github.com/DrdotHouse2106/Quallenkino-AndroidTV/releases/latest/download/quallenkino.apk`
 
 Alternativ per ADB: `adb install quallenkino.apk`.
 
@@ -148,7 +148,7 @@ Die normalen Startseiten-Einstellungen der Jellyfin-Weboberfläche („Startseit
 
 ## Bedienung per Handy
 
-Die App lässt sich komplett über Jellyfin fernsteuern, z. B. mit **[Jellyfin Remote](https://github.com/DrdotHouse2106/Jellyfin-Remote)** – ohne Einrichtung auf dem Stick. Einfach in Jellyfin Remote das Gerät „Quallenkino“ wählen.
+Die App lässt sich komplett über Jellyfin fernsteuern, z. B. mit **[Jellyfin Remote](https://github.com/DrdotHouse2106/Quallenkino-Fernbedienung)** – ohne Einrichtung auf dem Stick. Einfach in Jellyfin Remote das Gerät „Quallenkino“ wählen.
 
 | Befehl aus Jellyfin Remote | Wirkung in der App |
 |---|---|

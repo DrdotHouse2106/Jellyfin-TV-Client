@@ -58,5 +58,5 @@ The developer holds no data about you. For data on a Jellyfin server, contact it
 
 ## Source code and contact
 
-Open source (GPL v2): <https://github.com/DrdotHouse2106/Jellyfin-TV-Client>  
-Privacy questions: <https://github.com/DrdotHouse2106/Jellyfin-TV-Client/issues>
+Open source (GPL v2): <https://github.com/DrdotHouse2106/Quallenkino-AndroidTV>  
+Privacy questions: <https://github.com/DrdotHouse2106/Quallenkino-AndroidTV/issues>

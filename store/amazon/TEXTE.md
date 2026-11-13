@@ -19,8 +19,8 @@
 | App title | Quallenkino für Jellyfin (Amazon lehnt den Gedankenstrich „–“ ab; falls auch „ü“ abgelehnt wird: Quallenkino for Jellyfin) |
 | App SKU | de.drdothouse.jellyfintv |
 | Kategorie | Unterhaltung / Entertainment (bzw. „Video“, falls angeboten) |
-| Support-Website | https://github.com/DrdotHouse2106/Jellyfin-TV-Client |
-| Datenschutzerklärung | https://github.com/DrdotHouse2106/Jellyfin-TV-Client/blob/main/PRIVACY.md |
+| Support-Website | https://github.com/DrdotHouse2106/Quallenkino-AndroidTV |
+| Datenschutzerklärung | https://github.com/DrdotHouse2106/Quallenkino-AndroidTV/blob/main/PRIVACY.md |
 | Preis | kostenlos |
 | Werbung | keine |
 | Zielgeräte | nur Fire TV (keine Tablets/Handys) |
@@ -50,7 +50,7 @@ Besonderheiten gegenüber anderen Jellyfin-Apps:
 
 Außerdem: Weiterschauen, Als Nächstes, Live-TV mit TV-Programm und Aufnahmen, Untertitel, mehrere Benutzer, Quick Connect.
 
-Voraussetzung: ein Jellyfin-Server (eigener oder von Familie/Freunden). Quallenkino ist eine angepasste Version der offiziellen Jellyfin-App für Android TV und kein offizielles Produkt des Jellyfin-Projekts. Open Source (GPL v2): github.com/DrdotHouse2106/Jellyfin-TV-Client
+Voraussetzung: ein Jellyfin-Server (eigener oder von Familie/Freunden). Quallenkino ist eine angepasste Version der offiziellen Jellyfin-App für Android TV und kein offizielles Produkt des Jellyfin-Projekts. Open Source (GPL v2): github.com/DrdotHouse2106/Quallenkino-AndroidTV
 
 **Feature-Liste (eine Zeile pro Punkt)**
 
@@ -94,7 +94,7 @@ What makes it different:
 
 Also included: continue watching, next up, live TV with guide and recordings, subtitles, multiple users, Quick Connect.
 
-Requires a Jellyfin server (your own or one from family and friends). Quallenkino is a customized version of the official Jellyfin Android TV app and not an official Jellyfin product. Open source (GPL v2): github.com/DrdotHouse2106/Jellyfin-TV-Client
+Requires a Jellyfin server (your own or one from family and friends). Quallenkino is a customized version of the official Jellyfin Android TV app and not an official Jellyfin product. Open source (GPL v2): github.com/DrdotHouse2106/Quallenkino-AndroidTV
 
 **Feature bullets**
 
