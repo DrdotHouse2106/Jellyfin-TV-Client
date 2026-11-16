@@ -48,7 +48,7 @@ import java.security.MessageDigest
  */
 object SelfUpdate {
 	private const val OWNER = "DrdotHouse2106"
-	private const val REPO = "$OWNER/Quallenkino-AndroidTV"
+	private const val REPO = "$OWNER/Jellyfin-TV-Client"
 	// Über die feste Repository-Id statt des Namens: übersteht Umbenennungen (früher „Jellyfin-TV-Client“)
 	private const val LATEST_URL = "https://api.github.com/repositories/1422240363/releases/latest"
 	private const val CHANGELOG_URL = "https://raw.githubusercontent.com/$REPO/main/CHANGELOG-TV.md"

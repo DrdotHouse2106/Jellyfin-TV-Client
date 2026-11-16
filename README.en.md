@@ -1,4 +1,4 @@
-# Quallenkino – for Jellyfin (Quallenkino-AndroidTV)
+# Quallenkino – for Jellyfin (Jellyfin-TV-Client)
 
 [![Buy me a coffee](https://img.shields.io/badge/☕_Buy_me_a_coffee-PayPal-0070ba?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/DrdotHouse)
 
@@ -16,7 +16,7 @@ Customized build of the official **Jellyfin app for Android TV and Fire TV** ([j
 
 German documentation (main): [README.md](README.md) · Changes: [CHANGELOG-TV.md](CHANGELOG-TV.md)
 
-**Download (always the latest):** https://github.com/DrdotHouse2106/Quallenkino-AndroidTV/releases/latest/download/quallenkino.apk
+**Download (always the latest):** https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk
 
 **Amazon Appstore:** since 1.36.1 there is a separate build `quallenkino-vX-amazon.apk` in each release – without self-update and without the "install apps" permission; it only updates through the store.
 

@@ -1,9 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
-## 1.45.1 – noch nicht veröffentlicht
+## 1.45.1 – 2026-11-16
 
 - **Fire TV zeigt das breite Banner** statt des kleinen Symbols mit grauem Rand: `android:banner` steht jetzt auch an der Launcher-Activity.
-- **Selbst-Update übersteht Umbenennungen:** Das Repo heißt jetzt `Quallenkino-AndroidTV`. Die App fragt Updates über die feste Repository-Id ab und lässt Downloads aus den Releases des Kontos zu (Signaturprüfung bleibt). Installationen mit 1.44.1–1.45.0 finden seit der Umbenennung keine Updates mehr und brauchen diese Version einmal von Hand (oder das Repo wird zurückbenannt).
+- **Selbst-Update übersteht Umbenennungen des Repos:** Die App fragt Updates über die feste Repository-Id ab und lässt Downloads aus den Releases des Kontos zu (Signaturprüfung bleibt). Hintergrund: Vom 13. bis 16.11. hieß das Repo kurz `Quallenkino-AndroidTV`; in dieser Zeit fanden 1.44.1–1.45.0 keine Updates. Das Repo heißt wieder `Jellyfin-TV-Client`, damit diese Geräte 1.45.1 automatisch bekommen.
 
 ## 1.45.0 – 2026-11-11
 

@@ -27,9 +27,10 @@ jobs:
   publish:
     name: Amazon Appstore
     runs-on: ubuntu-24.04
+    # Automatik vorübergehend aus („&& false“), solange 1.45.0 in der Amazon-Prüfung ist
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      (github.event.workflow_run.conclusion == 'success' && vars.AMAZON_AUTO_SUBMIT == 'true')
+      (github.event.workflow_run.conclusion == 'success' && vars.AMAZON_AUTO_SUBMIT == 'true' && false)
     steps:
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0

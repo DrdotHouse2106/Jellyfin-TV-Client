@@ -1,4 +1,4 @@
-# Quallenkino – für Jellyfin (Quallenkino-AndroidTV)
+# Quallenkino – für Jellyfin (Jellyfin-TV-Client)
 
 [![Spendier mir einen Kaffee](https://img.shields.io/badge/☕_Spendier_mir_einen_Kaffee-PayPal-0070ba?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/DrdotHouse)
 
@@ -74,7 +74,7 @@ Alles andere ist wie in der offiziellen App: Player, Live-TV, Intro Skipper, Bed
 
 Immer die neueste Version:
 
-- **Fire TV / Android TV:** https://github.com/DrdotHouse2106/Quallenkino-AndroidTV/releases/latest/download/quallenkino.apk
+- **Fire TV / Android TV:** https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk
 - **Amazon Appstore:** Für den Store gibt es ab 1.36.1 eine eigene Fassung `quallenkino-vX-amazon.apk` (im jeweiligen Release) – ohne Selbst-Update und ohne die Berechtigung „Apps installieren“; sie bekommt Updates nur über den Store.
 
 ## Voraussetzungen
@@ -95,7 +95,7 @@ Die App heißt auf dem Gerät **„Quallenkino“** (eigenes Symbol, eigenes Log
 1. Einstellungen → Mein Fire TV → Entwickleroptionen → **Apps unbekannter Herkunft** für die App „Downloader“ erlauben (Entwickleroptionen erscheinen nach 7× Klick auf Einstellungen → Mein Fire TV → Info → Gerätename).
 2. App **Downloader** aus dem Amazon-Appstore installieren.
 3. In Downloader diese Adresse eingeben und installieren (zeigt immer auf die neueste Version):
-   `https://github.com/DrdotHouse2106/Quallenkino-AndroidTV/releases/latest/download/quallenkino.apk`
+   `https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk`
 4. „Quallenkino“ öffnen und mit dem eigenen Jellyfin-Konto anmelden.
 
 ### Android TV / Google TV (z. B. waipu.tv 4K Stick, Chromecast, Nvidia Shield)
@@ -103,7 +103,7 @@ Die App heißt auf dem Gerät **„Quallenkino“** (eigenes Symbol, eigenes Log
 1. Im Play Store des Sticks die App **Downloader** (von AFTVnews) installieren.
 2. Einstellungen → Geräteeinstellungen → Sicherheit & Einschränkungen → **Unbekannte Quellen** → „Downloader“ erlauben.
 3. In Downloader diese Adresse eingeben und installieren (zeigt immer auf die neueste Version):
-   `https://github.com/DrdotHouse2106/Quallenkino-AndroidTV/releases/latest/download/quallenkino.apk`
+   `https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk`
 
 Alternativ per ADB: `adb install quallenkino.apk`.
 
@@ -168,6 +168,10 @@ Hinweise:
 ## Probleme und Lösungen
 
 Hürden, auf die wir selbst gestoßen sind – jeweils mit Symptom, Ursache und Lösung.
+
+**„Nach Updates suchen“ findet keine neue Version (1.44.1–1.45.0, 13.–16.11.2026)**
+- *Ursache:* Das Repo war kurz in `Quallenkino-AndroidTV` umbenannt. Diese Versionen laden Updates nur aus `…/Jellyfin-TV-Client/releases/download/` und haben die umbenannten Download-Links abgelehnt.
+- *Lösung:* Das Repo heißt wieder `Jellyfin-TV-Client`. Ab 1.45.1 fragt die App über die feste Repository-Id ab, eine Umbenennung stört das Update nicht mehr. Wer in dieser Zeit hängen geblieben ist: einmal „Nach Updates suchen“, sonst die APK von Hand installieren.
 
 **Kachel auf dem Fire TV nur mit kleinem Symbol und grauem Rand**
 - *Ursache:* Das breite Banner (320×180 und andere Dichten in `mipmap-*`) war nur am `<application>` gesetzt. Der Fire-TV-Startbildschirm nimmt bei per APK installierten Apps das Banner der Launcher-Activity und zeigt sonst das quadratische App-Symbol auf grauem Grund. Die Fassung aus dem Amazon Appstore zeigt ohnehin die Kachel aus dem Store-Eintrag.
