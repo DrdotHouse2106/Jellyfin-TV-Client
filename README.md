@@ -169,6 +169,10 @@ Hinweise:
 
 Hürden, auf die wir selbst gestoßen sind – jeweils mit Symptom, Ursache und Lösung.
 
+**Kachel auf dem Fire TV nur mit kleinem Symbol und grauem Rand**
+- *Ursache:* Das breite Banner (320×180 und andere Dichten in `mipmap-*`) war nur am `<application>` gesetzt. Der Fire-TV-Startbildschirm nimmt bei per APK installierten Apps das Banner der Launcher-Activity und zeigt sonst das quadratische App-Symbol auf grauem Grund. Die Fassung aus dem Amazon Appstore zeigt ohnehin die Kachel aus dem Store-Eintrag.
+- *Lösung (ab 1.45.1):* `android:banner` steht zusätzlich direkt an der Launcher-Activity (`StartupActivity` mit `LEANBACK_LAUNCHER`). Nach dem Update kann es dauern, bis Fire TV die Kachel neu lädt; notfalls den Stick neu starten.
+
 **Bild ja, Ton nein (Dolby Digital Plus / E-AC3, 5.1 und 7.1)**
 - *Symptom:* Film läuft, aber es bleibt still – vor allem bei E-AC3 in 5.1/7.1, auch wenn der Server nur das Bild umwandelt (z. B. AV1-HDR → H.264). Manchmal bricht die Wiedergabe ab. Auf dem Server keine Fehler.
 - *Ursache (bis 1.44.x):* Die App meldete E-AC3 und Mehrkanal pauschal als abspielbar. Fire-TV-Stick → HDMI → Fernseher machen daraus aber nicht immer etwas Hörbares (Fernseher ohne E-AC3, Ausgang nur Stereo). Die offizielle Jellyfin-App verhält sich genauso.

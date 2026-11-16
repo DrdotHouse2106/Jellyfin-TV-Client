@@ -135,8 +135,11 @@
             android:initOrder="10" />
 
         <!-- Authentication -->
+        <!-- Jellyfin-TV-Client: Banner auch direkt an der Launcher-Activity – Fire TV zeigt sonst nur das
+             quadratische Symbol mit grauem Rand -->
         <activity
             android:name=".ui.startup.StartupActivity"
+            android:banner="@mipmap/app_banner"
             android:exported="true"
             android:launchMode="singleTask"
             android:noHistory="true"

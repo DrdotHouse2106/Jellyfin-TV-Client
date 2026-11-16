@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.45.1 – noch nicht veröffentlicht
+
+- **Fire TV zeigt das breite Banner** statt des kleinen Symbols mit grauem Rand: `android:banner` steht jetzt auch an der Launcher-Activity.
+- **Selbst-Update übersteht Umbenennungen:** Das Repo heißt jetzt `Quallenkino-AndroidTV`. Die App fragt Updates über die feste Repository-Id ab und lässt Downloads aus den Releases des Kontos zu (Signaturprüfung bleibt). Installationen mit 1.44.1–1.45.0 finden seit der Umbenennung keine Updates mehr und brauchen diese Version einmal von Hand (oder das Repo wird zurückbenannt).
+
 ## 1.45.0 – 2026-11-11
 
 - **Ton automatisch passend zum Ausgang:** Bei jedem Wiedergabestart prüft Quallenkino, was Fernseher, Soundbar oder AV-Receiver über HDMI wirklich annehmen (AC3, E-AC3, E-AC3-JOC, TrueHD, DTS) und wie viele Kanäle der Ausgang schafft; Bluetooth und Kopfhörer gelten als Stereo. Dolby Digital (Plus) und Mehrkanal meldet die App nur noch als direkt abspielbar, wenn der Ausgang sie durchreicht oder der Stick sie selbst dekodiert und die Kanalzahl passt. Sonst wandelt der Server nur den Ton in AAC Stereo um – das Bild bleibt beim Direct Play unangetastet. Behebt „Bild ja, Ton nein“ mit E-AC3 5.1/7.1 auf Fire TV Sticks an Fernsehern ohne E-AC3.
