@@ -173,6 +173,11 @@ Hürden, auf die wir selbst gestoßen sind – jeweils mit Symptom, Ursache und 
 - *Ursache:* Das Repo war kurz in `Quallenkino-AndroidTV` umbenannt. Diese Versionen laden Updates nur aus `…/Jellyfin-TV-Client/releases/download/` und haben die umbenannten Download-Links abgelehnt.
 - *Lösung:* Das Repo heißt wieder `Jellyfin-TV-Client`. Ab 1.45.1 fragt die App über die feste Repository-Id ab, eine Umbenennung stört das Update nicht mehr. Wer in dieser Zeit hängen geblieben ist: einmal „Nach Updates suchen“, sonst die APK von Hand installieren.
 
+**Film bricht immer wieder ab oder bleibt stumm – Problem melden**
+- *Ab 1.46.0:* Wird ein Film oder eine Folge zweimal nach wenigen Minuten beendet (oder bricht mit Player-Fehler ab), fragt Quallenkino beim nächsten Start: „Ups, gab es hier ein technisches Problem?“. **„Melden“** schickt einen Bericht an den eigenen Jellyfin-Server (Gerät, Ton- und Untertitelspur, Direktwiedergabe oder Umwandlung, erkannter Ton-Ausgang, Fehlermeldung, letzte Log-Zeilen – ohne Zugangsdaten), „Nein, passt“ fragt für diesen Titel nicht mehr. Jederzeit geht es im Player über **„Problem melden“** (weitere Knöpfe).
+- *Voraussetzung:* Plugin Local Recommendations ab 12.63. Die Berichte stehen dort im Reiter „Problemberichte“ zum Abarbeiten (offen/erledigt).
+- *Bleibt nur der Ton weg:* zuerst „Kein Ton?“ im Player (siehe „Bild ja, Ton nein“).
+
 **Kachel auf dem Fire TV nur mit kleinem Symbol und grauem Rand**
 - *Ursache:* Das breite Banner (320×180 und andere Dichten in `mipmap-*`) war nur am `<application>` gesetzt. Der Fire-TV-Startbildschirm nimmt bei per APK installierten Apps das Banner der Launcher-Activity und zeigt sonst das quadratische App-Symbol auf grauem Grund. Die Fassung aus dem Amazon Appstore zeigt ohnehin die Kachel aus dem Store-Eintrag.
 - *Lösung (ab 1.45.1):* `android:banner` steht zusätzlich direkt an der Launcher-Activity (`StartupActivity` mit `LEANBACK_LAUNCHER`). Nach dem Update kann es dauern, bis Fire TV die Kachel neu lädt; notfalls den Stick neu starten.

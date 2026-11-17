@@ -285,4 +285,17 @@
     <string name="tvclient_sound_hint">Automatic: at every start Quallenkino checks what the TV, soundbar or AV receiver really accepts. Dolby and multichannel only play directly if they arrive audibly – otherwise the server converts just the audio to stereo, the picture stays. “Force passthrough” is for AV receivers only. Changing this resets “No sound?”.</string>
     <string name="tvclient_no_sound">No sound?</string>
     <string name="tvclient_no_sound_done">Audio now plays in stereo – change it in the settings</string>
+    <!-- Problem reports -->
+    <string name="tvclient_problem_title">Oops, was there a technical problem?</string>
+    <string name="tvclient_problem_message">This title was stopped right away %1$d times. Should Quallenkino send a report to the server (device, audio and subtitles, playback method, error message, last log lines)? The report stays on your Jellyfin server.</string>
+    <string name="tvclient_problem_report">Report</string>
+    <string name="tvclient_problem_no">No, all good</string>
+    <string name="tvclient_problem_report_button">Report a problem</string>
+    <string name="tvclient_problem_report_title">Report a problem?</string>
+    <string name="tvclient_problem_report_message">Quallenkino sends a report about this title to your Jellyfin server: device, audio and subtitles, playback method, error message and the last log lines (without credentials).</string>
+    <string name="tvclient_problem_summary_aborts">Stopped after a few minutes %1$d times</string>
+    <string name="tvclient_problem_summary_manual">Reported in the player</string>
+    <string name="tvclient_problem_sent">Report sent – thank you!</string>
+    <string name="tvclient_problem_no_plugin">The server does not accept reports (plugin Local Recommendations 12.63 or newer needed).</string>
+    <string name="tvclient_problem_failed">The report could not be sent.</string>
 </resources>

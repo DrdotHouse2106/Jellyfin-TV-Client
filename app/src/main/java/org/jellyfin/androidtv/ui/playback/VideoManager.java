@@ -150,6 +150,8 @@ public class VideoManager {
             @Override
             public void onPlayerError(@NonNull PlaybackException error) {
                 Timber.e("***** Got error from player");
+                // Jellyfin-TV-Client: Fehler für einen Problembericht merken
+                org.jellyfin.androidtv.tvclient.ProblemReports.onPlayerError(error);
                 if (mPlaybackControllerNotifiable != null) mPlaybackControllerNotifiable.onError();
                 stopProgressLoop();
             }

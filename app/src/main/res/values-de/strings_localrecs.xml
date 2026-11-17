@@ -285,4 +285,17 @@
     <string name="tvclient_sound_hint">Automatisch: Bei jedem Start prüft Quallenkino, was Fernseher, Soundbar oder AV-Receiver wirklich annehmen. Dolby und Mehrkanal gehen nur direkt, wenn sie hörbar ankommen – sonst wandelt der Server nur den Ton in Stereo um, das Bild bleibt. „Durchreichen erzwingen“ nur für AV-Receiver. Ändern setzt „Kein Ton?“ zurück.</string>
     <string name="tvclient_no_sound">Kein Ton?</string>
     <string name="tvclient_no_sound_done">Ton läuft in Stereo – ändern in den Einstellungen</string>
+    <!-- Problemberichte -->
+    <string name="tvclient_problem_title">Ups, gab es hier ein technisches Problem?</string>
+    <string name="tvclient_problem_message">Dieser Titel wurde %1$d-mal gleich wieder beendet. Soll Quallenkino einen Bericht an den Server schicken (Gerät, Ton und Untertitel, Wiedergabeart, Fehlermeldung, letzte Log-Zeilen)? Der Bericht bleibt auf deinem Jellyfin-Server.</string>
+    <string name="tvclient_problem_report">Melden</string>
+    <string name="tvclient_problem_no">Nein, passt</string>
+    <string name="tvclient_problem_report_button">Problem melden</string>
+    <string name="tvclient_problem_report_title">Problem melden?</string>
+    <string name="tvclient_problem_report_message">Quallenkino schickt einen Bericht zu diesem Titel an deinen Jellyfin-Server: Gerät, Ton und Untertitel, Wiedergabeart, Fehlermeldung und die letzten Log-Zeilen (ohne Zugangsdaten).</string>
+    <string name="tvclient_problem_summary_aborts">%1$d× nach wenigen Minuten beendet</string>
+    <string name="tvclient_problem_summary_manual">Im Player gemeldet</string>
+    <string name="tvclient_problem_sent">Bericht gesendet – danke!</string>
+    <string name="tvclient_problem_no_plugin">Der Server nimmt keine Berichte an (Plugin Local Recommendations ab 12.63 nötig).</string>
+    <string name="tvclient_problem_failed">Bericht konnte nicht gesendet werden.</string>
 </resources>

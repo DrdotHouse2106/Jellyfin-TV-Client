@@ -618,6 +618,8 @@ public class PlaybackController implements PlaybackControllerNotifiable {
 
         mStartPosition = position;
         mCurrentStreamInfo = response;
+        // Jellyfin-TV-Client: nach mehrfachem Abbruch fragen „Ups, gab es hier ein technisches Problem?“
+        org.jellyfin.androidtv.tvclient.ProblemReports.onPlaybackStarted(mFragment.getContext(), item);
         mCurrentOptions.setMediaSourceId(response.getMediaSource().getId());
 
         if (response.getMediaUrl() == null) {
@@ -890,6 +892,11 @@ public class PlaybackController implements PlaybackControllerNotifiable {
     }
 
     public void endPlayback(Boolean closeActivity) {
+        // Jellyfin-TV-Client: Abbruch nach wenigen Minuten bzw. mit Fehler für „Technisches Problem?“ merken
+        if (mFragment != null && mFragment.getContext() != null && getCurrentlyPlayingItem() != null) {
+            refreshCurrentPosition();
+            org.jellyfin.androidtv.tvclient.ProblemReports.onPlaybackEnded(mFragment.getContext(), this, mCurrentPosition, mPlaybackState == PlaybackState.ERROR);
+        }
         if (closeActivity && mFragment != null) {
             mFragment.closePlayer();
         }

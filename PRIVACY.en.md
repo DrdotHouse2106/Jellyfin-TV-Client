@@ -17,6 +17,7 @@ Quallenkino ("the app") is an Android TV / Fire TV app for watching media from *
 - **Settings** synced between your Jellyfin apps.
 - **List of installed apps** on the TV (name and package name only) so they can be launched from the "Jellyfin Remote" phone app – only while the "Apps" row is enabled (Settings → Home).
 - **Crash reports** (technical error data and log), sent only to your Jellyfin server; can be disabled in the app settings.
+- **Problem reports** (from 1.46.0, with the plugin Local Recommendations 12.63 or newer) – only when you choose "Report" or "Report a problem": title (item ID), device model, Android and app version, playback method, audio and subtitle track, detected audio output, last player error and the last 100 lines of the app log (credentials redacted). The server keeps the report with your user name until an administrator handles or deletes it. For this the app remembers on the device how often a title was stopped right away.
 
 This data is sent only to the server you entered – never to the developer or third parties.
 

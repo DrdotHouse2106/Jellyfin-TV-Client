@@ -22,6 +22,7 @@ Wie jede Jellyfin-App sendet Quallenkino an den eingetragenen Server:
 - **Fehlerhinweise** ins Client-Log des Servers (z. B. „Player hängt“, „Trailer abgebrochen“, HDR-Hinweise): Gerätemodell, Android- und App-Version und die technische Meldung. Zugangsdaten werden geschwärzt, Titel in Anführungszeichen durch „…“ ersetzt; Element-IDs können enthalten sein. Abschaltbar unter Einstellungen → Erweitert → Absturzberichte → „Fehlerhinweise an den Server senden“.
 - **Zeitzone** des Geräts (z. B. „Europe/Berlin“) bzw. die Abweichung von UTC, damit Sendezeiten, Termine und Vorschläge nach Tageszeit stimmen (mit dem Plugin Local Recommendations).
 - **„Seltener vorschlagen“** in „Heute im TV für dich“ (ab Plugin 12.58): Sendung (ID, Serie, Titel) bzw. Genre und die gewählte Art („Seltener“, „Weniger <Genre>“, „Nie mehr“). Der Server merkt sich das für dein Konto; „Rückgängig“ löscht es wieder.
+- **Problemberichte** (ab 1.46.0, mit dem Plugin Local Recommendations ab 12.63) – nur wenn du „Melden“ bzw. „Problem melden“ wählst: Titel (Element-ID), Gerätemodell, Android- und App-Version, Wiedergabeart, Ton- und Untertitelspur, erkannter Ton-Ausgang, letzte Fehlermeldung des Players und die letzten 100 Zeilen des App-Protokolls (Zugangsdaten geschwärzt). Der Server speichert den Bericht mit deinem Benutzernamen, bis ein Administrator ihn erledigt bzw. löscht. Dafür merkt sich die App auf dem Gerät, wie oft ein Titel gleich wieder beendet wurde.
 
 Diese Daten gehen ausschließlich an den von dir eingetragenen Server, nicht an den Entwickler oder an Dritte.
 

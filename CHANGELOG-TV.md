@@ -1,5 +1,11 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.46.0 – 2026-11-17
+
+- **„Ups, gab es hier ein technisches Problem?“** Wird ein Film oder eine Folge zweimal nach wenigen Minuten beendet (oder bricht mit Player-Fehler ab), fragt Quallenkino beim nächsten Start, ob es einen Bericht an den Server schicken soll. „Nein, passt“ fragt für diesen Titel nicht mehr.
+- **„Problem melden“ im Player** (weitere Knöpfe): schickt jederzeit einen Bericht zum laufenden Titel.
+- Der Bericht enthält Gerät, App-Version, Ton- und Untertitelspur, Direktwiedergabe oder Umwandlung (mit Ziel-Codecs und Gründen des Servers), den erkannten Ton-Ausgang, die letzte Fehlermeldung des Players und die letzten 100 Log-Zeilen – Zugangsdaten geschwärzt. Er landet nur auf dem eigenen Server (Plugin Local Recommendations ab 12.63, Reiter „Problemberichte“). Datenschutzerklärung ergänzt.
+
 ## 1.45.1 – 2026-11-16
 
 - **Fire TV zeigt das breite Banner** statt des kleinen Symbols mit grauem Rand: `android:banner` steht jetzt auch an der Launcher-Activity.

@@ -22,6 +22,8 @@ class LogInitializer : Initializer<Unit> {
 		// Initialize the logging library
 		// Jellyfin-TV-Client: Tokens nie ins Protokoll; im Release-Build nur Hinweise ab „Info“
 		Timber.plant(if (BuildConfig.DEBUG) RedactingDebugTree() else RedactingReleaseTree())
+		// Jellyfin-TV-Client: letzte Zeilen für Problemberichte („Problem melden“)
+		Timber.plant(org.jellyfin.androidtv.tvclient.ProblemReports.logTree)
 		Timber.i("Log tree planted")
 	}
 
