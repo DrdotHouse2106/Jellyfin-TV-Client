@@ -1,6 +1,6 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
-## Nächste Version (noch nicht veröffentlicht)
+## 1.47.2 – 2026-11-18
 
 - Sicherheit: Der Fernbefehl `tvclient:app:…` (Handy-Fernbedienung) startet nur noch Apps, die das Gerät selbst veröffentlicht hat (Zeile „Apps“ eingeschaltet) – nicht mehr jede installierte App.
 - Sicherheit: Eine gemerkte Update-Adresse wird vor der Verwendung erneut geprüft (nur Releases auf GitHub).
