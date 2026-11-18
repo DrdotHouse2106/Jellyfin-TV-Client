@@ -298,4 +298,15 @@
     <string name="tvclient_problem_sent">Report sent – thank you!</string>
     <string name="tvclient_problem_no_plugin">The server does not accept reports (plugin Local Recommendations 12.63 or newer needed).</string>
     <string name="tvclient_problem_failed">The report could not be sent.</string>
+    <!-- All titles -->
+    <string name="tvclient_all_titles_link">Browse all titles</string>
+    <string name="tvclient_all_titles">All titles</string>
+    <string name="tvclient_all_titles_all">Movies and shows</string>
+    <string name="tvclient_all_titles_movies">Movies</string>
+    <string name="tvclient_all_titles_series">Shows</string>
+    <string name="tvclient_all_titles_sort_name">A–Z</string>
+    <string name="tvclient_all_titles_sort_added">Recently added</string>
+    <string name="tvclient_all_titles_sort_year">Release year</string>
+    <string name="tvclient_all_titles_sort_rating">Rating</string>
+    <string name="tvclient_all_titles_count">%1$d titles</string>
 </resources>

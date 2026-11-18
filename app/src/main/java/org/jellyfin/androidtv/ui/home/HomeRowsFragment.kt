@@ -186,6 +186,11 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 						for (row in rows) row.addToRowsAdapter(requireContext(), cardPresenter, adapter as MutableObjectAdapter<Row>)
 					}
 				}
+
+				// Jellyfin-TV-Client: ganz unten „Alle Titel durchstöbern“ (wie webOS und Web)
+				withContext(Dispatchers.Main) {
+					org.jellyfin.androidtv.tvclient.HomeFragmentAllTitlesRow().addToRowsAdapter(requireContext(), cardPresenter, adapter as MutableObjectAdapter<Row>)
+				}
 			}
 
 			withContext(Dispatchers.Main) {
@@ -207,6 +212,7 @@ class HomeRowsFragment : RowsSupportFragment(), AudioEventListener, View.OnKeyLi
 			registerListener(ItemViewClickedListener())
 			registerListener { _, item, _, _ -> onDeviceCardClicked(requireContext(), item) }
 			registerListener { _, item, _, _ -> onWorldClicked(item) }
+			registerListener { _, item, _, _ -> org.jellyfin.androidtv.tvclient.onAllTitlesClicked(item) }
 			registerListener { _, item, _, _ -> org.jellyfin.androidtv.tvclient.onMovieSeriesClicked(item) }
 			registerListener { _, item, _, _ -> org.jellyfin.androidtv.tvclient.onUpcomingClicked(requireContext(), item) }
 			registerListener { _, item, _, _ -> org.jellyfin.androidtv.tvclient.onDiscoverClicked(requireContext(), item) }

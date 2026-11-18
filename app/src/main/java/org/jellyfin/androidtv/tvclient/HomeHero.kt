@@ -235,7 +235,7 @@ fun HomeHero(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun HeroContent(item: BaseItemDto) {
+fun HeroContent(item: BaseItemDto) {
 	val imageHelper = koinInject<ImageHelper>()
 	// Thumb trägt den Titel meist schon im Bild: dann weder Logo noch Titel
 	val showTitle = heroShowsTitle(item)

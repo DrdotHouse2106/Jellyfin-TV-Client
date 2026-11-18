@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.47.0 – 2026-11-18
+
+- **„Alle Titel durchstöbern“** ganz unten auf der Startseite (gleich wie in der webOS-App und im Web): alle Filme und Serien als Banner-Karten, oben der große Infobereich zum ausgewählten Titel – so blättert man durch die Banner. Filter Filme/Serien, Sortierung A–Z, neu hinzugefügt, Erscheinungsjahr oder Bewertung; weitere Titel laden beim Scrollen nach.
+
 ## 1.46.0 – 2026-11-17
 
 - **„Ups, gab es hier ein technisches Problem?“** Wird ein Film oder eine Folge zweimal nach wenigen Minuten beendet (oder bricht mit Player-Fehler ab), fragt Quallenkino beim nächsten Start, ob es einen Bericht an den Server schicken soll. „Nein, passt“ fragt für diesen Titel nicht mehr.

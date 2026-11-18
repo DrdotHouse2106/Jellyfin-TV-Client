@@ -298,4 +298,15 @@
     <string name="tvclient_problem_sent">Bericht gesendet – danke!</string>
     <string name="tvclient_problem_no_plugin">Der Server nimmt keine Berichte an (Plugin Local Recommendations ab 12.63 nötig).</string>
     <string name="tvclient_problem_failed">Bericht konnte nicht gesendet werden.</string>
+    <!-- Alle Titel -->
+    <string name="tvclient_all_titles_link">Alle Titel durchstöbern</string>
+    <string name="tvclient_all_titles">Alle Titel</string>
+    <string name="tvclient_all_titles_all">Filme und Serien</string>
+    <string name="tvclient_all_titles_movies">Filme</string>
+    <string name="tvclient_all_titles_series">Serien</string>
+    <string name="tvclient_all_titles_sort_name">A–Z</string>
+    <string name="tvclient_all_titles_sort_added">Neu hinzugefügt</string>
+    <string name="tvclient_all_titles_sort_year">Erscheinungsjahr</string>
+    <string name="tvclient_all_titles_sort_rating">Bewertung</string>
+    <string name="tvclient_all_titles_count">%1$d Titel</string>
 </resources>

@@ -142,6 +142,8 @@ Die Zeilen der Startseite stehen in einer festen Reihenfolge und lassen sich unt
 18. Gerät (anfangs aus)
 19. Meine Medien (Bibliotheken; ab 1.36.3 anfangs aus wie im Web – die Bibliotheken sind über die Seitenleiste erreichbar)
 
+Ganz unten führt **„Alle Titel durchstöbern“** (ab 1.47.0) zu allen Filmen und Serien: Banner-Karten, oben der große Infobereich zum ausgewählten Titel, Filter Filme/Serien und Sortierung A–Z, neu hinzugefügt, Erscheinungsjahr oder Bewertung – gleich wie in der webOS-App und im Web.
+
 \* benötigt das Server-Plugin „Local Recommendations“ (Top 10 über alle Benutzer ab 12.6.0); ohne Plugin bleiben die Zeilen unsichtbar bzw. Top 10 zählt nur, was die App selbst sehen darf. Gesehene Titel verschwinden nach dem Anschauen.
 
 Die normalen Startseiten-Einstellungen der Jellyfin-Weboberfläche („Startseitenabschnitte“) gelten für Quallenkino nicht mehr.

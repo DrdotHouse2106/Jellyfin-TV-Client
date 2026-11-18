@@ -48,6 +48,8 @@ object Destinations {
 	fun movieSeries(id: String) = fragmentDestination<org.jellyfin.androidtv.tvclient.MovieSeriesFragment>(
 		org.jellyfin.androidtv.tvclient.MovieSeriesFragment.ARG_ID to id,
 	)
+	// Jellyfin-TV-Client: „Alle Titel“ (Link ganz unten auf der Startseite)
+	val allTitles = fragmentDestination<org.jellyfin.androidtv.tvclient.AllTitlesFragment>()
 	fun world(key: String) = fragmentDestination<org.jellyfin.androidtv.tvclient.WorldFragment>(
 		org.jellyfin.androidtv.tvclient.WorldFragment.ARG_KEY to key,
 	)
