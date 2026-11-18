@@ -309,4 +309,5 @@
     <string name="tvclient_all_titles_sort_year">Release year</string>
     <string name="tvclient_all_titles_sort_rating">Rating</string>
     <string name="tvclient_all_titles_count">%1$d titles</string>
+    <string name="tvclient_decoder_stall">Playback was stuck – the server now converts the video.</string>
 </resources>

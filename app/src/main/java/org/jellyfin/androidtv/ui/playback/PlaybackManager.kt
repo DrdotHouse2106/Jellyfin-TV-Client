@@ -108,7 +108,7 @@ class PlaybackManager(
 					maxAudioChannels = options.maxAudioChannels,
 					audioStreamIndex = options.audioStreamIndex.takeIf { it != null && it >= 0 },
 					subtitleStreamIndex = options.subtitleStreamIndex,
-					allowVideoStreamCopy = true,
+					allowVideoStreamCopy = options.allowVideoStreamCopy,
 					allowAudioStreamCopy = true,
 					autoOpenLiveStream = true,
 				)

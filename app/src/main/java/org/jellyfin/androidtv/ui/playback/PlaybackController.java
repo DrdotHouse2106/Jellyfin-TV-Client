@@ -510,6 +510,13 @@ public class PlaybackController implements PlaybackControllerNotifiable {
         internalOptions.setMediaSources(item.getMediaSources());
         if (playbackRetries > 0 || (isLiveTv && !directStreamLiveTv)) internalOptions.setEnableDirectPlay(false);
         if (playbackRetries > 1) internalOptions.setEnableDirectStream(false);
+        // Jellyfin-TV-Client: nach einem Decoder-Hänger das Bild vom Server neu kodieren lassen (Remux kopiert
+        // denselben Datenstrom und hängt genauso)
+        if (forceVideoTranscode) {
+            internalOptions.setEnableDirectPlay(false);
+            internalOptions.setEnableDirectStream(false);
+            internalOptions.setAllowVideoStreamCopy(false);
+        }
         if (mCurrentOptions != null) {
             internalOptions.setSubtitleStreamIndex(mCurrentOptions.getSubtitleStreamIndex());
             internalOptions.setAudioStreamIndex(mCurrentOptions.getAudioStreamIndex());
@@ -923,6 +930,25 @@ public class PlaybackController implements PlaybackControllerNotifiable {
 
     private void resetPlayerErrors() {
         playbackRetries = 0;
+        forceVideoTranscode = false;
+    }
+
+    /** Jellyfin-TV-Client: nach einem Decoder-Hänger für diesen Titel das Bild umwandeln lassen. */
+    private boolean forceVideoTranscode = false;
+
+    @Override
+    public void onDecoderStall() {
+        if (forceVideoTranscode) {
+            // Hängt auch die Umwandlung: wie ein normaler Abspielfehler behandeln
+            onError();
+            return;
+        }
+        Timber.w("Decoder-Hänger – Neustart an derselben Stelle mit Umwandlung des Bildes");
+        forceVideoTranscode = true;
+        if (mFragment != null) Utils.showToast(mFragment.getContext(), mFragment.getString(R.string.tvclient_decoder_stall));
+        refreshCurrentPosition();
+        stop();
+        play(mCurrentPosition);
     }
 
     private void clearPlaybackSessionOptions() {

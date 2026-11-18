@@ -309,4 +309,5 @@
     <string name="tvclient_all_titles_sort_year">Erscheinungsjahr</string>
     <string name="tvclient_all_titles_sort_rating">Bewertung</string>
     <string name="tvclient_all_titles_count">%1$d Titel</string>
+    <string name="tvclient_decoder_stall">Die Wiedergabe hing – der Server wandelt das Bild jetzt um.</string>
 </resources>

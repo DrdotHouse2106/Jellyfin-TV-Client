@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.47.6 – 2026-11-18
+
+- **Hänger nach Sprung bzw. Fortsetzen, gezielter Rückfall:** Steht die Wiedergabe 20 Sekunden still, obwohl genug gepuffert ist, läuft der Bild-Decoder des Sticks mit diesem Datenstrom nicht an – auch frisch geladen und im Remux nicht (beobachtet auf Amlogic-Sticks wie dem waipu.tv 4K Stick bei Dateien eines Studios). Dann startet die App an derselben Stelle neu und lässt den Server **das Bild umwandeln** (neu kodiert statt kopiert), mit kurzem Hinweis. Ist der Puffer leer, bleibt es beim bisherigen Rückfall ohne Direktwiedergabe. Ersetzt das „frisch laden“ aus 1.47.5 für diesen Fall.
+
 ## 1.47.5 – 2026-11-18
 
 - **Spulen hängt (z. B. zurück an eine frühere Stelle):** Auf manchen Sticks läuft der Bild- bzw. Ton-Decoder nach einem Sprung nicht wieder an, obwohl genug gepuffert ist – die Uhr steht. Statt gleich neu über den Server zu starten, lädt die App den Film jetzt zuerst an derselben Stelle frisch (neue Decoder, wie beim Start). Erst wenn auch das hängt, startet sie wie bisher neu ohne Direktwiedergabe. Das gilt auch für den Hänger „Position steht trotz Wiedergabe“.

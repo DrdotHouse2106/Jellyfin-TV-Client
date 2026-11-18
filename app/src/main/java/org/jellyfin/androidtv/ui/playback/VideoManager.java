@@ -161,7 +161,6 @@ public class VideoManager {
                 if (isPlaying) {
                     if (mPlaybackControllerNotifiable != null) mPlaybackControllerNotifiable.onPrepared();
                     stallWatch.reset();
-                    bufferReloads = 0;
                     startProgressLoop();
                     _helper.setScreensaverLock(true);
                 } else {
@@ -711,19 +710,18 @@ public class VideoManager {
                 if (mExoPlayer == null || mExoPlayer.getPlaybackState() != Player.STATE_BUFFERING || !mExoPlayer.getPlayWhenReady()) return;
                 if (bufferWatch.check(mExoPlayer.getBufferedPosition(), android.os.SystemClock.elapsedRealtime())) {
                     long position = mExoPlayer.getCurrentPosition();
-                    boolean reload = bufferReloads == 0;
-                    String text = bufferWatch.describe(position, mExoPlayer.getBufferedPosition(), mExoPlayer.getDuration()) + ". " + stallDetails()
-                            + (reload ? " – frisch laden an derselben Stelle" : " – Neustart ohne Direktwiedergabe");
+                    long buffered = mExoPlayer.getBufferedPosition();
+                    // Puffer gut gefüllt, Uhr steht: Der Decoder läuft nicht an (auch frisch geladen und im Remux nicht) –
+                    // dann muss der Server das Bild neu kodieren. Sonst (Puffer leer) wie ein Abspielfehler
+                    boolean decoder = buffered - position > 5_000;
+                    String text = bufferWatch.describe(position, buffered, mExoPlayer.getDuration()) + ". " + stallDetails()
+                            + (decoder ? " – Decoder läuft nicht an, Neustart mit Umwandlung des Bildes" : " – Neustart ohne Direktwiedergabe");
                     Timber.w(text);
                     org.jellyfin.androidtv.tvclient.ClientDiagnostics.INSTANCE.report(text);
                     org.jellyfin.androidtv.tvclient.ProblemReports.onPlayerError(new IllegalStateException(text));
-                    if (reload) {
-                        // Erst frisch laden (neue Decoder): manche Sticks laufen nach einem Sprung nicht wieder an,
-                        // obwohl genug gepuffert ist – frisch geladen ab derselben Stelle schon
-                        bufferReloads++;
-                        reloadAt(position);
-                    } else if (mPlaybackControllerNotifiable != null) {
-                        mPlaybackControllerNotifiable.onError();
+                    if (mPlaybackControllerNotifiable != null) {
+                        if (decoder) mPlaybackControllerNotifiable.onDecoderStall();
+                        else mPlaybackControllerNotifiable.onError();
                     }
                     return;
                 }
@@ -732,9 +730,6 @@ public class VideoManager {
         };
         mHandler.postDelayed(bufferLoop, 1000);
     }
-
-    /** Hänger nach einem Sprung: so oft wurde schon frisch geladen (zurückgesetzt, sobald die Wiedergabe läuft). */
-    private int bufferReloads = 0;
 
     /** Jellyfin-TV-Client: Medium an derselben Stelle frisch laden (Decoder neu), Spuren und Untertitel bleiben. */
     private void reloadAt(long positionMs) {
