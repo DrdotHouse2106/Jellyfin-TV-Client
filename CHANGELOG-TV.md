@@ -4,6 +4,8 @@
 
 - Sicherheit: Der Fernbefehl `tvclient:app:…` (Handy-Fernbedienung) startet nur noch Apps, die das Gerät selbst veröffentlicht hat (Zeile „Apps“ eingeschaltet) – nicht mehr jede installierte App.
 - Sicherheit: Eine gemerkte Update-Adresse wird vor der Verwendung erneut geprüft (nur Releases auf GitHub).
+- Heimnetz-Adresse: Der Dialog weist darauf hin, dass eine http-Adresse unverschlüsselt ist (https empfohlen).
+- Build: Tests und Bauen laufen nur noch mit Leserecht, nur der Release-Schritt darf schreiben.
 
 ## 1.47.1 – 2026-11-18
 
