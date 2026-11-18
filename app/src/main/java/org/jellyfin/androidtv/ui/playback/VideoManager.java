@@ -161,6 +161,7 @@ public class VideoManager {
                 if (isPlaying) {
                     if (mPlaybackControllerNotifiable != null) mPlaybackControllerNotifiable.onPrepared();
                     stallWatch.reset();
+                    bufferReloads = 0;
                     startProgressLoop();
                     _helper.setScreensaverLock(true);
                 } else {
@@ -682,7 +683,8 @@ public class VideoManager {
 
     // Jellyfin-TV-Client: Hänger erkennen (Position steht trotz Wiedergabe), einmal neu ansetzen und melden
     private final org.jellyfin.androidtv.tvclient.PlaybackStallWatch stallWatch = new org.jellyfin.androidtv.tvclient.PlaybackStallWatch(position -> {
-        if (mExoPlayer != null) mExoPlayer.seekTo(position);
+        // Frisch laden statt nur springen – ein Sprung allein lief auf manchen Sticks nicht wieder an
+        reloadAt(position);
         return kotlin.Unit.INSTANCE;
     });
 
@@ -708,17 +710,41 @@ public class VideoManager {
             public void run() {
                 if (mExoPlayer == null || mExoPlayer.getPlaybackState() != Player.STATE_BUFFERING || !mExoPlayer.getPlayWhenReady()) return;
                 if (bufferWatch.check(mExoPlayer.getBufferedPosition(), android.os.SystemClock.elapsedRealtime())) {
-                    String text = bufferWatch.describe(mExoPlayer.getCurrentPosition(), mExoPlayer.getBufferedPosition(), mExoPlayer.getDuration()) + ". " + stallDetails();
+                    long position = mExoPlayer.getCurrentPosition();
+                    boolean reload = bufferReloads == 0;
+                    String text = bufferWatch.describe(position, mExoPlayer.getBufferedPosition(), mExoPlayer.getDuration()) + ". " + stallDetails()
+                            + (reload ? " – frisch laden an derselben Stelle" : " – Neustart ohne Direktwiedergabe");
                     Timber.w(text);
                     org.jellyfin.androidtv.tvclient.ClientDiagnostics.INSTANCE.report(text);
                     org.jellyfin.androidtv.tvclient.ProblemReports.onPlayerError(new IllegalStateException(text));
-                    if (mPlaybackControllerNotifiable != null) mPlaybackControllerNotifiable.onError();
+                    if (reload) {
+                        // Erst frisch laden (neue Decoder): manche Sticks laufen nach einem Sprung nicht wieder an,
+                        // obwohl genug gepuffert ist – frisch geladen ab derselben Stelle schon
+                        bufferReloads++;
+                        reloadAt(position);
+                    } else if (mPlaybackControllerNotifiable != null) {
+                        mPlaybackControllerNotifiable.onError();
+                    }
                     return;
                 }
                 mHandler.postDelayed(this, 1000);
             }
         };
         mHandler.postDelayed(bufferLoop, 1000);
+    }
+
+    /** Hänger nach einem Sprung: so oft wurde schon frisch geladen (zurückgesetzt, sobald die Wiedergabe läuft). */
+    private int bufferReloads = 0;
+
+    /** Jellyfin-TV-Client: Medium an derselben Stelle frisch laden (Decoder neu), Spuren und Untertitel bleiben. */
+    private void reloadAt(long positionMs) {
+        if (mExoPlayer == null) return;
+        MediaItem item = mExoPlayer.getCurrentMediaItem();
+        if (item == null) return;
+        mExoPlayer.stop();
+        mExoPlayer.setMediaItem(item, positionMs);
+        mExoPlayer.prepare();
+        mExoPlayer.setPlayWhenReady(true);
     }
 
     private void stopBufferWatch() {

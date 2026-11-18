@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.47.5 – 2026-11-18
+
+- **Spulen hängt (z. B. zurück an eine frühere Stelle):** Auf manchen Sticks läuft der Bild- bzw. Ton-Decoder nach einem Sprung nicht wieder an, obwohl genug gepuffert ist – die Uhr steht. Statt gleich neu über den Server zu starten, lädt die App den Film jetzt zuerst an derselben Stelle frisch (neue Decoder, wie beim Start). Erst wenn auch das hängt, startet sie wie bisher neu ohne Direktwiedergabe. Das gilt auch für den Hänger „Position steht trotz Wiedergabe“.
+
 ## 1.47.4 – 2026-11-18
 
 - **Fortsetzen bei Direktwiedergabe:** Der Player lädt den Film jetzt gleich ab der gemerkten Stelle, statt ab dem Anfang zu starten und danach dorthin zu springen. Dieser nachträgliche Sprung blieb auf manchen Sticks (z. B. waipu.tv 4K Stick) bei jeder Startposition im Puffern hängen, ohne Fehlermeldung; ab dem Anfang lief der Film normal. Falls es trotzdem hängt, greift nach 20 Sekunden der Rückfall aus 1.47.3.

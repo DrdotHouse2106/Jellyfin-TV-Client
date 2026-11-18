@@ -4,7 +4,7 @@ package org.jellyfin.androidtv.tvclient
 /**
  * Jellyfin-TV-Client: erkennt einen hängenden Player – die Wiedergabe läuft laut Player, aber die Position
  * steht (z. B. eingefrorenes Bild nach dem Fortsetzen, wenn der Ton-Passthrough nicht wieder anläuft).
- * Beim ersten Hänger versucht der Player es mit einem Sprung an dieselbe Stelle (setzt Bild und Ton neu auf);
+ * Beim ersten Hänger lädt der Player das Medium an derselben Stelle frisch (neue Decoder);
  * jeder Hänger landet im Client-Log des Servers (Dashboard → Protokolle), damit er sich nachvollziehen lässt.
  */
 class PlaybackStallWatch(private val onRecover: (positionMs: Long) -> Unit) {
@@ -35,7 +35,7 @@ class PlaybackStallWatch(private val onRecover: (positionMs: Long) -> Unit) {
 		}
 		if (reported || now - lastMoveAt < STALL_MS) return
 		reported = true
-		val action = if (recoveries == 0) "Neuansatz an derselben Stelle" else "kein weiterer Neuansatz"
+		val action = if (recoveries == 0) "frisch laden an derselben Stelle" else "kein weiterer Neuansatz"
 		val text = "Player hängt: Position steht seit ${(now - lastMoveAt) / 1000} s bei $positionMs ms trotz laufender Wiedergabe – $action. ${details()}"
 		report(text)
 		if (recoveries == 0) {
