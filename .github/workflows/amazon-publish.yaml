@@ -5,6 +5,9 @@
 name: Amazon / Veröffentlichen
 
 on:
+  # Täglich: neueste Version nachreichen, falls Amazon beim Release noch mit der vorigen beschäftigt war
+  schedule:
+    - cron: '17 6 * * *'
   workflow_run:
     workflows: [TV-Client / Build]
     types: [completed]
@@ -29,6 +32,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: >-
       github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'schedule' && vars.AMAZON_AUTO_SUBMIT == 'true') ||
       (github.event.workflow_run.conclusion == 'success' && vars.AMAZON_AUTO_SUBMIT == 'true')
     steps:
       - name: Checkout repository
@@ -56,4 +60,5 @@ jobs:
           AMAZON_CLIENT_ID: ${{ secrets.AMAZON_CLIENT_ID }}
           AMAZON_CLIENT_SECRET: ${{ secrets.AMAZON_CLIENT_SECRET }}
           AMAZON_APP_ID: ${{ secrets.AMAZON_APP_ID }}
-        run: .github/scripts/amazon-publish.sh apk/*-amazon.apk "$VERSION" "${{ github.event_name == 'workflow_run' || inputs.commit }}"
+          AMAZON_SKIP_SAME: ${{ github.event_name == 'schedule' }}
+        run: .github/scripts/amazon-publish.sh apk/*-amazon.apk "$VERSION" "${{ github.event_name != 'workflow_dispatch' || inputs.commit }}"

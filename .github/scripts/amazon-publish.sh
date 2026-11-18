@@ -28,7 +28,14 @@ echo "::add-mask::$TOKEN"
 api() { local m="$1" p="$2"; shift 2; curl -fsS -X "$m" -D "$H" -H "Authorization: Bearer $TOKEN" "$@" "$API$p"; }
 etag() { api GET "$1" -o /dev/null; tr -d '\r' < "$H" | awk 'tolower($1)=="etag:"{print $2}'; }
 
-EDIT="$(api GET /edits | jq -r '.id // empty' || true)"
+# Offenes Edit weiterverwenden; liegt eine Version gerade in der Prüfung, nichts tun (der tägliche Lauf reicht nach)
+ACTIVE="$(api GET /edits || true)"
+EDIT="$(jq -r '.id // empty' <<<"$ACTIVE" 2>/dev/null || true)"
+STATUS="$(jq -r '.status // empty' <<<"$ACTIVE" 2>/dev/null || true)"
+if [ -n "$EDIT" ] && [ -n "$STATUS" ] && [ "$STATUS" != "IN_PROGRESS" ]; then
+	echo "::notice::Bei Amazon wird gerade eine Version geprüft (Status $STATUS) – $VERSION folgt automatisch, sobald sie freigegeben ist."
+	exit 0
+fi
 if [ -z "$EDIT" ]; then EDIT="$(api POST /edits | jq -r .id)"; echo "Neues Edit $EDIT"; else echo "Offenes Edit $EDIT wird weiterverwendet"; fi
 
 # APK ersetzen (Gerätezuordnung bleibt erhalten); gleiche Version nicht doppelt hochladen
@@ -36,7 +43,16 @@ APKS="$(api GET "/edits/$EDIT/apks")"
 [ "$(jq length <<<"$APKS")" -eq 1 ] || { echo "::error::Erwartet genau eine APK im Edit, gefunden: $(jq length <<<"$APKS")"; exit 1; }
 APK_ID="$(jq -r '.[0].id' <<<"$APKS")"
 CODE_OLD="$(jq -r '.[0].versionCode' <<<"$APKS")"
-if [ "$CODE_NEW" = "$CODE_OLD" ]; then
+if [ "$CODE_OLD" -gt "$CODE_NEW" ] 2>/dev/null; then
+	echo "::notice::Bei Amazon liegt schon eine neuere Version ($CODE_OLD) – nichts zu tun"
+	api DELETE "/edits/$EDIT" -H "If-Match: $(etag "/edits/$EDIT")" -o /dev/null || true
+	exit 0
+elif [ "$CODE_NEW" = "$CODE_OLD" ] && [ "$COMMIT" = "true" ] && [ "${AMAZON_SKIP_SAME:-}" = "true" ]; then
+	# Täglicher Lauf: diese Version ist schon live – das frisch angelegte Edit wieder verwerfen
+	echo "Version $VERSION ($CODE_NEW) ist bei Amazon aktuell – nichts zu tun"
+	api DELETE "/edits/$EDIT" -H "If-Match: $(etag "/edits/$EDIT")" -o /dev/null || true
+	exit 0
+elif [ "$CODE_NEW" = "$CODE_OLD" ]; then
 	echo "Version $VERSION ($CODE_NEW) liegt schon im Edit – kein erneuter Upload"
 else
 	api PUT "/edits/$EDIT/apks/$APK_ID/replace" -H "If-Match: $(etag "/edits/$EDIT/apks/$APK_ID")" \
