@@ -45,5 +45,9 @@ class PlaybackStallWatch(private val onRecover: (positionMs: Long) -> Unit) {
 		}
 	}
 
-	private fun report(text: String) = ClientDiagnostics.report(text)
+	private fun report(text: String) {
+		ClientDiagnostics.report(text)
+		// Auch in einen späteren Problembericht („Problem melden“)
+		ProblemReports.onPlayerError(IllegalStateException(text))
+	}
 }

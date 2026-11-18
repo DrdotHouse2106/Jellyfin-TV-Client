@@ -177,6 +177,10 @@ public class VideoManager {
             public void onPlaybackStateChanged(int playbackState) {
                 if (playbackState == Player.STATE_BUFFERING) {
                     Timber.d("Player is buffering");
+                    // Jellyfin-TV-Client: Hänger beim Puffern erkennen (kommt ohne Fehler vom Player)
+                    startBufferWatch();
+                } else {
+                    stopBufferWatch();
                 }
 
                 if (playbackState == Player.STATE_ENDED) {
@@ -367,6 +371,7 @@ public class VideoManager {
         }
 
         stopProgressLoop();
+        stopBufferWatch();
     }
 
     public boolean isSeekable() {
@@ -682,6 +687,39 @@ public class VideoManager {
         return "Video: " + (video != null ? video.sampleMimeType + " " + video.width + "x" + video.height : "–")
                 + ", Ton: " + (audio != null ? audio.sampleMimeType + " " + audio.channelCount + " Kanäle" : "–")
                 + ", gepuffert bis " + mExoPlayer.getBufferedPosition() + " ms";
+    }
+
+    // Jellyfin-TV-Client: Puffern ohne Fortschritt (z. B. MP4 ohne faststart über einen Proxy) als Fehler behandeln –
+    // der Controller startet dann neu ohne Direktwiedergabe (Server packt um bzw. wandelt um)
+    private final org.jellyfin.androidtv.tvclient.BufferStallWatch bufferWatch = new org.jellyfin.androidtv.tvclient.BufferStallWatch();
+    private Runnable bufferLoop;
+
+    private void startBufferWatch() {
+        stopBufferWatch();
+        bufferWatch.reset();
+        bufferLoop = new Runnable() {
+            @Override
+            public void run() {
+                if (mExoPlayer == null || mExoPlayer.getPlaybackState() != Player.STATE_BUFFERING || !mExoPlayer.getPlayWhenReady()) return;
+                if (bufferWatch.check(mExoPlayer.getBufferedPosition(), android.os.SystemClock.elapsedRealtime())) {
+                    String text = bufferWatch.describe(mExoPlayer.getCurrentPosition(), mExoPlayer.getBufferedPosition(), mExoPlayer.getDuration()) + ". " + stallDetails();
+                    Timber.w(text);
+                    org.jellyfin.androidtv.tvclient.ClientDiagnostics.INSTANCE.report(text);
+                    org.jellyfin.androidtv.tvclient.ProblemReports.onPlayerError(new IllegalStateException(text));
+                    if (mPlaybackControllerNotifiable != null) mPlaybackControllerNotifiable.onError();
+                    return;
+                }
+                mHandler.postDelayed(this, 1000);
+            }
+        };
+        mHandler.postDelayed(bufferLoop, 1000);
+    }
+
+    private void stopBufferWatch() {
+        if (bufferLoop != null) {
+            mHandler.removeCallbacks(bufferLoop);
+            bufferLoop = null;
+        }
     }
 
     private void startProgressLoop() {

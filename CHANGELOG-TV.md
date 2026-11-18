@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.47.3 – 2026-11-18
+
+- **Hänger beim Fortsetzen:** Bleibt der Player nach dem Start oder Fortsetzen im Puffern stehen (20 Sekunden ohne jeden Fortschritt, ohne Fehlermeldung), gilt das jetzt als Abspielfehler: Die App startet an derselben Stelle neu ohne Direktwiedergabe – der Server packt um bzw. wandelt um. Typisch bei MP4-Dateien ohne „faststart“ über eine Internet-Adresse bzw. einen Proxy.
+- Hänger (auch der schon erkannte „Position steht trotz Wiedergabe“) stehen jetzt im Problembericht unter „Fehler“.
+
 ## 1.47.2 – 2026-11-18
 
 - Sicherheit: Der Fernbefehl `tvclient:app:…` (Handy-Fernbedienung) startet nur noch Apps, die das Gerät selbst veröffentlicht hat (Zeile „Apps“ eingeschaltet) – nicht mehr jede installierte App.
