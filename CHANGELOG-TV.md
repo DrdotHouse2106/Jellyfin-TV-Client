@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.47.4 – 2026-11-18
+
+- **Fortsetzen bei Direktwiedergabe:** Der Player lädt den Film jetzt gleich ab der gemerkten Stelle, statt ab dem Anfang zu starten und danach dorthin zu springen. Dieser nachträgliche Sprung blieb auf manchen Sticks (z. B. waipu.tv 4K Stick) bei jeder Startposition im Puffern hängen, ohne Fehlermeldung; ab dem Anfang lief der Film normal. Falls es trotzdem hängt, greift nach 20 Sekunden der Rückfall aus 1.47.3.
+
 ## 1.47.3 – 2026-11-18
 
 - **Hänger beim Fortsetzen:** Bleibt der Player nach dem Start oder Fortsetzen im Puffern stehen (20 Sekunden ohne jeden Fortschritt, ohne Fehlermeldung), gilt das jetzt als Abspielfehler: Die App startet an derselben Stelle neu ohne Direktwiedergabe – der Server packt um bzw. wandelt um. Typisch bei MP4-Dateien ohne „faststart“ über eine Internet-Adresse bzw. einen Proxy.

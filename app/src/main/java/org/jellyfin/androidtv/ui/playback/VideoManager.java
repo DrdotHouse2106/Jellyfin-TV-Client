@@ -400,6 +400,11 @@ public class VideoManager {
     }
 
     public void setMediaStreamInfo(ApiClient api, StreamInfo streamInfo) {
+        setMediaStreamInfo(api, streamInfo, 0);
+    }
+
+    /** Jellyfin-TV-Client: mit Startposition – der Player lädt gleich ab dieser Stelle statt erst ab 0 und springt nicht nachträglich. */
+    public void setMediaStreamInfo(ApiClient api, StreamInfo streamInfo, long startPositionMs) {
         String path = streamInfo.getMediaUrl();
         if (path == null) {
             Timber.w("Video path is null cannot continue");
@@ -432,7 +437,8 @@ public class VideoManager {
                     .setSubtitleConfigurations(subtitleConfigurations)
                     .build();
 
-            mExoPlayer.setMediaItem(mediaItem);
+            if (startPositionMs > 0) mExoPlayer.setMediaItem(mediaItem, startPositionMs);
+            else mExoPlayer.setMediaItem(mediaItem);
             mExoPlayer.prepare();
         } catch (IllegalStateException e) {
             Timber.e(e, "Unable to set video path.  Probably backing out.");

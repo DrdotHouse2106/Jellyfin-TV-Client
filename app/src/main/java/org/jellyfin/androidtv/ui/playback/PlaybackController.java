@@ -681,7 +681,16 @@ public class PlaybackController implements PlaybackControllerNotifiable {
         if (mFragment != null) mFragment.updateDisplay();
 
         if (mVideoManager != null) {
-            mVideoManager.setMediaStreamInfo(api.getValue(), response);
+            // Jellyfin-TV-Client: Direktwiedergabe gleich ab der Startposition laden statt ab 0 mit späterem Sprung –
+            // der nachträgliche Sprung blieb auf manchen Sticks im Puffern hängen (ohne Fehler)
+            if (response.getPlayMethod() == PlayMethod.DIRECT_PLAY && mStartPosition > 0) {
+                Timber.i("Direktwiedergabe ab %d ms (Startposition beim Laden)", mStartPosition);
+                mVideoManager.setMediaStreamInfo(api.getValue(), response, mStartPosition);
+                mSeekPosition = mStartPosition;
+                mStartPosition = 0;
+            } else {
+                mVideoManager.setMediaStreamInfo(api.getValue(), response);
+            }
         }
 
         PlaybackControllerHelperKt.applyMediaSegments(this, item, () -> {
