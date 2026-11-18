@@ -171,9 +171,9 @@ Hinweise:
 
 Hürden, auf die wir selbst gestoßen sind – jeweils mit Symptom, Ursache und Lösung.
 
-**„Nach Updates suchen“ findet keine neue Version (1.44.1–1.45.0, 13.–16.11.2026)**
-- *Ursache:* Das Repo war kurz in `Quallenkino-AndroidTV` umbenannt. Diese Versionen laden Updates nur aus `…/Jellyfin-TV-Client/releases/download/` und haben die umbenannten Download-Links abgelehnt.
-- *Lösung:* Das Repo heißt wieder `Jellyfin-TV-Client`. Ab 1.45.1 fragt die App über die feste Repository-Id ab, eine Umbenennung stört das Update nicht mehr. Wer in dieser Zeit hängen geblieben ist: einmal „Nach Updates suchen“, sonst die APK von Hand installieren.
+**„Nach Updates suchen“ findet keine neue Version (1.44.1 bis 1.47.0)**
+- *Ursache:* Ein Fehler in der Sicherheitsprüfung von 1.44.1: Die App ließ nur Antworten von den Download-Hosts zu und lehnte damit die Antwort der GitHub-API ab, über die sie nach neuen Versionen fragt. Jede Prüfung scheiterte (in den Einstellungen „Update fehlgeschlagen“). Die kurze Umbenennung des Repos (13.–16.11.) kam noch dazu.
+- *Lösung:* Ab 1.47.1 behoben. Geräte mit 1.44.1 bis 1.47.0 einmal von Hand aktualisieren – in Downloader `https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk` eingeben und installieren (Einstellungen und Anmeldung bleiben erhalten). Danach aktualisiert sich die App wieder selbst. Die Fassung aus dem Amazon Appstore ist nicht betroffen.
 
 **Film bricht immer wieder ab oder bleibt stumm – Problem melden**
 - *Ab 1.46.0:* Wird ein Film oder eine Folge zweimal nach wenigen Minuten beendet (oder bricht mit Player-Fehler ab), fragt Quallenkino beim nächsten Start: „Ups, gab es hier ein technisches Problem?“. **„Melden“** schickt einen Bericht an den eigenen Jellyfin-Server (Gerät, Ton- und Untertitelspur, Direktwiedergabe oder Umwandlung, erkannter Ton-Ausgang, Fehlermeldung, letzte Log-Zeilen – ohne Zugangsdaten), „Nein, passt“ fragt für diesen Titel nicht mehr. Jederzeit geht es im Player über **„Problem melden“** (weitere Knöpfe).

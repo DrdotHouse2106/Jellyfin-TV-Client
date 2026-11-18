@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.47.1 – 2026-11-18
+
+- **Selbst-Update funktioniert wieder:** Seit 1.44.1 lehnte die App die Antwort der GitHub-API selbst ab („Unerwarteter Download-Host“) – die Prüfung auf erlaubte Hosts kannte nur die Download-Adressen. Jetzt gelten für Release-Abfrage und Änderungsliste `api.github.com` und `raw.githubusercontent.com`, für die APK weiter nur die GitHub-Download-Hosts (jetzt auch beim Herunterladen selbst geprüft). **Geräte mit 1.44.1 bis 1.47.0 brauchen diese Version einmal von Hand** (Downloader: `https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk`), danach geht es wieder automatisch.
+
 ## 1.47.0 – 2026-11-18
 
 - **„Alle Titel durchstöbern“** ganz unten auf der Startseite (gleich wie in der webOS-App und im Web): alle Filme und Serien als Banner-Karten, oben der große Infobereich zum ausgewählten Titel – so blättert man durch die Banner. Filter Filme/Serien, Sortierung A–Z, neu hinzugefügt, Erscheinungsjahr oder Bewertung; weitere Titel laden beim Scrollen nach.

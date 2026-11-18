@@ -56,4 +56,12 @@ class SelfUpdateTests : FunSpec({
 		SelfUpdate.isAllowedHost(java.net.URL("https://evil.example/x")) shouldBe false
 		SelfUpdate.isAllowedHost(java.net.URL("http://github.com/x")) shouldBe false
 	}
+
+	test("Release-Abfrage und Änderungsliste von der GitHub-API (TV-1: bis 1.47.0 abgelehnt)") {
+		SelfUpdate.isAllowedApiHost(java.net.URL("https://api.github.com/repositories/1422240363/releases/latest")) shouldBe true
+		SelfUpdate.isAllowedApiHost(java.net.URL("https://raw.githubusercontent.com/DrdotHouse2106/Jellyfin-TV-Client/main/CHANGELOG-TV.md")) shouldBe true
+		SelfUpdate.isAllowedApiHost(java.net.URL("http://api.github.com/x")) shouldBe false
+		SelfUpdate.isAllowedApiHost(java.net.URL("https://evil.example/x")) shouldBe false
+		SelfUpdate.isAllowedHost(java.net.URL("https://api.github.com/x")) shouldBe false
+	}
 })

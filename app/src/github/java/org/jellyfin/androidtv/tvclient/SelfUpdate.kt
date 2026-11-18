@@ -49,8 +49,9 @@ import java.security.MessageDigest
 object SelfUpdate {
 	private const val OWNER = "DrdotHouse2106"
 	private const val REPO = "$OWNER/Jellyfin-TV-Client"
-	// Über die feste Repository-Id statt des Namens: übersteht Umbenennungen (früher „Jellyfin-TV-Client“)
-	private const val LATEST_URL = "https://api.github.com/repositories/1422240363/releases/latest"
+	// Nach einer Umbenennung leitet GitHub diese Adresse auf api.github.com weiter (erlaubter Host); Downloads aus allen
+	// Repos des Kontos sind erlaubt (Signaturprüfung bleibt)
+	private const val LATEST_URL = "https://api.github.com/repos/$REPO/releases/latest"
 	private const val CHANGELOG_URL = "https://raw.githubusercontent.com/$REPO/main/CHANGELOG-TV.md"
 	private const val APK_NAME = "quallenkino.apk"
 	private const val PREFS = "tvclient_update"
@@ -107,8 +108,9 @@ object SelfUpdate {
 			connection.setRequestProperty("Accept", "application/vnd.github+json")
 			connection.setRequestProperty("User-Agent", "Quallenkino/${BuildConfig.VERSION_NAME}")
 			if (connection.responseCode != HttpURLConnection.HTTP_OK) error("HTTP ${connection.responseCode}")
-			// Nach Weiterleitungen nur GitHub-Hosts (Release-Dateien liegen auf *.githubusercontent.com)
-			if (!isAllowedHost(connection.url)) error("Unerwarteter Download-Host ${connection.url.host}")
+			// Release-Liste und Änderungen nur von der GitHub-API bzw. raw.githubusercontent.com (auch nach Weiterleitungen).
+			// Bis 1.47.0 stand hier die Liste der Download-Hosts – jede Prüfung scheiterte seit 1.44.1
+			if (!isAllowedApiHost(connection.url)) error("Unerwarteter Host ${connection.url.host}")
 			connection.inputStream.bufferedReader().use { it.readText() }
 		} finally {
 			connection.disconnect()
@@ -326,9 +328,13 @@ object SelfUpdate {
 		Regex("https://github\\.com/$OWNER/[A-Za-z0-9._-]+/releases/download/.+", RegexOption.IGNORE_CASE).matches(url)
 
 	private val allowedHosts = setOf("github.com", "objects.githubusercontent.com", "release-assets.githubusercontent.com")
+	private val apiHosts = setOf("api.github.com", "raw.githubusercontent.com")
 
-	/** Endgültiger Host nach Weiterleitungen (testbar). */
+	/** Endgültiger Host der APK nach Weiterleitungen (testbar). */
 	fun isAllowedHost(url: URL): Boolean = url.protocol == "https" && url.host in allowedHosts
+
+	/** Endgültiger Host der Release-Abfrage und der Änderungsliste (testbar). */
+	fun isAllowedApiHost(url: URL): Boolean = url.protocol == "https" && url.host in apiHosts
 
 	private suspend fun download(context: Context, release: Release, onProgress: (Int) -> Unit): File = withContext(Dispatchers.IO) {
 		val dir = File(context.cacheDir, "updates").apply { mkdirs() }
@@ -341,6 +347,8 @@ object SelfUpdate {
 			connection.readTimeout = TIMEOUT_MS * 2
 			connection.instanceFollowRedirects = true
 			if (connection.responseCode != HttpURLConnection.HTTP_OK) error("HTTP ${connection.responseCode}")
+			// APK nur von GitHub-Hosts, auch nach Weiterleitungen (Release-Dateien liegen auf *.githubusercontent.com)
+			if (!isAllowedHost(connection.url)) error("Unerwarteter Download-Host ${connection.url.host}")
 			val total = release.size ?: connection.contentLengthLong.takeIf { it > 0 }
 			val digest = MessageDigest.getInstance("SHA-256")
 			var loaded = 0L
