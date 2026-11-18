@@ -249,7 +249,8 @@ object SelfUpdate {
 	private fun cachedRelease(context: Context): Release? {
 		val prefs = prefs(context)
 		val version = prefs.getString("release_version", null) ?: return null
-		val url = prefs.getString("release_url", null) ?: return null
+		// Gemerkte Adresse erneut prüfen (nur Releases auf GitHub)
+		val url = prefs.getString("release_url", null)?.takeIf(::isAllowedDownload) ?: return null
 		return Release(version, url, prefs.getLong("release_size", -1).takeIf { it > 0 }, prefs.getString("release_sha256", null), prefs.getString("release_notes", null).orEmpty())
 	}
 

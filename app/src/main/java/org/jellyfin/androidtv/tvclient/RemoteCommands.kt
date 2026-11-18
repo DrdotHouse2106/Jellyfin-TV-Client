@@ -32,7 +32,11 @@ object RemoteCommands {
 		val value = parts.getOrNull(1)?.trim().orEmpty()
 
 		when (type) {
-			"app" -> if (!DeviceApps.launch(context, value)) Timber.w("App %s nicht gefunden", value)
+			// Nur Apps, die dieses Gerät selbst für die Fernbedienung veröffentlicht hat (Zeile „Apps“ an)
+			"app" -> when {
+				value !in DeviceAppsPublisher.published -> Timber.w("App %s nicht freigegeben (Zeile „Apps“ aus oder nicht veröffentlicht)", value)
+				!DeviceApps.launch(context, value) -> Timber.w("App %s nicht gefunden", value)
+			}
 			"settings" -> DeviceApps.SettingsShortcut.fromKey(value)?.let { DeviceApps.openSettings(context, it) }
 			"open" -> when (value.lowercase()) {
 				"home" -> navigationRepository.reset(Destinations.home, true)

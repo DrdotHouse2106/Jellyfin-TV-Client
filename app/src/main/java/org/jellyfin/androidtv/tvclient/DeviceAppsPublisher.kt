@@ -33,11 +33,20 @@ object DeviceAppsPublisher {
 
 	fun displayPreferencesId(deviceId: String) = "tvclient-device-$deviceId"
 
+	/**
+	 * Pakete, die dieses Gerät zuletzt für die Handy-Fernbedienung veröffentlicht hat (nur bei eingeschalteter
+	 * Zeile „Apps“). Nur diese darf der Fernbefehl `tvclient:app:` starten.
+	 */
+	@Volatile
+	var published: Set<String> = emptySet()
+		private set
+
 	suspend fun publish(context: Context, api: ApiClient) = withContext(Dispatchers.IO) {
 		try {
 			val deviceId = api.deviceInfo.id
 			val id = displayPreferencesId(deviceId)
 			val apps = DeviceApps.getApps(context).map { PublishedApp(it.packageName, it.label) }
+			published = apps.map { it.id }.toSet()
 			val settings = DeviceApps.getSettingsShortcuts(context).joinToString(",") { it.key }
 
 			val current = runCatching {

@@ -5,8 +5,8 @@ import io.kotest.matchers.shouldBe
 
 class TvClientLocalAddressTests : FunSpec({
 	test("IP ohne Schema und Port wird ergänzt") {
-		TvClientLocalAddress.normalizeAddress(" 192.168.72.91 ") shouldBe "http://192.168.72.91:8096"
-		TvClientLocalAddress.normalizeAddress("192.168.72.91:8920/") shouldBe "http://192.168.72.91:8920"
+		TvClientLocalAddress.normalizeAddress(" 192.168.1.10 ") shouldBe "http://192.168.1.10:8096"
+		TvClientLocalAddress.normalizeAddress("192.168.1.10:8920/") shouldBe "http://192.168.1.10:8920"
 		TvClientLocalAddress.normalizeAddress("https://server.lan") shouldBe "https://server.lan"
 	}
 
@@ -19,7 +19,7 @@ class TvClientLocalAddressTests : FunSpec({
 	}
 
 	test("Private Adressen erkennen") {
-		TvClientLocalAddress.isPrivateAddress("http://192.168.72.91:8096") shouldBe true
+		TvClientLocalAddress.isPrivateAddress("http://192.168.1.10:8096") shouldBe true
 		TvClientLocalAddress.isPrivateAddress("http://10.0.0.5:8096") shouldBe true
 		TvClientLocalAddress.isPrivateAddress("http://172.20.1.1:8096") shouldBe true
 		TvClientLocalAddress.isPrivateAddress("http://172.32.1.1:8096") shouldBe false
@@ -33,10 +33,10 @@ class TvClientLocalAddressTests : FunSpec({
 	}
 
 	test("Netzkennung aus Gateway, DNS und Domain") {
-		val home = TvClientLocalAddress.networkKey(listOf("192.168.72.1"), listOf("192.168.72.1"), "fritz.box")
-		val other = TvClientLocalAddress.networkKey(listOf("192.168.72.1"), listOf("8.8.8.8"), null)
+		val home = TvClientLocalAddress.networkKey(listOf("192.168.1.1"), listOf("192.168.1.1"), "router.local")
+		val other = TvClientLocalAddress.networkKey(listOf("192.168.1.1"), listOf("8.8.8.8"), null)
 		(home == other) shouldBe false
-		TvClientLocalAddress.networkKey(listOf("192.168.72.1"), listOf("192.168.72.1"), "fritz.box") shouldBe home
+		TvClientLocalAddress.networkKey(listOf("192.168.1.1"), listOf("192.168.1.1"), "router.local") shouldBe home
 		TvClientLocalAddress.networkKey(emptyList(), listOf("1.1.1.1"), null) shouldBe null
 	}
 

@@ -1,5 +1,10 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## Nächste Version (noch nicht veröffentlicht)
+
+- Sicherheit: Der Fernbefehl `tvclient:app:…` (Handy-Fernbedienung) startet nur noch Apps, die das Gerät selbst veröffentlicht hat (Zeile „Apps“ eingeschaltet) – nicht mehr jede installierte App.
+- Sicherheit: Eine gemerkte Update-Adresse wird vor der Verwendung erneut geprüft (nur Releases auf GitHub).
+
 ## 1.47.1 – 2026-11-18
 
 - **Selbst-Update funktioniert wieder:** Seit 1.44.1 lehnte die App die Antwort der GitHub-API selbst ab („Unerwarteter Download-Host“) – die Prüfung auf erlaubte Hosts kannte nur die Download-Adressen. Jetzt gelten für Release-Abfrage und Änderungsliste `api.github.com` und `raw.githubusercontent.com`, für die APK weiter nur die GitHub-Download-Hosts (jetzt auch beim Herunterladen selbst geprüft). **Geräte mit 1.44.1 bis 1.47.0 brauchen diese Version einmal von Hand** (Downloader: `https://github.com/DrdotHouse2106/Jellyfin-TV-Client/releases/latest/download/quallenkino.apk`), danach geht es wieder automatisch.
