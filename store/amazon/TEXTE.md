@@ -18,7 +18,7 @@
 |---|---|
 | App title | Quallenkino für Jellyfin (Amazon lehnt den Gedankenstrich „–“ ab; falls auch „ü“ abgelehnt wird: Quallenkino for Jellyfin) |
 | App SKU | de.drdothouse.jellyfintv |
-| Kategorie | Unterhaltung / Entertainment (bzw. „Video“, falls angeboten) |
+| Kategorie | **Fotos & Videos** (Photos & Videos) – von Amazon am 19.11.2026 so verlangt; „Filme & TV“ (Movies & TV) wurde abgelehnt, weil die App keine eigenen Filme anbietet |
 | Support-Website | https://github.com/DrdotHouse2106/Jellyfin-TV-Client |
 | Datenschutzerklärung | https://github.com/DrdotHouse2106/Jellyfin-TV-Client/blob/main/PRIVACY.md |
 | Preis | kostenlos |
