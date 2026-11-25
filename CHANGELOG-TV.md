@@ -1,5 +1,9 @@
 # Änderungen – Quallenkino (Jellyfin-TV-Client)
 
+## 1.47.7 – 2026-11-25
+
+- **Bild friert ein, Ton läuft weiter:** Gibt der Bild-Decoder nach Start oder Sprung keine Bilder mehr aus (beobachtet bei AV1 auf Amlogic-Sticks wie dem waipu.tv 4K Stick, sporadisch, ohne Fehlermeldung), erkennt die App das jetzt nach 6 Sekunden: Sie lädt den Titel an derselben Stelle frisch (bleibt Direktwiedergabe). Friert es beim selben Titel erneut ein, lässt sie den Server das Bild umwandeln (wie in 1.47.6).
+
 ## 1.47.6 – 2026-11-18
 
 - **Hänger nach Sprung bzw. Fortsetzen, gezielter Rückfall:** Steht die Wiedergabe 20 Sekunden still, obwohl genug gepuffert ist, läuft der Bild-Decoder des Sticks mit diesem Datenstrom nicht an – auch frisch geladen und im Remux nicht (beobachtet auf Amlogic-Sticks wie dem waipu.tv 4K Stick bei Dateien eines Studios). Dann startet die App an derselben Stelle neu und lässt den Server **das Bild umwandeln** (neu kodiert statt kopiert), mit kurzem Hinweis. Ist der Puffer leer, bleibt es beim bisherigen Rückfall ohne Direktwiedergabe. Ersetzt das „frisch laden“ aus 1.47.5 für diesen Fall.

@@ -161,6 +161,7 @@ public class VideoManager {
                 if (isPlaying) {
                     if (mPlaybackControllerNotifiable != null) mPlaybackControllerNotifiable.onPrepared();
                     stallWatch.reset();
+                    frozenWatch.reset();
                     startProgressLoop();
                     _helper.setScreensaverLock(true);
                 } else {
@@ -437,7 +438,8 @@ public class VideoManager {
                     .setSubtitleConfigurations(subtitleConfigurations)
                     .build();
 
-            if (startPositionMs > 0) mExoPlayer.setMediaItem(mediaItem, startPositionMs);
+                frozenReloaded = false;
+        if (startPositionMs > 0) mExoPlayer.setMediaItem(mediaItem, startPositionMs);
             else mExoPlayer.setMediaItem(mediaItem);
             mExoPlayer.prepare();
         } catch (IllegalStateException e) {
@@ -749,6 +751,35 @@ public class VideoManager {
         }
     }
 
+    // Jellyfin-TV-Client: Bild steht, Ton läuft (Decoder gibt keine Bilder mehr aus) – Neustart mit Umwandlung
+    private final org.jellyfin.androidtv.tvclient.FrozenVideoWatch frozenWatch = new org.jellyfin.androidtv.tvclient.FrozenVideoWatch();
+
+    private void checkFrozenVideo() {
+        androidx.media3.common.Format video = mExoPlayer.getVideoFormat();
+        androidx.media3.exoplayer.DecoderCounters counters = mExoPlayer.getVideoDecoderCounters();
+        if (video == null || counters == null) return;
+        counters.ensureUpdated();
+        long frames = counters.renderedOutputBufferCount + counters.skippedOutputBufferCount + counters.droppedBufferCount;
+        if (!frozenWatch.check(mExoPlayer.getCurrentPosition(), frames, android.os.SystemClock.elapsedRealtime())) return;
+        // Erst frisch laden (sporadischer Hänger nach Start/Sprung), friert es beim selben Titel erneut ein: Umwandlung
+        boolean reload = !frozenReloaded;
+        String text = "Bild steht, Ton läuft: Position " + mExoPlayer.getCurrentPosition() + " ms, " + frames + " Bilder ausgegeben. "
+                + stallDetails() + (reload ? " – frisch laden an derselben Stelle" : " – Neustart mit Umwandlung des Bildes");
+        Timber.w(text);
+        org.jellyfin.androidtv.tvclient.ClientDiagnostics.INSTANCE.report(text);
+        org.jellyfin.androidtv.tvclient.ProblemReports.onPlayerError(new IllegalStateException(text));
+        if (reload) {
+            frozenReloaded = true;
+            frozenWatch.reset();
+            reloadAt(mExoPlayer.getCurrentPosition());
+        } else if (mPlaybackControllerNotifiable != null) {
+            mPlaybackControllerNotifiable.onDecoderStall();
+        }
+    }
+
+    /** Beim aktuellen Titel schon einmal wegen stehendem Bild frisch geladen (neuer Titel: zurückgesetzt). */
+    private boolean frozenReloaded = false;
+
     private void startProgressLoop() {
         stopProgressLoop();
         progressLoop = new Runnable() {
@@ -757,6 +788,7 @@ public class VideoManager {
                 if (mPlaybackControllerNotifiable != null) mPlaybackControllerNotifiable.onProgress();
                 if (mExoPlayer != null && mExoPlayer.isPlaying()) {
                     stallWatch.check(mExoPlayer.getCurrentPosition(), android.os.SystemClock.elapsedRealtime(), () -> stallDetails());
+                    checkFrozenVideo();
                 }
                 mHandler.postDelayed(this, 500);
             }
