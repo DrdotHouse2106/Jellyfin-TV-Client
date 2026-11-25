@@ -20,6 +20,10 @@ on:
         description: 'Einreichen (aus = Edit nur vorbereiten und prüfen)'
         type: boolean
         default: false
+      force_edit:
+        description: 'Offenes Edit auch bei anderem Status als IN_PROGRESS verwenden (z. B. nach Ablehnung)'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -61,4 +65,5 @@ jobs:
           AMAZON_CLIENT_SECRET: ${{ secrets.AMAZON_CLIENT_SECRET }}
           AMAZON_APP_ID: ${{ secrets.AMAZON_APP_ID }}
           AMAZON_SKIP_SAME: ${{ github.event_name == 'schedule' }}
+          AMAZON_FORCE_EDIT: ${{ inputs.force_edit || false }}
         run: .github/scripts/amazon-publish.sh apk/*-amazon.apk "$VERSION" "${{ github.event_name != 'workflow_dispatch' || inputs.commit }}"

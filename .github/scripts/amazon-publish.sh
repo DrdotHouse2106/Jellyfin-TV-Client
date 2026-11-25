@@ -32,7 +32,9 @@ etag() { api GET "$1" -o /dev/null; tr -d '\r' < "$H" | awk 'tolower($1)=="etag:
 ACTIVE="$(api GET /edits || true)"
 EDIT="$(jq -r '.id // empty' <<<"$ACTIVE" 2>/dev/null || true)"
 STATUS="$(jq -r '.status // empty' <<<"$ACTIVE" 2>/dev/null || true)"
-if [ -n "$EDIT" ] && [ -n "$STATUS" ] && [ "$STATUS" != "IN_PROGRESS" ]; then
+echo "Aktuelles Edit bei Amazon: ${EDIT:-keins} (Status ${STATUS:-?})"
+# PENDING ist z. B. eine abgelehnte, wieder bearbeitbare Version – nur von Hand mit „Edit trotz Status verwenden“
+if [ -n "$EDIT" ] && [ -n "$STATUS" ] && [ "$STATUS" != "IN_PROGRESS" ] && [ "${AMAZON_FORCE_EDIT:-}" != "true" ]; then
 	echo "::notice::Bei Amazon wird gerade eine Version geprüft (Status $STATUS) – $VERSION folgt automatisch, sobald sie freigegeben ist."
 	exit 0
 fi
